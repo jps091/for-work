@@ -7,7 +7,7 @@ build/
 
 # Application configuration
 *.yml
-
+*.gradle
 
 ### STS ###
 .apt_generated
