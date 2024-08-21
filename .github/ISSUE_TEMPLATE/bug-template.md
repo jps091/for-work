@@ -2,8 +2,8 @@
 name: bug template
 about: 버그 발생시에 관련한 이슈 사항입니다.
 title: "\U0001F41B[BUG]"
-labels: ''
-assignees: ''
+labels: 'Type: Errors/Bugs'
+assignees: seokin23
 
 ---
 
