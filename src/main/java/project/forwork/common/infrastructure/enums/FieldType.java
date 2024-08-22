@@ -1,10 +1,10 @@
-package project.forwork.domain.thumbnailimage.infrastructure.enums;
+package project.forwork.common.infrastructure.enums;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
-public enum Field {
+public enum FieldType {
 
     FRONTEND("프론트엔드"),
     BACKEND("백엔드"),
@@ -18,8 +18,8 @@ public enum Field {
     private String description;
 
     @JsonCreator
-    public static Field from(String s) {
-        for (Field status : Field.values()) {
+    public static FieldType from(String s) {
+        for (FieldType status : FieldType.values()) {
             if (status.name().equalsIgnoreCase(s)) {
                 return status;
             }

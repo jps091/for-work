@@ -4,7 +4,7 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 import project.forwork.common.infrastructure.BaseTimeEntity;
 
-import project.forwork.domain.thumbnailimage.infrastructure.enums.Field;
+import project.forwork.common.infrastructure.FieldEntity;
 
 
 @Entity
@@ -24,7 +24,7 @@ public class ThumbnailImageEntity extends BaseTimeEntity{
     @Column(nullable = false)
     private String url;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private Field field;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "field_id", nullable = false)
+    private FieldEntity fieldEntity;
 }
