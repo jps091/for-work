@@ -1,14 +1,13 @@
-package project.forwork.domain.salespost.infrastructure.enums;
+package project.forwork.domain.salepost.infrastructure.enums;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.AllArgsConstructor;
-import project.forwork.domain.user.infrastructure.enums.RoleType;
 
 @AllArgsConstructor
 public enum SalesStatus {
 
     SELLING("판매중"),
-    STOP("판매중지"),
+    CANCELED("판매중지"),
     ;
 
     private String description;

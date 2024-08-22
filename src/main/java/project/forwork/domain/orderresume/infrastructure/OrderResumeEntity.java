@@ -5,7 +5,7 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 import project.forwork.common.infrastructure.BaseTimeEntity;
 import project.forwork.domain.order.infrastructure.OrderEntity;
-import project.forwork.domain.resume.infrastructure.ResumeEntity;
+import project.forwork.domain.saleresume.infrastructure.SaleResumeEntity;
 
 @Entity
 @Table(name = "order_resumes")
@@ -16,7 +16,7 @@ import project.forwork.domain.resume.infrastructure.ResumeEntity;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class OrderResumeEntity extends BaseTimeEntity {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "order_resume_id")
     private Long id;
 
@@ -26,7 +26,7 @@ public class OrderResumeEntity extends BaseTimeEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "resume_id", nullable = false)
-    private ResumeEntity resumeEntity;
+    private SaleResumeEntity saleResumeEntity;
 
     @Column(name = "is_selected", nullable = false)
     private boolean isSelected;
