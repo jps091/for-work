@@ -18,7 +18,7 @@ import project.forwork.common.infrastructure.enums.LevelType;
 public class LevelEntity extends BaseTimeEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "field_id")
+    @Column(name = "level_id")
     private Long id;
 
     @Enumerated(EnumType.STRING)
