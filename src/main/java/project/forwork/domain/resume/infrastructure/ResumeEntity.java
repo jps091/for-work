@@ -19,4 +19,10 @@ public class ResumeEntity extends BaseTimeEntity {
     @Column(name = "resume_id")
     private Long id;
 
+    /***
+     * 제목
+     * 분야
+     * 서류 합격율
+     * 상세 설명
+     */
 }
