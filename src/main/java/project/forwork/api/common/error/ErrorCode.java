@@ -1,0 +1,22 @@
+package project.forwork.api.common.error;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import org.springframework.http.HttpStatus;
+
+@Getter
+@AllArgsConstructor
+public enum ErrorCode implements ErrorCodeIfs{
+
+    OK(200, 200, "성공"),
+    CREATED(201, 201, "생성완료"),
+    FOUND(302, 302, "Welcome"),
+    BAD_REQUEST(400, 400, "잘못된 요청"),
+    NOT_FOUND(404, 404, "존재 하지 않습니다."),
+    SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR.value(), 500, "서버에러"),
+    NULL_POINT(HttpStatus.INTERNAL_SERVER_ERROR.value(), 512, "Null Point Exp");
+
+    private final Integer httpStatusCode;
+    private final Integer errorCode;
+    private final String description;
+}
