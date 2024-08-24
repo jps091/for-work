@@ -5,6 +5,7 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 import project.forwork.api.common.infrastructure.BaseTimeEntity;
 import project.forwork.api.domain.user.infrastructure.enums.RoleType;
+import project.forwork.api.domain.user.model.User;
 
 @Entity
 @Table(name = "users")
@@ -34,4 +35,26 @@ public class UserEntity extends BaseTimeEntity {
 
     @Column(name = "last_login_at")
     private Long lastLoginAt;
+
+    public static UserEntity from(User user) {
+        UserEntity userEntity = new UserEntity();
+        userEntity.id = user.getId();
+        userEntity.email = user.getEmail();
+        userEntity.password = user.getPassword();
+        userEntity.name = user.getName();
+        userEntity.roleType = user.getRoleType();
+        userEntity.lastLoginAt = user.getLastLoginAt();
+        return userEntity;
+    }
+
+    public User toModel() {
+        return User.builder()
+                .id(id)
+                .email(email)
+                .password(password)
+                .name(name)
+                .roleType(roleType)
+                .lastLoginAt(lastLoginAt)
+                .build();
+    }
 }

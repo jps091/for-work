@@ -1,0 +1,32 @@
+package project.forwork.api.domain.user.infrastructure;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
+import project.forwork.api.common.error.UserErrorCode;
+import project.forwork.api.common.exception.ApiException;
+import project.forwork.api.domain.user.model.User;
+import project.forwork.api.domain.user.service.port.UserRepository;
+
+import java.util.Optional;
+
+@Repository
+@RequiredArgsConstructor
+public class UserRepositoryImpl implements UserRepository {
+
+    private final UserJpaRepository userJpaRepository;
+
+    @Override
+    public User getById(long id) {
+        return findById(id).orElseThrow(() -> new ApiException(UserErrorCode.USER_NOT_FOUND));
+    }
+
+    @Override
+    public Optional<User> findById(long id) {
+        return userJpaRepository.findById(id).map(UserEntity::toModel);
+    }
+    @Override
+    public User save(User user) {
+        return userJpaRepository.save(UserEntity.from(user)).toModel();
+    }
+
+}
