@@ -29,4 +29,8 @@ public class UserRepositoryImpl implements UserRepository {
         return userJpaRepository.save(UserEntity.from(user)).toModel();
     }
 
+    @Override
+    public Optional<User> findByEmail(String email) {
+        return userJpaRepository.findByEmail(email).map(UserEntity::toModel);
+    }
 }
