@@ -6,6 +6,7 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import project.forwork.api.interceptor.AuthorizationInterceptor;
+import project.forwork.api.resolver.UserCookieResolver;
 
 import java.util.List;
 
@@ -14,6 +15,7 @@ import java.util.List;
 public class WebConfig implements WebMvcConfigurer {
 
     private final AuthorizationInterceptor authorizationInterceptor;
+    private final UserCookieResolver userCookieResolver;
 
     private List<String> OPEN_API = List.of(
             "/open-api/**"
@@ -40,5 +42,10 @@ public class WebConfig implements WebMvcConfigurer {
                 .excludePathPatterns(OPEN_API)
                 .excludePathPatterns(DEFAULT_EXCLUDE)
                 .excludePathPatterns(SWAGGER);
+    }
+
+    @Override
+    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
+        resolvers.add(userCookieResolver);
     }
 }
