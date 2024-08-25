@@ -9,4 +9,10 @@ public interface RefreshTokenRepository {
     RefreshToken save(RefreshToken refreshToken);
 
     Optional<RefreshToken> findByToken(String token);
+
+    Optional<RefreshToken> findByUserId(Long userId);
+
+    RefreshToken getByUserId(Long userId);
+
+    void delete(RefreshToken refreshToken);
 }

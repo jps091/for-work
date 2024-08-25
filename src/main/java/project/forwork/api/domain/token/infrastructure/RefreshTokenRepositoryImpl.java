@@ -2,6 +2,8 @@ package project.forwork.api.domain.token.infrastructure;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import project.forwork.api.common.error.TokenErrorCode;
+import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.domain.token.model.RefreshToken;
 import project.forwork.api.domain.token.service.port.RefreshTokenRepository;
 
@@ -22,5 +24,21 @@ public class RefreshTokenRepositoryImpl implements RefreshTokenRepository {
     @Override
     public Optional<RefreshToken> findByToken(String token) {
         return refreshTokenJpaRepository.findByToken(token).map(RefreshTokenEntity::toModel);
+    }
+
+    @Override
+    public Optional<RefreshToken> findByUserId(Long userId) {
+        return refreshTokenJpaRepository.findByUserId(userId).map(RefreshTokenEntity::toModel);
+    }
+
+    @Override
+    public RefreshToken getByUserId(Long userId) {
+        return findByUserId(userId)
+                .orElseThrow(() -> new ApiException(TokenErrorCode.EXCEPTION_TOKEN));
+    }
+
+    @Override
+    public void delete(RefreshToken refreshToken) {
+        refreshTokenJpaRepository.delete(RefreshTokenEntity.from(refreshToken));
     }
 }

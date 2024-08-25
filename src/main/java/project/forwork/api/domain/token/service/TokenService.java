@@ -17,8 +17,6 @@ import project.forwork.api.domain.token.service.port.RefreshTokenRepository;
 import project.forwork.api.domain.user.model.User;
 import project.forwork.api.domain.user.service.port.UserRepository;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -33,34 +31,49 @@ public class TokenService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final UserRepository userRepository;
 
-    public TokenResponse issueToken(User user) {
+    public TokenResponse issueTokenResponse(User user) {
 
-        return Optional.ofNullable(user)
-                .map(u -> {
-                    Token token = createRefreshToken(u);
-                    refreshTokenRepository.save(RefreshToken.from(token, u.getId()));
-                    return createTokenResponse(u);
-                })
-                .orElseThrow(() -> new ApiException(UserErrorCode.USER_NOT_FOUND));
+        refreshTokenRepository.findByUserId(user.getId())
+                .ifPresentOrElse(refreshToken -> {
+                    if(isTimeOutRefreshToken(refreshToken)){
+                        reissueRefreshToken(refreshToken, user);
+                    }
+                }, () -> {
+                    issueRefreshToken(user);
+                });
+        return createTokenResponse(user);
     }
 
-    public TokenResponse reissueToken(String refreshTokenValue) {
+    public TokenResponse reissueTokenResponse(String refreshTokenValue) {
 
         // 리프레쉬 토큰 값 자체로 데이터베이스에서 검색
         RefreshToken refreshToken = refreshTokenRepository.findByToken(refreshTokenValue)
                 .orElseThrow(() -> new ApiException(TokenErrorCode.INVALID_TOKEN));
 
-        if (refreshToken.getExpiredAt().isBefore(clockHolder.now())) {
+        if (isTimeOutRefreshToken(refreshToken)) {
             throw new ApiException(TokenErrorCode.EXPIRED_TOKEN);
         }
 
         // 토큰에서 사용자 ID 추출
         Long userId = refreshToken.getUserId();
-
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ApiException(UserErrorCode.USER_NOT_FOUND));
 
         return createTokenResponse(user);
+    }
+
+    private boolean isTimeOutRefreshToken(RefreshToken refreshToken) {
+        return refreshToken.getExpiredAt().isBefore(clockHolder.now());
+    }
+
+    private void issueRefreshToken(User user){
+        Token token = tokenHelper.issueRefreshToken(user);
+        refreshTokenRepository.save(RefreshToken.from(token, user.getId()));
+    }
+
+    private void reissueRefreshToken(RefreshToken refreshToken, User user){
+        refreshTokenRepository.delete(refreshToken);
+        issueRefreshToken(user);
     }
 
     private TokenResponse createTokenResponse(User user) {
@@ -79,10 +92,6 @@ public class TokenService {
         });
 
         return userId;
-    }
-
-    private Token createRefreshToken(User user) {
-        return tokenHelper.issueRefreshToken(user);
     }
 
     public String getRoleByToken(String token) {
