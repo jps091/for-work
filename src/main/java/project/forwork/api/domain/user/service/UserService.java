@@ -14,8 +14,6 @@ import project.forwork.api.domain.user.controller.model.UserResponse;
 import project.forwork.api.domain.user.model.User;
 import project.forwork.api.domain.user.service.port.UserRepository;
 
-import java.util.Objects;
-
 @Service
 @Transactional
 @RequiredArgsConstructor
