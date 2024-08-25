@@ -23,7 +23,7 @@ public class CookieService {
     private final TokenService tokenService;
 
     public void createCookies(HttpServletResponse response, User loginUser) {
-        TokenResponse token = tokenService.issueToken(loginUser);
+        TokenResponse token = tokenService.issueTokenResponse(loginUser);
         createCookie(response, token.getAccessToken(), ACCESS_TOKEN, true);
         createCookie(response, token.getCsrfToken(), CSRF_TOKEN, false);
     }
