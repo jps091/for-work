@@ -40,6 +40,7 @@ public class UserCookieResolver implements HandlerMethodArgumentResolver {
 
         RequestAttributes requestContext = RequestContextHolder.getRequestAttributes();
         Object userId = requestContext.getAttribute(USER_ID, RequestAttributes.SCOPE_REQUEST);
+
         UserResponse userResponse = userService.getById(Long.parseLong(userId.toString()));
 
         return CurrentUser.builder()

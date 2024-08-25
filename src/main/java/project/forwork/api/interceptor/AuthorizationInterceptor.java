@@ -38,16 +38,10 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
         }
 
         RequestAttributes requestContext = Objects.requireNonNull(RequestContextHolder.getRequestAttributes());
+        String accessToken = cookieService.extractTokenFromCookies(request, CookieService.ACCESS_TOKEN);
+        Long userId = tokenService.validationToken(accessToken);
+        requestContext.setAttribute(USER_ID, userId, RequestAttributes.SCOPE_REQUEST);
 
-        try {
-            String accessToken = cookieService.extractTokenFromCookies(request, CookieService.ACCESS_TOKEN);
-            Long userId = tokenService.validationToken(accessToken);
-            requestContext.setAttribute(USER_ID, userId, RequestAttributes.SCOPE_REQUEST);
-            log.info("interceptor={}",userId);
-            return true;
-        } catch (ApiException e) {
-            log.error("AuthorizationInterceptor Token Error : ", e);
-            throw e;
-        }
+        return true;
     }
 }
