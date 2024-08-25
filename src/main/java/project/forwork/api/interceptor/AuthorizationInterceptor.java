@@ -10,7 +10,6 @@ import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
-import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.common.service.CookieService;
 import project.forwork.api.domain.token.service.TokenService;
 
@@ -39,7 +38,7 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
 
         RequestAttributes requestContext = Objects.requireNonNull(RequestContextHolder.getRequestAttributes());
         String accessToken = cookieService.extractTokenFromCookies(request, CookieService.ACCESS_TOKEN);
-        Long userId = tokenService.validationToken(accessToken);
+        Long userId = tokenService.validateAndGetUserId(accessToken);
         requestContext.setAttribute(USER_ID, userId, RequestAttributes.SCOPE_REQUEST);
 
         return true;

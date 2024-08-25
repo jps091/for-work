@@ -18,9 +18,6 @@ import project.forwork.api.domain.user.model.User;
 import project.forwork.api.domain.user.service.port.UserRepository;
 
 import java.util.Objects;
-import java.util.Optional;
-
-import static project.forwork.api.domain.token.helper.JwtTokenHelper.ROLE_TYPE;
 
 @Service
 @RequiredArgsConstructor
@@ -84,7 +81,7 @@ public class TokenService {
     }
 
     // JWT 토큰의 유효성 검사 후, 유효한 경우 사용자 ID 반환. 토큰이 유효하지 않거나, 사용자 ID가 없다면 예외를 던짐
-    public Long validationToken(String token) {
+    public Long validateAndGetUserId(String token) {
         Long userId = tokenHelper.validationTokenWithThrow(token);
 
         Objects.requireNonNull(userId, () -> {
@@ -92,11 +89,6 @@ public class TokenService {
         });
 
         return userId;
-    }
-
-    public String getRoleByToken(String token) {
-        DecodedJWT decodedJWT = JWT.decode(token);
-        return decodedJWT.getClaim(ROLE_TYPE).asString();
     }
 
     public Long getUserIdByToken(String token) {
