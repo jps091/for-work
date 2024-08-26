@@ -1,5 +1,6 @@
 package project.forwork.api.domain.user.service;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -46,5 +47,9 @@ public class UserService {
         cookieService.createCookies(response, user);
 
         return UserResponse.from(user);
+    }
+
+    public void refreshAccessToken(HttpServletRequest request, HttpServletResponse response){
+        cookieService.extractTokenFromCookies(request, )
     }
 }

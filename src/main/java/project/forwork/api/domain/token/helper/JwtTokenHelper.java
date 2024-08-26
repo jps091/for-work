@@ -46,21 +46,21 @@ public class JwtTokenHelper implements TokenHelperIfs {
     private Long refreshTokenPlusHour;
 
     @Override
-    public Token issueAccessToken(User user) {
-        return issueAccessTokenFrom(user, accessTokenPlusHour, ACCESS_TYPE);
+    public Token issueAccessToken(Long userId) {
+        return issueAccessTokenFrom(userId, accessTokenPlusHour, ACCESS_TYPE);
     }
 
     @Override
-    public Token issueRefreshToken(User user) {
-        return issueTokenFrom(user, refreshTokenPlusHour, REFRESH_TYPE);
+    public Token issueRefreshToken(Long userId) {
+        return issueTokenFrom(userId, refreshTokenPlusHour, REFRESH_TYPE);
     }
 
     @Override
-    public Token issueCsrfToken(User user) {
-        return issueTokenFrom(user, csrfTokenPlusHour, CSRF_TYPE);
+    public Token issueCsrfToken(Long userId) {
+        return issueTokenFrom(userId, csrfTokenPlusHour, CSRF_TYPE);
     }
 
-    private Token issueAccessTokenFrom(User user, Long tokenPlusHour, String tokenType) {
+    private Token issueAccessTokenFrom(Long userId, Long tokenPlusHour, String tokenType) {
         LocalDateTime expiredTime = clockHolder.plusHours(tokenPlusHour);
         Date expiredAt = clockHolder.convertAbsoluteTime(expiredTime);
 
@@ -68,9 +68,9 @@ public class JwtTokenHelper implements TokenHelperIfs {
 
         String jwtToken = JWT.create()
                 .withIssuer("for-work")
-                .withSubject(user.getId().toString())
+                .withSubject(userId.toString())
                 .withClaim(TOKEN_TYPE, tokenType)
-                .withClaim(ROLE_TYPE, user.getRoleType().toString())
+//                .withClaim(ROLE_TYPE, user.getRoleType().toString())
                 .withExpiresAt(expiredAt)
                 .sign(algo);
 
@@ -80,7 +80,7 @@ public class JwtTokenHelper implements TokenHelperIfs {
                 .build();
     }
 
-    private Token issueTokenFrom(User user, Long tokenPlusHour, String tokenType) {
+    private Token issueTokenFrom(Long userId, Long tokenPlusHour, String tokenType) {
         LocalDateTime expiredTime = clockHolder.plusHours(tokenPlusHour);
         Date expiredAt = clockHolder.convertAbsoluteTime(expiredTime);
 
@@ -88,7 +88,7 @@ public class JwtTokenHelper implements TokenHelperIfs {
 
         String jwtToken = JWT.create()
                 .withIssuer("for-work")
-                .withSubject(user.getId().toString())
+                .withSubject(userId.toString())
                 .withClaim(TOKEN_TYPE, tokenType)
                 .withExpiresAt(expiredAt)
                 .sign(algo);

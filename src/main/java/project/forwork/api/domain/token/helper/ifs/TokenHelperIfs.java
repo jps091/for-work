@@ -4,8 +4,8 @@ import project.forwork.api.domain.token.model.Token;
 import project.forwork.api.domain.user.model.User;
 
 public interface TokenHelperIfs {
-    Token issueAccessToken(User user);
-    Token issueCsrfToken(User user);
-    Token issueRefreshToken(User user);
+    Token issueAccessToken(Long userId);
+    Token issueCsrfToken(Long userId);
+    Token issueRefreshToken(Long userId);
     Long validationTokenWithThrow(String token);
 }

@@ -30,15 +30,17 @@ public class TokenService {
 
     public TokenResponse issueTokenResponse(User user) {
 
-        refreshTokenRepository.findByUserId(user.getId())
+        Long userId = user.getId();
+
+        refreshTokenRepository.findByUserId(userId)
                 .ifPresentOrElse(refreshToken -> {
                     if(isTimeOutRefreshToken(refreshToken)){
-                        reissueRefreshToken(refreshToken, user);
+                        reissueRefreshToken(refreshToken, userId);
                     }
                 }, () -> {
-                    issueRefreshToken(user);
+                    issueRefreshToken(userId);
                 });
-        return createTokenResponse(user);
+        return createTokenResponse(userId);
     }
 
     public TokenResponse reissueTokenResponse(String refreshTokenValue) {
@@ -53,29 +55,27 @@ public class TokenService {
 
         // 토큰에서 사용자 ID 추출
         Long userId = refreshToken.getUserId();
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ApiException(UserErrorCode.USER_NOT_FOUND));
 
-        return createTokenResponse(user);
+        return createTokenResponse(userId);
     }
 
     private boolean isTimeOutRefreshToken(RefreshToken refreshToken) {
         return refreshToken.getExpiredAt().isBefore(clockHolder.now());
     }
 
-    private void issueRefreshToken(User user){
-        Token token = tokenHelper.issueRefreshToken(user);
-        refreshTokenRepository.save(RefreshToken.from(token, user.getId()));
+    private void issueRefreshToken(Long userId){
+        Token token = tokenHelper.issueRefreshToken(userId);
+        refreshTokenRepository.save(RefreshToken.from(token, userId));
     }
 
-    private void reissueRefreshToken(RefreshToken refreshToken, User user){
+    private void reissueRefreshToken(RefreshToken refreshToken, Long userId){
         refreshTokenRepository.delete(refreshToken);
-        issueRefreshToken(user);
+        issueRefreshToken(userId);
     }
 
-    private TokenResponse createTokenResponse(User user) {
-        Token accessToken = tokenHelper.issueAccessToken(user);
-        Token csrfToken = tokenHelper.issueCsrfToken(user);
+    private TokenResponse createTokenResponse(Long userId) {
+        Token accessToken = tokenHelper.issueAccessToken(userId);
+        Token csrfToken = tokenHelper.issueCsrfToken(userId);
 
         return TokenResponse.from(accessToken, csrfToken);
     }
