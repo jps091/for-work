@@ -28,7 +28,6 @@ public class JwtTokenHelper implements TokenHelperIfs {
 
     public static final String ACCESS_TYPE = "ACCESS_TYPE";
     public static final String REFRESH_TYPE = "REFRESH_TYPE";
-    public static final String CSRF_TYPE = "CSRF_TYPE";
     public static final String TOKEN_TYPE = "tokenType";
     public static final String ROLE_TYPE = "roleType";
     private final ClockHolder clockHolder;
@@ -39,64 +38,17 @@ public class JwtTokenHelper implements TokenHelperIfs {
     @Value("${token.access-token.plus-hour}")
     private Long accessTokenPlusHour;
 
-    @Value("${token.access-token.plus-hour}")
-    private Long csrfTokenPlusHour;
-
     @Value("${token.refresh-token.plus-hour}")
     private Long refreshTokenPlusHour;
 
     @Override
-    public Token issueAccessToken(User user) {
-        return issueAccessTokenFrom(user, accessTokenPlusHour, ACCESS_TYPE);
+    public Token issueAccessToken(Long userId) {
+        return issueTokenFrom(userId, accessTokenPlusHour, ACCESS_TYPE);
     }
 
     @Override
-    public Token issueRefreshToken(User user) {
-        return issueTokenFrom(user, refreshTokenPlusHour, REFRESH_TYPE);
-    }
-
-    @Override
-    public Token issueCsrfToken(User user) {
-        return issueTokenFrom(user, csrfTokenPlusHour, CSRF_TYPE);
-    }
-
-    private Token issueAccessTokenFrom(User user, Long tokenPlusHour, String tokenType) {
-        LocalDateTime expiredTime = clockHolder.plusHours(tokenPlusHour);
-        Date expiredAt = clockHolder.convertAbsoluteTime(expiredTime);
-
-        Algorithm algo = Algorithm.HMAC256(secretKey.getBytes(StandardCharsets.UTF_8));
-
-        String jwtToken = JWT.create()
-                .withIssuer("for-work")
-                .withSubject(user.getId().toString())
-                .withClaim(TOKEN_TYPE, tokenType)
-                .withClaim(ROLE_TYPE, user.getRoleType().toString())
-                .withExpiresAt(expiredAt)
-                .sign(algo);
-
-        return Token.builder()
-                .token(jwtToken)
-                .expiredAt(expiredTime)
-                .build();
-    }
-
-    private Token issueTokenFrom(User user, Long tokenPlusHour, String tokenType) {
-        LocalDateTime expiredTime = clockHolder.plusHours(tokenPlusHour);
-        Date expiredAt = clockHolder.convertAbsoluteTime(expiredTime);
-
-        Algorithm algo = Algorithm.HMAC256(secretKey.getBytes(StandardCharsets.UTF_8));
-
-        String jwtToken = JWT.create()
-                .withIssuer("for-work")
-                .withSubject(user.getId().toString())
-                .withClaim(TOKEN_TYPE, tokenType)
-                .withExpiresAt(expiredAt)
-                .sign(algo);
-
-        return Token.builder()
-                .token(jwtToken)
-                .expiredAt(expiredTime)
-                .build();
+    public Token issueRefreshToken(Long userId) {
+        return issueTokenFrom(userId, refreshTokenPlusHour, REFRESH_TYPE);
     }
 
     @Override
@@ -113,5 +65,24 @@ public class JwtTokenHelper implements TokenHelperIfs {
         } catch (JWTVerificationException e) {
             throw new ApiException(TokenErrorCode.INVALID_TOKEN, e);
         }
+    }
+
+    private Token issueTokenFrom(Long userId, Long tokenPlusHour, String tokenType) {
+        LocalDateTime expiredTime = clockHolder.plusHours(tokenPlusHour);
+        Date expiredAt = clockHolder.convertAbsoluteTime(expiredTime);
+
+        Algorithm algo = Algorithm.HMAC256(secretKey.getBytes(StandardCharsets.UTF_8));
+
+        String jwtToken = JWT.create()
+                .withIssuer("for-work")
+                .withSubject(userId.toString())
+                .withClaim(TOKEN_TYPE, tokenType)
+                .withExpiresAt(expiredAt)
+                .sign(algo);
+
+        return Token.builder()
+                .token(jwtToken)
+                .expiredAt(expiredTime)
+                .build();
     }
 }

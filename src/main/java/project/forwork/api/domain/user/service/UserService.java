@@ -1,5 +1,6 @@
 package project.forwork.api.domain.user.service;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,12 +30,6 @@ public class UserService {
         return UserResponse.from(user);
     }
 
-    public UserResponse getById(long id){
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new ApiException(UserErrorCode.USER_NOT_FOUND));
-        return UserResponse.from(user);
-    }
-
     public UserResponse login(HttpServletResponse response, UserLoginRequest loginUser){
 
         User user = userRepository.findByEmail(loginUser.getEmail())
@@ -45,6 +40,12 @@ public class UserService {
 
         cookieService.createCookies(response, user);
 
+        return UserResponse.from(user);
+    }
+
+    public UserResponse getById(long id){
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ApiException(UserErrorCode.USER_NOT_FOUND));
         return UserResponse.from(user);
     }
 }
