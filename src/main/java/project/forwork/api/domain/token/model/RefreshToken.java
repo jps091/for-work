@@ -2,6 +2,7 @@ package project.forwork.api.domain.token.model;
 
 import lombok.Builder;
 import lombok.Getter;
+import project.forwork.api.common.service.port.ClockHolder;
 
 import java.time.LocalDateTime;
 
@@ -25,6 +26,15 @@ public class RefreshToken {
                 .token(token.getToken())
                 .userId(userId)
                 .expiredAt(token.getExpiredAt())
+                .build();
+    }
+
+    public RefreshToken initExpiredAt(RefreshToken refreshToken, ClockHolder clockHolder){
+        return RefreshToken.builder()
+                .id(refreshToken.getId())
+                .token(refreshToken.getToken())
+                .userId(refreshToken.getUserId())
+                .expiredAt(clockHolder.now())
                 .build();
     }
 }

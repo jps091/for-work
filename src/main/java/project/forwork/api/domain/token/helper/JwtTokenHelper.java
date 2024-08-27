@@ -28,7 +28,6 @@ public class JwtTokenHelper implements TokenHelperIfs {
 
     public static final String ACCESS_TYPE = "ACCESS_TYPE";
     public static final String REFRESH_TYPE = "REFRESH_TYPE";
-    public static final String CSRF_TYPE = "CSRF_TYPE";
     public static final String TOKEN_TYPE = "tokenType";
     public static final String ROLE_TYPE = "roleType";
     private final ClockHolder clockHolder;
@@ -39,15 +38,12 @@ public class JwtTokenHelper implements TokenHelperIfs {
     @Value("${token.access-token.plus-hour}")
     private Long accessTokenPlusHour;
 
-    @Value("${token.access-token.plus-hour}")
-    private Long csrfTokenPlusHour;
-
     @Value("${token.refresh-token.plus-hour}")
     private Long refreshTokenPlusHour;
 
     @Override
     public Token issueAccessToken(Long userId) {
-        return issueAccessTokenFrom(userId, accessTokenPlusHour, ACCESS_TYPE);
+        return issueTokenFrom(userId, accessTokenPlusHour, ACCESS_TYPE);
     }
 
     @Override
@@ -56,28 +52,19 @@ public class JwtTokenHelper implements TokenHelperIfs {
     }
 
     @Override
-    public Token issueCsrfToken(Long userId) {
-        return issueTokenFrom(userId, csrfTokenPlusHour, CSRF_TYPE);
-    }
-
-    private Token issueAccessTokenFrom(Long userId, Long tokenPlusHour, String tokenType) {
-        LocalDateTime expiredTime = clockHolder.plusHours(tokenPlusHour);
-        Date expiredAt = clockHolder.convertAbsoluteTime(expiredTime);
-
+    public Long validationTokenWithThrow(String token) {
         Algorithm algo = Algorithm.HMAC256(secretKey.getBytes(StandardCharsets.UTF_8));
 
-        String jwtToken = JWT.create()
-                .withIssuer("for-work")
-                .withSubject(userId.toString())
-                .withClaim(TOKEN_TYPE, tokenType)
-//                .withClaim(ROLE_TYPE, user.getRoleType().toString())
-                .withExpiresAt(expiredAt)
-                .sign(algo);
+        JWTVerifier verifier = JWT.require(algo).build();
 
-        return Token.builder()
-                .token(jwtToken)
-                .expiredAt(expiredTime)
-                .build();
+        try {
+            DecodedJWT decodedJWT = verifier.verify(token);
+            return Long.parseLong(decodedJWT.getSubject());
+        } catch (TokenExpiredException e) {
+            throw new ApiException(TokenErrorCode.EXPIRED_TOKEN, e);
+        } catch (JWTVerificationException e) {
+            throw new ApiException(TokenErrorCode.INVALID_TOKEN, e);
+        }
     }
 
     private Token issueTokenFrom(Long userId, Long tokenPlusHour, String tokenType) {
@@ -97,21 +84,5 @@ public class JwtTokenHelper implements TokenHelperIfs {
                 .token(jwtToken)
                 .expiredAt(expiredTime)
                 .build();
-    }
-
-    @Override
-    public Long validationTokenWithThrow(String token) {
-        Algorithm algo = Algorithm.HMAC256(secretKey.getBytes(StandardCharsets.UTF_8));
-
-        JWTVerifier verifier = JWT.require(algo).build();
-
-        try {
-            DecodedJWT decodedJWT = verifier.verify(token);
-            return Long.parseLong(decodedJWT.getSubject());
-        } catch (TokenExpiredException e) {
-            throw new ApiException(TokenErrorCode.EXPIRED_TOKEN, e);
-        } catch (JWTVerificationException e) {
-            throw new ApiException(TokenErrorCode.INVALID_TOKEN, e);
-        }
     }
 }

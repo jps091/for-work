@@ -19,31 +19,45 @@ import java.util.Optional;
 public class CookieService {
 
     public static final String ACCESS_TOKEN = "accessToken";
-    public static final String CSRF_TOKEN = "csrfToken";
+    public static final String REFRESH_TOKEN = "refreshToken";
     private final TokenService tokenService;
 
     public void createCookies(HttpServletResponse response, User loginUser) {
-        TokenResponse token = tokenService.issueTokenResponse(loginUser);
-        createCookie(response, token.getAccessToken(), ACCESS_TOKEN, true);
-        createCookie(response, token.getCsrfToken(), CSRF_TOKEN, false);
+        TokenResponse tokenResponse = tokenService.issueTokenResponse(loginUser);
+        createCookieByTokenResponse(response, tokenResponse);
     }
 
     public void addCookies(HttpServletResponse response, TokenResponse tokenResponse) {
-        createCookie(response, tokenResponse.getAccessToken(), ACCESS_TOKEN, true);
-        createCookie(response, tokenResponse.getCsrfToken(), CSRF_TOKEN, false);
-    }
-
-    private void createCookie(HttpServletResponse response, String tokenValue, String tokenKey, boolean httpOnly) {
-        Cookie cookie = new Cookie(tokenKey, tokenValue);
-        cookie.setPath("/");
-        cookie.setHttpOnly(httpOnly);
-        cookie.setMaxAge(60 * 60);
-        response.addCookie(cookie);
+        createCookieByTokenResponse(response, tokenResponse);
     }
 
     public void expiredCookies(HttpServletRequest request, HttpServletResponse response) {
         deleteCookie(request, response, ACCESS_TOKEN);
-        deleteCookie(request, response, CSRF_TOKEN);
+        deleteCookie(request, response, REFRESH_TOKEN);
+    }
+
+    public String extractTokenFromCookies(HttpServletRequest request, String tokenKey) {
+        return Optional.ofNullable(request.getCookies())
+                .stream()
+                .flatMap(Arrays::stream)  // Cookie[] -> Stream<Cookie>
+                .filter(cookie -> tokenKey.equals(cookie.getName()))  // tokenKey와 이름이 일치하는 쿠키 필터링
+                .map(Cookie::getValue)  // 쿠키의 값을 가져옴
+                .findFirst()  // 첫 번째 값을 Optional로 반환
+                .orElseThrow(() -> new ApiException(TokenErrorCode.INVALID_TOKEN));  // 값이 없으면 예외 발생
+    }
+
+
+    private void createCookieByTokenResponse(HttpServletResponse response, TokenResponse tokenResponse){
+        createCookie(response, tokenResponse.getAccessToken(), ACCESS_TOKEN);
+        createCookie(response, tokenResponse.getRefreshToken(), REFRESH_TOKEN);
+    }
+
+    private void createCookie(HttpServletResponse response, String tokenValue, String tokenKey){
+        Cookie cookie = new Cookie(tokenKey, tokenValue);
+        cookie.setPath("/");
+        cookie.setHttpOnly(true);
+        cookie.setMaxAge(60 * 60);
+        response.addCookie(cookie);
     }
 
     private void deleteCookie(HttpServletRequest request, HttpServletResponse response, String tokenKey) {
@@ -71,16 +85,6 @@ public class CookieService {
                 }
             }
         }
-    }
-
-    public String extractTokenFromCookies(HttpServletRequest request, String tokenKey) {
-        return Optional.ofNullable(request.getCookies())
-                .stream()
-                .flatMap(Arrays::stream)  // Cookie[] -> Stream<Cookie>
-                .filter(cookie -> tokenKey.equals(cookie.getName()))  // tokenKey와 이름이 일치하는 쿠키 필터링
-                .map(Cookie::getValue)  // 쿠키의 값을 가져옴
-                .findFirst()  // 첫 번째 값을 Optional로 반환
-                .orElseThrow(() -> new ApiException(TokenErrorCode.INVALID_TOKEN));  // 값이 없으면 예외 발생
     }
 
     public String extractTokenFromCookies2(HttpServletRequest request, String tokenKey) {

@@ -30,12 +30,6 @@ public class UserService {
         return UserResponse.from(user);
     }
 
-    public UserResponse getById(long id){
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new ApiException(UserErrorCode.USER_NOT_FOUND));
-        return UserResponse.from(user);
-    }
-
     public UserResponse login(HttpServletResponse response, UserLoginRequest loginUser){
 
         User user = userRepository.findByEmail(loginUser.getEmail())
@@ -49,7 +43,9 @@ public class UserService {
         return UserResponse.from(user);
     }
 
-    public void refreshAccessToken(HttpServletRequest request, HttpServletResponse response){
-        cookieService.extractTokenFromCookies(request, )
+    public UserResponse getById(long id){
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ApiException(UserErrorCode.USER_NOT_FOUND));
+        return UserResponse.from(user);
     }
 }

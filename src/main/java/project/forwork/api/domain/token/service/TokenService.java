@@ -5,6 +5,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import project.forwork.api.common.error.TokenErrorCode;
 import project.forwork.api.common.error.UserErrorCode;
 import project.forwork.api.common.exception.ApiException;
@@ -15,18 +16,17 @@ import project.forwork.api.domain.token.model.Token;
 import project.forwork.api.domain.token.model.TokenResponse;
 import project.forwork.api.domain.token.service.port.RefreshTokenRepository;
 import project.forwork.api.domain.user.model.User;
-import project.forwork.api.domain.user.service.port.UserRepository;
 
 import java.util.Objects;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class TokenService {
 
     private final TokenHelperIfs tokenHelper;
     private final ClockHolder clockHolder;
     private final RefreshTokenRepository refreshTokenRepository;
-    private final UserRepository userRepository;
 
     public TokenResponse issueTokenResponse(User user) {
 
@@ -34,9 +34,7 @@ public class TokenService {
 
         refreshTokenRepository.findByUserId(userId)
                 .ifPresentOrElse(refreshToken -> {
-                    if(isTimeOutRefreshToken(refreshToken)){
-                        reissueRefreshToken(refreshToken, userId);
-                    }
+                    reissueRefreshToken(refreshToken, userId);
                 }, () -> {
                     issueRefreshToken(userId);
                 });
@@ -59,27 +57,6 @@ public class TokenService {
         return createTokenResponse(userId);
     }
 
-    private boolean isTimeOutRefreshToken(RefreshToken refreshToken) {
-        return refreshToken.getExpiredAt().isBefore(clockHolder.now());
-    }
-
-    private void issueRefreshToken(Long userId){
-        Token token = tokenHelper.issueRefreshToken(userId);
-        refreshTokenRepository.save(RefreshToken.from(token, userId));
-    }
-
-    private void reissueRefreshToken(RefreshToken refreshToken, Long userId){
-        refreshTokenRepository.delete(refreshToken);
-        issueRefreshToken(userId);
-    }
-
-    private TokenResponse createTokenResponse(Long userId) {
-        Token accessToken = tokenHelper.issueAccessToken(userId);
-        Token csrfToken = tokenHelper.issueCsrfToken(userId);
-
-        return TokenResponse.from(accessToken, csrfToken);
-    }
-
     // JWT 토큰의 유효성 검사 후, 유효한 경우 사용자 ID 반환. 토큰이 유효하지 않거나, 사용자 ID가 없다면 예외를 던짐
     public Long validateAndGetUserId(String token) {
         Long userId = tokenHelper.validationTokenWithThrow(token);
@@ -94,5 +71,29 @@ public class TokenService {
     public Long getUserIdByToken(String token) {
         DecodedJWT decodedJWT = JWT.decode(token);
         return Long.parseLong(decodedJWT.getSubject());
+    }
+
+    private TokenResponse createTokenResponse(Long userId) {
+        Token accessToken = tokenHelper.issueAccessToken(userId);
+        Token refreshToken = tokenHelper.issueRefreshToken(userId);
+
+        return TokenResponse.from(accessToken, refreshToken);
+    }
+
+    private void issueRefreshToken(Long userId){
+        Token token = tokenHelper.issueRefreshToken(userId);
+        refreshTokenRepository.save(RefreshToken.from(token, userId));
+    }
+
+    private void reissueRefreshToken(RefreshToken refreshToken, Long userId){
+        RefreshToken oldRefreshToken = refreshToken.initExpiredAt(refreshToken, clockHolder);
+        refreshTokenRepository.save(oldRefreshToken);
+
+        refreshTokenRepository.delete(oldRefreshToken);
+        issueRefreshToken(userId);
+    }
+
+    private boolean isTimeOutRefreshToken(RefreshToken refreshToken) {
+        return refreshToken.getExpiredAt().isBefore(clockHolder.now());
     }
 }
