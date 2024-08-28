@@ -17,7 +17,6 @@ import project.forwork.api.domain.user.infrastructure.enums.RoleType;
 import project.forwork.api.domain.user.service.UserService;
 
 import static project.forwork.api.interceptor.AuthorizationInterceptor.USER_ID;
-import static project.forwork.api.domain.token.helper.JwtTokenHelper.ROLE_TYPE;
 
 @Component
 @Slf4j

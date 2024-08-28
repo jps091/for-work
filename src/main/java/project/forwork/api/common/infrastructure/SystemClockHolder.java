@@ -14,19 +14,17 @@ public class SystemClockHolder implements ClockHolder {
         return Clock.systemUTC().millis();
     }
     @Override
+    public long convertMillisFrom(long minutes) {
+        return (minutes * 60 * 1000);
+    }
+
+    public Date convertExpiredDateFrom(long millis) {
+        long expiredMillis = millis + millis();
+        return new Date(expiredMillis);
+    }
+
+    @Override
     public LocalDateTime now() {
         return LocalDateTime.now();
-    }
-
-    @Override
-    public LocalDateTime plusHours(Long hours) {
-        return LocalDateTime.now().plusHours(hours);
-    }
-
-    @Override
-    public Date convertAbsoluteTime(LocalDateTime expiredTime) {
-        return Date.from(expiredTime.atZone(
-                        ZoneId.systemDefault())
-                .toInstant());
     }
 }

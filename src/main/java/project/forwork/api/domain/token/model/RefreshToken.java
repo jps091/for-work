@@ -4,37 +4,35 @@ import lombok.Builder;
 import lombok.Getter;
 import project.forwork.api.common.service.port.ClockHolder;
 
-import java.time.LocalDateTime;
 
 @Getter
 public class RefreshToken {
-    private final Long id;
+    private final String authId;
     private final String token;
     private final Long userId;
-    private final LocalDateTime expiredAt;
+    private final long ttl;
 
     @Builder
-    public RefreshToken(Long id, String token, Long userId, LocalDateTime expiredAt) {
-        this.id = id;
+    public RefreshToken(String authId, String token, Long userId, long ttl) {
+        this.authId = authId;
         this.token = token;
         this.userId = userId;
-        this.expiredAt = expiredAt;
+        this.ttl = ttl;
     }
-
     public static RefreshToken from(Token token, Long userId){
         return RefreshToken.builder()
                 .token(token.getToken())
                 .userId(userId)
-                .expiredAt(token.getExpiredAt())
+                .ttl(token.getTtl())
                 .build();
     }
 
     public RefreshToken initExpiredAt(RefreshToken refreshToken, ClockHolder clockHolder){
         return RefreshToken.builder()
-                .id(refreshToken.getId())
+                .authId(refreshToken.getAuthId())
                 .token(refreshToken.getToken())
                 .userId(refreshToken.getUserId())
-                .expiredAt(clockHolder.now())
+                .ttl(clockHolder.millis())
                 .build();
     }
 }

@@ -3,17 +3,15 @@ package project.forwork.api.domain.token.model;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.time.LocalDateTime;
-
 
 @Getter
 public class Token {
     private final String token;
-    private final LocalDateTime expiredAt;
+    private final long ttl;
 
     @Builder
-    public Token(String token, LocalDateTime expiredAt) {
+    public Token(String token, long ttl) {
         this.token = token;
-        this.expiredAt = expiredAt;
+        this.ttl = ttl;
     }
 }

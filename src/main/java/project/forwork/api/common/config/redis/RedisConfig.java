@@ -24,27 +24,42 @@ public class RedisConfig {
         return new LettuceConnectionFactory(new RedisStandaloneConfiguration(host, port));
     }
 
-    @Bean
-    public RedisTemplate<String, Object> stringRedisTemplate(){
-        return createRedisTemplate(new StringRedisSerializer());
+    //@Bean
+    public RedisTemplate<String, String> redisStringTemplate(){
+        return createStringRedisTemplate();
     }
 
-    @Bean
-    public RedisTemplate<String, Object> jsonRedisTemplate(){
-        return createRedisTemplate(new Jackson2JsonRedisSerializer<>(Object.class));
+    //@Bean
+    public RedisTemplate<String, Object> redisJsonTemplate(){
+        return createJsonRedisTemplate();
     }
 
-    private RedisTemplate<String, Object> createRedisTemplate(RedisSerializer<?> redisSerializer){
+    private RedisTemplate<String, String> createStringRedisTemplate(){
+        RedisTemplate<String, String> redisTemplate = new RedisTemplate<>();
+        redisTemplate.setConnectionFactory(redisConnectionFactory());
+
+        redisTemplate.setKeySerializer(new StringRedisSerializer());
+        redisTemplate.setValueSerializer(new StringRedisSerializer());
+
+        redisTemplate.setHashKeySerializer(new StringRedisSerializer());
+        redisTemplate.setHashValueSerializer(new StringRedisSerializer());
+
+        redisTemplate.setDefaultSerializer(new StringRedisSerializer());
+
+        return redisTemplate;
+    }
+
+    private RedisTemplate<String, Object> createJsonRedisTemplate(){
         RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(redisConnectionFactory());
 
         redisTemplate.setKeySerializer(new StringRedisSerializer());
-        redisTemplate.setValueSerializer(redisSerializer);
+        redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(Object.class));
 
         redisTemplate.setHashKeySerializer(new StringRedisSerializer());
-        redisTemplate.setHashValueSerializer(redisSerializer);
+        redisTemplate.setHashValueSerializer(new Jackson2JsonRedisSerializer<>(Object.class));
 
-        redisTemplate.setDefaultSerializer(redisSerializer);
+        redisTemplate.setDefaultSerializer(new Jackson2JsonRedisSerializer<>(Object.class));
 
         return redisTemplate;
     }
