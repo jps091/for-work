@@ -6,7 +6,6 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -15,10 +14,8 @@ import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.common.service.port.ClockHolder;
 import project.forwork.api.domain.token.helper.ifs.TokenHelperIfs;
 import project.forwork.api.domain.token.model.Token;
-import project.forwork.api.domain.user.model.User;
 
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
 import java.util.Date;
 
 
@@ -29,26 +26,25 @@ public class JwtTokenHelper implements TokenHelperIfs {
     public static final String ACCESS_TYPE = "ACCESS_TYPE";
     public static final String REFRESH_TYPE = "REFRESH_TYPE";
     public static final String TOKEN_TYPE = "tokenType";
-    public static final String ROLE_TYPE = "roleType";
     private final ClockHolder clockHolder;
 
     @Value("${token.secret.key}")
     private String secretKey;
 
-    @Value("${token.access-token.plus-hour}")
-    private Long accessTokenPlusHour;
+    @Value("${token.access-token.plus-minutes}")
+    private long accessTokenPlusMinutes;
 
-    @Value("${token.refresh-token.plus-hour}")
-    private Long refreshTokenPlusHour;
+    @Value("${token.refresh-token.plus-minutes}")
+    private long refreshTokenPlusMinutes;
 
     @Override
     public Token issueAccessToken(Long userId) {
-        return issueTokenFrom(userId, accessTokenPlusHour, ACCESS_TYPE);
+        return issueTokenFrom(userId, accessTokenPlusMinutes, ACCESS_TYPE);
     }
 
     @Override
     public Token issueRefreshToken(Long userId) {
-        return issueTokenFrom(userId, refreshTokenPlusHour, REFRESH_TYPE);
+        return issueTokenFrom(userId, refreshTokenPlusMinutes, REFRESH_TYPE);
     }
 
     @Override
@@ -67,9 +63,9 @@ public class JwtTokenHelper implements TokenHelperIfs {
         }
     }
 
-    private Token issueTokenFrom(Long userId, Long tokenPlusHour, String tokenType) {
-        LocalDateTime expiredTime = clockHolder.plusHours(tokenPlusHour);
-        Date expiredAt = clockHolder.convertAbsoluteTime(expiredTime);
+    private Token issueTokenFrom(Long userId, long tokenPlusMinutes, String tokenType) {
+        long ttlSeconds = clockHolder.convertSecondsFrom(tokenPlusMinutes);
+        Date expiredAt = clockHolder.convertExpiredDateFrom(ttlSeconds);
 
         Algorithm algo = Algorithm.HMAC256(secretKey.getBytes(StandardCharsets.UTF_8));
 
@@ -82,7 +78,7 @@ public class JwtTokenHelper implements TokenHelperIfs {
 
         return Token.builder()
                 .token(jwtToken)
-                .expiredAt(expiredTime)
+                .ttl(ttlSeconds)
                 .build();
     }
 }

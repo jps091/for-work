@@ -5,54 +5,48 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import project.forwork.api.common.error.TokenErrorCode;
 import project.forwork.api.common.error.UserErrorCode;
 import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.common.service.port.ClockHolder;
+import project.forwork.api.common.service.port.RedisUtils;
 import project.forwork.api.domain.token.helper.ifs.TokenHelperIfs;
-import project.forwork.api.domain.token.model.RefreshToken;
-import project.forwork.api.domain.token.model.Token;
-import project.forwork.api.domain.token.model.TokenResponse;
-import project.forwork.api.domain.token.service.port.RefreshTokenRepository;
+import project.forwork.api.domain.token.model.*;
 import project.forwork.api.domain.user.model.User;
 
 import java.util.Objects;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class TokenService {
 
+    public static final String PREFIX_TOKEN_KEY = "refreshToken:userId:";
     private final TokenHelperIfs tokenHelper;
     private final ClockHolder clockHolder;
-    private final RefreshTokenRepository refreshTokenRepository;
-
+    private final RedisUtils redisUtils;
     public TokenResponse issueTokenResponse(User user) {
 
         Long userId = user.getId();
+        String key = redisUtils.createKeyForm(PREFIX_TOKEN_KEY, userId);
 
-        refreshTokenRepository.findByUserId(userId)
-                .ifPresentOrElse(refreshToken -> {
-                    reissueRefreshToken(refreshToken, userId);
-                }, () -> {
-                    issueRefreshToken(userId);
-                });
+        if(redisUtils.getData(key) != null){
+            deleteRefreshToken(key);
+            return createTokenResponse(userId);
+        }
+
         return createTokenResponse(userId);
     }
 
     public TokenResponse reissueTokenResponse(String refreshTokenValue) {
 
-        // 리프레쉬 토큰 값 자체로 데이터베이스에서 검색
-        RefreshToken refreshToken = refreshTokenRepository.findByToken(refreshTokenValue)
-                .orElseThrow(() -> new ApiException(TokenErrorCode.INVALID_TOKEN));
+        Long userId = getUserIdByToken(refreshTokenValue);
+        String storedToken = findRefreshTokenFrom(userId);
+        String key = redisUtils.createKeyForm(PREFIX_TOKEN_KEY, userId);
+        long remainingTtl = redisUtils.getExpirationTime(key);
 
-        if (isTimeOutRefreshToken(refreshToken)) {
+        if (isNotMatchTokenValue(refreshTokenValue, storedToken) || isTimeOutRefreshToken(remainingTtl)) {
             throw new ApiException(TokenErrorCode.EXPIRED_TOKEN);
         }
-
-        // 토큰에서 사용자 ID 추출
-        Long userId = refreshToken.getUserId();
 
         return createTokenResponse(userId);
     }
@@ -75,25 +69,35 @@ public class TokenService {
 
     private TokenResponse createTokenResponse(Long userId) {
         Token accessToken = tokenHelper.issueAccessToken(userId);
-        Token refreshToken = tokenHelper.issueRefreshToken(userId);
+        Token refreshToken = issueRefreshToken(userId);
+
 
         return TokenResponse.from(accessToken, refreshToken);
     }
 
-    private void issueRefreshToken(Long userId){
-        Token token = tokenHelper.issueRefreshToken(userId);
-        refreshTokenRepository.save(RefreshToken.from(token, userId));
+    private Token issueRefreshToken(Long userId){
+        Token refreshToken = tokenHelper.issueRefreshToken(userId);
+        String key = "refreshToken:userId:" + userId;
+
+        redisUtils.setData(key, refreshToken.getToken(), refreshToken.getTtl());
+
+        return refreshToken;
     }
 
-    private void reissueRefreshToken(RefreshToken refreshToken, Long userId){
-        RefreshToken oldRefreshToken = refreshToken.initExpiredAt(refreshToken, clockHolder);
-        refreshTokenRepository.save(oldRefreshToken);
-
-        refreshTokenRepository.delete(oldRefreshToken);
-        issueRefreshToken(userId);
+    private void deleteRefreshToken(String key){
+        redisUtils.deleteData(key);
     }
 
-    private boolean isTimeOutRefreshToken(RefreshToken refreshToken) {
-        return refreshToken.getExpiredAt().isBefore(clockHolder.now());
+    private String findRefreshTokenFrom(Long userId) {
+        String key = redisUtils.createKeyForm(PREFIX_TOKEN_KEY, userId);
+        return redisUtils.getData(key);
+    }
+
+    private boolean isTimeOutRefreshToken(long remainingTtl) {
+        return remainingTtl <= clockHolder.millis();
+    }
+
+    private boolean isNotMatchTokenValue(String requestTokenValue, String targetTokenValue){
+        return !Objects.equals(requestTokenValue, targetTokenValue);
     }
 }

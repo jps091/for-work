@@ -50,4 +50,14 @@ public class User {
                 .lastLoginAt(clockHolder.millis())
                 .build();
     }
+    public User initTemporaryPassword(String tempPassword){
+        return User.builder()
+                .id(id)
+                .name(name)
+                .email(email)
+                .password(tempPassword)
+                .roleType(roleType)
+                .lastLoginAt(lastLoginAt)
+                .build();
+    }
 }

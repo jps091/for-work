@@ -9,24 +9,19 @@ import java.util.Date;
 
 @Component
 public class SystemClockHolder implements ClockHolder {
-    @Override
     public long millis() {
         return Clock.systemUTC().millis();
     }
-    @Override
+    public long convertSecondsFrom(long minutes) {
+        return (minutes * 60);
+    }
+
+    public Date convertExpiredDateFrom(long millis) {
+        long expiredMillis = millis * 1000 + millis();
+        return new Date(expiredMillis);
+    }
+
     public LocalDateTime now() {
         return LocalDateTime.now();
-    }
-
-    @Override
-    public LocalDateTime plusHours(Long hours) {
-        return LocalDateTime.now().plusHours(hours);
-    }
-
-    @Override
-    public Date convertAbsoluteTime(LocalDateTime expiredTime) {
-        return Date.from(expiredTime.atZone(
-                        ZoneId.systemDefault())
-                .toInstant());
     }
 }
