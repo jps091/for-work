@@ -1,10 +1,10 @@
-package project.forwork.api.common.infrastructure;
+package project.forwork.api.domain.field;
 
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
-import project.forwork.api.common.infrastructure.enums.FieldType;
+import project.forwork.api.common.infrastructure.BaseTimeEntity;
 
 
 @Entity
@@ -14,7 +14,7 @@ import project.forwork.api.common.infrastructure.enums.FieldType;
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class FieldEntity extends BaseTimeEntity{
+public class FieldEntity extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "field_id")

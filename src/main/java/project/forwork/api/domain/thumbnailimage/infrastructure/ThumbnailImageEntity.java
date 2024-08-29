@@ -4,7 +4,7 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 import project.forwork.api.common.infrastructure.BaseTimeEntity;
 
-import project.forwork.api.common.infrastructure.FieldEntity;
+import project.forwork.api.domain.field.FieldEntity;
 
 
 @Entity

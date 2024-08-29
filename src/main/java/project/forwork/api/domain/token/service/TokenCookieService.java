@@ -1,4 +1,4 @@
-package project.forwork.api.common.service;
+package project.forwork.api.domain.token.service;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,7 +16,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class CookieService {
+public class TokenCookieService {
 
     public static final String ACCESS_TOKEN = "accessToken";
     public static final String REFRESH_TOKEN = "refreshToken";

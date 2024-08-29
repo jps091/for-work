@@ -2,7 +2,7 @@ package project.forwork.api.domain.cart.infrastructure.enums;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.AllArgsConstructor;
-import project.forwork.api.common.infrastructure.enums.LevelType;
+import project.forwork.api.domain.level.LevelType;
 
 @AllArgsConstructor
 public enum CartStatus {

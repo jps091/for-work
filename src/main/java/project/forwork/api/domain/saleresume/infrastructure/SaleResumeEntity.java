@@ -4,8 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import project.forwork.api.common.infrastructure.BaseTimeEntity;
-import project.forwork.api.common.infrastructure.FieldEntity;
-import project.forwork.api.common.infrastructure.LevelEntity;
+import project.forwork.api.domain.field.FieldEntity;
+import project.forwork.api.domain.level.LevelEntity;
 import project.forwork.api.domain.saleresume.infrastructure.enums.SaleResumeStatus;
 import project.forwork.api.domain.user.infrastructure.UserEntity;
 

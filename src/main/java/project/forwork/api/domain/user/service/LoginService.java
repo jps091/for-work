@@ -8,9 +8,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.forwork.api.common.error.UserErrorCode;
 import project.forwork.api.common.exception.ApiException;
-import project.forwork.api.common.service.CookieService;
 import project.forwork.api.common.service.port.ClockHolder;
 import project.forwork.api.common.service.port.RedisUtils;
+import project.forwork.api.domain.token.service.TokenCookieService;
 import project.forwork.api.domain.user.controller.model.UserLoginRequest;
 import project.forwork.api.domain.user.controller.model.UserResponse;
 import project.forwork.api.domain.user.model.User;
@@ -23,7 +23,7 @@ public class LoginService {
     private static final String LOGIN_ATTEMPT_KEY_PREFIX = "loginAttempt:userId:";
     private static final int MAX_LOGIN_ATTEMPTS = 2; //TODO test
     private final UserRepository userRepository;
-    private final CookieService cookieService;
+    private final TokenCookieService tokenCookieService;
     private final ClockHolder clockHolder;
     private final RedisUtils redisUtils;
     private final CertificationService certificationService;
@@ -38,7 +38,7 @@ public class LoginService {
         user = user.login(clockHolder, loginUser.getPassword());
         userRepository.save(user);
 
-        cookieService.createCookies(response, user);
+        tokenCookieService.createCookies(response, user);
 
         String key = redisUtils.createKeyForm(LOGIN_ATTEMPT_KEY_PREFIX, user.getId());
         initLoginAttemptCount(key);
@@ -47,7 +47,7 @@ public class LoginService {
     }
 
     public void logout(HttpServletRequest request, HttpServletResponse response){
-        cookieService.expiredCookies(request, response);
+        tokenCookieService.expiredCookies(request, response);
     }
 
     private void loginAttempt(User user){
