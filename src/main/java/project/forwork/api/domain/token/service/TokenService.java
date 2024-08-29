@@ -8,8 +8,8 @@ import org.springframework.stereotype.Service;
 import project.forwork.api.common.error.TokenErrorCode;
 import project.forwork.api.common.error.UserErrorCode;
 import project.forwork.api.common.exception.ApiException;
-import project.forwork.api.common.infrastructure.RedisStringUtilsImpl;
 import project.forwork.api.common.service.port.ClockHolder;
+import project.forwork.api.common.service.port.RedisUtils;
 import project.forwork.api.domain.token.helper.ifs.TokenHelperIfs;
 import project.forwork.api.domain.token.model.*;
 import project.forwork.api.domain.user.model.User;
@@ -23,13 +23,13 @@ public class TokenService {
     public static final String PREFIX_TOKEN_KEY = "refreshToken:userId:";
     private final TokenHelperIfs tokenHelper;
     private final ClockHolder clockHolder;
-    private final RedisStringUtilsImpl redisStringUtils;
+    private final RedisUtils redisUtils;
     public TokenResponse issueTokenResponse(User user) {
 
         Long userId = user.getId();
-        String key = createKeyForm(userId);
+        String key = redisUtils.createKeyForm(PREFIX_TOKEN_KEY, userId);
 
-        if(redisStringUtils.getData(key) != null){
+        if(redisUtils.getData(key) != null){
             deleteRefreshToken(key);
             return createTokenResponse(userId);
         }
@@ -39,9 +39,10 @@ public class TokenService {
 
     public TokenResponse reissueTokenResponse(String refreshTokenValue) {
 
-        long userId = getUserIdByToken(refreshTokenValue);
+        Long userId = getUserIdByToken(refreshTokenValue);
         String storedToken = findRefreshTokenFrom(userId);
-        long remainingTtl = redisStringUtils.getExpirationTime(createKeyForm(userId));
+        String key = redisUtils.createKeyForm(PREFIX_TOKEN_KEY, userId);
+        long remainingTtl = redisUtils.getExpirationTime(key);
 
         if (isNotMatchTokenValue(refreshTokenValue, storedToken) || isTimeOutRefreshToken(remainingTtl)) {
             throw new ApiException(TokenErrorCode.EXPIRED_TOKEN);
@@ -78,21 +79,18 @@ public class TokenService {
         Token refreshToken = tokenHelper.issueRefreshToken(userId);
         String key = "refreshToken:userId:" + userId;
 
-        redisStringUtils.setData(key, refreshToken.getToken(), refreshToken.getTtl());
+        redisUtils.setData(key, refreshToken.getToken(), refreshToken.getTtl());
 
         return refreshToken;
     }
 
     private void deleteRefreshToken(String key){
-        redisStringUtils.deleteData(key);
+        redisUtils.deleteData(key);
     }
 
-    private String findRefreshTokenFrom(long userId) {
-        return redisStringUtils.getData(createKeyForm(userId));
-    }
-
-    private static String createKeyForm(Long userId) {
-        return PREFIX_TOKEN_KEY + userId;
+    private String findRefreshTokenFrom(Long userId) {
+        String key = redisUtils.createKeyForm(PREFIX_TOKEN_KEY, userId);
+        return redisUtils.getData(key);
     }
 
     private boolean isTimeOutRefreshToken(long remainingTtl) {

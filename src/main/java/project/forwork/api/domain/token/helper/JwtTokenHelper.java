@@ -32,10 +32,10 @@ public class JwtTokenHelper implements TokenHelperIfs {
     private String secretKey;
 
     @Value("${token.access-token.plus-minutes}")
-    private Long accessTokenPlusMinutes;
+    private long accessTokenPlusMinutes;
 
     @Value("${token.refresh-token.plus-minutes}")
-    private Long refreshTokenPlusMinutes;
+    private long refreshTokenPlusMinutes;
 
     @Override
     public Token issueAccessToken(Long userId) {
@@ -63,9 +63,9 @@ public class JwtTokenHelper implements TokenHelperIfs {
         }
     }
 
-    private Token issueTokenFrom(Long userId, Long tokenPlusMinutes, String tokenType) {
-        long ttlMillis = clockHolder.convertMillisFrom(tokenPlusMinutes);
-        Date expiredAt = clockHolder.convertExpiredDateFrom(ttlMillis);
+    private Token issueTokenFrom(Long userId, long tokenPlusMinutes, String tokenType) {
+        long ttlSeconds = clockHolder.convertSecondsFrom(tokenPlusMinutes);
+        Date expiredAt = clockHolder.convertExpiredDateFrom(ttlSeconds);
 
         Algorithm algo = Algorithm.HMAC256(secretKey.getBytes(StandardCharsets.UTF_8));
 
@@ -78,7 +78,7 @@ public class JwtTokenHelper implements TokenHelperIfs {
 
         return Token.builder()
                 .token(jwtToken)
-                .ttl(ttlMillis)
+                .ttl(ttlSeconds)
                 .build();
     }
 }

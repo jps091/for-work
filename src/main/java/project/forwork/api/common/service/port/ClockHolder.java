@@ -5,7 +5,7 @@ import java.util.Date;
 
 public interface ClockHolder {
     long millis();
-    long convertMillisFrom(long minutes);
+    long convertSecondsFrom(long minutes);
     LocalDateTime now();
     Date convertExpiredDateFrom(long millis);
 }

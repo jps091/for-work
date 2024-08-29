@@ -9,21 +9,18 @@ import java.util.Date;
 
 @Component
 public class SystemClockHolder implements ClockHolder {
-    @Override
     public long millis() {
         return Clock.systemUTC().millis();
     }
-    @Override
-    public long convertMillisFrom(long minutes) {
-        return (minutes * 60 * 1000);
+    public long convertSecondsFrom(long minutes) {
+        return (minutes * 60);
     }
 
     public Date convertExpiredDateFrom(long millis) {
-        long expiredMillis = millis + millis();
+        long expiredMillis = millis * 1000 + millis();
         return new Date(expiredMillis);
     }
 
-    @Override
     public LocalDateTime now() {
         return LocalDateTime.now();
     }

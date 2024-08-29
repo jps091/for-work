@@ -3,6 +3,8 @@ package project.forwork.api.domain.user.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -10,6 +12,7 @@ import project.forwork.api.common.annotation.Current;
 import project.forwork.api.common.api.Api;
 import project.forwork.api.domain.user.controller.model.CurrentUser;
 import project.forwork.api.domain.user.controller.model.UserResponse;
+import project.forwork.api.domain.user.service.LoginService;
 import project.forwork.api.domain.user.service.UserService;
 
 @RestController
@@ -20,14 +23,24 @@ import project.forwork.api.domain.user.service.UserService;
 public class UserController {
 
     private final UserService userService;
+    private final LoginService loginService;
 
     @Operation(summary = "My Page API", description = "현재 나의 정보 출력")
     @GetMapping("/me")
     public Api<UserResponse> me(
             @Parameter(hidden = true) @Current CurrentUser user
     ){
-        log.info("currentuser={}",user);
         UserResponse userResponse = userService.getById(user.getId());
         return Api.OK(userResponse);
+    }
+
+    @Operation(summary = "로그아웃 API", description = "로그아웃")
+    @PostMapping("/logout")
+    public Api<String> logout(
+            HttpServletRequest request,
+            HttpServletResponse response
+    ){
+        loginService.logout(request, response);
+        return Api.OK("로그아웃 성공");
     }
 }

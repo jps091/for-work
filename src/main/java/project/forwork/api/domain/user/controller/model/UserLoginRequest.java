@@ -12,7 +12,7 @@ public class UserLoginRequest {
 
     @NotBlank
     @Email
-    @Schema(example = "123@naver.com")
+    @Schema(example = "seokin23@naver.com")
     private String email;
 
     @NotBlank

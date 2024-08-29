@@ -13,6 +13,7 @@ import project.forwork.api.common.api.Api;
 import project.forwork.api.domain.user.controller.model.UserCreateRequest;
 import project.forwork.api.domain.user.controller.model.UserLoginRequest;
 import project.forwork.api.domain.user.controller.model.UserResponse;
+import project.forwork.api.domain.user.service.LoginService;
 import project.forwork.api.domain.user.service.UserService;
 
 
@@ -23,6 +24,7 @@ import project.forwork.api.domain.user.service.UserService;
 public class UserOpenApiController {
 
     private final UserService userService;
+    private final LoginService loginService;
 
     @Operation(summary = "회원 등록 API", description = "ID, 패스워드, 이름, 이메일 입력")
     @PostMapping("/create")
@@ -41,7 +43,7 @@ public class UserOpenApiController {
             @RequestBody Api<UserLoginRequest> userLoginRequest,
             HttpServletResponse response
     ){
-        UserResponse userResponse = userService.login(response, userLoginRequest.getBody());
+        UserResponse userResponse = loginService.login(response, userLoginRequest.getBody());
         return ResponseEntity.status(HttpStatus.CREATED).body(Api.OK(userResponse));
     }
 }

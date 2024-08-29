@@ -72,30 +72,4 @@ public class CookieService {
                     response.addCookie(cookie);
                 });
     }
-
-    private void deleteCookie2(HttpServletRequest request, HttpServletResponse response, String tokenKey) {
-        Cookie[] cookies = request.getCookies();
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if (tokenKey.equals(cookie.getName())) {
-                    cookie.setPath("/");
-                    cookie.setMaxAge(0);
-                    cookie.setValue("");
-                    response.addCookie(cookie);
-                }
-            }
-        }
-    }
-
-    public String extractTokenFromCookies2(HttpServletRequest request, String tokenKey) {
-        Cookie[] cookies = request.getCookies();
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if (tokenKey.equals(cookie.getName())) {
-                    return cookie.getValue();
-                }
-            }
-        }
-        throw new ApiException(TokenErrorCode.INVALID_TOKEN);
-    }
 }
