@@ -28,10 +28,11 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
+        // WEB, chrome 의 경우 GET, POST OPTIONS = pass
         if (HttpMethod.OPTIONS.matches(request.getMethod())) {
             return true;
         }
-
+        // js, html, png resource 를 요청 하는경우 Pass
         if (handler instanceof ResourceHttpRequestHandler) {
             return true;
         }

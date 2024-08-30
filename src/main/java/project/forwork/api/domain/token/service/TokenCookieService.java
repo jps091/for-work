@@ -36,6 +36,16 @@ public class TokenCookieService {
         deleteCookie(request, response, REFRESH_TOKEN);
     }
 
+    public void expiredCookiesAndRefreshToken(
+            Long userId,
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) {
+        tokenService.deleteRefreshToken(userId);
+        deleteCookie(request, response, ACCESS_TOKEN);
+        deleteCookie(request, response, REFRESH_TOKEN);
+    }
+
     public String extractTokenFromCookies(HttpServletRequest request, String tokenKey) {
         return Optional.ofNullable(request.getCookies())
                 .stream()

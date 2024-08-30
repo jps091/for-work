@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import project.forwork.api.common.api.Api;
+import project.forwork.api.domain.user.controller.model.EmailVerifyRequest;
 import project.forwork.api.domain.user.controller.model.UserCreateRequest;
 import project.forwork.api.domain.user.controller.model.UserLoginRequest;
 import project.forwork.api.domain.user.controller.model.UserResponse;
@@ -50,10 +51,10 @@ public class UserOpenApiController {
     @Operation(summary = "인증 코드 검증 API", description = "이메일, 받은 검증코드 입력")
     @PostMapping("/verify")
     public Api<String> verifyEmail(
-            @RequestParam String email,
-            @RequestParam String code
+            @Valid @RequestBody
+            EmailVerifyRequest emailVerifyRequest
     ){
-        userService.verifyEmail(email, code);
+        userService.verifyEmail(emailVerifyRequest);
         return Api.OK("인증코드 검증 성공");
     }
 
