@@ -1,6 +1,6 @@
 ---
 name: test template
-about: 버그 발생시에 관련한 이슈 사항입니다.
+about: 테스트용 템플릿 입니다.
 title: "♻️[test]"
 labels: 'Type: Test'
 assignees: seokin23
