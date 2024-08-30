@@ -15,19 +15,20 @@ import project.forwork.api.domain.user.controller.model.UserLoginRequest;
 import project.forwork.api.domain.user.controller.model.UserResponse;
 import project.forwork.api.domain.user.model.User;
 import project.forwork.api.domain.user.service.port.UserRepository;
+
 @Slf4j
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class LoginService {
     private static final String LOGIN_ATTEMPT_KEY_PREFIX = "loginAttempt:userId:";
-    private static final int MAX_LOGIN_ATTEMPTS = 2; //TODO test
+    private static final int MAX_LOGIN_ATTEMPTS = 5;
     private final UserRepository userRepository;
     private final TokenCookieService tokenCookieService;
     private final ClockHolder clockHolder;
     private final RedisUtils redisUtils;
-    private final CertificationService certificationService;
+    private final PasswordInitializationService passwordInitializationService;
 
+    @Transactional
     public UserResponse login(HttpServletResponse response, UserLoginRequest loginUser){
 
         User user = userRepository.findByEmail(loginUser.getEmail())
@@ -40,25 +41,26 @@ public class LoginService {
 
         tokenCookieService.createCookies(response, user);
 
-        String key = redisUtils.createKeyForm(LOGIN_ATTEMPT_KEY_PREFIX, user.getId());
+        String key = getKeyByLoginAttempt(user);
         initLoginAttemptCount(key);
 
         return UserResponse.from(user);
     }
 
+    @Transactional
     public void logout(HttpServletRequest request, HttpServletResponse response){
         tokenCookieService.expiredCookies(request, response);
     }
 
     private void loginAttempt(User user){
-        String key = redisUtils.createKeyForm(LOGIN_ATTEMPT_KEY_PREFIX, user.getId());
+        String key = getKeyByLoginAttempt(user);
         Long loginCount = redisUtils.incrementDataInitTimeOut(key, 600);
         log.info("login count={}", loginCount);
 
         if(isExceedMaxCount(loginCount)){
-            certificationService.issueTemporaryPassword(user);
+            passwordInitializationService.issueTemporaryPassword(user);
             initLoginAttemptCount(key);
-            throw new ApiException(UserErrorCode.ISSUE_PASSWORD);
+            throw new ApiException(UserErrorCode.PASSWORD_ISSUE);
         }
     }
 
@@ -68,5 +70,9 @@ public class LoginService {
 
     private static boolean isExceedMaxCount(Long loginCount) {
         return loginCount > MAX_LOGIN_ATTEMPTS;
+    }
+
+    private String getKeyByLoginAttempt(User user) {
+        return redisUtils.createKeyForm(LOGIN_ATTEMPT_KEY_PREFIX, user.getId());
     }
 }

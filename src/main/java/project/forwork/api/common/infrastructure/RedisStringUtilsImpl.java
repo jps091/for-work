@@ -13,8 +13,8 @@ public class RedisStringUtilsImpl implements RedisUtils {
 
     private final RedisTemplate<String, String> redisTemplate;
 
-    public void setData(String key, String value, Long expiredTimeMillis){
-        redisTemplate.opsForValue().set(key, value, expiredTimeMillis, TimeUnit.SECONDS);
+    public void setData(String key, String value, Long ttlSeconds){
+        redisTemplate.opsForValue().set(key, value, ttlSeconds, TimeUnit.SECONDS);
     }
 
     public String getData(String key){
@@ -44,7 +44,7 @@ public class RedisStringUtilsImpl implements RedisUtils {
         return incrementedValue;
     }
 
-    public String createKeyForm(String prefix, Long userId) {
+    public String createKeyForm(String prefix, Object userId) {
         return prefix + userId;
     }
 }

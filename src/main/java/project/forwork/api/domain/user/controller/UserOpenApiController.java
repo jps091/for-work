@@ -26,24 +26,46 @@ public class UserOpenApiController {
     private final UserService userService;
     private final LoginService loginService;
 
+
     @Operation(summary = "회원 등록 API", description = "ID, 패스워드, 이름, 이메일 입력")
     @PostMapping("/create")
-    public ResponseEntity<Api<UserResponse>> create(
-            @Valid
-            @RequestBody Api<UserCreateRequest> createRequest
+    @ResponseStatus(HttpStatus.CREATED)
+    public Api<UserResponse> create(
+            @Valid @RequestBody
+            UserCreateRequest createRequest
     ){
-        UserResponse userResponse = userService.create(createRequest.getBody());
-        return ResponseEntity.status(HttpStatus.CREATED).body(Api.CREATED(userResponse));
+        UserResponse userResponse = userService.create(createRequest);
+        return Api.CREATED(userResponse);
     }
+
+    @Operation(summary = "이메일 인증코드 발송 API", description = "이메일 입력")
+    @PostMapping("/send")
+    public Api<String> sendCertificationCodeCode(
+            @RequestParam String email
+    ){
+        userService.sendCode(email);
+        return Api.OK("인증 코드 이메일 전송 완료");
+    }
+
+    @Operation(summary = "인증 코드 검증 API", description = "이메일, 받은 검증코드 입력")
+    @PostMapping("/verify")
+    public Api<String> verifyEmail(
+            @RequestParam String email,
+            @RequestParam String code
+    ){
+        userService.verifyEmail(email, code);
+        return Api.OK("인증코드 검증 성공");
+    }
+
 
     @Operation(summary = "회원 로그인 API", description = "ID, 패스워드 입력")
     @PostMapping("/login")
-    public ResponseEntity<Api<UserResponse>> login(
-            @Valid
-            @RequestBody Api<UserLoginRequest> userLoginRequest,
+    public Api<UserResponse> login(
+            @Valid @RequestBody
+            UserLoginRequest userLoginRequest,
             HttpServletResponse response
     ){
-        UserResponse userResponse = loginService.login(response, userLoginRequest.getBody());
-        return ResponseEntity.status(HttpStatus.CREATED).body(Api.OK(userResponse));
+        UserResponse userResponse = loginService.login(response, userLoginRequest);
+        return Api.OK(userResponse);
     }
 }
