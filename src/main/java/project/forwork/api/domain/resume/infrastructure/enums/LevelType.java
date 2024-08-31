@@ -1,4 +1,4 @@
-package project.forwork.api.domain.level;
+package project.forwork.api.domain.resume.infrastructure.enums;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.AllArgsConstructor;

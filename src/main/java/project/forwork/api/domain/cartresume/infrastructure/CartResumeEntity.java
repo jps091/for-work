@@ -5,7 +5,7 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 import project.forwork.api.common.infrastructure.BaseTimeEntity;
 import project.forwork.api.domain.cart.infrastructure.CartEntity;
-import project.forwork.api.domain.saleresume.infrastructure.SaleResumeEntity;
+import project.forwork.api.domain.resume.infrastructure.ResumeEntity;
 
 @Entity
 @Table(name = "cart_resumes")
@@ -26,7 +26,7 @@ public class CartResumeEntity extends BaseTimeEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "resume_id", nullable = false)
-    private SaleResumeEntity saleResumeEntity;
+    private ResumeEntity resumeEntity;
 
     @Column(name = "is_selected", nullable = false)
     private boolean isSelected;
