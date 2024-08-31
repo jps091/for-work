@@ -15,6 +15,12 @@ public class ApiException extends RuntimeException implements ApiExceptionIfs{
         this.errorDescription = errorCodeIfs.getDescription();
     }
 
+    public ApiException(ErrorCodeIfs errorCodeIfs, Long id) {
+        super(errorCodeIfs.getDescription());
+        this.errorCodeIfs = errorCodeIfs;
+        this.errorDescription = "Invalid Id : " + id;
+    }
+
     public ApiException(ErrorCodeIfs errorCodeIfs, String errorDescription) {
         super(errorDescription);
         this.errorCodeIfs = errorCodeIfs;

@@ -26,7 +26,7 @@ public class ResumeRepositoryImpl implements ResumeRepository {
 
     @Override
     public Resume getById(Long id) {
-        return findById(id).orElseThrow(() -> new ApiException(ResumeErrorCode.RESUME_NOT_FOUND));
+        return findById(id).orElseThrow(() -> new ApiException(ResumeErrorCode.RESUME_NOT_FOUND, id));
     }
 
     @Override

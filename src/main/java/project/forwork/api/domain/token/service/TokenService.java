@@ -61,7 +61,7 @@ public class TokenService {
         Long userId = tokenHelper.validationTokenWithThrow(token);
 
         Objects.requireNonNull(userId, () -> {
-            throw new ApiException(UserErrorCode.USER_NOT_FOUND);
+            throw new ApiException(UserErrorCode.USER_NOT_FOUND, userId);
         });
 
         return userId;
