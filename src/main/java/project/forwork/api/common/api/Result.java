@@ -65,4 +65,12 @@ public class Result {
                 .resultDescription(description)
                 .build();
     }
+
+    public static Result ERROR(Integer resultCode, String resultMessage, String resultDescription) {
+        return Result.builder()
+                .resultCode(resultCode)
+                .resultMessage(resultMessage)
+                .resultDescription(resultDescription)
+                .build();
+    }
 }
