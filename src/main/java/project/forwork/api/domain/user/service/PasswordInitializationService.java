@@ -13,8 +13,8 @@ import project.forwork.api.domain.user.service.port.UserRepository;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-@Transactional
-public class CertificationService {
+public class PasswordInitializationService {
+
 
     private final UserRepository userRepository;
     private final UuidHolder uuidHolder;
@@ -28,15 +28,9 @@ public class CertificationService {
         sendPassword(user.getEmail(), user.getPassword());
     }
 
-    public void sendPassword(String email, String password){
+    private void sendPassword(String email, String password){
         String title = "for-work 임시 비밀번호 발급";
         String content = "임시 비밀번호 : " + password;
-        mailSender.send(email, title, content);
-    }
-
-    public void sendCode(String email, String certificationCode){
-        String title = "for-work 인증 코드 발송";
-        String content = "인증코드 : " + certificationCode;
         mailSender.send(email, title, content);
     }
 }

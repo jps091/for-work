@@ -11,7 +11,6 @@ import project.forwork.api.domain.user.service.port.UserRepository;
 import java.util.Optional;
 
 @Repository
-@Slf4j
 @RequiredArgsConstructor
 public class UserRepositoryImpl implements UserRepository {
 
@@ -19,19 +18,17 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public User save(User user) {
-        log.info("call save");
         return userJpaRepository.save(UserEntity.from(user)).toModel();
     }
 
     @Override
-    public User saveAndFlush(User user) {
-        log.info("call save");
-        return userJpaRepository.saveAndFlush(UserEntity.from(user)).toModel();
+    public void delete(User user) {
+        userJpaRepository.delete(UserEntity.from(user));
     }
 
     @Override
     public User getById(long id) {
-        return findById(id).orElseThrow(() -> new ApiException(UserErrorCode.USER_NOT_FOUND));
+        return findById(id).orElseThrow(() -> new ApiException(UserErrorCode.USER_NOT_FOUND, id));
     }
 
     @Override

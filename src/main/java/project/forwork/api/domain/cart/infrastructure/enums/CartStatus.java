@@ -2,7 +2,6 @@ package project.forwork.api.domain.cart.infrastructure.enums;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.AllArgsConstructor;
-import project.forwork.api.common.infrastructure.enums.LevelType;
 
 @AllArgsConstructor
 public enum CartStatus {
@@ -14,12 +13,12 @@ public enum CartStatus {
     private String description;
 
     @JsonCreator
-    public static LevelType from(String s) {
-        for (LevelType status : LevelType.values()) {
+    public static CartStatus from(String s) {
+        for (CartStatus status : CartStatus.values()) {
             if (status.name().equalsIgnoreCase(s)) {
                 return status;
             }
         }
-        throw new IllegalArgumentException("Invalid LevelType: " + s);
+        throw new IllegalArgumentException("Invalid CartStatus: " + s);
     }
 }

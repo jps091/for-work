@@ -2,18 +2,10 @@ package project.forwork.api.domain.user.controller.model;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import lombok.Builder;
 import lombok.Data;
 
 @Data
-@Builder
-public class UserCreateRequest {
-
-    @NotBlank
-    private String name;
-    @NotBlank
-    @Email
-    private String email;
+public class ModifyPasswordRequest {
     @NotBlank
     private String password;
 }

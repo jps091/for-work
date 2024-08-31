@@ -10,7 +10,7 @@ import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
-import project.forwork.api.common.service.CookieService;
+import project.forwork.api.domain.token.service.TokenCookieService;
 import project.forwork.api.domain.token.service.TokenService;
 
 import java.util.Objects;
@@ -23,21 +23,22 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
 
     public static final String USER_ID = "userId";
     private final TokenService tokenService;
-    private final CookieService cookieService;
+    private final TokenCookieService tokenCookieService;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
+        // WEB, chrome 의 경우 GET, POST OPTIONS = pass
         if (HttpMethod.OPTIONS.matches(request.getMethod())) {
             return true;
         }
-
+        // js, html, png resource 를 요청 하는경우 Pass
         if (handler instanceof ResourceHttpRequestHandler) {
             return true;
         }
 
         RequestAttributes requestContext = Objects.requireNonNull(RequestContextHolder.getRequestAttributes());
-        String accessToken = cookieService.extractTokenFromCookies(request, CookieService.ACCESS_TOKEN);
+        String accessToken = tokenCookieService.extractTokenFromCookies(request, TokenCookieService.ACCESS_TOKEN);
         Long userId = tokenService.validateAndGetUserId(accessToken);
         requestContext.setAttribute(USER_ID, userId, RequestAttributes.SCOPE_REQUEST);
 

@@ -4,13 +4,13 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 import project.forwork.api.common.infrastructure.BaseTimeEntity;
 import project.forwork.api.domain.saleresumedecision.infrastructure.enums.DecisionStatus;
-import project.forwork.api.domain.saleresume.infrastructure.SaleResumeEntity;
+import project.forwork.api.domain.resume.infrastructure.ResumeEntity;
 import project.forwork.api.domain.user.infrastructure.UserEntity;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "sale_resume_decisions")
+@Table(name = "resume_decisions")
 @Getter
 @Setter
 @SuperBuilder
@@ -20,7 +20,7 @@ public class SaleResumeDecisionEntity extends BaseTimeEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "sale_resume_decision_id")
+    @Column(name = "resume_decision_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -32,8 +32,8 @@ public class SaleResumeDecisionEntity extends BaseTimeEntity{
     private UserEntity adminEntity;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sale_resume_id", nullable = false)
-    private SaleResumeEntity saleResumeEntity;
+    @JoinColumn(name = "resume_id", nullable = false)
+    private ResumeEntity resumeEntity;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)

@@ -27,10 +27,10 @@ public class TokenService {
     public TokenResponse issueTokenResponse(User user) {
 
         Long userId = user.getId();
-        String key = redisUtils.createKeyForm(PREFIX_TOKEN_KEY, userId);
+        String key = getRefreshTokenKeyFrom(userId);
 
         if(redisUtils.getData(key) != null){
-            deleteRefreshToken(key);
+            deleteRefreshToken(userId);
             return createTokenResponse(userId);
         }
 
@@ -41,7 +41,7 @@ public class TokenService {
 
         Long userId = getUserIdByToken(refreshTokenValue);
         String storedToken = findRefreshTokenFrom(userId);
-        String key = redisUtils.createKeyForm(PREFIX_TOKEN_KEY, userId);
+        String key = getRefreshTokenKeyFrom(userId);
         long remainingTtl = redisUtils.getExpirationTime(key);
 
         if (isNotMatchTokenValue(refreshTokenValue, storedToken) || isTimeOutRefreshToken(remainingTtl)) {
@@ -51,12 +51,17 @@ public class TokenService {
         return createTokenResponse(userId);
     }
 
+    public void deleteRefreshToken(Long userId){
+        String key = getRefreshTokenKeyFrom(userId);
+        redisUtils.deleteData(key);
+    }
+
     // JWT 토큰의 유효성 검사 후, 유효한 경우 사용자 ID 반환. 토큰이 유효하지 않거나, 사용자 ID가 없다면 예외를 던짐
     public Long validateAndGetUserId(String token) {
         Long userId = tokenHelper.validationTokenWithThrow(token);
 
         Objects.requireNonNull(userId, () -> {
-            throw new ApiException(UserErrorCode.USER_NOT_FOUND);
+            throw new ApiException(UserErrorCode.USER_NOT_FOUND, userId);
         });
 
         return userId;
@@ -84,12 +89,8 @@ public class TokenService {
         return refreshToken;
     }
 
-    private void deleteRefreshToken(String key){
-        redisUtils.deleteData(key);
-    }
-
     private String findRefreshTokenFrom(Long userId) {
-        String key = redisUtils.createKeyForm(PREFIX_TOKEN_KEY, userId);
+        String key = getRefreshTokenKeyFrom(userId);
         return redisUtils.getData(key);
     }
 
@@ -99,5 +100,9 @@ public class TokenService {
 
     private boolean isNotMatchTokenValue(String requestTokenValue, String targetTokenValue){
         return !Objects.equals(requestTokenValue, targetTokenValue);
+    }
+
+    private String getRefreshTokenKeyFrom(Long userId) {
+        return redisUtils.createKeyForm(PREFIX_TOKEN_KEY, userId);
     }
 }

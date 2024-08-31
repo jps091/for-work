@@ -5,7 +5,7 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 import project.forwork.api.common.infrastructure.BaseTimeEntity;
 import project.forwork.api.domain.salepost.infrastructure.enums.SalesStatus;
-import project.forwork.api.domain.saleresume.infrastructure.SaleResumeEntity;
+import project.forwork.api.domain.resume.infrastructure.ResumeEntity;
 import project.forwork.api.domain.thumbnailimage.infrastructure.ThumbnailImageEntity;
 
 @Entity
@@ -23,7 +23,7 @@ public class SalePostEntity extends BaseTimeEntity {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "resume_id", nullable = false)
-    private SaleResumeEntity saleResumeEntity;
+    private ResumeEntity resumeEntity;
 
     @Column(nullable = false)
     private String title;

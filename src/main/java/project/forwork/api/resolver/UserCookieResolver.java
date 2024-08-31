@@ -13,8 +13,8 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import project.forwork.api.common.annotation.Current;
 import project.forwork.api.domain.user.controller.model.CurrentUser;
 import project.forwork.api.domain.user.controller.model.UserResponse;
-import project.forwork.api.domain.user.infrastructure.enums.RoleType;
 import project.forwork.api.domain.user.service.UserService;
+import project.forwork.api.domain.user.service.port.UserRepository;
 
 import static project.forwork.api.interceptor.AuthorizationInterceptor.USER_ID;
 
@@ -24,6 +24,7 @@ import static project.forwork.api.interceptor.AuthorizationInterceptor.USER_ID;
 public class UserCookieResolver implements HandlerMethodArgumentResolver {
 
     private final UserService userService;
+    private final UserRepository userRepository;
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
