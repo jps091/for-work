@@ -28,7 +28,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public User getById(long id) {
-        return findById(id).orElseThrow(() -> new ApiException(UserErrorCode.USER_NOT_FOUND));
+        return findById(id).orElseThrow(() -> new ApiException(UserErrorCode.USER_NOT_FOUND, id));
     }
 
     @Override

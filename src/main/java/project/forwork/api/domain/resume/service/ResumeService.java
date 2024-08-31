@@ -50,7 +50,7 @@ public class ResumeService {
 
     public Resume getResumeWithThrow(Long resumeId) {
         return resumeRepository.findById(resumeId)
-                .orElseThrow(() -> new ApiException(ResumeErrorCode.RESUME_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ResumeErrorCode.RESUME_NOT_FOUND, resumeId));
     }
 
     private static void validateAuthor(CurrentUser currentUser, Resume resume) {

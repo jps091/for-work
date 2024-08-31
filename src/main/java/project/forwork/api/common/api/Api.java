@@ -4,6 +4,8 @@ import jakarta.validation.Valid;
 import lombok.Data;
 import project.forwork.api.common.error.ErrorCodeIfs;
 
+import java.util.Map;
+
 @Data
 public class Api<T> {
 
@@ -48,6 +50,12 @@ public class Api<T> {
     public static Api<Object> ERROR(ErrorCodeIfs errorCodeIfs, String description){
         Api<Object> api = new Api<Object>();
         api.result = Result.ERROR(errorCodeIfs, description);
+        return api;
+    }
+
+    public static <T> Api<T> ERROR(Integer resultCode, String resultMessage, String resultDescription) {
+        Api<T> api = new Api<>();
+        api.result = Result.ERROR(resultCode, resultMessage, resultDescription);
         return api;
     }
 }
