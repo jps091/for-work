@@ -6,7 +6,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import project.forwork.api.common.annotation.Current;
 import project.forwork.api.common.api.Api;
@@ -15,6 +14,8 @@ import project.forwork.api.domain.resume.controller.model.ResumeRegisterRequest;
 import project.forwork.api.domain.resume.controller.model.ResumeResponse;
 import project.forwork.api.domain.resume.service.ResumeService;
 import project.forwork.api.domain.user.controller.model.CurrentUser;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/resumes")
@@ -50,13 +51,22 @@ public class ResumeController {
 
     @Operation(summary = "Resume 수정 API", description = "ResumeId 입력")
     @PutMapping("{resumeId}")
-    public ResponseEntity<Api<String>> editPost(
+    public Api<String> editPost(
             @Parameter(hidden = true) @Current CurrentUser currentUser,
             @Parameter(description = "수정할 Resume ID", required = true, example = "1")
             @PathVariable Long resumeId,
             @Valid @RequestBody ResumeModifyRequest resumeModifyRequest
     ){
         resumeService.modify(resumeId, currentUser, resumeModifyRequest);
-        return ResponseEntity.status(HttpStatus.OK).body(Api.OK("Resume 변경 완료 되었습니다."));
+        return Api.OK("Resume 변경 완료 되었습니다.");
+    }
+
+    @Operation(summary = "회원Resume 조회 API", description = "로그인한 회원의 전체 Resume 조회")
+    @GetMapping
+    public Api<List<ResumeResponse>> retrieveAllPostWithDraft(
+            @Parameter(hidden = true) @Current CurrentUser currentUser
+    ){
+        List<ResumeResponse> resumes = resumeService.findResumesBySeller(currentUser);
+        return Api.OK(resumes);
     }
 }

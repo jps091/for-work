@@ -27,7 +27,7 @@ public class ResumeEntity extends BaseTimeEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sender_id", nullable = false)
+    @JoinColumn(name = "seller_id", nullable = false)
     private UserEntity sellerEntity;
 
     @Enumerated(EnumType.STRING)
