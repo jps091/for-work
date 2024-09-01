@@ -5,10 +5,10 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public enum ResumeErrorCode implements ErrorCodeIfs{
+public enum ResumeDecisionErrorCode implements ErrorCodeIfs{
 
-    RESUME_NOT_FOUND(404, 3401, "이력서를 찾을 수 없습니다."),
-    AUTHOR_MISMATCH(401, 3402, "작성자가 일치 하지 않습니다."),
+    RESUME_DECISION_NOT_FOUND(404, 4401, "이력서 판매 요청을 찾을 수 없습니다."),
+    AUTHOR_MISMATCH(401, 4402, "작성자가 일치 하지 않습니다."),
     ;
 
     private final Integer httpStatusCode;

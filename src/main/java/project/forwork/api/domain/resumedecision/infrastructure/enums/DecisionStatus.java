@@ -1,12 +1,12 @@
-package project.forwork.api.domain.saleresumedecision.infrastructure.enums;
+package project.forwork.api.domain.resumedecision.infrastructure.enums;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 public enum DecisionStatus {
-    APPROVED("승인"),
-    REJECTED("거부"),
+    APPROVE("승인"),
+    DENY("거부")
     ;
 
     private String description;

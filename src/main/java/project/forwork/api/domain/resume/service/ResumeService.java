@@ -13,6 +13,8 @@ import project.forwork.api.domain.user.controller.model.CurrentUser;
 import project.forwork.api.domain.user.model.User;
 import project.forwork.api.domain.user.service.port.UserRepository;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class ResumeService {
@@ -51,6 +53,22 @@ public class ResumeService {
     public Resume getResumeWithThrow(Long resumeId) {
         return resumeRepository.findById(resumeId)
                 .orElseThrow(() -> new ApiException(ResumeErrorCode.RESUME_NOT_FOUND, resumeId));
+    }
+
+    public List<ResumeResponse> getResumes(){
+        return resumeRepository.findAll()
+                .stream()
+                .map(ResumeResponse::from)
+                .toList();
+    }
+
+    public List<ResumeResponse> findResumesBySeller(CurrentUser currentUser){
+        User user = userRepository.getById(currentUser.getId());
+
+        return resumeRepository.findAllBySeller(user)
+                .stream()
+                .map(ResumeResponse::from)
+                .toList();
     }
 
     private static void validateAuthor(CurrentUser currentUser, Resume resume) {

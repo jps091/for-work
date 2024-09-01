@@ -9,7 +9,7 @@ import project.forwork.api.domain.user.model.User;
 
 @Entity
 @Table(name = "users")
-@Getter @Setter
+@Getter
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
