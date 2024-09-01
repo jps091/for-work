@@ -2,6 +2,7 @@ package project.forwork.api.mock;
 
 import project.forwork.api.common.error.UserErrorCode;
 import project.forwork.api.common.exception.ApiException;
+import project.forwork.api.domain.user.infrastructure.enums.RoleType;
 import project.forwork.api.domain.user.model.User;
 import project.forwork.api.domain.user.service.port.UserRepository;
 
@@ -49,6 +50,11 @@ public class FakeUserRepository implements UserRepository {
     @Override
     public Optional<User> findById(long id) {
         return data.stream().filter(u -> u.getId().equals(id)).findAny();
+    }
+
+    @Override
+    public Optional<User> findAdminById(long id, RoleType role) {
+        return null;
     }
 
     @Override
