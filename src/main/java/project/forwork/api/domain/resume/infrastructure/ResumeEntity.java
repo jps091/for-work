@@ -15,7 +15,6 @@ import java.math.BigDecimal;
 @Entity
 @Table(name = "resumes")
 @Getter
-@Setter
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
