@@ -22,22 +22,22 @@ public class ResumeDecisionController {
     private final ResumeDecisionService resumeDecisionService;
 
     @Operation(summary = "이력서 판매 요청 승인 API", description = "이력서 판매 요청 승인 API")
-    @PostMapping("/resume/{resumeDecisionId}/approve")
+    @PostMapping("/resume/{resumeId}/approve")
     public Api<ResumeDecisionResponse> approveResumeSale(
             @Current CurrentUser currentUser,
-            @PathVariable Long resumeDecisionId
+            @PathVariable Long resumeId
     ){
-        ResumeDecisionResponse approveResume = resumeDecisionService.approve(currentUser, resumeDecisionId);
+        ResumeDecisionResponse approveResume = resumeDecisionService.approve(currentUser, resumeId);
         return Api.OK(approveResume);
     }
 
     @Operation(summary = "이력서 판매 요청 거부 API", description = "이력서 판매 요청 거부 API")
-    @PostMapping("/resume/{resumeDecisionId}/deny")
+    @PostMapping("/resume/{resumeId}/deny")
     public Api<ResumeDecisionResponse> denyResumeDeny(
             @Current CurrentUser currentUser,
-            @PathVariable Long resumeDecisionId
+            @PathVariable Long resumeId
     ){
-        ResumeDecisionResponse denyResume = resumeDecisionService.deny(currentUser, resumeDecisionId);
+        ResumeDecisionResponse denyResume = resumeDecisionService.deny(currentUser, resumeId);
         return Api.OK(denyResume);
     }
 

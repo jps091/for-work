@@ -25,23 +25,7 @@ public class ResumeDecision {
         this.decidedAt = decidedAt;
     }
 
-    public static ResumeDecision from(Resume resume){
-        return ResumeDecision.builder()
-                .resume(resume)
-                .decisionStatus(DecisionStatus.PENDING)
-                .build();
-    }
-
-    public ResumeDecision decide(User admin, DecisionStatus status, ClockHolder clockHolder){
-        return ResumeDecision.builder()
-                .admin(admin)
-                .resume(resume)
-                .decisionStatus(status)
-                .decidedAt(clockHolder.now())
-                .build();
-    }
-
-    public ResumeDecision approve(User admin, ClockHolder clockHolder){
+    public static ResumeDecision approve(User admin, Resume resume, ClockHolder clockHolder){
         return ResumeDecision.builder()
                 .admin(admin)
                 .resume(resume)
@@ -50,7 +34,7 @@ public class ResumeDecision {
                 .build();
     }
 
-    public ResumeDecision deny(User admin,ClockHolder clockHolder){
+    public static ResumeDecision deny(User admin, Resume resume, ClockHolder clockHolder){
         return ResumeDecision.builder()
                 .admin(admin)
                 .resume(resume)

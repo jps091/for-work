@@ -9,6 +9,7 @@ import project.forwork.api.common.error.UserErrorCode;
 import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.common.service.port.ClockHolder;
 import project.forwork.api.domain.resume.controller.model.ResumeAdminResponse;
+import project.forwork.api.domain.resume.model.Resume;
 import project.forwork.api.domain.resume.service.port.ResumeRepository;
 import project.forwork.api.domain.resume.controller.model.ResumePage;
 import project.forwork.api.domain.resumedecision.controller.model.ResumeDecisionResponse;
@@ -30,34 +31,31 @@ public class ResumeDecisionService {
     private final UserRepository userRepository;
     private final ClockHolder clockHolder;
 
-    public ResumeDecisionResponse approve(CurrentUser currentUser, Long resumeDecisionId){
+    public ResumeDecisionResponse approve(CurrentUser currentUser, Long resumeId){
         User admin = userRepository.getByIdWithThrow(currentUser.getId());
         if(admin.isAdminMismatch()){
             throw new ApiException(UserErrorCode.USER_DISALLOW);
         }
 
-        ResumeDecision resumeDecision = resumeDecisionRepository.getById(resumeDecisionId);
-        resumeDecision = decideResumeSale(resumeDecision, admin, DecisionStatus.APPROVE);
+        Resume resume = resumeRepository.getByIdWithThrow(resumeId);
+
+        ResumeDecision resumeDecision = ResumeDecision.approve(admin, resume, clockHolder);
         resumeDecision = resumeDecisionRepository.save(resumeDecision);
 
         return ResumeDecisionResponse.from(resumeDecision);
     }
 
-    public ResumeDecisionResponse deny(CurrentUser currentUser, Long resumeDecisionId){
+    public ResumeDecisionResponse deny(CurrentUser currentUser, Long resumeId){
         User admin = userRepository.getByIdWithThrow(currentUser.getId());
         if(admin.isAdminMismatch()){
             throw new ApiException(UserErrorCode.USER_DISALLOW);
         }
 
-        ResumeDecision resumeDecision = resumeDecisionRepository.getById(resumeDecisionId);
-        resumeDecision = decideResumeSale(resumeDecision, admin, DecisionStatus.DENY);
+        Resume resume = resumeRepository.getByIdWithThrow(resumeId);
+
+        ResumeDecision resumeDecision = ResumeDecision.deny(admin, resume, clockHolder);
         resumeDecision = resumeDecisionRepository.save(resumeDecision);
 
         return ResumeDecisionResponse.from(resumeDecision);
-    }
-
-    private ResumeDecision decideResumeSale(ResumeDecision resumeDecision, User admin, DecisionStatus status) {
-        resumeDecision = resumeDecision.decide(admin, status, clockHolder);
-        return resumeDecision;
     }
 }
