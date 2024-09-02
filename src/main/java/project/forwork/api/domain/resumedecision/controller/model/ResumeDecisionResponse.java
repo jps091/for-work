@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import project.forwork.api.domain.resume.infrastructure.enums.FieldType;
 import project.forwork.api.domain.resume.infrastructure.enums.LevelType;
-import project.forwork.api.domain.resume.model.Resume;
 import project.forwork.api.domain.resumedecision.infrastructure.ResumeDecision;
 import project.forwork.api.domain.resumedecision.infrastructure.enums.DecisionStatus;
 

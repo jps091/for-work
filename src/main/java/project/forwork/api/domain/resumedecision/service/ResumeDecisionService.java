@@ -27,7 +27,6 @@ import org.springframework.data.domain.Sort;
 public class ResumeDecisionService {
 
     private final ResumeDecisionRepository resumeDecisionRepository;
-    private final ResumeRepository resumeRepository;
     private final UserRepository userRepository;
     private final ClockHolder clockHolder;
 

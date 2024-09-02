@@ -47,22 +47,6 @@ public class ResumeDecisionEntity extends BaseTimeEntity{
         return resumeDecisionEntity;
     }
 
-    public static ResumeDecisionEntity initResume(ResumeDecision resumeDecision){
-        return ResumeDecisionEntity.builder()
-                .id(resumeDecision.getId())
-                .resumeEntity(ResumeEntity.from(resumeDecision.getResume()))
-                .decisionStatus(resumeDecision.getDecisionStatus())
-                .build();
-    }
-
-    public ResumeDecision initToModel(){
-        return ResumeDecision.builder()
-                .id(id)
-                .resume(resumeEntity.toModel())
-                .decisionStatus(decisionStatus)
-                .build();
-    }
-
     public ResumeDecision toModel(){
         return ResumeDecision.builder()
                 .id(id)

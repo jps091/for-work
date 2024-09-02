@@ -103,7 +103,7 @@ class UserTest {
                 .build();
 
         //when(상황발생)
-        boolean result = user.isNotMatchPassword("321");
+        boolean result = user.isPasswordMismatch("321");
 
         //then(검증)
         assertThat(result).isTrue();

@@ -51,7 +51,7 @@ public class UserService {
             HttpServletResponse response
     ){
         User user = getUserByCurrentUser(currentUser);
-        if(user.isNotMatchPassword(password)){
+        if(user.isPasswordMismatch(password)){
             throw new ApiException(UserErrorCode.PASSWORD_NOT_MATCH);
         }
 

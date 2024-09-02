@@ -75,7 +75,7 @@ public class User {
                 .build();
     }
 
-    public boolean isNotMatchPassword(String password){
+    public boolean isPasswordMismatch(String password){
         return !Objects.equals(this.password, password);
     }
     public boolean isAdminMismatch(){
