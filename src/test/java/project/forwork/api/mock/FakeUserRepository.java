@@ -42,7 +42,7 @@ public class FakeUserRepository implements UserRepository {
     }
 
     @Override
-    public User getById(long id) {
+    public User getByIdWithThrow(long id) {
         return findById(id).orElseThrow(() -> new ApiException(UserErrorCode.USER_NOT_FOUND));
     }
 

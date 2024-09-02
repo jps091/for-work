@@ -1,11 +1,18 @@
 package project.forwork.api.domain.resume.infrastructure;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 import project.forwork.api.common.error.ResumeErrorCode;
 import project.forwork.api.common.exception.ApiException;
+import project.forwork.api.domain.resume.controller.model.ResumeAdminResponse;
+import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
+import project.forwork.api.domain.resume.infrastructure.querydsl.ResumeQueryDlsRepository;
+import project.forwork.api.domain.resume.infrastructure.querydsl.ResumeSearchCond;
 import project.forwork.api.domain.resume.model.Resume;
 import project.forwork.api.domain.resume.service.port.ResumeRepository;
+import project.forwork.api.domain.resumedecision.controller.model.ResumeDecisionResponse;
 import project.forwork.api.domain.user.infrastructure.UserEntity;
 import project.forwork.api.domain.user.model.User;
 
@@ -16,6 +23,8 @@ import java.util.Optional;
 public class ResumeRepositoryImpl implements ResumeRepository {
 
     private final ResumeJpaRepository resumeJpaRepository;
+    private final ResumeQueryDlsRepository resumeQueryDlsRepository;
+
 
     @Override
     public Resume save(Resume resume) {
@@ -28,7 +37,7 @@ public class ResumeRepositoryImpl implements ResumeRepository {
     }
 
     @Override
-    public Resume getById(Long id) {
+    public Resume getByIdWithThrow(Long id) {
         return findById(id).orElseThrow(() -> new ApiException(ResumeErrorCode.RESUME_NOT_FOUND, id));
     }
 
@@ -47,10 +56,24 @@ public class ResumeRepositoryImpl implements ResumeRepository {
     }
 
     @Override
+    public List<Resume> findAllByStatus(ResumeStatus status) {
+        return resumeJpaRepository
+                .findByResumeStatus(status)
+                .stream()
+                .map(ResumeEntity::toModel)
+                .toList();
+    }
+
+    @Override
     public List<Resume> findAllBySeller(User seller) {
         return resumeJpaRepository.findAllBySellerEntity(UserEntity.from(seller))
                 .stream()
                 .map(ResumeEntity::toModel)
                 .toList();
+    }
+
+    @Override
+    public Page<ResumeAdminResponse> search(ResumeSearchCond cond, PageRequest pageRequest) {
+        return resumeQueryDlsRepository.search(cond, pageRequest);
     }
 }
