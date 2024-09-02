@@ -78,4 +78,7 @@ public class User {
     public boolean isPasswordMismatch(String password){
         return !Objects.equals(this.password, password);
     }
+    public boolean isAdminMismatch(){
+        return roleType != RoleType.ADMIN;
+    }
 }

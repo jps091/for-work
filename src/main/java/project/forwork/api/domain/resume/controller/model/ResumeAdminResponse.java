@@ -11,32 +11,25 @@ import project.forwork.api.domain.resume.model.Resume;
 import project.forwork.api.domain.user.model.User;
 
 import java.math.BigDecimal;
+
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ResumeResponse {
+public class ResumeAdminResponse {
 
     private Long id;
     private String email;
     private FieldType field;
     private LevelType level;
-    private String resumeUrl;
-    private String architectureImageUrl;
-    private BigDecimal price;
-    private String description;
     private ResumeStatus status;
 
-    public static ResumeResponse from(Resume resume){
-        return ResumeResponse.builder()
+    public static ResumeAdminResponse from(Resume resume){
+        return ResumeAdminResponse.builder()
                 .id(resume.getId())
                 .email(resume.getSeller().getEmail())
                 .field(resume.getField())
                 .level(resume.getLevel())
-                .resumeUrl(resume.getResumeUrl())
-                .architectureImageUrl(resume.getArchitectureImageUrl())
-                .price(resume.getPrice())
-                .description(resume.getDescription())
                 .status(resume.getStatus())
                 .build();
     }

@@ -9,7 +9,7 @@ public interface UserRepository {
 
     User save(User user);
     void delete(User user);
-    User getById(long id);
+    User getByIdWithThrow(long id);
     Optional<User> findById(long id);
     Optional<User> findAdminById(long id, RoleType role);
     Optional<User> findByEmail(String email);

@@ -84,7 +84,7 @@ public class UserService {
     }
 
     private User getUserByCurrentUser(CurrentUser currentUser) {
-        return userRepository.getById(currentUser.getId());
+        return userRepository.getByIdWithThrow(currentUser.getId());
     }
 
     private String issueCertificationCode(String email){

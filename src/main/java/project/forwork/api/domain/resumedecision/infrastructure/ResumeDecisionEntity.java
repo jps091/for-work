@@ -23,7 +23,7 @@ public class ResumeDecisionEntity extends BaseTimeEntity{
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "admin_id", nullable = false)
+    @JoinColumn(name = "admin_id")
     private UserEntity adminEntity;
 
     @OneToOne(fetch = FetchType.LAZY)
@@ -31,7 +31,7 @@ public class ResumeDecisionEntity extends BaseTimeEntity{
     private ResumeEntity resumeEntity;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
+    @Column(name = "status")
     private DecisionStatus decisionStatus;
 
     @Column(name = "decided_at")

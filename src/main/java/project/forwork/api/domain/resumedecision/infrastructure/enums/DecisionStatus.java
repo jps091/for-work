@@ -6,7 +6,8 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public enum DecisionStatus {
     APPROVE("승인"),
-    DENY("거부")
+    DENY("거부"),
+    PENDING("대기")
     ;
 
     private String description;
