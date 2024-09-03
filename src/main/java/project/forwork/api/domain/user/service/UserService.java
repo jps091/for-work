@@ -2,6 +2,7 @@ package project.forwork.api.domain.user.service;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +21,7 @@ import project.forwork.api.domain.user.service.port.UserRepository;
 import java.util.Objects;
 
 @Service
+@Builder
 @RequiredArgsConstructor
 public class UserService {
 

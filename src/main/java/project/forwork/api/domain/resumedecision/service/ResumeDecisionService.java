@@ -20,6 +20,7 @@ import project.forwork.api.domain.user.service.port.UserRepository;
 public class ResumeDecisionService {
 
     private final ResumeDecisionRepository resumeDecisionRepository;
+    private final ResumeRepository resumeRepository;
     private final UserRepository userRepository;
     private final ClockHolder clockHolder;
 
