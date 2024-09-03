@@ -11,7 +11,7 @@ import project.forwork.api.domain.resume.controller.model.*;
 import project.forwork.api.domain.resume.model.Resume;
 import project.forwork.api.domain.resume.service.port.ResumeRepository;
 import project.forwork.api.domain.resume.infrastructure.querydsl.ResumeSearchCond;
-import project.forwork.api.domain.user.controller.model.CurrentUser;
+import project.forwork.api.common.domain.CurrentUser;
 import project.forwork.api.domain.user.model.User;
 import project.forwork.api.domain.user.service.port.UserRepository;
 
@@ -24,13 +24,13 @@ public class ResumeService {
     private final ResumeRepository resumeRepository;
     private final UserRepository userRepository;
 
-    public ResumeResponse register(CurrentUser currentUser, ResumeRegisterRequest resumeRegisterRequest){
+    public ResumeDetailResponse register(CurrentUser currentUser, ResumeRegisterRequest resumeRegisterRequest){
 
         User user = userRepository.getByIdWithThrow(currentUser.getId());
 
         Resume resume = Resume.from(user, resumeRegisterRequest);
         resume =  resumeRepository.save(resume);
-        return ResumeResponse.from(resume);
+        return ResumeDetailResponse.from(resume);
     }
 
     public void modify(
@@ -52,6 +52,15 @@ public class ResumeService {
         resumeRepository.delete(resume);
     }
 
+    public ResumeDetailResponse getByIdWithThrow(CurrentUser currentUser, Long resumeId){
+        Resume resume = resumeRepository.getByIdWithThrow(resumeId);
+
+        validateAuthorOrAdmin(currentUser, resume);
+        return ResumeDetailResponse.from(resume);
+    }
+
+
+
     public List<ResumeResponse> findAll(){
         return resumeRepository.findAll()
                 .stream()
@@ -68,7 +77,7 @@ public class ResumeService {
     ){
         Sort sort = Sort.by(ascending ? Sort.Order.asc(sortBy) : Sort.Order.desc(sortBy));
         PageRequest pageRequest = PageRequest.of(offset, limit, sort);
-        Page<ResumeAdminResponse> result = resumeRepository.search(cond, pageRequest);
+        Page<ResumeResponse> result = resumeRepository.search(cond, pageRequest);
         return ResumePage.from(result);
     }
 
@@ -83,7 +92,13 @@ public class ResumeService {
 
     private static void validateAuthor(CurrentUser currentUser, Resume resume) {
         if(resume.isAuthorMismatch(currentUser.getId())){
-            throw new ApiException(ResumeErrorCode.AUTHOR_MISMATCH);
+            throw new ApiException(ResumeErrorCode.ACCESS_NOT_PERMISSION);
+        }
+    }
+
+    private static void validateAuthorOrAdmin(CurrentUser currentUser, Resume resume) {
+        if(currentUser.isAdminMismatch() && resume.isAuthorMismatch(currentUser.getId())){
+            throw new ApiException(ResumeErrorCode.ACCESS_NOT_PERMISSION);
         }
     }
 }

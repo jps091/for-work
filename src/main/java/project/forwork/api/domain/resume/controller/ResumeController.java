@@ -11,9 +11,10 @@ import project.forwork.api.common.annotation.Current;
 import project.forwork.api.common.api.Api;
 import project.forwork.api.domain.resume.controller.model.ResumeModifyRequest;
 import project.forwork.api.domain.resume.controller.model.ResumeRegisterRequest;
+import project.forwork.api.domain.resume.controller.model.ResumeDetailResponse;
 import project.forwork.api.domain.resume.controller.model.ResumeResponse;
 import project.forwork.api.domain.resume.service.ResumeService;
-import project.forwork.api.domain.user.controller.model.CurrentUser;
+import project.forwork.api.common.domain.CurrentUser;
 
 import java.util.List;
 
@@ -29,12 +30,12 @@ public class ResumeController {
     @Operation(summary = "Resume 생성", description = "Resume 생성")
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/register")
-    public Api<ResumeResponse> register(
+    public Api<ResumeDetailResponse> register(
             @Parameter(hidden = true) @Current CurrentUser currentUser,
             @Valid @RequestBody ResumeRegisterRequest resumeRegisterRequest
     ){
-        ResumeResponse resumeResponse = resumeService.register(currentUser, resumeRegisterRequest);
-        return Api.CREATED(resumeResponse);
+        ResumeDetailResponse resumeDetailResponse = resumeService.register(currentUser, resumeRegisterRequest);
+        return Api.CREATED(resumeDetailResponse);
     }
 
 
@@ -51,7 +52,7 @@ public class ResumeController {
 
     @Operation(summary = "Resume 수정 API", description = "ResumeId 입력")
     @PutMapping("{resumeId}")
-    public Api<String> editPost(
+    public Api<String> edit(
             @Parameter(hidden = true) @Current CurrentUser currentUser,
             @Parameter(description = "수정할 Resume ID", required = true, example = "1")
             @PathVariable Long resumeId,
@@ -62,8 +63,18 @@ public class ResumeController {
     }
 
     @Operation(summary = "회원Resume 조회 API", description = "로그인한 회원의 전체 Resume 조회")
+    @GetMapping("{resumeId}")
+    public Api<ResumeDetailResponse> retrieve(
+            @Parameter(hidden = true) @Current CurrentUser currentUser,
+            @PathVariable Long resumeId
+    ){
+        ResumeDetailResponse resume = resumeService.getByIdWithThrow(currentUser, resumeId);
+        return Api.OK(resume);
+    }
+
+    @Operation(summary = "회원Resume 조회 API", description = "로그인한 회원의 전체 Resume 조회")
     @GetMapping
-    public Api<List<ResumeResponse>> retrieveAllPostWithDraft(
+    public Api<List<ResumeResponse>> retrieveAll(
             @Parameter(hidden = true) @Current CurrentUser currentUser
     ){
         List<ResumeResponse> resumes = resumeService.findResumesBySeller(currentUser);

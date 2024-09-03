@@ -9,19 +9,15 @@ import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
-import project.forwork.api.domain.resume.controller.model.ResumeAdminResponse;
-import project.forwork.api.domain.resume.infrastructure.QResumeEntity;
+import project.forwork.api.domain.resume.controller.model.ResumeResponse;
 import project.forwork.api.domain.resume.infrastructure.enums.FieldType;
 import project.forwork.api.domain.resume.infrastructure.enums.LevelType;
 import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
-import project.forwork.api.domain.user.infrastructure.QUserEntity;
 
 import java.util.List;
 
@@ -37,9 +33,9 @@ public class ResumeQueryDlsRepository {
         this.queryFactory = new JPAQueryFactory(em);
     }
 
-    public Page<ResumeAdminResponse> search(ResumeSearchCond cond, Pageable pageable) {
-        List<ResumeAdminResponse> content = queryFactory
-                .select(Projections.fields(ResumeAdminResponse.class,
+    public Page<ResumeResponse> search(ResumeSearchCond cond, Pageable pageable) {
+        List<ResumeResponse> content = queryFactory
+                .select(Projections.fields(ResumeResponse.class,
                         resumeEntity.id.as("id"),
                         resumeEntity.fieldType.as("field"),
                         resumeEntity.levelType.as("level"),

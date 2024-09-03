@@ -2,11 +2,10 @@ package project.forwork.api.domain.resume.service.port;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import project.forwork.api.domain.resume.controller.model.ResumeAdminResponse;
+import project.forwork.api.domain.resume.controller.model.ResumeResponse;
 import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
 import project.forwork.api.domain.resume.infrastructure.querydsl.ResumeSearchCond;
 import project.forwork.api.domain.resume.model.Resume;
-import project.forwork.api.domain.resumedecision.controller.model.ResumeDecisionResponse;
 import project.forwork.api.domain.user.model.User;
 
 import java.util.List;
@@ -28,5 +27,5 @@ public interface ResumeRepository {
 
     List<Resume> findAllBySeller(User seller);
 
-    Page<ResumeAdminResponse> search(ResumeSearchCond cond, PageRequest pageRequest);
+    Page<ResumeResponse> search(ResumeSearchCond cond, PageRequest pageRequest);
 }
