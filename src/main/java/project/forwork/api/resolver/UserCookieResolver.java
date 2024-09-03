@@ -13,6 +13,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import project.forwork.api.common.annotation.Current;
 import project.forwork.api.domain.user.controller.model.CurrentUser;
 import project.forwork.api.domain.user.controller.model.UserResponse;
+import project.forwork.api.domain.user.model.User;
 import project.forwork.api.domain.user.service.UserService;
 import project.forwork.api.domain.user.service.port.UserRepository;
 
@@ -23,7 +24,6 @@ import static project.forwork.api.interceptor.AuthorizationInterceptor.USER_ID;
 @RequiredArgsConstructor
 public class UserCookieResolver implements HandlerMethodArgumentResolver {
 
-    private final UserService userService;
     private final UserRepository userRepository;
 
     @Override
@@ -41,13 +41,13 @@ public class UserCookieResolver implements HandlerMethodArgumentResolver {
         RequestAttributes requestContext = RequestContextHolder.getRequestAttributes();
         Object userId = requestContext.getAttribute(USER_ID, RequestAttributes.SCOPE_REQUEST);
 
-        UserResponse userResponse = userService.getById(Long.parseLong(userId.toString()));
+        User user = userRepository.getByIdWithThrow(Long.parseLong(userId.toString()));
 
         return CurrentUser.builder()
-                .id(userResponse.getId())
-                .name(userResponse.getName())
-                .email(userResponse.getEmail())
-                .roleType(userResponse.getRoleType())
+                .id(user.getId())
+                .name(user.getName())
+                .email(user.getEmail())
+                .roleType(user.getRoleType())
                 .build();
     }
 }

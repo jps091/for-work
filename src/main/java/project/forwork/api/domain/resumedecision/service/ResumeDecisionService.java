@@ -33,9 +33,9 @@ public class ResumeDecisionService {
 
     public ResumeDecisionResponse approve(CurrentUser currentUser, Long resumeId){
         User admin = userRepository.getByIdWithThrow(currentUser.getId());
-        if(admin.isAdminMismatch()){
+/*        if(admin.isAdminMismatch()){
             throw new ApiException(UserErrorCode.USER_DISALLOW);
-        }
+        }*/
 
         Resume resume = resumeRepository.getByIdWithThrow(resumeId);
 
@@ -47,9 +47,9 @@ public class ResumeDecisionService {
 
     public ResumeDecisionResponse deny(CurrentUser currentUser, Long resumeId){
         User admin = userRepository.getByIdWithThrow(currentUser.getId());
-        if(admin.isAdminMismatch()){
+/*        if(admin.isAdminMismatch()){
             throw new ApiException(UserErrorCode.USER_DISALLOW);
-        }
+        }*/
 
         Resume resume = resumeRepository.getByIdWithThrow(resumeId);
 

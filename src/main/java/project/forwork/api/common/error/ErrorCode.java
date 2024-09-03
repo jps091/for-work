@@ -12,6 +12,7 @@ public enum ErrorCode implements ErrorCodeIfs{
     CREATED(201, 201, "생성완료"),
     FOUND(302, 302, "Welcome"),
     BAD_REQUEST(400, 400, "잘못된 요청"),
+    FORBIDDEN(403, 403, "접근 불가"),
     NOT_FOUND(404, 404, "존재 하지 않습니다."),
     SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR.value(), 500, "서버에러"),
     NULL_POINT(HttpStatus.INTERNAL_SERVER_ERROR.value(), 512, "Null Point Exp");

@@ -13,7 +13,7 @@ import project.forwork.api.domain.resume.service.ResumeService;
 @RestController
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping("/api/admin")
+@RequestMapping("/admin-api")
 @Tag(name = "ResumeController for Admin", description = "어드민 전용 판매 이력서 조회 컨트롤러")
 
 public class ResumeAdminController {

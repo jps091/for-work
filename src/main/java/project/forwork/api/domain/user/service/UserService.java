@@ -60,7 +60,7 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public UserResponse getById(long id){
+    public UserResponse getByIdWithThrow(long id){
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ApiException(UserErrorCode.USER_NOT_FOUND, id));
         return UserResponse.from(user);

@@ -32,7 +32,7 @@ public class UserController {
     public Api<UserResponse> me(
             @Parameter(hidden = true) @Current CurrentUser user
     ){
-        UserResponse userResponse = userService.getById(user.getId());
+        UserResponse userResponse = userService.getByIdWithThrow(user.getId());
         return Api.OK(userResponse);
     }
 
