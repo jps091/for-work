@@ -8,9 +8,7 @@ import project.forwork.api.domain.resume.infrastructure.enums.FieldType;
 import project.forwork.api.domain.resume.infrastructure.enums.LevelType;
 import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
 import project.forwork.api.domain.resume.model.Resume;
-import project.forwork.api.domain.user.model.User;
 
-import java.math.BigDecimal;
 @Data
 @Builder
 @AllArgsConstructor
@@ -21,10 +19,6 @@ public class ResumeResponse {
     private String email;
     private FieldType field;
     private LevelType level;
-    private String resumeUrl;
-    private String architectureImageUrl;
-    private BigDecimal price;
-    private String description;
     private ResumeStatus status;
 
     public static ResumeResponse from(Resume resume){
@@ -33,10 +27,6 @@ public class ResumeResponse {
                 .email(resume.getSeller().getEmail())
                 .field(resume.getField())
                 .level(resume.getLevel())
-                .resumeUrl(resume.getResumeUrl())
-                .architectureImageUrl(resume.getArchitectureImageUrl())
-                .price(resume.getPrice())
-                .description(resume.getDescription())
                 .status(resume.getStatus())
                 .build();
     }

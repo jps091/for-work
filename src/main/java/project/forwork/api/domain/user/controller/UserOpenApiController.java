@@ -2,12 +2,10 @@ package project.forwork.api.domain.user.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import project.forwork.api.common.api.Api;
 import project.forwork.api.domain.user.controller.model.EmailVerifyRequest;
@@ -29,19 +27,19 @@ public class UserOpenApiController {
 
 
     @Operation(summary = "회원 등록 API", description = "ID, 패스워드, 이름, 이메일 입력")
-    @PostMapping("/create")
+    @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public Api<UserResponse> create(
+    public Api<UserResponse> register(
             @Valid @RequestBody
             UserCreateRequest createRequest
     ){
-        UserResponse userResponse = userService.create(createRequest);
+        UserResponse userResponse = userService.register(createRequest);
         return Api.CREATED(userResponse);
     }
 
     @Operation(summary = "이메일 인증코드 발송 API", description = "이메일 입력")
     @PostMapping("/send")
-    public Api<String> sendCertificationCodeCode(
+    public Api<String> sendCertificationCode(
             @RequestParam String email
     ){
         userService.sendCode(email);

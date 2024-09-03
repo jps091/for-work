@@ -34,11 +34,21 @@ public class SwaggerConfig {
     }
 
     @Bean
-    @Order(Integer.MAX_VALUE)
+    @Order(Integer.MIN_VALUE + 1)
     public GroupedOpenApi forWorkLoginApi(){
         String[] paths = {"/api/**"};
         return GroupedOpenApi.builder()
                 .group("로그인 사용자를 위한 For-work Service 도메인 API")
+                .pathsToMatch(paths)
+                .build();
+    }
+
+    @Bean
+    @Order(Integer.MAX_VALUE)
+    public GroupedOpenApi forWorkAdminApi(){
+        String[] paths = {"/admin-api/**"};
+        return GroupedOpenApi.builder()
+                .group("관리자를 위한 For-work Service 도메인 API")
                 .pathsToMatch(paths)
                 .build();
     }

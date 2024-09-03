@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import project.forwork.api.domain.resumedecision.controller.model.ResumeDecisionResponse;
 
 import java.util.List;
 
@@ -17,9 +16,9 @@ import java.util.List;
 public class ResumePage {
     private int offset;
     private int limit;
-    private List<ResumeAdminResponse> contents;
+    private List<ResumeResponse> contents;
 
-    public static ResumePage from(Page<ResumeAdminResponse> response){
+    public static ResumePage from(Page<ResumeResponse> response){
         Pageable pageable = response.getPageable();
 
         return ResumePage.builder()

@@ -1,6 +1,7 @@
 package project.forwork.api.domain.resumedecision.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,12 +10,12 @@ import project.forwork.api.common.annotation.Current;
 import project.forwork.api.common.api.Api;
 import project.forwork.api.domain.resumedecision.controller.model.ResumeDecisionResponse;
 import project.forwork.api.domain.resumedecision.service.ResumeDecisionService;
-import project.forwork.api.domain.user.controller.model.CurrentUser;
+import project.forwork.api.common.domain.CurrentUser;
 
 @RestController
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping("/api/admin")
+@RequestMapping("/admin-api")
 @Tag(name = "ResumeDecisionController for Admin", description = "어드민 전용 판매 이력서 관리 컨트롤러")
 
 public class ResumeDecisionController {
@@ -22,22 +23,22 @@ public class ResumeDecisionController {
     private final ResumeDecisionService resumeDecisionService;
 
     @Operation(summary = "이력서 판매 요청 승인 API", description = "이력서 판매 요청 승인 API")
-    @PostMapping("/resume/{resumeDecisionId}/approve")
-    public Api<ResumeDecisionResponse> approveResumeSale(
-            @Current CurrentUser currentUser,
-            @PathVariable Long resumeDecisionId
+    @PostMapping("/resume/{resumeId}/approve")
+    public Api<ResumeDecisionResponse> approve(
+            @Parameter(hidden = true) @Current CurrentUser currentUser,
+            @PathVariable Long resumeId
     ){
-        ResumeDecisionResponse approveResume = resumeDecisionService.approve(currentUser, resumeDecisionId);
+        ResumeDecisionResponse approveResume = resumeDecisionService.approve(currentUser, resumeId);
         return Api.OK(approveResume);
     }
 
     @Operation(summary = "이력서 판매 요청 거부 API", description = "이력서 판매 요청 거부 API")
-    @PostMapping("/resume/{resumeDecisionId}/deny")
-    public Api<ResumeDecisionResponse> denyResumeDeny(
-            @Current CurrentUser currentUser,
-            @PathVariable Long resumeDecisionId
+    @PostMapping("/resume/{resumeId}/deny")
+    public Api<ResumeDecisionResponse> deny(
+            @Parameter(hidden = true) @Current CurrentUser currentUser,
+            @PathVariable Long resumeId
     ){
-        ResumeDecisionResponse denyResume = resumeDecisionService.deny(currentUser, resumeDecisionId);
+        ResumeDecisionResponse denyResume = resumeDecisionService.deny(currentUser, resumeId);
         return Api.OK(denyResume);
     }
 

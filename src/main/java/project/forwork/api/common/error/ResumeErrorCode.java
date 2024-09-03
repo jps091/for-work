@@ -8,7 +8,7 @@ import lombok.Getter;
 public enum ResumeErrorCode implements ErrorCodeIfs{
 
     RESUME_NOT_FOUND(404, 3401, "이력서를 찾을 수 없습니다."),
-    AUTHOR_MISMATCH(401, 3402, "작성자가 일치 하지 않습니다."),
+    ACCESS_NOT_PERMISSION(403, 3402, "이력서 접근 권한이 없습니다."),
     ;
 
     private final Integer httpStatusCode;

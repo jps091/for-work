@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.forwork.api.common.annotation.Current;
+import project.forwork.api.common.domain.CurrentUser;
 import project.forwork.api.common.error.UserErrorCode;
 import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.common.service.port.MailSender;
@@ -31,7 +32,7 @@ public class UserService {
     private final RedisUtils redisUtils;
 
     @Transactional
-    public UserResponse create(UserCreateRequest createRequest){
+    public UserResponse register(UserCreateRequest createRequest){
         User user = User.from(createRequest);
         user = userRepository.save(user);
         return UserResponse.from(user);
@@ -60,7 +61,7 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public UserResponse getById(long id){
+    public UserResponse getByIdWithThrow(long id){
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ApiException(UserErrorCode.USER_NOT_FOUND, id));
         return UserResponse.from(user);

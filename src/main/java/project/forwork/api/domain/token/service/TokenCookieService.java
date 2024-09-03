@@ -53,7 +53,7 @@ public class TokenCookieService {
                 .filter(cookie -> tokenKey.equals(cookie.getName()))  // tokenKey와 이름이 일치하는 쿠키 필터링
                 .map(Cookie::getValue)  // 쿠키의 값을 가져옴
                 .findFirst()  // 첫 번째 값을 Optional로 반환
-                .orElseThrow(() -> new ApiException(TokenErrorCode.INVALID_TOKEN));  // 값이 없으면 예외 발생
+                .orElseThrow(() -> new ApiException(TokenErrorCode.TOKEN_NOT_FOUND));  // 값이 없으면 예외 발생
     }
 
 

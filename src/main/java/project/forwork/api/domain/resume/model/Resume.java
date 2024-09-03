@@ -69,6 +69,23 @@ public class Resume {
                 .build();
     }
 
+    public Resume updateStatus(ResumeStatus status){
+        return Resume.builder()
+                .id(id)
+                .seller(seller)
+                .field(field)
+                .level(level)
+                //.resumeUrl(request.getResumeUrl()) TODO Test
+                //.architectureImageUrl(request.getArchitectureImageUrl())
+                .resumeUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
+                .architectureImageUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
+                .price(price)
+                .description(description)
+                .status(status)
+                .build();
+    }
+
+
     public boolean isAuthorMismatch(Long sellerId){
         return !Objects.equals(seller.getId(), sellerId);
     }
