@@ -10,7 +10,7 @@ public enum TokenErrorCode implements ErrorCodeIfs{
     INVALID_TOKEN(400, 2000, "유효 하지 않은 토큰."),
     EXPIRED_TOKEN(400, 2001, "만료된 토큰"),
     EXCEPTION_TOKEN(400, 2002, "토큰 알수 없는 에러"),
-    AUTHORIZATION_TOKEN_NOT_FOUND(2003, 2003, "인증 헤더 토큰 없음"),
+    TOKEN_NOT_FOUND(403, 2003, "인증 헤더 토큰 없음"),
     ;
 
     private final Integer httpStatusCode;

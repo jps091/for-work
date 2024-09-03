@@ -11,10 +11,8 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import project.forwork.api.common.annotation.Current;
-import project.forwork.api.domain.user.controller.model.CurrentUser;
-import project.forwork.api.domain.user.controller.model.UserResponse;
+import project.forwork.api.common.domain.CurrentUser;
 import project.forwork.api.domain.user.model.User;
-import project.forwork.api.domain.user.service.UserService;
 import project.forwork.api.domain.user.service.port.UserRepository;
 
 import static project.forwork.api.interceptor.AuthorizationInterceptor.USER_ID;
