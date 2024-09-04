@@ -53,7 +53,7 @@ public class User {
                 .build();
     }
 
-    public User modifyPassword(String password){
+    public User updatePassword(String password){
         return User.builder()
                 .id(id)
                 .name(name)

@@ -1,7 +1,6 @@
 package project.forwork.api.domain.user.model;
 
 import org.junit.jupiter.api.Test;
-import project.forwork.api.common.error.UserErrorCode;
 import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.domain.user.controller.model.UserCreateRequest;
 import project.forwork.api.domain.user.infrastructure.enums.RoleType;
@@ -71,7 +70,7 @@ class UserTest {
                 .build();
 
         //when(상황발생)
-        user = user.modifyPassword("345");
+        user = user.updatePassword("345");
 
         //then(검증)
         assertThat(user.getPassword()).isEqualTo("345");

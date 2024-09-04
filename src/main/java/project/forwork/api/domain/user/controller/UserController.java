@@ -48,11 +48,11 @@ public class UserController {
 
     @Operation(summary = "회원 비밀번호 수정 API", description = "수정할 비밀번호 입력")
     @PutMapping
-    public Api<String> modifyPassword(
+    public Api<String> updatePassword(
             @Parameter(hidden = true) @Current CurrentUser currentUser,
             @Valid @RequestBody ModifyPasswordRequest modifyPasswordRequest
     ){
-        userService.modifyPassword(currentUser, modifyPasswordRequest);
+        userService.updatePassword(currentUser, modifyPasswordRequest);
         return Api.OK("비밀번호 수정 성공");
     }
 

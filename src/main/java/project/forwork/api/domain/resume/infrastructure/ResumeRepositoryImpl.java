@@ -36,6 +36,12 @@ public class ResumeRepositoryImpl implements ResumeRepository {
     }
 
     @Override
+    public void deleteAllBySeller(User seller) {
+        List<ResumeEntity> resumeEntityList = resumeJpaRepository.findAllBySellerEntity(UserEntity.from(seller));
+        resumeJpaRepository.deleteAll(resumeEntityList);
+    }
+
+    @Override
     public Resume getByIdWithThrow(Long id) {
         return findById(id).orElseThrow(() -> new ApiException(ResumeErrorCode.RESUME_NOT_FOUND, id));
     }
