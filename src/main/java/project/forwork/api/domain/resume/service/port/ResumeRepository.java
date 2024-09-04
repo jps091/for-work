@@ -17,6 +17,8 @@ public interface ResumeRepository {
 
     void delete(Resume resume);
 
+    void deleteAllBySeller(User Seller);
+
     Resume getByIdWithThrow(Long id);
 
     Optional<Resume> findById(Long id);

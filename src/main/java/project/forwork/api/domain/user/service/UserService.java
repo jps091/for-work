@@ -2,6 +2,7 @@ package project.forwork.api.domain.user.service;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,6 +13,7 @@ import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.common.service.port.MailSender;
 import project.forwork.api.common.service.port.RedisUtils;
 import project.forwork.api.common.service.port.UuidHolder;
+import project.forwork.api.domain.resume.service.ResumeService;
 import project.forwork.api.domain.token.service.TokenCookieService;
 import project.forwork.api.domain.user.controller.model.*;
 import project.forwork.api.domain.user.model.User;
@@ -20,12 +22,14 @@ import project.forwork.api.domain.user.service.port.UserRepository;
 import java.util.Objects;
 
 @Service
+@Builder
 @RequiredArgsConstructor
 public class UserService {
 
     public static final String EMAIL_PREFIX = "email:";
 
     private final UserRepository userRepository;
+    private final ResumeService resumeService;
     private final TokenCookieService tokenCookieService;
     private final MailSender mailSender;
     private final UuidHolder uuidHolder;
@@ -38,9 +42,9 @@ public class UserService {
         return UserResponse.from(user);
     }
     @Transactional
-    public void modifyPassword(CurrentUser currentUser, ModifyPasswordRequest modifyPasswordRequest){
+    public void updatePassword(CurrentUser currentUser, ModifyPasswordRequest modifyPasswordRequest){
         User user = getUserByCurrentUser(currentUser);
-        user = user.modifyPassword(modifyPasswordRequest.getPassword());
+        user = user.updatePassword(modifyPasswordRequest.getPassword());
         userRepository.save(user);
     }
 
@@ -57,6 +61,7 @@ public class UserService {
         }
 
         tokenCookieService.expiredCookiesAndRefreshToken(user.getId(), request, response);
+        resumeService.deleteByUser(user);
         userRepository.delete(user);
     }
 

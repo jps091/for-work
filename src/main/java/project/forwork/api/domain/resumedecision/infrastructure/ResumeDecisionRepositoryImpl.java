@@ -6,7 +6,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 import project.forwork.api.common.error.ResumeDecisionErrorCode;
 import project.forwork.api.common.exception.ApiException;
+import project.forwork.api.domain.resume.infrastructure.ResumeEntity;
 import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
+import project.forwork.api.domain.resume.model.Resume;
 import project.forwork.api.domain.resumedecision.service.port.ResumeDecisionRepository;
 
 import java.util.Optional;
@@ -35,6 +37,11 @@ public class ResumeDecisionRepositoryImpl implements ResumeDecisionRepository {
     @Override
     public ResumeDecision getById(Long id) {
         return findById(id).orElseThrow(() -> new ApiException(ResumeDecisionErrorCode.RESUME_DECISION_NOT_FOUND, id));
+    }
+
+    @Override
+    public Optional<ResumeDecision> findByResume(Resume resume) {
+        return resumeDecisionJpaRepository.findByResumeEntity(ResumeEntity.from(resume)).map(ResumeDecisionEntity::toModel);
     }
 
     @Override

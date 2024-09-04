@@ -41,9 +41,4 @@ public class UserRepositoryImpl implements UserRepository {
     public Optional<User> findByEmail(String email) {
         return userJpaRepository.findByEmail(email).map(UserEntity::toModel);
     }
-
-    @Override
-    public Optional<User> findAdminById(long id, RoleType role) {
-        return userJpaRepository.findByIdAndRoleType(id, role).map(UserEntity::toModel);
-    }
 }

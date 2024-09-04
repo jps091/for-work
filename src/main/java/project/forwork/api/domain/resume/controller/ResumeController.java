@@ -13,6 +13,7 @@ import project.forwork.api.domain.resume.controller.model.ResumeModifyRequest;
 import project.forwork.api.domain.resume.controller.model.ResumeRegisterRequest;
 import project.forwork.api.domain.resume.controller.model.ResumeDetailResponse;
 import project.forwork.api.domain.resume.controller.model.ResumeResponse;
+import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
 import project.forwork.api.domain.resume.service.ResumeService;
 import project.forwork.api.common.domain.CurrentUser;
 
@@ -42,24 +43,35 @@ public class ResumeController {
     @Operation(summary = "Resume 삭제 API", description = "ResumeId 입력")
     @DeleteMapping("{resumeId}")
     public Api<String> delete(
-            @Parameter(hidden = true) @Current CurrentUser currentUser,
             @Parameter(description = "삭제할 Resume ID", required = true, example = "1")
-            @PathVariable Long resumeId
-    ){
-        resumeService.delete(currentUser, resumeId);
+            @PathVariable Long resumeId,
+            @Parameter(hidden = true) @Current CurrentUser currentUser
+            ){
+        resumeService.delete(resumeId, currentUser);
         return Api.OK("Resume 삭제 성공");
     }
 
-    @Operation(summary = "Resume 수정 API", description = "ResumeId 입력")
+    @Operation(summary = "Resume 수정 API", description = "상태가 대기 일때만 수정 가능")
     @PutMapping("{resumeId}")
-    public Api<String> edit(
-            @Parameter(hidden = true) @Current CurrentUser currentUser,
+    public Api<String> modifyIfPending(
             @Parameter(description = "수정할 Resume ID", required = true, example = "1")
             @PathVariable Long resumeId,
+            @Parameter(hidden = true) @Current CurrentUser currentUser,
             @Valid @RequestBody ResumeModifyRequest resumeModifyRequest
     ){
-        resumeService.modify(resumeId, currentUser, resumeModifyRequest);
+        resumeService.modifyIfPending(resumeId, currentUser, resumeModifyRequest);
         return Api.OK("Resume 변경 완료 되었습니다.");
+    }
+
+    @Operation(summary = "Resume Pending상태  API", description = "api 호출시 Resume 상태 Pending으로 변경")
+    @PutMapping("{resumeId}")
+    public Api<String> updatePending(
+            @Parameter(description = "요청 Resume ID", required = true, example = "1")
+            @PathVariable Long resumeId,
+            @Parameter(hidden = true) @Current CurrentUser currentUser
+    ){
+        resumeService.updatePending(resumeId, currentUser);
+        return Api.OK("Resume 상태 Pending 변경 완료 되었습니다.");
     }
 
     @Operation(summary = "회원Resume 조회 API", description = "로그인한 회원의 전체 Resume 조회")

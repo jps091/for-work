@@ -2,6 +2,8 @@ package project.forwork.api.domain.resume.model;
 
 import lombok.Builder;
 import lombok.Getter;
+import project.forwork.api.common.error.ResumeErrorCode;
+import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.domain.resume.controller.model.ResumeModifyRequest;
 import project.forwork.api.domain.resume.controller.model.ResumeRegisterRequest;
 import project.forwork.api.domain.resume.infrastructure.enums.FieldType;
@@ -53,7 +55,10 @@ public class Resume {
                 .build();
     }
 
-    public Resume modify(ResumeModifyRequest request){
+    public Resume modifyIfPending(ResumeModifyRequest request){
+        if(status != ResumeStatus.PENDING){
+            throw new ApiException(ResumeErrorCode.STATUS_NOT_PENDING);
+        }
         return Resume.builder()
                 .id(id)
                 .seller(seller)

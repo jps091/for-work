@@ -1,7 +1,6 @@
 package project.forwork.api.domain.user.model;
 
 import org.junit.jupiter.api.Test;
-import project.forwork.api.common.error.UserErrorCode;
 import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.domain.user.controller.model.UserCreateRequest;
 import project.forwork.api.domain.user.infrastructure.enums.RoleType;
@@ -71,7 +70,7 @@ class UserTest {
                 .build();
 
         //when(상황발생)
-        user = user.modifyPassword("345");
+        user = user.updatePassword("345");
 
         //then(검증)
         assertThat(user.getPassword()).isEqualTo("345");
@@ -104,6 +103,23 @@ class UserTest {
 
         //when(상황발생)
         boolean result = user.isPasswordMismatch("321");
+
+        //then(검증)
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    void 관리자가_아니라면_참을_반환한다(){
+        //given(상황환경 세팅)
+        User user = User.builder()
+                .email("test@naver.com")
+                .name("kim")
+                .password("123")
+                .roleType(RoleType.USER)
+                .build();
+
+        //when(상황발생)
+        boolean result = user.isAdminMismatch();
 
         //then(검증)
         assertThat(result).isTrue();

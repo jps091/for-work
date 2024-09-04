@@ -8,10 +8,12 @@ import org.springframework.stereotype.Service;
 import project.forwork.api.common.error.ResumeErrorCode;
 import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.domain.resume.controller.model.*;
+import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
 import project.forwork.api.domain.resume.model.Resume;
 import project.forwork.api.domain.resume.service.port.ResumeRepository;
 import project.forwork.api.domain.resume.infrastructure.querydsl.ResumeSearchCond;
 import project.forwork.api.common.domain.CurrentUser;
+import project.forwork.api.domain.resumedecision.service.port.ResumeDecisionRepository;
 import project.forwork.api.domain.user.model.User;
 import project.forwork.api.domain.user.service.port.UserRepository;
 
@@ -22,6 +24,7 @@ import java.util.List;
 public class ResumeService {
 
     private final ResumeRepository resumeRepository;
+    private final ResumeDecisionRepository resumeDecisionRepository;
     private final UserRepository userRepository;
 
     public ResumeDetailResponse register(CurrentUser currentUser, ResumeRegisterRequest resumeRegisterRequest){
@@ -33,7 +36,7 @@ public class ResumeService {
         return ResumeDetailResponse.from(resume);
     }
 
-    public void modify(
+    public void modifyIfPending(
             Long resumeId,
             CurrentUser currentUser,
             ResumeModifyRequest resumeModifyRequest
@@ -41,15 +44,34 @@ public class ResumeService {
         Resume resume = resumeRepository.getByIdWithThrow(resumeId);
         validateAuthor(currentUser, resume);
 
-        resume = resume.modify(resumeModifyRequest);
+        resume = resume.modifyIfPending(resumeModifyRequest);
         resumeRepository.save(resume);
     }
 
-    public void delete(CurrentUser currentUser, Long resumeId) {
+    public void updatePending(Long resumeId, CurrentUser currentUser){
         Resume resume = resumeRepository.getByIdWithThrow(resumeId);
         validateAuthor(currentUser, resume);
 
+        resume = resume.updateStatus(ResumeStatus.PENDING);
+        resumeRepository.save(resume);
+    }
+
+    public void delete(Long resumeId, CurrentUser currentUser) {
+        Resume resume = resumeRepository.getByIdWithThrow(resumeId);
+        validateAuthor(currentUser, resume);
+
+        resumeDecisionRepository.findByResume(resume).ifPresent(resumeDecisionRepository::delete);
         resumeRepository.delete(resume);
+    }
+
+    public void deleteByUser(User seller){
+
+        List<Resume> resumeList = resumeRepository.findAllBySeller(seller);
+
+        for (Resume resume : resumeList) {
+            resumeDecisionRepository.findByResume(resume).ifPresent(resumeDecisionRepository::delete);
+            resumeRepository.delete(resume);
+        }
     }
 
     public ResumeDetailResponse getByIdWithThrow(CurrentUser currentUser, Long resumeId){

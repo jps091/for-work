@@ -11,6 +11,5 @@ public interface UserRepository {
     void delete(User user);
     User getByIdWithThrow(long id);
     Optional<User> findById(long id);
-    Optional<User> findAdminById(long id, RoleType role);
     Optional<User> findByEmail(String email);
 }
