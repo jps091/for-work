@@ -53,11 +53,6 @@ public class FakeUserRepository implements UserRepository {
     }
 
     @Override
-    public Optional<User> findAdminById(long id, RoleType role) {
-        return null;
-    }
-
-    @Override
     public Optional<User> findByEmail(String email) {
         return data.stream().filter(u -> u.getEmail().equals(email)).findAny();
     }

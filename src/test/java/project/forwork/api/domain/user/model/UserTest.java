@@ -108,4 +108,21 @@ class UserTest {
         //then(검증)
         assertThat(result).isTrue();
     }
+
+    @Test
+    void 관리자가_아니라면_참을_반환한다(){
+        //given(상황환경 세팅)
+        User user = User.builder()
+                .email("test@naver.com")
+                .name("kim")
+                .password("123")
+                .roleType(RoleType.USER)
+                .build();
+
+        //when(상황발생)
+        boolean result = user.isAdminMismatch();
+
+        //then(검증)
+        assertThat(result).isTrue();
+    }
 }
