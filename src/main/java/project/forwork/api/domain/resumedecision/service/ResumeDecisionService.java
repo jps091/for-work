@@ -22,7 +22,6 @@ public class  ResumeDecisionService {
     private final ResumeDecisionRepository resumeDecisionRepository;
     private final ResumeRepository resumeRepository;
     private final UserRepository userRepository;
-    private final ClockHolder clockHolder;
 
     public ResumeDecisionResponse approve(CurrentUser currentUser, Long resumeId){
         User admin = userRepository.getByIdWithThrow(currentUser.getId());
@@ -31,7 +30,7 @@ public class  ResumeDecisionService {
         resume = resume.updateStatus(ResumeStatus.ACTIVE);
         resumeRepository.save(resume);
 
-        ResumeDecision resumeDecision = ResumeDecision.approve(admin, resume, clockHolder);
+        ResumeDecision resumeDecision = ResumeDecision.approve(admin, resume);
         resumeDecision = resumeDecisionRepository.save(resumeDecision);
 
         return ResumeDecisionResponse.from(resumeDecision);
@@ -44,9 +43,11 @@ public class  ResumeDecisionService {
         resume = resume.updateStatus(ResumeStatus.REJECTED);
         resumeRepository.save(resume);
 
-        ResumeDecision resumeDecision = ResumeDecision.deny(admin, resume, clockHolder);
+        ResumeDecision resumeDecision = ResumeDecision.deny(admin, resume);
         resumeDecision = resumeDecisionRepository.save(resumeDecision);
 
         return ResumeDecisionResponse.from(resumeDecision);
     }
+
+
 }

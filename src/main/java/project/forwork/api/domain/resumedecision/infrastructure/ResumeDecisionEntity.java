@@ -43,7 +43,7 @@ public class ResumeDecisionEntity extends BaseTimeEntity{
         resumeDecisionEntity.adminEntity = UserEntity.from(resumeDecision.getAdmin());
         resumeDecisionEntity.resumeEntity = ResumeEntity.from(resumeDecision.getResume());
         resumeDecisionEntity.decisionStatus = resumeDecision.getDecisionStatus();
-        resumeDecisionEntity.decidedAt = resumeDecision.getDecidedAt();
+        resumeDecisionEntity.decidedAt = resumeDecision.getRegisteredAt();
         return resumeDecisionEntity;
     }
 

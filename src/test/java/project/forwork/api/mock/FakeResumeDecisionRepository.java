@@ -2,17 +2,10 @@ package project.forwork.api.mock;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import project.forwork.api.common.error.ResumeErrorCode;
-import project.forwork.api.common.exception.ApiException;
-import project.forwork.api.domain.resume.controller.model.ResumeResponse;
 import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
-import project.forwork.api.domain.resume.infrastructure.querydsl.ResumeSearchCond;
 import project.forwork.api.domain.resume.model.Resume;
-import project.forwork.api.domain.resume.service.port.ResumeRepository;
 import project.forwork.api.domain.resumedecision.infrastructure.ResumeDecision;
-import project.forwork.api.domain.resumedecision.infrastructure.enums.DecisionStatus;
 import project.forwork.api.domain.resumedecision.service.port.ResumeDecisionRepository;
-import project.forwork.api.domain.user.model.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +27,7 @@ public class FakeResumeDecisionRepository implements ResumeDecisionRepository {
                     .admin(resumeDecision.getAdmin())
                     .resume(resumeDecision.getResume())
                     .decisionStatus(resumeDecision.getDecisionStatus())
-                    .decidedAt(resumeDecision.getDecidedAt())
+                    .decidedAt(resumeDecision.getRegisteredAt())
                     .build();
             data.add(newDecision);
             return newDecision;
