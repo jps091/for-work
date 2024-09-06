@@ -12,6 +12,7 @@ import project.forwork.api.domain.user.controller.model.EmailVerifyRequest;
 import project.forwork.api.domain.user.controller.model.UserCreateRequest;
 import project.forwork.api.domain.user.controller.model.UserLoginRequest;
 import project.forwork.api.domain.user.controller.model.UserResponse;
+import project.forwork.api.domain.user.model.User;
 import project.forwork.api.domain.user.service.LoginService;
 import project.forwork.api.domain.user.service.UserService;
 
@@ -33,8 +34,8 @@ public class UserOpenApiController {
             @Valid @RequestBody
             UserCreateRequest createRequest
     ){
-        UserResponse userResponse = userService.register(createRequest);
-        return Api.CREATED(userResponse);
+        User user = userService.register(createRequest);
+        return Api.CREATED(UserResponse.from(user));
     }
 
     @Operation(summary = "이메일 인증코드 발송 API", description = "이메일 입력")
