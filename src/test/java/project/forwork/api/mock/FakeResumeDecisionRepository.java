@@ -27,7 +27,7 @@ public class FakeResumeDecisionRepository implements ResumeDecisionRepository {
                     .admin(resumeDecision.getAdmin())
                     .resume(resumeDecision.getResume())
                     .decisionStatus(resumeDecision.getDecisionStatus())
-                    .decidedAt(resumeDecision.getRegisteredAt())
+                    .registeredAt(resumeDecision.getRegisteredAt())
                     .build();
             data.add(newDecision);
             return newDecision;
@@ -44,7 +44,7 @@ public class FakeResumeDecisionRepository implements ResumeDecisionRepository {
     }
 
     @Override
-    public ResumeDecision getById(Long id) {
+    public ResumeDecision getByIdWithThrow(Long id) {
         return null;
     }
 
