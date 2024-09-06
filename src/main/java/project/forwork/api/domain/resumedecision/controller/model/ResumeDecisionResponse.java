@@ -22,7 +22,6 @@ public class ResumeDecisionResponse {
     private LevelType level;
     private DecisionStatus decisionStatus;
     private LocalDateTime registeredAt;
-    private LocalDateTime decidedAt;
 
     public static ResumeDecisionResponse from(ResumeDecision resumeDecision){
         return ResumeDecisionResponse.builder()
@@ -30,7 +29,7 @@ public class ResumeDecisionResponse {
                 .field(resumeDecision.getResume().getField())
                 .level(resumeDecision.getResume().getLevel())
                 .decisionStatus(resumeDecision.getDecisionStatus())
-                .decidedAt(resumeDecision.getDecidedAt())
+                .registeredAt(resumeDecision.getRegisteredAt())
                 .build();
     }
 }

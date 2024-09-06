@@ -9,6 +9,8 @@ import project.forwork.api.domain.resume.infrastructure.enums.LevelType;
 import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
 import project.forwork.api.domain.resume.model.Resume;
 
+import java.time.LocalDateTime;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -20,6 +22,7 @@ public class ResumeResponse {
     private FieldType field;
     private LevelType level;
     private ResumeStatus status;
+    private LocalDateTime modifiedAt;
 
     public static ResumeResponse from(Resume resume){
         return ResumeResponse.builder()
@@ -28,6 +31,7 @@ public class ResumeResponse {
                 .field(resume.getField())
                 .level(resume.getLevel())
                 .status(resume.getStatus())
+                .modifiedAt(resume.getModifiedAt())
                 .build();
     }
 }

@@ -36,14 +36,14 @@ public class UserService {
     private final RedisUtils redisUtils;
 
     @Transactional
-    public UserResponse register(UserCreateRequest createRequest){
+    public User register(UserCreateRequest createRequest){
         User user = User.from(createRequest);
         user = userRepository.save(user);
-        return UserResponse.from(user);
+        return user;
     }
     @Transactional
     public void updatePassword(CurrentUser currentUser, ModifyPasswordRequest modifyPasswordRequest){
-        User user = getUserByCurrentUser(currentUser);
+        User user = userRepository.getByIdWithThrow(currentUser.getId());
         user = user.updatePassword(modifyPasswordRequest.getPassword());
         userRepository.save(user);
     }
@@ -55,21 +55,20 @@ public class UserService {
             HttpServletRequest request,
             HttpServletResponse response
     ){
-        User user = getUserByCurrentUser(currentUser);
+        User user = userRepository.getByIdWithThrow(currentUser.getId());
         if(user.isPasswordMismatch(password)){
             throw new ApiException(UserErrorCode.PASSWORD_NOT_MATCH);
         }
 
         tokenCookieService.expiredCookiesAndRefreshToken(user.getId(), request, response);
-        resumeService.deleteByUser(user);
+        resumeService.deleteByUser(user.getId());
         userRepository.delete(user);
     }
 
     @Transactional(readOnly = true)
-    public UserResponse getByIdWithThrow(long id){
-        User user = userRepository.findById(id)
+    public User getByIdWithThrow(long id){
+        return userRepository.findById(id)
                 .orElseThrow(() -> new ApiException(UserErrorCode.USER_NOT_FOUND, id));
-        return UserResponse.from(user);
     }
 
     public void sendCode(String email){
@@ -87,10 +86,6 @@ public class UserService {
         }
 
         deleteCertificationCode(emailVerifyRequest.getEmail());
-    }
-
-    private User getUserByCurrentUser(CurrentUser currentUser) {
-        return userRepository.getByIdWithThrow(currentUser.getId());
     }
 
     private String issueCertificationCode(String email){

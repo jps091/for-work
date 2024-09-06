@@ -11,6 +11,7 @@ import project.forwork.api.common.api.Api;
 import project.forwork.api.domain.resume.controller.model.ResumeDetailResponse;
 import project.forwork.api.domain.resume.controller.model.ResumePage;
 import project.forwork.api.domain.resume.infrastructure.querydsl.ResumeSearchCond;
+import project.forwork.api.domain.resume.model.Resume;
 import project.forwork.api.domain.resume.service.ResumeService;
 import project.forwork.api.common.domain.CurrentUser;
 
@@ -31,7 +32,7 @@ public class ResumeAdminController {
     public Api<ResumePage> retrieveAllByCondition(
             @RequestParam(defaultValue = "0") int offset,
             @RequestParam(defaultValue = "10") int limit,
-            @RequestParam(defaultValue = "registeredAt") String sortBy,
+            @RequestParam(defaultValue = "modifiedAt") String sortBy,
             @RequestParam(defaultValue = "true") boolean ascending,
             @ModelAttribute ResumeSearchCond cond
     ){
@@ -45,7 +46,7 @@ public class ResumeAdminController {
             @Parameter(hidden = true) @Current CurrentUser currentUser,
             @PathVariable Long resumeId
     ){
-        ResumeDetailResponse resume = resumeService.getByIdWithThrow(currentUser, resumeId);
-        return Api.OK(resume);
+        Resume resume = resumeService.getByIdWithThrow(currentUser, resumeId);
+        return Api.OK(ResumeDetailResponse.from(resume));
     }
 }

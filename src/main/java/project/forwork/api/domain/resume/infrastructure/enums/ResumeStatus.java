@@ -22,5 +22,4 @@ public enum ResumeStatus {
         }
         throw new IllegalArgumentException("Invalid ResumeStatus: " + s);
     }
-
 }

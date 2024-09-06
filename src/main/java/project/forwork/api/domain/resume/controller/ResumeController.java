@@ -14,6 +14,7 @@ import project.forwork.api.domain.resume.controller.model.ResumeRegisterRequest;
 import project.forwork.api.domain.resume.controller.model.ResumeDetailResponse;
 import project.forwork.api.domain.resume.controller.model.ResumeResponse;
 import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
+import project.forwork.api.domain.resume.model.Resume;
 import project.forwork.api.domain.resume.service.ResumeService;
 import project.forwork.api.common.domain.CurrentUser;
 
@@ -35,8 +36,8 @@ public class ResumeController {
             @Parameter(hidden = true) @Current CurrentUser currentUser,
             @Valid @RequestBody ResumeRegisterRequest resumeRegisterRequest
     ){
-        ResumeDetailResponse resumeDetailResponse = resumeService.register(currentUser, resumeRegisterRequest);
-        return Api.CREATED(resumeDetailResponse);
+        Resume resume = resumeService.register(currentUser, resumeRegisterRequest);
+        return Api.CREATED(ResumeDetailResponse.from(resume));
     }
 
 
@@ -64,7 +65,7 @@ public class ResumeController {
     }
 
     @Operation(summary = "Resume Pending상태  API", description = "api 호출시 Resume 상태 Pending으로 변경")
-    @PutMapping("{resumeId}")
+    @PutMapping("/status/{resumeId}")
     public Api<String> updatePending(
             @Parameter(description = "요청 Resume ID", required = true, example = "1")
             @PathVariable Long resumeId,
@@ -80,8 +81,8 @@ public class ResumeController {
             @Parameter(hidden = true) @Current CurrentUser currentUser,
             @PathVariable Long resumeId
     ){
-        ResumeDetailResponse resume = resumeService.getByIdWithThrow(currentUser, resumeId);
-        return Api.OK(resume);
+        Resume resume = resumeService.getByIdWithThrow(currentUser, resumeId);
+        return Api.OK(ResumeDetailResponse.from(resume));
     }
 
     @Operation(summary = "회원Resume 조회 API", description = "로그인한 회원의 전체 Resume 조회")

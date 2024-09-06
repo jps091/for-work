@@ -14,6 +14,7 @@ import project.forwork.api.common.api.Api;
 import project.forwork.api.common.domain.CurrentUser;
 import project.forwork.api.domain.user.controller.model.ModifyPasswordRequest;
 import project.forwork.api.domain.user.controller.model.UserResponse;
+import project.forwork.api.domain.user.model.User;
 import project.forwork.api.domain.user.service.LoginService;
 import project.forwork.api.domain.user.service.UserService;
 
@@ -30,10 +31,10 @@ public class UserController {
     @Operation(summary = "My Page API", description = "현재 나의 정보 출력")
     @GetMapping("/mypage")
     public Api<UserResponse> me(
-            @Parameter(hidden = true) @Current CurrentUser user
+            @Parameter(hidden = true) @Current CurrentUser currentUser
     ){
-        UserResponse userResponse = userService.getByIdWithThrow(user.getId());
-        return Api.OK(userResponse);
+        User user = userService.getByIdWithThrow(currentUser.getId());
+        return Api.OK(UserResponse.from(user));
     }
 
     @Operation(summary = "로그아웃 API", description = "로그아웃")
