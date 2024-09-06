@@ -29,13 +29,11 @@ public class ResumeService {
     private final ResumeDecisionRepository resumeDecisionRepository;
     private final UserRepository userRepository;
 
-    public ResumeDetailResponse register(CurrentUser currentUser, ResumeRegisterRequest resumeRegisterRequest){
-
-        User user = getUserFrom(currentUser);
-
+    public Resume register(CurrentUser currentUser, ResumeRegisterRequest resumeRegisterRequest){
+        User user = userRepository.getByIdWithThrow(currentUser.getId());
         Resume resume = Resume.from(user, resumeRegisterRequest);
         resume =  resumeRepository.save(resume);
-        return ResumeDetailResponse.from(resume);
+        return resume;
     }
 
     public void modifyIfPending(
@@ -66,8 +64,8 @@ public class ResumeService {
         resumeRepository.delete(resume);
     }
 
-    public void deleteByUser(User seller){
-
+    public void deleteByUser(Long userId){
+        User seller = userRepository.getByIdWithThrow(userId);
         List<Resume> resumeList = resumeRepository.findAllBySeller(seller);
 
         for (Resume resume : resumeList) {
@@ -76,16 +74,13 @@ public class ResumeService {
         }
     }
 
-    public ResumeDetailResponse getByIdWithThrow(CurrentUser currentUser, Long resumeId){
+    public Resume getByIdWithThrow(CurrentUser currentUser, Long resumeId){
         Resume resume = resumeRepository.getByIdWithThrow(resumeId);
 
         validateAuthorOrAdmin(currentUser, resume);
-        return ResumeDetailResponse.from(resume);
+        return resume;
     }
 
-    public User getUserFrom(CurrentUser currentUser) {
-        return userRepository.getByIdWithThrow(currentUser.getId());
-    }
 
     public Resume getByIdWithThrow(Long resumeId){
         return resumeRepository.getByIdWithThrow(resumeId);
@@ -112,7 +107,7 @@ public class ResumeService {
     }
 
     public List<ResumeResponse> findResumesBySeller(CurrentUser currentUser){
-        User user = getUserFrom(currentUser);
+        User user = userRepository.getByIdWithThrow(currentUser.getId());
 
         return resumeRepository.findAllBySeller(user)
                 .stream()

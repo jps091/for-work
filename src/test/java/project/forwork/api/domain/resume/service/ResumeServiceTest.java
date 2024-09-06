@@ -126,7 +126,7 @@ class ResumeServiceTest {
                 .id(1L)
                 .admin(admin)
                 .decisionStatus(DecisionStatus.PENDING)
-                .decidedAt(LocalDateTime.of(2024, 9, 5, 12, 0, 0))
+                .registeredAt(LocalDateTime.of(2024, 9, 5, 12, 0, 0))
                 .resume(resume1)
                 .build();
 
@@ -134,7 +134,7 @@ class ResumeServiceTest {
                 .id(2L)
                 .admin(admin)
                 .decisionStatus(DecisionStatus.PENDING)
-                .decidedAt(LocalDateTime.of(2024, 9, 5, 12, 0, 0))
+                .registeredAt(LocalDateTime.of(2024, 9, 5, 12, 0, 0))
                 .resume(resume2)
                 .build();
 
@@ -158,12 +158,12 @@ class ResumeServiceTest {
                 .build();
 
         //when(상황발생)
-        ResumeDetailResponse response = resumeService.register(currentUser, request);
+        Resume resume = resumeService.register(currentUser, request);
 
         //then(검증)
-        assertThat(response.getId()).isNotNull();
-        assertThat(response.getField()).isEqualTo(FieldType.AI);
-        assertThat(response.getDescription()).isEqualTo("test resume");
+        assertThat(resume.getId()).isNotNull();
+        assertThat(resume.getField()).isEqualTo(FieldType.AI);
+        assertThat(resume.getDescription()).isEqualTo("test resume");
     }
 
     @Test
@@ -220,8 +220,7 @@ class ResumeServiceTest {
                 .id(1L)
                 .build();
         //when(상황발생)
-        User user = resumeService.getUserFrom(currentUser);
-        resumeService.deleteByUser(user);
+        resumeService.deleteByUser(currentUser.getId());
         //then(검증)
         assertThat(resumeService.findAll().size()).isEqualTo(2);
     }

@@ -61,7 +61,7 @@ public class UserService {
         }
 
         tokenCookieService.expiredCookiesAndRefreshToken(user.getId(), request, response);
-        resumeService.deleteByUser(user);
+        resumeService.deleteByUser(user.getId());
         userRepository.delete(user);
     }
 
