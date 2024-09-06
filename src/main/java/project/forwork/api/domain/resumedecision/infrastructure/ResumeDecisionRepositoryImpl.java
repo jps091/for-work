@@ -35,7 +35,7 @@ public class ResumeDecisionRepositoryImpl implements ResumeDecisionRepository {
     }
 
     @Override
-    public ResumeDecision getById(Long id) {
+    public ResumeDecision getByIdWithThrow(Long id) {
         return findById(id).orElseThrow(() -> new ApiException(ResumeDecisionErrorCode.RESUME_DECISION_NOT_FOUND, id));
     }
 

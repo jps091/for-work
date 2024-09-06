@@ -1,9 +1,9 @@
 package project.forwork.api.domain.resumedecision.service;
 
+import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import project.forwork.api.common.service.port.ClockHolder;
 import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
 import project.forwork.api.domain.resume.model.Resume;
 import project.forwork.api.domain.resume.service.port.ResumeRepository;
@@ -15,6 +15,7 @@ import project.forwork.api.domain.user.model.User;
 import project.forwork.api.domain.user.service.port.UserRepository;
 
 @Service
+@Builder
 @Transactional
 @RequiredArgsConstructor
 public class  ResumeDecisionService {
@@ -23,7 +24,7 @@ public class  ResumeDecisionService {
     private final ResumeRepository resumeRepository;
     private final UserRepository userRepository;
 
-    public ResumeDecisionResponse approve(CurrentUser currentUser, Long resumeId){
+    public void approve(CurrentUser currentUser, Long resumeId){
         User admin = userRepository.getByIdWithThrow(currentUser.getId());
 
         Resume resume = resumeRepository.getByIdWithThrow(resumeId);
@@ -33,10 +34,9 @@ public class  ResumeDecisionService {
         ResumeDecision resumeDecision = ResumeDecision.approve(admin, resume);
         resumeDecision = resumeDecisionRepository.save(resumeDecision);
 
-        return ResumeDecisionResponse.from(resumeDecision);
     }
 
-    public ResumeDecisionResponse deny(CurrentUser currentUser, Long resumeId){
+    public void deny(CurrentUser currentUser, Long resumeId){
         User admin = userRepository.getByIdWithThrow(currentUser.getId());
 
         Resume resume = resumeRepository.getByIdWithThrow(resumeId);
@@ -46,8 +46,9 @@ public class  ResumeDecisionService {
         ResumeDecision resumeDecision = ResumeDecision.deny(admin, resume);
         resumeDecision = resumeDecisionRepository.save(resumeDecision);
 
-        return ResumeDecisionResponse.from(resumeDecision);
     }
 
-
+    public ResumeDecision getByIdWithThrow(Long resumeDecisionId){
+        return resumeDecisionRepository.getByIdWithThrow(resumeDecisionId);
+    }
 }
