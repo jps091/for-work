@@ -17,7 +17,7 @@ import project.forwork.api.domain.user.service.port.UserRepository;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class ResumeDecisionService {
+public class  ResumeDecisionService {
 
     private final ResumeDecisionRepository resumeDecisionRepository;
     private final ResumeRepository resumeRepository;

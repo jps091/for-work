@@ -40,6 +40,7 @@ public class ResumeQueryDlsRepository {
                         resumeEntity.fieldType.as("field"),
                         resumeEntity.levelType.as("level"),
                         resumeEntity.resumeStatus.as("status"),
+                        resumeEntity.modifiedAt.as("modifiedAt"),
                         userEntity.email.as("email")))
                 .from(resumeEntity)
                 .join(resumeEntity.sellerEntity, userEntity)

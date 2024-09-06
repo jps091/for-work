@@ -1,5 +1,6 @@
 package project.forwork.api.domain.resume.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import project.forwork.api.common.error.ResumeErrorCode;
@@ -12,9 +13,12 @@ import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
 import project.forwork.api.domain.user.model.User;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Getter
+@AllArgsConstructor
+@Builder
 public class Resume {
 
     private final Long id;
@@ -26,19 +30,8 @@ public class Resume {
     private final BigDecimal price;
     private final String description;
     private final ResumeStatus status;
+    private final LocalDateTime modifiedAt;
 
-    @Builder
-    public Resume(Long id, User seller, FieldType field, LevelType level, String resumeUrl, String architectureImageUrl, BigDecimal price, String description, ResumeStatus status) {
-        this.id = id;
-        this.seller = seller;
-        this.field = field;
-        this.level = level;
-        this.resumeUrl = resumeUrl;
-        this.architectureImageUrl = architectureImageUrl;
-        this.price = price;
-        this.description = description;
-        this.status = status;
-    }
 
     public static Resume from(User user, ResumeRegisterRequest resumeRegisterRequest){
         return Resume.builder()

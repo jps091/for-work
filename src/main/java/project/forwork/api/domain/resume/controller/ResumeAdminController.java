@@ -31,7 +31,7 @@ public class ResumeAdminController {
     public Api<ResumePage> retrieveAllByCondition(
             @RequestParam(defaultValue = "0") int offset,
             @RequestParam(defaultValue = "10") int limit,
-            @RequestParam(defaultValue = "registeredAt") String sortBy,
+            @RequestParam(defaultValue = "modifiedAt") String sortBy,
             @RequestParam(defaultValue = "true") boolean ascending,
             @ModelAttribute ResumeSearchCond cond
     ){

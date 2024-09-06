@@ -1,5 +1,6 @@
 package project.forwork.api.domain.resume.service;
 
+import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,6 +21,7 @@ import project.forwork.api.domain.user.service.port.UserRepository;
 import java.util.List;
 
 @Service
+@Builder
 @RequiredArgsConstructor
 public class ResumeService {
 
@@ -29,7 +31,7 @@ public class ResumeService {
 
     public ResumeDetailResponse register(CurrentUser currentUser, ResumeRegisterRequest resumeRegisterRequest){
 
-        User user = userRepository.getByIdWithThrow(currentUser.getId());
+        User user = getUserFrom(currentUser);
 
         Resume resume = Resume.from(user, resumeRegisterRequest);
         resume =  resumeRepository.save(resume);
@@ -81,7 +83,13 @@ public class ResumeService {
         return ResumeDetailResponse.from(resume);
     }
 
+    public User getUserFrom(CurrentUser currentUser) {
+        return userRepository.getByIdWithThrow(currentUser.getId());
+    }
 
+    public Resume getByIdWithThrow(Long resumeId){
+        return resumeRepository.getByIdWithThrow(resumeId);
+    }
 
     public List<ResumeResponse> findAll(){
         return resumeRepository.findAll()
@@ -104,7 +112,7 @@ public class ResumeService {
     }
 
     public List<ResumeResponse> findResumesBySeller(CurrentUser currentUser){
-        User user = userRepository.getByIdWithThrow(currentUser.getId());
+        User user = getUserFrom(currentUser);
 
         return resumeRepository.findAllBySeller(user)
                 .stream()

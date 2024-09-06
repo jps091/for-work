@@ -64,7 +64,7 @@ public class ResumeController {
     }
 
     @Operation(summary = "Resume Pending상태  API", description = "api 호출시 Resume 상태 Pending으로 변경")
-    @PutMapping("{resumeId}")
+    @PutMapping("/status/{resumeId}")
     public Api<String> updatePending(
             @Parameter(description = "요청 Resume ID", required = true, example = "1")
             @PathVariable Long resumeId,
