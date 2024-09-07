@@ -6,10 +6,11 @@ import lombok.experimental.SuperBuilder;
 import project.forwork.api.common.infrastructure.BaseTimeEntity;
 import project.forwork.api.domain.salepost.infrastructure.enums.SalesStatus;
 import project.forwork.api.domain.resume.infrastructure.ResumeEntity;
+import project.forwork.api.domain.salepost.model.SalePost;
 import project.forwork.api.domain.thumbnailimage.infrastructure.ThumbnailImageEntity;
 
 @Entity
-@Table(name = "sales_posts")
+@Table(name = "sale_posts")
 @Getter
 @Setter
 @SuperBuilder
@@ -18,7 +19,7 @@ import project.forwork.api.domain.thumbnailimage.infrastructure.ThumbnailImageEn
 public class SalePostEntity extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "sales_post_id")
+    @Column(name = "sale_post_id")
     private Long id;
 
     @OneToOne(fetch = FetchType.LAZY)
@@ -30,10 +31,39 @@ public class SalePostEntity extends BaseTimeEntity {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "thumbnail_image_id", nullable = false)
-    private ThumbnailImageEntity thumbnailEntity;
-
+    private ThumbnailImageEntity thumbnailImageEntity;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private SalesStatus salesStatus;
+
+    @Column(nullable = false)
+    private Integer quantity;
+
+    @Column(name = "view_count", nullable = false)
+    private Integer viewCount;
+
+    public static SalePostEntity from(SalePost salePost){
+        SalePostEntity salePostEntity = new SalePostEntity();
+        salePostEntity.id = salePost.getId();
+        salePostEntity.resumeEntity = ResumeEntity.from(salePost.getResume());
+        salePostEntity.title = salePost.getTitle();
+        salePostEntity.thumbnailImageEntity = ThumbnailImageEntity.from(salePost.getThumbnail());
+        salePostEntity.salesStatus = salePost.getSalesStatus();
+        salePostEntity.quantity = salePost.getQuantity();
+        salePostEntity.viewCount = salePost.getViewCount();
+        return salePostEntity;
+    }
+
+    public SalePost toModel(){
+        return SalePost.builder()
+                .id(id)
+                .resume(resumeEntity.toModel())
+                .title(title)
+                .thumbnail(thumbnailImageEntity.toModel())
+                .salesStatus(salesStatus)
+                .quantity(quantity)
+                .viewCount(viewCount)
+                .build();
+    }
 }
