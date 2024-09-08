@@ -2,8 +2,10 @@ package project.forwork.api.domain.resume.infrastructure.enums;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 @AllArgsConstructor
+@Getter
 public enum LevelType {
 
     NEW("신입"),
