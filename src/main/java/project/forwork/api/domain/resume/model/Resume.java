@@ -83,8 +83,16 @@ public class Resume {
                 .build();
     }
 
+    public String createSalePostTitle(){
+        return level.getDescription() + " : " + field.getDescription() + " 이력서 #" + getId();
+    }
+
 
     public boolean isAuthorMismatch(Long sellerId){
         return !Objects.equals(seller.getId(), sellerId);
+    }
+
+    public boolean isActiveMismatch(){
+        return status != ResumeStatus.ACTIVE;
     }
 }

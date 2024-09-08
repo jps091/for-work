@@ -30,7 +30,7 @@ public class SalePostEntity extends BaseTimeEntity {
     private String title;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "thumbnail_image_id", nullable = false)
+    @JoinColumn(name = "thumbnail_image_id")
     private ThumbnailImageEntity thumbnailImageEntity;
 
     @Enumerated(EnumType.STRING)
@@ -48,7 +48,7 @@ public class SalePostEntity extends BaseTimeEntity {
         salePostEntity.id = salePost.getId();
         salePostEntity.resumeEntity = ResumeEntity.from(salePost.getResume());
         salePostEntity.title = salePost.getTitle();
-        salePostEntity.thumbnailImageEntity = ThumbnailImageEntity.from(salePost.getThumbnail());
+        salePostEntity.thumbnailImageEntity = ThumbnailImageEntity.from(salePost.getThumbnailImage());
         salePostEntity.salesStatus = salePost.getSalesStatus();
         salePostEntity.quantity = salePost.getQuantity();
         salePostEntity.viewCount = salePost.getViewCount();
@@ -60,7 +60,7 @@ public class SalePostEntity extends BaseTimeEntity {
                 .id(id)
                 .resume(resumeEntity.toModel())
                 .title(title)
-                .thumbnail(thumbnailImageEntity.toModel())
+                .thumbnailImage(thumbnailImageEntity.toModel())
                 .salesStatus(salesStatus)
                 .quantity(quantity)
                 .viewCount(viewCount)

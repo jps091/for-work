@@ -22,7 +22,7 @@ public class OrderEntity extends BaseTimeEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id")
     private UserEntity userEntity;
 
     @Column(name = "order_date")
