@@ -60,7 +60,6 @@ public class ResumeService {
         Resume resume = resumeRepository.getByIdWithThrow(resumeId);
         validateAuthor(currentUser, resume);
 
-        resumeDecisionRepository.findByResume(resume).ifPresent(resumeDecisionRepository::delete);
         resumeRepository.delete(resume);
     }
 
