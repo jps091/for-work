@@ -12,6 +12,8 @@ import project.forwork.api.domain.salepost.infrastructure.enums.SalesStatus;
 import project.forwork.api.domain.thumbnailimage.infrastructure.ThumbnailImageEntity;
 import project.forwork.api.domain.thumbnailimage.model.ThumbnailImage;
 
+import java.time.LocalDateTime;
+
 @Getter
 public class SalePost {
     private final Long id;
@@ -21,9 +23,10 @@ public class SalePost {
     private final SalesStatus salesStatus;
     private final Integer quantity;
     private final Integer viewCount;
+    private final LocalDateTime registeredAt;
 
     @Builder
-    public SalePost(Long id, Resume resume, String title, ThumbnailImage thumbnailImage, SalesStatus salesStatus, Integer quantity, Integer viewCount) {
+    public SalePost(Long id, Resume resume, String title, ThumbnailImage thumbnailImage, SalesStatus salesStatus, Integer quantity, Integer viewCount, LocalDateTime registeredAt) {
         this.id = id;
         this.resume = resume;
         this.title = title;
@@ -31,13 +34,14 @@ public class SalePost {
         this.salesStatus = salesStatus;
         this.quantity = quantity;
         this.viewCount = viewCount;
+        this.registeredAt = registeredAt;
     }
 
     public static SalePost create(Resume resume){
         return SalePost.builder()
                 .resume(resume)
                 .title(resume.createSalePostTitle())
-                .thumbnailImage(null)
+                //.thumbnailImage() TODO 썸네일
                 .salesStatus(SalesStatus.SELLING)
                 .quantity(30)
                 .viewCount(0)
@@ -46,34 +50,27 @@ public class SalePost {
 
     public SalePost changeStatus(SalesStatus status){
         return SalePost.builder()
+                .id(id)
                 .resume(resume)
                 .title(title)
                 .thumbnailImage(thumbnailImage)
                 .salesStatus(status)
                 .quantity(quantity)
                 .viewCount(viewCount)
+                .registeredAt(registeredAt)
                 .build();
     }
 
     public SalePost addViewCount(){
-        if(salesStatus != SalesStatus.SELLING){
-            return SalePost.builder()
-                    .resume(resume)
-                    .title(title)
-                    .thumbnailImage(thumbnailImage)
-                    .salesStatus(salesStatus)
-                    .quantity(quantity)
-                    .viewCount(viewCount)
-                    .build();
-        }
-
         return SalePost.builder()
+                .id(id)
                 .resume(resume)
                 .title(title)
                 .thumbnailImage(thumbnailImage)
                 .salesStatus(salesStatus)
                 .quantity(quantity)
                 .viewCount(viewCount + 1)
+                .registeredAt(registeredAt)
                 .build();
     }
 }

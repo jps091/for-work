@@ -31,7 +31,7 @@ public class SalePostService {
         salePostRepository.save(salePost);
     }
 
-    public void stopSelling(CurrentUser currentUser, Long resumeId){
+    public void cancelSelling(CurrentUser currentUser, Long resumeId){
         Resume resume = sellerValidationService.validateSellerAndResumeStatus(currentUser, resumeId);
         SalePost salePost = salePostRepository.getByResumeWithThrow(resume);
         salePost = salePost.changeStatus(SalesStatus.CANCELED);
