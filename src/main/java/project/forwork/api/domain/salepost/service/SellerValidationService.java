@@ -1,6 +1,7 @@
 package project.forwork.api.domain.salepost.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.forwork.api.common.domain.CurrentUser;
@@ -14,6 +15,7 @@ import project.forwork.api.domain.user.service.port.UserRepository;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class SellerValidationService {
     private final UserRepository userRepository;
     private final ResumeRepository resumeRepository;
@@ -23,6 +25,7 @@ public class SellerValidationService {
         User user = userRepository.getByIdWithThrow(currentUser.getId());
         Resume resume = resumeRepository.getByIdWithThrow(resumeId);
 
+        log.info("userId={}, currentUserId={}",user.getId(), currentUser.getId());
         if(resume.isAuthorMismatch(user.getId())){
             throw new ApiException(SalePostErrorCode.ACCESS_NOT_PERMISSION, user.getId());
         }

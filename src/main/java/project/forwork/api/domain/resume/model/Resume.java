@@ -3,6 +3,7 @@ package project.forwork.api.domain.resume.model;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import project.forwork.api.common.error.ResumeErrorCode;
 import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.domain.resume.controller.model.ResumeModifyRequest;
@@ -19,6 +20,7 @@ import java.util.Objects;
 @Getter
 @AllArgsConstructor
 @Builder
+@Slf4j
 public class Resume {
 
     private final Long id;
@@ -89,6 +91,7 @@ public class Resume {
 
 
     public boolean isAuthorMismatch(Long sellerId){
+        log.info("sellerId={}, sellerId={}",seller.getId(), sellerId);
         return !Objects.equals(seller.getId(), sellerId);
     }
 

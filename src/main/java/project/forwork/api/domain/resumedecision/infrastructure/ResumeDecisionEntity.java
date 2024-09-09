@@ -26,7 +26,7 @@ public class ResumeDecisionEntity extends BaseTimeEntity{
     @JoinColumn(name = "admin_id")
     private UserEntity adminEntity;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "resume_id", nullable = false)
     private ResumeEntity resumeEntity;
 

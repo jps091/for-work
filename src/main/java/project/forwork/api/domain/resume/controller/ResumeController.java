@@ -75,7 +75,7 @@ public class ResumeController {
         return Api.OK("Resume 상태 Pending 변경 완료 되었습니다.");
     }
 
-    @Operation(summary = "회원Resume 조회 API", description = "로그인한 회원의 전체 Resume 조회")
+    @Operation(summary = "회원 Resume 조회 API", description = "로그인한 회원의 전체 Resume 조회")
     @GetMapping("{resumeId}")
     public Api<ResumeDetailResponse> retrieve(
             @Parameter(hidden = true) @Current CurrentUser currentUser,
@@ -85,7 +85,7 @@ public class ResumeController {
         return Api.OK(ResumeDetailResponse.from(resume));
     }
 
-    @Operation(summary = "회원Resume 조회 API", description = "로그인한 회원의 전체 Resume 조회")
+    @Operation(summary = "회원 Resume 전체조회 API", description = "로그인한 회원의 전체 Resume 조회")
     @GetMapping
     public Api<List<ResumeResponse>> retrieveAll(
             @Parameter(hidden = true) @Current CurrentUser currentUser
