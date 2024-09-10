@@ -29,7 +29,7 @@ public class SalePostEntity extends BaseTimeEntity {
     @Column(nullable = false)
     private String title;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "thumbnail_image_id")
     private ThumbnailImageEntity thumbnailImageEntity;
 

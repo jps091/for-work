@@ -11,9 +11,14 @@ import project.forwork.api.common.annotation.Current;
 import project.forwork.api.common.api.Api;
 import project.forwork.api.common.domain.CurrentUser;
 import project.forwork.api.domain.resume.controller.model.ResumeDetailResponse;
+import project.forwork.api.domain.resume.controller.model.ResumePage;
 import project.forwork.api.domain.resume.controller.model.ResumeResponse;
+import project.forwork.api.domain.resume.infrastructure.querydsl.ResumeSearchCond;
 import project.forwork.api.domain.resume.model.Resume;
+import project.forwork.api.domain.salepost.controller.model.SalePostPage;
 import project.forwork.api.domain.salepost.controller.model.SalePostResponse;
+import project.forwork.api.domain.salepost.infrastructure.query.SalePostSearchCond;
+import project.forwork.api.domain.salepost.infrastructure.query.SalePostSortType;
 import project.forwork.api.domain.salepost.model.SalePost;
 import project.forwork.api.domain.salepost.service.SalePostService;
 
@@ -36,12 +41,17 @@ public class SalePostOpenController {
         return Api.OK(SalePostResponse.from(salePost));
     }
 
-/*    @Operation(summary = "회원 Resume 전체조회 API", description = "로그인한 회원의 전체 Resume 조회")
-    @GetMapping
-    public Api<List<ResumeResponse>> retrieveAll(
-            @Parameter(hidden = true) @Current CurrentUser currentUser
+    @Operation(summary = "이력서 판매글 전체 조회 API",
+            description = "정렬 조건 [등록날짜, 가격, 조회수, 팔린개수]" +
+                    "검색 조건 [분야, 년차, 가격범위, 제목]")
+    @GetMapping // 조회이기 때문에 겟매핑을 하고 다만  그러면 RequestBody를 사용못한다 TODO
+    public Api<SalePostPage> retrieveAllByCondition(
+            @RequestParam(defaultValue = "0") int offset,
+            @RequestParam(defaultValue = "10") int limit,
+            @RequestParam SalePostSortType sortType,
+            @ModelAttribute SalePostSearchCond cond
     ){
-        List<ResumeResponse> resumes = resumeService.findResumesBySeller(currentUser);
-        return Api.OK(resumes);
-    }*/
+        SalePostPage result = salePostService.getResumesByCondition(offset, limit, sortType, cond);
+        return Api.OK(result);
+    }
 }

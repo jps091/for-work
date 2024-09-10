@@ -1,4 +1,4 @@
-package project.forwork.api.domain.resumedecision.service;
+package project.forwork.api.domain.salepost.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -8,9 +8,7 @@ import project.forwork.api.domain.resume.infrastructure.enums.FieldType;
 import project.forwork.api.domain.resume.infrastructure.enums.LevelType;
 import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
 import project.forwork.api.domain.resume.model.Resume;
-import project.forwork.api.domain.resume.service.ResumeService;
-import project.forwork.api.domain.resumedecision.infrastructure.ResumeDecision;
-import project.forwork.api.domain.resumedecision.infrastructure.enums.DecisionStatus;
+import project.forwork.api.domain.resumedecision.service.ResumeDecisionService;
 import project.forwork.api.domain.user.infrastructure.enums.RoleType;
 import project.forwork.api.domain.user.model.User;
 import project.forwork.api.mock.FakeResumeDecisionRepository;
@@ -18,25 +16,21 @@ import project.forwork.api.mock.FakeResumeRepository;
 import project.forwork.api.mock.FakeUserRepository;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-class ResumeDecisionServiceTest {
+class SellerValidationServiceTest {
 
-    private ResumeDecisionService resumeDecisionService;
-
+    private SellerValidationService sellerValidationService;
 
     @BeforeEach
     void init(){
         FakeUserRepository fakeUserRepository = new FakeUserRepository();
         FakeResumeRepository fakeResumeRepository = new FakeResumeRepository();
-        FakeResumeDecisionRepository fakeResumeDecisionRepository = new FakeResumeDecisionRepository();
-        this.resumeDecisionService = ResumeDecisionService.builder()
+        this.sellerValidationService = SellerValidationService.builder()
                 .resumeRepository(fakeResumeRepository)
                 .userRepository(fakeUserRepository)
-                .resumeDecisionRepository(fakeResumeDecisionRepository)
                 .build();
 
         User user1 = User.builder()
@@ -47,16 +41,16 @@ class ResumeDecisionServiceTest {
                 .roleType(RoleType.USER)
                 .build();
 
-
-        User admin = User.builder()
-                .id(3L)
-                .email("admin@naver.com")
-                .name("admin")
-                .password("321")
-                .roleType(RoleType.ADMIN)
+        User user2 = User.builder()
+                .id(2L)
+                .email("user2@naver.com")
+                .name("user2")
+                .password("123")
+                .roleType(RoleType.USER)
                 .build();
+
         fakeUserRepository.save(user1);
-        fakeUserRepository.save(admin);
+        fakeUserRepository.save(user2);
 
         Resume resume1 = Resume.builder()
                 .id(1L)
@@ -70,11 +64,24 @@ class ResumeDecisionServiceTest {
                 .status(ResumeStatus.ACTIVE)
                 .build();
 
+        Resume resume2 = Resume.builder()
+                .id(2L)
+                .seller(user2)
+                .field(FieldType.BACKEND)
+                .level(LevelType.NEW)
+                .resumeUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
+                .architectureImageUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
+                .price(new BigDecimal("98000.00"))
+                .description("test resume2")
+                .status(ResumeStatus.PENDING)
+                .build();
+
         fakeResumeRepository.save(resume1);
+        fakeResumeRepository.save(resume2);
     }
 
     @Test
-    void 승인을_할_수_있다(){
+    void 활성_상태인_자신의_이력서에_접근_할_수_있다(){
         //given(상황환경 세팅)
         CurrentUser currentUser = CurrentUser.builder()
                 .id(1L)
@@ -82,12 +89,12 @@ class ResumeDecisionServiceTest {
 
         //when(상황발생)
         //then(검증)
-        assertThatCode(() -> resumeDecisionService.approve(currentUser, 1L))
+        assertThatCode(() -> sellerValidationService.validateSellerAndResumeStatus(currentUser, 1L))
                 .doesNotThrowAnyException();
     }
 
     @Test
-    void 거절을_할_수_있다(){
+    void 자신의_이력서가_아닐_경우_예외가_발생_한다(){
         //given(상황환경 세팅)
         CurrentUser currentUser = CurrentUser.builder()
                 .id(1L)
@@ -95,7 +102,20 @@ class ResumeDecisionServiceTest {
 
         //when(상황발생)
         //then(검증)
-        assertThatCode(() -> resumeDecisionService.deny(currentUser, 1L))
-                .doesNotThrowAnyException();
+        assertThatThrownBy(() -> sellerValidationService.validateSellerAndResumeStatus(currentUser, 2L))
+                .isInstanceOf(ApiException.class);
+    }
+
+    @Test
+    void 이력서가_활성_상태가_아닐_경우_예외가_발생_한다(){
+        //given(상황환경 세팅)
+        CurrentUser currentUser = CurrentUser.builder()
+                .id(2L)
+                .build();
+
+        //when(상황발생)
+        //then(검증)
+        assertThatThrownBy(() -> sellerValidationService.validateSellerAndResumeStatus(currentUser, 2L))
+                .isInstanceOf(ApiException.class);
     }
 }
