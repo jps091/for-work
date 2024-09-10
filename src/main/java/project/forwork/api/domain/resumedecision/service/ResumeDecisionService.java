@@ -32,8 +32,7 @@ public class  ResumeDecisionService {
         resumeRepository.save(resume);
 
         ResumeDecision resumeDecision = ResumeDecision.approve(admin, resume);
-        resumeDecision = resumeDecisionRepository.save(resumeDecision);
-
+        resumeDecisionRepository.save(resumeDecision);
     }
 
     public void deny(CurrentUser currentUser, Long resumeId){
@@ -44,8 +43,7 @@ public class  ResumeDecisionService {
         resumeRepository.save(resume);
 
         ResumeDecision resumeDecision = ResumeDecision.deny(admin, resume);
-        resumeDecision = resumeDecisionRepository.save(resumeDecision);
-
+        resumeDecisionRepository.save(resumeDecision);
     }
 
     public ResumeDecision getByIdWithThrow(Long resumeDecisionId){

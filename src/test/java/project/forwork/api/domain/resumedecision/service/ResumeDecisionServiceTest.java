@@ -20,8 +20,7 @@ import project.forwork.api.mock.FakeUserRepository;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ResumeDecisionServiceTest {
@@ -48,13 +47,6 @@ class ResumeDecisionServiceTest {
                 .roleType(RoleType.USER)
                 .build();
 
-        User user2 = User.builder()
-                .id(2L)
-                .email("user2@naver.com")
-                .name("user2")
-                .password("123")
-                .roleType(RoleType.USER)
-                .build();
 
         User admin = User.builder()
                 .id(3L)
@@ -64,7 +56,6 @@ class ResumeDecisionServiceTest {
                 .roleType(RoleType.ADMIN)
                 .build();
         fakeUserRepository.save(user1);
-        fakeUserRepository.save(user2);
         fakeUserRepository.save(admin);
 
         Resume resume1 = Resume.builder()
@@ -79,64 +70,32 @@ class ResumeDecisionServiceTest {
                 .status(ResumeStatus.ACTIVE)
                 .build();
 
-        Resume resume2 = Resume.builder()
-                .id(2L)
-                .seller(user2)
-                .field(FieldType.BACKEND)
-                .level(LevelType.NEW)
-                .resumeUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
-                .architectureImageUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
-                .price(new BigDecimal("98000.00"))
-                .description("test resume2")
-                .status(ResumeStatus.PENDING)
-                .build();
-
-        Resume resume3 = Resume.builder()
-                .id(3L)
-                .seller(user1)
-                .field(FieldType.BACKEND)
-                .level(LevelType.SENIOR)
-                .resumeUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
-                .architectureImageUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
-                .price(new BigDecimal("98000.00"))
-                .description("test resume3")
-                .status(ResumeStatus.PENDING)
-                .build();
-
-        Resume resume4 = Resume.builder()
-                .id(4L)
-                .seller(user2)
-                .field(FieldType.FRONTEND)
-                .level(LevelType.NEW)
-                .resumeUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
-                .architectureImageUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
-                .price(new BigDecimal("70000.00"))
-                .description("test resume4")
-                .status(ResumeStatus.REJECTED)
-                .build();
-
         fakeResumeRepository.save(resume1);
-        fakeResumeRepository.save(resume2);
-        fakeResumeRepository.save(resume3);
-        fakeResumeRepository.save(resume4);
+    }
 
-        ResumeDecision resumeDecision1 = ResumeDecision.builder()
+    @Test
+    void 승인을_할_수_있다(){
+        //given(상황환경 세팅)
+        CurrentUser currentUser = CurrentUser.builder()
                 .id(1L)
-                .admin(admin)
-                .decisionStatus(DecisionStatus.PENDING)
-                .registeredAt(LocalDateTime.of(2024, 9, 5, 12, 0, 0))
-                .resume(resume1)
                 .build();
 
-        ResumeDecision resumeDecision2 = ResumeDecision.builder()
-                .id(2L)
-                .admin(admin)
-                .decisionStatus(DecisionStatus.PENDING)
-                .registeredAt(LocalDateTime.of(2024, 9, 5, 12, 0, 0))
-                .resume(resume2)
+        //when(상황발생)
+        //then(검증)
+        assertThatCode(() -> resumeDecisionService.approve(currentUser, 1L))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    void 거절을_할_수_있다(){
+        //given(상황환경 세팅)
+        CurrentUser currentUser = CurrentUser.builder()
+                .id(1L)
                 .build();
 
-        fakeResumeDecisionRepository.save(resumeDecision1);
-        fakeResumeDecisionRepository.save(resumeDecision2);
+        //when(상황발생)
+        //then(검증)
+        assertThatCode(() -> resumeDecisionService.deny(currentUser, 1L))
+                .doesNotThrowAnyException();
     }
 }
