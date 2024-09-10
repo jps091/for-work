@@ -1,5 +1,6 @@
 package project.forwork.api.domain.salepost.service;
 
+import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,6 +21,7 @@ import project.forwork.api.domain.salepost.model.SalePost;
 import project.forwork.api.domain.salepost.service.port.SalePostRepository;
 
 @Service
+@Builder
 @Transactional
 @RequiredArgsConstructor
 public class SalePostService {
@@ -46,6 +48,10 @@ public class SalePostService {
         SalePost salePost = salePostRepository.getByResumeWithThrow(resume);
         salePost = salePost.changeStatus(SalesStatus.CANCELED);
         salePostRepository.save(salePost);
+    }
+
+    public SalePost getSalePostWithThrow(Long salePostId){
+        return salePostRepository.getByIdWithThrow(salePostId);
     }
 
     // 판매 상태인 판매글 반환시 조회수 1증가

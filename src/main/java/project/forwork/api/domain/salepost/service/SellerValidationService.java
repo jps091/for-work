@@ -1,5 +1,6 @@
 package project.forwork.api.domain.salepost.service;
 
+import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ import project.forwork.api.domain.user.service.port.UserRepository;
 
 @RequiredArgsConstructor
 @Service
+@Builder
 @Slf4j
 public class SellerValidationService {
     private final UserRepository userRepository;
