@@ -18,6 +18,7 @@ import org.springframework.stereotype.Repository;
 import project.forwork.api.domain.resume.infrastructure.enums.FieldType;
 import project.forwork.api.domain.resume.infrastructure.enums.LevelType;
 import project.forwork.api.domain.salepost.controller.model.SalePostResponse;
+import project.forwork.api.domain.salepost.infrastructure.enums.SalesStatus;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -46,15 +47,18 @@ public class SalePostQueryDslRepository {
                         salePostEntity.id,
                         salePostEntity.title,
                         resumeEntity.price,
-                        thumbnailImageEntity.url,
+                        //thumbnailImageEntity.url, TODO 썸네일
                         salePostEntity.viewCount,
                         salePostEntity.quantity,
                         resumeEntity.fieldType,
-                        resumeEntity.levelType))
+                        resumeEntity.levelType,
+                        salePostEntity.salesStatus,
+                        salePostEntity.registeredAt))
                 .from(salePostEntity)
                 .join(salePostEntity.resumeEntity, resumeEntity)
-                .join(salePostEntity.thumbnailImageEntity, thumbnailImageEntity)
-                .where(titleSearchCond(cond.getTitle()),
+                //.join(salePostEntity.thumbnailImageEntity, thumbnailImageEntity) // 썸네일
+                .where(salePostEntity.salesStatus.eq(SalesStatus.SELLING),
+                        titleSearchCond(cond.getTitle()),
                         priceRangeCond(cond.getMinPrice(), cond.getMaxPrice()),
                         fieldEqual(cond.getField()),
                         levelEqual(cond.getLevel()))
