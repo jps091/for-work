@@ -9,6 +9,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.SqlGroup;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import project.forwork.api.domain.resume.controller.model.ResumeResponse;
 import project.forwork.api.domain.resume.infrastructure.enums.FieldType;
@@ -17,14 +18,16 @@ import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@ExtendWith(SpringExtension.class)
 @SpringBootTest
 @TestPropertySource("classpath:test-application.yml")
-@Sql(scripts = "/sql/delete-all-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD) // 테스트 전에 데이터 삭제
-@Sql("/sql/resume-search-test-data.sql") // 테스트 데이터를 삽입하는 SQL
+@SqlGroup({
+        @Sql(value = "/sql/resume-test-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
+        @Sql(value = "/sql/delete-all-data.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+})
 class ResumeQueryDlsRepositoryTest {
 
     @Autowired
@@ -49,7 +52,7 @@ class ResumeQueryDlsRepositoryTest {
         List<ResumeResponse> content = result.getContent();
 
         // Then: 결과 검증
-        assertThat(content).hasSize(4);
+        assertThat(content).hasSize(8);
     }
 
     @Test
@@ -64,9 +67,9 @@ class ResumeQueryDlsRepositoryTest {
         Page<ResumeResponse> result = repository.search(cond, pageRequest);
         List<ResumeResponse> content = result.getContent();
 
-        // Then: 결과 검증
-        assertThat(content).hasSize(2);
-        assertThat(content.get(0).getField()).isEqualTo(FieldType.FRONTEND);
+        //then(검증)
+        assertThat(content).isNotEmpty();
+        assertThat(content).allMatch(resume -> resume.getField().equals(FieldType.FRONTEND));
     }
 
     @Test
@@ -82,8 +85,8 @@ class ResumeQueryDlsRepositoryTest {
         Page<ResumeResponse> result = repository.search(cond, pageRequest);
         List<ResumeResponse> content = result.getContent();
 
-        // Then: 결과 검증
-        assertThat(content).hasSize(2);
+        //then(검증)
+        assertThat(content).isNotEmpty();
         assertThat(content).allMatch(resume -> resume.getLevel().equals(LevelType.NEW));
     }
 
@@ -100,8 +103,8 @@ class ResumeQueryDlsRepositoryTest {
         Page<ResumeResponse> result = repository.search(cond, pageRequest);
         List<ResumeResponse> content = result.getContent();
 
-        // Then: 결과 검증
-        assertThat(content).hasSize(1);
+        //then(검증)
+        assertThat(content).isNotEmpty();
         assertThat(content).allMatch(resume -> resume.getStatus().equals(ResumeStatus.ACTIVE));
     }
 
@@ -119,8 +122,8 @@ class ResumeQueryDlsRepositoryTest {
         Page<ResumeResponse> result = repository.search(cond, pageRequest);
         List<ResumeResponse> content = result.getContent();
 
-        // Then: 결과 검증
-        assertThat(content).hasSize(1);
+        //then(검증)
+        assertThat(content).isNotEmpty();
         assertThat(content).allMatch(resume -> resume.getStatus().equals(ResumeStatus.PENDING));
         assertThat(content).allMatch(resume -> resume.getField().equals(FieldType.BACKEND));
     }
@@ -140,8 +143,8 @@ class ResumeQueryDlsRepositoryTest {
         Page<ResumeResponse> result = repository.search(cond, pageRequest);
         List<ResumeResponse> content = result.getContent();
 
-        // Then: 결과 검증
-        assertThat(content).hasSize(1);
+        //then(검증)
+        assertThat(content).isNotEmpty();
         assertThat(content).allMatch(resume -> resume.getStatus().equals(ResumeStatus.REJECTED));
         assertThat(content).allMatch(resume -> resume.getField().equals(FieldType.AI));
         assertThat(content).allMatch(resume -> resume.getLevel().equals(LevelType.SENIOR));

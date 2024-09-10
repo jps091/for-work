@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import project.forwork.api.domain.resume.infrastructure.enums.FieldType;
 import project.forwork.api.domain.resume.infrastructure.enums.LevelType;
+import project.forwork.api.domain.salepost.infrastructure.enums.SalesStatus;
 import project.forwork.api.domain.salepost.model.SalePost;
 import project.forwork.api.domain.thumbnailimage.model.ThumbnailImage;
 
@@ -21,11 +22,12 @@ public class SalePostResponse {
     private Long id;
     private String title;
     private BigDecimal price;
-    private String thumbnailUrl;
+    //private String thumbnailUrl; TODO 썸네일
     private Integer quantity;
     private Integer viewCount;
     private FieldType field;
     private LevelType level;
+    private SalesStatus salesStatus;
     private LocalDateTime registerAt;
 
     public static SalePostResponse from(SalePost salePost){
