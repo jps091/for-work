@@ -23,10 +23,10 @@ public class SalePost {
     private final SalesStatus salesStatus;
     private final Integer quantity;
     private final Integer viewCount;
-    private final LocalDateTime registeredAt;
+    private final LocalDateTime modifiedAt;
 
     @Builder
-    public SalePost(Long id, Resume resume, String title, ThumbnailImage thumbnailImage, SalesStatus salesStatus, Integer quantity, Integer viewCount, LocalDateTime registeredAt) {
+    public SalePost(Long id, Resume resume, String title, ThumbnailImage thumbnailImage, SalesStatus salesStatus, Integer quantity, Integer viewCount, LocalDateTime modifiedAt) {
         this.id = id;
         this.resume = resume;
         this.title = title;
@@ -34,7 +34,7 @@ public class SalePost {
         this.salesStatus = salesStatus;
         this.quantity = quantity;
         this.viewCount = viewCount;
-        this.registeredAt = registeredAt;
+        this.modifiedAt = modifiedAt;
     }
 
     public static SalePost create(Resume resume){
@@ -57,7 +57,7 @@ public class SalePost {
                 .salesStatus(status)
                 .quantity(quantity)
                 .viewCount(viewCount)
-                .registeredAt(registeredAt)
+                .modifiedAt(modifiedAt)
                 .build();
     }
 
@@ -70,7 +70,7 @@ public class SalePost {
                 .salesStatus(salesStatus)
                 .quantity(quantity)
                 .viewCount(viewCount + 1)
-                .registeredAt(registeredAt)
+                .modifiedAt(modifiedAt)
                 .build();
     }
 }

@@ -6,8 +6,7 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public enum CartStatus {
     ACTIVE("활성"),
-    CHECK_OUT("구매완료"),
-    ABANDONED("비활성"),
+    INACTIVE("비활성"),
     ;
 
     private String description;

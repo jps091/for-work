@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlGroup;
@@ -20,7 +21,6 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@ExtendWith(SpringExtension.class)
 @SpringBootTest
 @TestPropertySource("classpath:test-application.yml")
 @SqlGroup({
@@ -197,10 +197,10 @@ class SalePostQueryDslRepositoryTest {
     void 이력서_가격범위_년차_검색() {
         //given(상황환경 세팅)
         SalePostSearchCond cond = new SalePostSearchCond();
-        cond.setMinPrice(new BigDecimal(50000));
-        cond.setMaxPrice(new BigDecimal(100000));
+        cond.setMinPrice(new BigDecimal(10000));
+        cond.setMaxPrice(new BigDecimal(99000));
         cond.setLevel(LevelType.NEW);
-        cond.setField(FieldType.FRONTEND);
+        cond.setField(FieldType.BACKEND);
 
         PageRequest pageRequest = PageRequest.of(0, 10);
 
@@ -211,8 +211,8 @@ class SalePostQueryDslRepositoryTest {
         //then(검증)
         assertThat(content).isNotEmpty();
         assertThat(content).allMatch(s -> s.getLevel().equals(LevelType.NEW));
-        assertThat(content).allMatch(s -> s.getField().equals(FieldType.FRONTEND));
-        assertThat(content).allMatch(s -> s.getPrice().compareTo(new BigDecimal(50000)) >= 0 &&
-                s.getPrice().compareTo(new BigDecimal(100000)) <= 0);
+        assertThat(content).allMatch(s -> s.getField().equals(FieldType.BACKEND));
+        assertThat(content).allMatch(s -> s.getPrice().compareTo(new BigDecimal(10000)) >= 0 &&
+                s.getPrice().compareTo(new BigDecimal(99000)) <= 0);
     }
 }

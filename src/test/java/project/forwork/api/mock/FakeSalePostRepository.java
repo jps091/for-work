@@ -42,7 +42,7 @@ public class FakeSalePostRepository implements SalePostRepository {
                     .salesStatus(salePost.getSalesStatus())
                     .quantity(salePost.getQuantity())
                     .viewCount(salePost.getViewCount())
-                    .registeredAt(salePost.getRegisteredAt())
+                    .modifiedAt(salePost.getModifiedAt())
                     .build();
             data.add(newSalePost);
             return newSalePost;
