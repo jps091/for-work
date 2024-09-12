@@ -22,14 +22,4 @@ public class CartService {
         Cart cart = Cart.create(user);
         return cartRepository.save(cart);
     }
-
-    public BigDecimal getTotalPriceInCart(CurrentUser currentUser){
-        Cart cart = cartRepository.getByUserIdWithThrow(currentUser.getId());
-        return cart.getTotalPrice();
-    }
-
-    public int getTotalQuantityInCart(CurrentUser currentUser){
-        Cart cart = cartRepository.getByUserIdWithThrow(currentUser.getId());
-        return cart.getTotalQuantity();
-    }
 }
