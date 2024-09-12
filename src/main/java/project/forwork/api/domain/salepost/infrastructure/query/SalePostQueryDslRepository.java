@@ -6,14 +6,12 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.ComparableExpressionBase;
 import com.querydsl.core.types.dsl.PathBuilder;
-import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 import project.forwork.api.domain.resume.infrastructure.enums.FieldType;
 import project.forwork.api.domain.resume.infrastructure.enums.LevelType;
@@ -25,7 +23,6 @@ import java.util.List;
 
 import static project.forwork.api.domain.resume.infrastructure.QResumeEntity.*;
 import static project.forwork.api.domain.salepost.infrastructure.QSalePostEntity.*;
-import static project.forwork.api.domain.thumbnailimage.infrastructure.QThumbnailImageEntity.*;
 
 @Repository
 public class SalePostQueryDslRepository {
