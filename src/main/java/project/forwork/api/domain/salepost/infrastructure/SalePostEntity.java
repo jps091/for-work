@@ -64,6 +64,7 @@ public class SalePostEntity extends BaseTimeEntity {
                 .salesStatus(salesStatus)
                 .quantity(quantity)
                 .viewCount(viewCount)
+                .modifiedAt(getModifiedAt())
                 .build();
     }
 }

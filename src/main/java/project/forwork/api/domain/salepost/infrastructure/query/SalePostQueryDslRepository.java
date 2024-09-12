@@ -53,7 +53,7 @@ public class SalePostQueryDslRepository {
                         resumeEntity.fieldType,
                         resumeEntity.levelType,
                         salePostEntity.salesStatus,
-                        salePostEntity.registeredAt))
+                        salePostEntity.modifiedAt))
                 .from(salePostEntity)
                 .join(salePostEntity.resumeEntity, resumeEntity)
                 //.join(salePostEntity.thumbnailImageEntity, thumbnailImageEntity) // 썸네일
