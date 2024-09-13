@@ -1,12 +1,14 @@
 package project.forwork.api.mock;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import project.forwork.api.common.service.port.ClockHolder;
 
 import java.time.LocalDateTime;
 import java.util.Date;
 @AllArgsConstructor
+@Builder
 public class TestClockHolder implements ClockHolder {
 
     private long mills;
