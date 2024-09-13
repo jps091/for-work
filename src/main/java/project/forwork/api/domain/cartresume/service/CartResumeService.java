@@ -1,5 +1,6 @@
 package project.forwork.api.domain.cartresume.service;
 
+import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +20,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @Service
+@Builder
 @Transactional
 @RequiredArgsConstructor
 public class CartResumeService {
@@ -46,6 +48,7 @@ public class CartResumeService {
         cartResumeRepository.delete(cartResumeList);
     }
 
+    @Transactional(readOnly = true)
     public CartSummary calculateSummary(List<Long> cartResumeIds){
         List<CartResume> cartResumeList = cartResumeRepository.findBySelected(cartResumeIds);
 
