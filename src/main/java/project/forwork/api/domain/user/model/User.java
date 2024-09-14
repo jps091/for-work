@@ -30,11 +30,11 @@ public class User {
         this.lastLoginAt = lastLoginAt;
     }
 
-    public static User from(UserCreateRequest request){
+    public static User from(UserCreateRequest body){
         return User.builder()
-                .email(request.getEmail())
-                .name(request.getName())
-                .password(request.getPassword())
+                .email(body.getEmail())
+                .name(body.getName())
+                .password(body.getPassword())
                 .roleType(RoleType.USER)
                 .build();
     }

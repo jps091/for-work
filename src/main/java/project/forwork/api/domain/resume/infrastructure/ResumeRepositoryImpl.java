@@ -37,8 +37,8 @@ public class ResumeRepositoryImpl implements ResumeRepository {
 
     @Override
     public void deleteAllBySeller(User seller) {
-        List<ResumeEntity> resumeEntityList = resumeJpaRepository.findAllBySellerEntity(UserEntity.from(seller));
-        resumeJpaRepository.deleteAll(resumeEntityList);
+        List<ResumeEntity> resumeEntities = resumeJpaRepository.findAllBySellerEntity(UserEntity.from(seller));
+        resumeJpaRepository.deleteAll(resumeEntities);
     }
 
     @Override

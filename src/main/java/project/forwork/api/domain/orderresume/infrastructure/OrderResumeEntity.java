@@ -5,12 +5,15 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 import project.forwork.api.common.infrastructure.BaseTimeEntity;
 import project.forwork.api.domain.order.infrastructure.OrderEntity;
+import project.forwork.api.domain.orderresume.infrastructure.enums.OrderResumeStatus;
+import project.forwork.api.domain.orderresume.model.OrderResume;
 import project.forwork.api.domain.resume.infrastructure.ResumeEntity;
+
+import java.math.BigDecimal;
 
 @Entity
 @Table(name = "order_resumes")
 @Getter
-@Setter
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -28,6 +31,25 @@ public class OrderResumeEntity extends BaseTimeEntity {
     @JoinColumn(name = "resume_id", nullable = false)
     private ResumeEntity resumeEntity;
 
-    @Column(name = "is_selected", nullable = false)
-    private boolean isSelected;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private OrderResumeStatus status;
+
+    public static OrderResumeEntity from(OrderResume orderResume){
+        OrderResumeEntity orderResumeEntity = new OrderResumeEntity();
+        orderResumeEntity.id = orderResume.getId();
+        orderResumeEntity.orderEntity = OrderEntity.from(orderResume.getOrder());
+        orderResumeEntity.resumeEntity = ResumeEntity.from(orderResume.getResume());
+        orderResumeEntity.status = orderResume.getStatus();
+        return orderResumeEntity;
+    }
+
+    public OrderResume toModel(){
+        return OrderResume.builder()
+                .id(id)
+                .order(orderEntity.toModel())
+                .resume(resumeEntity.toModel())
+                .status(status)
+                .build();
+    }
 }
