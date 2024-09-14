@@ -5,8 +5,10 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 import project.forwork.api.common.infrastructure.BaseTimeEntity;
 import project.forwork.api.domain.order.infrastructure.enums.OrderStatus;
+import project.forwork.api.domain.order.model.Order;
 import project.forwork.api.domain.user.infrastructure.UserEntity;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -25,16 +27,43 @@ public class OrderEntity extends BaseTimeEntity {
     @JoinColumn(name = "user_id")
     private UserEntity userEntity;
 
-    @Column(name = "order_date")
-    private LocalDateTime orderDate;
-
-    @Column(name = "cancel_date")
-    private LocalDateTime cancelDate;
-
-    @Column(name = "confirm_date")
-    private LocalDateTime confirmDate;
+    @Column(precision = 8, name = "total_price", nullable = false)
+    private BigDecimal totalPrice;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private OrderStatus status; //[ORDER, CANCEL, CONFIRM]
+    private OrderStatus status;
+
+    @Column(name = "ordered_at")
+    private LocalDateTime orderedAt;
+
+    @Column(name = "canceled_at")
+    private LocalDateTime canceledAt;
+
+    @Column(name = "confirmed_at")
+    private LocalDateTime confirmedAt;
+
+    public static OrderEntity from(Order order){
+        OrderEntity orderEntity = new OrderEntity();
+        orderEntity.id = order.getId();
+        orderEntity.userEntity = UserEntity.from(order.getUser());
+        orderEntity.totalPrice = order.getTotalPrice();
+        orderEntity.status = order.getStatus();
+        orderEntity.orderedAt = order.getOrderedAt();
+        orderEntity.canceledAt = order.getCanceledAt();
+        orderEntity.confirmedAt = order.getConfirmedAt();
+        return orderEntity;
+    }
+
+    public Order toModel(){
+        return Order.builder()
+                .id(id)
+                .user(userEntity.toModel())
+                .totalPrice(totalPrice)
+                .status(status)
+                .orderedAt(orderedAt)
+                .canceledAt(canceledAt)
+                .confirmedAt(confirmedAt)
+                .build();
+    }
 }

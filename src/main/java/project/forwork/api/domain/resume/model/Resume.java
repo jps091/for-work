@@ -35,36 +35,36 @@ public class Resume {
     private final LocalDateTime modifiedAt;
 
 
-    public static Resume from(User user, ResumeRegisterRequest resumeRegisterRequest){
+    public static Resume from(User user, ResumeRegisterRequest body){
         return Resume.builder()
                 .seller(user)
-                .field(resumeRegisterRequest.getField())
-                .level(resumeRegisterRequest.getLevel())
+                .field(body.getField())
+                .level(body.getLevel())
                 //.resumeUrl(resumeRegisterRequest.getResumeUrl()) TODO Test
                 //.architectureImageUrl(resumeRegisterRequest.getArchitectureImageUrl())
                 .resumeUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
                 .architectureImageUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
-                .price(resumeRegisterRequest.getPrice())
-                .description(resumeRegisterRequest.getDescription())
+                .price(body.getPrice())
+                .description(body.getDescription())
                 .status(ResumeStatus.PENDING)
                 .build();
     }
 
-    public Resume modifyIfPending(ResumeModifyRequest request){
+    public Resume modifyIfPending(ResumeModifyRequest body){
         if(status != ResumeStatus.PENDING){
             throw new ApiException(ResumeErrorCode.STATUS_NOT_PENDING);
         }
         return Resume.builder()
                 .id(id)
                 .seller(seller)
-                .field(request.getField())
-                .level(request.getLevel())
+                .field(body.getField())
+                .level(body.getLevel())
                 //.resumeUrl(request.getResumeUrl()) TODO Test
                 //.architectureImageUrl(request.getArchitectureImageUrl())
                 .resumeUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
                 .architectureImageUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
-                .price(request.getPrice())
-                .description(request.getDescription())
+                .price(body.getPrice())
+                .description(body.getDescription())
                 .status(status)
                 .build();
     }

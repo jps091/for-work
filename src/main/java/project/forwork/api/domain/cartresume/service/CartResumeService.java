@@ -44,20 +44,20 @@ public class CartResumeService {
     }
 
     public void deleteBySelected(CurrentUser currentUser, List<Long> cartResumeIds){
-        List<CartResume> cartResumeList = cartResumeRepository.findByUserAndSelected(currentUser.getId(), cartResumeIds);
-        cartResumeRepository.delete(cartResumeList);
+        List<CartResume> cartResumes = cartResumeRepository.findByUserAndSelected(currentUser.getId(), cartResumeIds);
+        cartResumeRepository.delete(cartResumes);
     }
 
     @Transactional(readOnly = true)
     public CartSummary calculateSummary(List<Long> cartResumeIds){
-        List<CartResume> cartResumeList = cartResumeRepository.findBySelected(cartResumeIds);
+        List<CartResume> cartResumes = cartResumeRepository.findBySelected(cartResumeIds);
 
-        BigDecimal totalPrice = cartResumeList.stream()
+        BigDecimal totalPrice = cartResumes.stream()
                 .map(CartResume::getPrice)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         //TODO 불변객체 cartResumeList.forEach(cartResume -> totalPrice.add(cartResume.getPrice()));
 
-        int totalQuantity = cartResumeList.size();
+        int totalQuantity = cartResumes.size();
 
         return new CartSummary(totalPrice, totalQuantity);
     }

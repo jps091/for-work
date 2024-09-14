@@ -5,9 +5,13 @@ import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 public enum OrderStatus {
-    ORDER("주문완료"),
+    ORDER("결제완료"),
+    WAIT("발송대기"),
     CANCEL("주문취소"),
-    CONFIRM("구매확정")
+    PARTIAL_CANCEL("부분취소"),
+    PARTIAL_WAIT("부분대기"),
+    CONFIRM("구매확정"),
+    PARTIAL_CONFIRM("부분확정"),
     ;
 
     private String description;

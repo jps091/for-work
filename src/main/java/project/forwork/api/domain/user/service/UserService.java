@@ -34,15 +34,15 @@ public class UserService {
     private final RedisUtils redisUtils;
 
     @Transactional
-    public User register(UserCreateRequest createRequest){
-        User user = User.from(createRequest);
+    public User register(UserCreateRequest body){
+        User user = User.from(body);
         user = userRepository.save(user);
         return user;
     }
     @Transactional
-    public void updatePassword(CurrentUser currentUser, ModifyPasswordRequest modifyPasswordRequest){
+    public void updatePassword(CurrentUser currentUser, ModifyPasswordRequest body){
         User user = userRepository.getByIdWithThrow(currentUser.getId());
-        user = user.updatePassword(modifyPasswordRequest.getPassword());
+        user = user.updatePassword(body.getPassword());
         userRepository.save(user);
     }
 
@@ -75,14 +75,14 @@ public class UserService {
         mailSender.send(email, title, content);
     }
 
-    public void verifyEmail(EmailVerifyRequest emailVerifyRequest){
-        String targetCode = redisUtils.getData(getKeyByEmail(emailVerifyRequest.getEmail()));
+    public void verifyEmail(EmailVerifyRequest body){
+        String targetCode = redisUtils.getData(getKeyByEmail(body.getEmail()));
 
-        if(isCodeMismatch(emailVerifyRequest.getCode(), targetCode)){
+        if(isCodeMismatch(body.getCode(), targetCode)){
             throw new ApiException(UserErrorCode.EMAIL_VERIFY_FAIL);
         }
 
-        deleteCertificationCode(emailVerifyRequest.getEmail());
+        deleteCertificationCode(body.getEmail());
     }
 
     private String issueCertificationCode(String email){

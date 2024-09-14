@@ -26,10 +26,10 @@ public class CartResumeRepositoryImpl implements CartResumeRepository {
     }
 
     @Override
-    public void delete(List<CartResume> cartResumeList) {
+    public void delete(List<CartResume> cartResumes) {
 
-        List<CartResumeEntity> cartResumeEntityList = cartResumeList.stream().map(CartResumeEntity::from).toList();
-        cartResumeJpaRepository.deleteAll(cartResumeEntityList);
+        List<CartResumeEntity> cartResumeEntities = cartResumes.stream().map(CartResumeEntity::from).toList();
+        cartResumeJpaRepository.deleteAll(cartResumeEntities);
     }
 
     @Override

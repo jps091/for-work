@@ -58,7 +58,7 @@ public class CartResumeController {
     public Api<List<CartResumeResponse>> findAll(
             @Parameter(hidden = true) @Current CurrentUser currentUser
     ){
-        List<CartResumeResponse> cartResumeResponseListList = cartResumeService.findAll(currentUser);
-        return Api.OK(cartResumeResponseListList);
+        List<CartResumeResponse> cartResumeResponses = cartResumeService.findAll(currentUser);
+        return Api.OK(cartResumeResponses);
     }
 }

@@ -30,9 +30,9 @@ public class ResumeService {
     private final ResumeDecisionRepository resumeDecisionRepository;
     private final UserRepository userRepository;
 
-    public Resume register(CurrentUser currentUser, ResumeRegisterRequest resumeRegisterRequest){
+    public Resume register(CurrentUser currentUser, ResumeRegisterRequest body){
         User user = userRepository.getByIdWithThrow(currentUser.getId());
-        Resume resume = Resume.from(user, resumeRegisterRequest);
+        Resume resume = Resume.from(user, body);
         resume =  resumeRepository.save(resume);
         return resume;
     }
@@ -40,12 +40,12 @@ public class ResumeService {
     public void modifyIfPending(
             Long resumeId,
             CurrentUser currentUser,
-            ResumeModifyRequest resumeModifyRequest
+            ResumeModifyRequest body
     ){
         Resume resume = resumeRepository.getByIdWithThrow(resumeId);
         validateAuthor(currentUser, resume);
 
-        resume = resume.modifyIfPending(resumeModifyRequest);
+        resume = resume.modifyIfPending(body);
         resumeRepository.save(resume);
     }
 
@@ -66,9 +66,9 @@ public class ResumeService {
 
     public void deleteByUser(Long userId){
         User seller = userRepository.getByIdWithThrow(userId);
-        List<Resume> resumeList = resumeRepository.findAllBySeller(seller);
+        List<Resume> resumes = resumeRepository.findAllBySeller(seller);
 
-        for (Resume resume : resumeList) {
+        for (Resume resume : resumes) {
             resumeDecisionRepository.findByResume(resume).ifPresent(resumeDecisionRepository::delete);
             resumeRepository.delete(resume);
         }

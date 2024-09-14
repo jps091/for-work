@@ -43,7 +43,7 @@ public class ResumeEntity extends BaseTimeEntity {
     @Column(name = "architecture_image_url", nullable = false)
     private String architectureImageUrl;
 
-    @Column(precision = 6, scale = 0, nullable = false)
+    @Column(precision = 6, nullable = false)
     private BigDecimal price;
 
     @Lob
