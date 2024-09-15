@@ -1,4 +1,4 @@
-package project.forwork.api.domain.salepost.infrastructure.query;
+package project.forwork.api.domain.salepost.infrastructure;
 
 import lombok.Data;
 import project.forwork.api.domain.resume.infrastructure.enums.FieldType;

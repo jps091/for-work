@@ -7,7 +7,8 @@ import lombok.AllArgsConstructor;
 public enum OrderResumeStatus {
     ORDER("결제완료"),
     CANCEL("주문취소"),
-    CONFIRM("구매확정")
+    CONFIRM("구매확정"),
+    SENT("발송완료")
     ;
 
     private String description;

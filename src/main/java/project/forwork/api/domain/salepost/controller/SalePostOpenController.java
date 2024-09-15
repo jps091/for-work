@@ -1,28 +1,16 @@
 package project.forwork.api.domain.salepost.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import project.forwork.api.common.annotation.Current;
 import project.forwork.api.common.api.Api;
-import project.forwork.api.common.domain.CurrentUser;
-import project.forwork.api.domain.resume.controller.model.ResumeDetailResponse;
-import project.forwork.api.domain.resume.controller.model.ResumePage;
-import project.forwork.api.domain.resume.controller.model.ResumeResponse;
-import project.forwork.api.domain.resume.infrastructure.querydsl.ResumeSearchCond;
-import project.forwork.api.domain.resume.model.Resume;
 import project.forwork.api.domain.salepost.controller.model.SalePostPage;
 import project.forwork.api.domain.salepost.controller.model.SalePostResponse;
-import project.forwork.api.domain.salepost.infrastructure.query.SalePostSearchCond;
-import project.forwork.api.domain.salepost.infrastructure.query.SalePostSortType;
+import project.forwork.api.domain.salepost.infrastructure.SalePostSearchCond;
+import project.forwork.api.domain.salepost.infrastructure.enums.SalePostSortType;
 import project.forwork.api.domain.salepost.model.SalePost;
 import project.forwork.api.domain.salepost.service.SalePostService;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
