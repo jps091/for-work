@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.forwork.api.common.domain.CurrentUser;
 import project.forwork.api.common.service.port.ClockHolder;
-import project.forwork.api.common.service.port.MailSender;
 import project.forwork.api.domain.cartresume.model.CartResume;
 import project.forwork.api.domain.cartresume.service.port.CartResumeRepository;
 import project.forwork.api.domain.order.controller.model.CancelRequest;
@@ -16,6 +15,8 @@ import project.forwork.api.domain.order.model.Order;
 import project.forwork.api.domain.order.service.port.OrderRepository;
 import project.forwork.api.domain.orderresume.infrastructure.enums.OrderResumeStatus;
 import project.forwork.api.domain.orderresume.model.OrderResume;
+import project.forwork.api.domain.orderresume.service.OrderResumeService;
+import project.forwork.api.domain.orderresume.service.SendPurchaseResumeService;
 import project.forwork.api.domain.orderresume.service.port.OrderResumeRepository;
 import project.forwork.api.domain.resume.model.Resume;
 import project.forwork.api.domain.resume.service.port.ResumeRepository;
@@ -47,7 +48,7 @@ public class OrderService {
     private final ResumeRepository resumeRepository;
     private final UserRepository userRepository;
     private final ClockHolder clockHolder;
-    private final MailSender mailSender;
+    private final OrderResumeService orderResumeService;
 
     public Order orderNow(CurrentUser currentUser, Long resumeId){
         User user = userRepository.getByIdWithThrow(currentUser.getId());
@@ -62,7 +63,6 @@ public class OrderService {
         return order;
     }
 
-
     public Order orderInCart(CurrentUser currentUser, OrderRequest body){
         User user = userRepository.getByIdWithThrow(currentUser.getId());
 
@@ -71,13 +71,70 @@ public class OrderService {
                 .toList();
 
         Order order = Order.create(user, cartResumes, clockHolder);
-        List<OrderResume> orderResumes = cartResumes.stream()
-                .map(cartResume -> OrderResume.create(order, cartResume.getResume()))
-                .toList();
+        order = orderRepository.save(order);
 
-        Order savedOrder = orderRepository.save(order);
-        orderResumes.forEach(orderResumeRepository::save);
+        orderResumeService.registerByCartResume(order, cartResumes);
 
-        return savedOrder;
+        return order;
+    }
+    @Scheduled(fixedRate = 60000) // TODO 시간 변경 페이징처리(do while)
+    public void markAsWaiting(){
+        List<Order> orders = orderRepository.findAllByStatus(OrderStatus.ORDER);
+        orders = orders.stream()
+                .map(order -> order.markAsWaiting(OrderStatus.WAIT)).toList();
+        orderRepository.saveAll(orders);
+    }
+
+    @Scheduled(fixedRate = 60000)
+    public void markPartialAsWaiting(){
+        List<Order> partialOrders = orderRepository.findAllByStatus(OrderStatus.PARTIAL_CANCEL);
+        partialOrders = partialOrders.stream()
+                .map(order -> order.markAsWaiting(OrderStatus.PARTIAL_WAIT)).toList();
+        orderRepository.saveAll(partialOrders);
+    }
+    @Scheduled(fixedRate = 70000)
+    public void markAsConfirm(){
+        List<Order> orders = orderRepository.findAllByStatus(OrderStatus.WAIT);
+
+        orders = orders.stream()
+                .map(order -> order.markAsConfirm(OrderStatus.CONFIRM, clockHolder)).toList();
+        orderRepository.saveAll(orders);
+
+        orderResumeService.sendMailForConfirmedOrders(orders);
+    }
+
+    @Scheduled(fixedRate = 70000)
+    public void markPartialAsConfirm(){
+        List<Order> partialOrders = orderRepository.findAllByStatus(OrderStatus.PARTIAL_WAIT);
+
+        partialOrders = partialOrders.stream()
+                .map(order -> order.markAsConfirm(OrderStatus.PARTIAL_CONFIRM, clockHolder)).toList();
+        orderRepository.saveAll(partialOrders);
+
+        orderResumeService.sendMailForConfirmedOrders(partialOrders);
+    }
+
+    public void confirmOrderNow(CurrentUser currentUser, Long orderId){
+        Order order = orderRepository.getByIdWithThrow(orderId);
+        order = order.confirmOrderNow(currentUser.getId(), clockHolder);
+        orderRepository.save(order);
+
+        List<OrderResume> orderResumes = orderResumeRepository.findByOrder(order);
+        orderResumeService.sendMailForConfirmedOrder(order);
+    }
+
+    public void cancelOrder(CurrentUser currentUser, Long orderId){
+        Order order = orderRepository.getByIdWithThrow(orderId);
+        order = order.cancelOrder(currentUser.getId(), clockHolder);
+        orderRepository.save(order);
+        orderResumeService.cancel(order);
+    }
+
+    public void cancelPartialOrder(CurrentUser currentUser, Long orderId, CancelRequest body){
+        List<OrderResume> orderResumes = orderResumeService.cancelPartialOrderResumes(body.getOrderResumeIds());
+
+        Order order = orderRepository.getByIdWithThrow(orderId);
+        order = order.cancelPartialOrder(currentUser.getId(), orderResumes, clockHolder);
+        orderRepository.save(order);
     }
 }

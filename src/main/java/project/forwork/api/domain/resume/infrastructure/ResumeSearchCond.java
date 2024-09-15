@@ -1,4 +1,4 @@
-package project.forwork.api.domain.resume.infrastructure.querydsl;
+package project.forwork.api.domain.resume.infrastructure;
 
 import lombok.Data;
 import project.forwork.api.domain.resume.infrastructure.enums.FieldType;

@@ -8,13 +8,10 @@ import project.forwork.api.common.error.SalePostErrorCode;
 import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.domain.resume.infrastructure.ResumeEntity;
 import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
-import project.forwork.api.domain.resume.infrastructure.querydsl.ResumeSearchCond;
 import project.forwork.api.domain.resume.model.Resume;
 import project.forwork.api.domain.salepost.controller.model.SalePostResponse;
 import project.forwork.api.domain.salepost.infrastructure.enums.SalesStatus;
-import project.forwork.api.domain.salepost.infrastructure.query.SalePostQueryDslRepository;
-import project.forwork.api.domain.salepost.infrastructure.query.SalePostSearchCond;
-import project.forwork.api.domain.salepost.infrastructure.query.SalePostSortType;
+import project.forwork.api.domain.salepost.infrastructure.enums.SalePostSortType;
 import project.forwork.api.domain.salepost.model.SalePost;
 import project.forwork.api.domain.salepost.service.port.SalePostRepository;
 

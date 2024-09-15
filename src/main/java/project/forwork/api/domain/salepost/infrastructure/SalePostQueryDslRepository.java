@@ -1,4 +1,4 @@
-package project.forwork.api.domain.salepost.infrastructure.query;
+package project.forwork.api.domain.salepost.infrastructure;
 
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
@@ -16,6 +16,7 @@ import org.springframework.stereotype.Repository;
 import project.forwork.api.domain.resume.infrastructure.enums.FieldType;
 import project.forwork.api.domain.resume.infrastructure.enums.LevelType;
 import project.forwork.api.domain.salepost.controller.model.SalePostResponse;
+import project.forwork.api.domain.salepost.infrastructure.enums.SalePostSortType;
 import project.forwork.api.domain.salepost.infrastructure.enums.SalesStatus;
 
 import java.math.BigDecimal;

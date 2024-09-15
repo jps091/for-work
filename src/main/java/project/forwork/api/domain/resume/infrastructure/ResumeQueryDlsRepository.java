@@ -1,4 +1,4 @@
-package project.forwork.api.domain.resume.infrastructure.querydsl;
+package project.forwork.api.domain.resume.infrastructure;
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;

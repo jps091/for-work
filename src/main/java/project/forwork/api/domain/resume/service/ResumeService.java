@@ -12,10 +12,9 @@ import project.forwork.api.domain.resume.controller.model.*;
 import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
 import project.forwork.api.domain.resume.model.Resume;
 import project.forwork.api.domain.resume.service.port.ResumeRepository;
-import project.forwork.api.domain.resume.infrastructure.querydsl.ResumeSearchCond;
+import project.forwork.api.domain.resume.infrastructure.ResumeSearchCond;
 import project.forwork.api.common.domain.CurrentUser;
 import project.forwork.api.domain.resumedecision.service.port.ResumeDecisionRepository;
-import project.forwork.api.domain.salepost.service.port.SalePostRepository;
 import project.forwork.api.domain.user.model.User;
 import project.forwork.api.domain.user.service.port.UserRepository;
 
