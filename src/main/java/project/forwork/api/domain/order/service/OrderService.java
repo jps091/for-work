@@ -1,5 +1,6 @@
 package project.forwork.api.domain.order.service;
 
+import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -16,7 +17,6 @@ import project.forwork.api.domain.order.service.port.OrderRepository;
 import project.forwork.api.domain.orderresume.infrastructure.enums.OrderResumeStatus;
 import project.forwork.api.domain.orderresume.model.OrderResume;
 import project.forwork.api.domain.orderresume.service.OrderResumeService;
-import project.forwork.api.domain.orderresume.service.SendPurchaseResumeService;
 import project.forwork.api.domain.orderresume.service.port.OrderResumeRepository;
 import project.forwork.api.domain.resume.model.Resume;
 import project.forwork.api.domain.resume.service.port.ResumeRepository;
@@ -26,6 +26,7 @@ import project.forwork.api.domain.user.service.port.UserRepository;
 import java.util.List;
 
 @Service
+@Builder
 @Transactional
 @RequiredArgsConstructor
 /***
@@ -119,7 +120,6 @@ public class OrderService {
         order = order.confirmOrderNow(currentUser.getId(), clockHolder);
         orderRepository.save(order);
 
-        List<OrderResume> orderResumes = orderResumeRepository.findByOrder(order);
         orderResumeService.sendMailForConfirmedOrder(order);
     }
 
@@ -136,5 +136,9 @@ public class OrderService {
         Order order = orderRepository.getByIdWithThrow(orderId);
         order = order.cancelPartialOrder(currentUser.getId(), orderResumes, clockHolder);
         orderRepository.save(order);
+    }
+
+    public Order getByIdWithThrow(Long orderId){
+        return orderRepository.getByIdWithThrow(orderId);
     }
 }

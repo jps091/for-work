@@ -28,7 +28,7 @@ public class SendPurchaseResumeService {
 
     private void sendEmail(PurchaseInfo purchaseInfo){
         String title = "for-work 구매 이력서 : " + purchaseInfo.getSalePostTitle();
-        String content = "주문 번호  : #" + purchaseInfo.getOrderId() +" <URL> : "+ purchaseInfo.getResumeUrl();
+        String content = "주문 번호 #" + purchaseInfo.getOrderId() +" <URL> : "+ purchaseInfo.getResumeUrl();
         mailSender.send(purchaseInfo.getEmail(), title, content);
     }
 }
