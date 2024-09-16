@@ -1,5 +1,6 @@
 package project.forwork.api.domain.user.service;
 
+import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -11,7 +12,7 @@ import project.forwork.api.domain.user.model.User;
 import project.forwork.api.domain.user.service.port.UserRepository;
 
 @Service
-@Slf4j
+@Builder
 @RequiredArgsConstructor
 public class PasswordInitializationService {
 
@@ -24,7 +25,6 @@ public class PasswordInitializationService {
     public void issueTemporaryPassword(User user) {
         user = user.initTemporaryPassword(uuidHolder.random());
         userRepository.save(user);
-
         sendPassword(user.getEmail(), user.getPassword());
     }
 
