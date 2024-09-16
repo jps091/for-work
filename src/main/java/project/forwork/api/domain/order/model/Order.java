@@ -115,14 +115,14 @@ public class Order {
             throw new ApiException(OrderErrorCode.ORDER_NOT_PERMISSION, userId);
         }
 
-        BigDecimal minPrice = orderResumes.stream()
+        BigDecimal canceledPrice = orderResumes.stream()
                 .map(OrderResume::getPrice)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         return Order.builder()
                 .id(id)
                 .user(user)
-                .totalPrice(totalPrice.min(minPrice))
+                .totalPrice(totalPrice.subtract(canceledPrice))
                 .status(OrderStatus.PARTIAL_CANCEL)
                 .orderedAt(orderedAt)
                 .canceledAt(clockHolder.now())

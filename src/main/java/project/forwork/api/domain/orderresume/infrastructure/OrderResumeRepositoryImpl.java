@@ -4,9 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Repository;
 import project.forwork.api.common.error.OrderErrorCode;
+import project.forwork.api.common.error.OrderResumeErrorCode;
 import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.domain.order.infrastructure.OrderEntity;
 import project.forwork.api.domain.order.model.Order;
+import project.forwork.api.domain.orderresume.infrastructure.enums.OrderResumeStatus;
 import project.forwork.api.domain.orderresume.model.OrderResume;
 import project.forwork.api.domain.orderresume.model.PurchaseInfo;
 import project.forwork.api.domain.orderresume.service.port.OrderResumeRepository;
@@ -32,32 +34,32 @@ public class OrderResumeRepositoryImpl implements OrderResumeRepository {
     }
 
     @Override
-    public OrderResume getByIdWithThrow(long id) {
-        return findById(id).orElseThrow(() -> new ApiException(OrderErrorCode.ORDER_NOT_FOUND, id));
+    public OrderResume getByIdWithThrow(long orderResumeId) {
+        return findById(orderResumeId).orElseThrow(() -> new ApiException(OrderResumeErrorCode.ORDER_NOT_FOUND, orderResumeId));
     }
 
     @Override
-    public Optional<OrderResume> findById(long id) {
-        return orderResumeJpaRepository.findById(id).map(OrderResumeEntity::toModel);
+    public Optional<OrderResume> findById(long orderResumeId) {
+        return orderResumeJpaRepository.findById(orderResumeId).map(OrderResumeEntity::toModel);
     }
 
     @Override
-    public List<OrderResume> findByIds(List<Long> ids) {
-        return orderResumeJpaRepository.findAllById(ids).stream()
+    public List<OrderResume> findByIds(List<Long> orderResumeIds) {
+        return orderResumeJpaRepository.findAllById(orderResumeIds).stream()
                 .map(OrderResumeEntity::toModel)
                 .toList();
     }
 
     @Override
-    public List<OrderResume> findByOrder(Order order) {
-        return orderResumeJpaRepository.findByOrderEntity(OrderEntity.from(order)).stream()
+    public List<OrderResume> findByStatusAndOrder(OrderResumeStatus status, Order order) {
+        return orderResumeJpaRepository.findByStatusAndOrder(status, OrderEntity.from(order)).stream()
                 .map(OrderResumeEntity::toModel)
                 .toList();
     }
     @Override
-    public List<OrderResume> findByOrders(List<Order> orders) {
+    public List<OrderResume> findByStatusAndOrders(OrderResumeStatus status, List<Order> orders) {
         List<OrderEntity> orderEntities = orders.stream().map(OrderEntity::from).toList();
-        return orderResumeJpaRepository.findByOrderEntity(orderEntities).stream()
+        return orderResumeJpaRepository.findByStatusAndOrder(status, orderEntities).stream()
                 .map(OrderResumeEntity::toModel)
                 .toList();
     }

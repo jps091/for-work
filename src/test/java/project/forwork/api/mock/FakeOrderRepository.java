@@ -1,0 +1,69 @@
+package project.forwork.api.mock;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import project.forwork.api.common.error.OrderErrorCode;
+import project.forwork.api.common.error.OrderResumeErrorCode;
+import project.forwork.api.common.exception.ApiException;
+import project.forwork.api.domain.order.infrastructure.enums.OrderStatus;
+import project.forwork.api.domain.order.model.Order;
+import project.forwork.api.domain.order.service.port.OrderRepository;
+import project.forwork.api.domain.orderresume.infrastructure.enums.OrderResumeStatus;
+import project.forwork.api.domain.orderresume.model.OrderResume;
+import project.forwork.api.domain.orderresume.model.PurchaseInfo;
+import project.forwork.api.domain.orderresume.service.port.OrderResumeRepository;
+import project.forwork.api.domain.resume.infrastructure.enums.FieldType;
+import project.forwork.api.domain.resume.infrastructure.enums.LevelType;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicLong;
+
+public class FakeOrderRepository implements OrderRepository {
+
+    private final AtomicLong id = new AtomicLong(0);
+    private final List<Order> data = new ArrayList<>();
+
+    @Override
+    public Order save(Order order) {
+        if(order.getId() == null || order.getId() == 0){
+            Order newOrder = Order.builder()
+                    .id(id.incrementAndGet())
+                    .user(order.getUser())
+                    .totalPrice(order.getTotalPrice())
+                    .status(OrderStatus.ORDER)
+                    .orderedAt(order.getOrderedAt())
+                    .build();
+            data.add(newOrder);
+            return newOrder;
+        }else{
+            data.removeIf(o -> Objects.equals(o.getId(), order.getId()));
+            data.add(order);
+            return order;
+        }
+    }
+
+    @Override
+    public void saveAll(List<Order> orders) {
+        orders.forEach(this::save);
+    }
+
+    @Override
+    public Order getByIdWithThrow(long id) {
+        return findById(id).orElseThrow(() -> new ApiException(OrderErrorCode.ORDER_NOT_FOUND, id));
+    }
+
+    @Override
+    public Optional<Order> findById(long id) {
+        return data.stream().filter(o -> Objects.equals(o.getId(), id)).findAny();
+    }
+
+    @Override
+    public List<Order> findAllByStatus(OrderStatus status) {
+        return data.stream().filter(order -> Objects.equals(order.getStatus(), status)).toList();
+    }
+}

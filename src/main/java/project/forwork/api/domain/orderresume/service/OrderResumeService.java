@@ -1,5 +1,6 @@
 package project.forwork.api.domain.orderresume.service;
 
+import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,6 +13,7 @@ import project.forwork.api.domain.orderresume.service.port.OrderResumeRepository
 import java.util.List;
 
 @Service
+@Builder
 @Transactional
 @RequiredArgsConstructor
 public class OrderResumeService {
@@ -27,7 +29,7 @@ public class OrderResumeService {
     }
 
     public void sendMailForConfirmedOrder(Order order){
-        List<OrderResume> orderResumes = orderResumeRepository.findByOrder(order).stream()
+        List<OrderResume> orderResumes = orderResumeRepository.findByStatusAndOrder(OrderResumeStatus.ORDER, order).stream()
                 .map(orderResume -> orderResume.changeStatus(OrderResumeStatus.CONFIRM))
                 .toList();
         orderResumeRepository.saveAll(orderResumes);
@@ -36,7 +38,7 @@ public class OrderResumeService {
     }
 
     public void sendMailForConfirmedOrders(List<Order> orders){
-        List<OrderResume> orderResumes = orderResumeRepository.findByOrders(orders).stream()
+        List<OrderResume> orderResumes = orderResumeRepository.findByStatusAndOrders(OrderResumeStatus.ORDER, orders).stream()
                 .map(orderResume -> orderResume.changeStatus(OrderResumeStatus.CONFIRM))
                 .toList();
         orderResumeRepository.saveAll(orderResumes);
@@ -53,7 +55,7 @@ public class OrderResumeService {
     }
 
     public void cancel(Order order){
-        List<OrderResume> orderResumes = orderResumeRepository.findByOrder(order).stream()
+        List<OrderResume> orderResumes = orderResumeRepository.findByStatusAndOrder(OrderResumeStatus.ORDER, order).stream()
                 .map(orderResume -> orderResume.changeStatus(OrderResumeStatus.CANCEL))
                 .toList();
         orderResumeRepository.saveAll(orderResumes);
@@ -67,5 +69,9 @@ public class OrderResumeService {
         orderResumeRepository.saveAll(orderResumes);
 
         return orderResumes;
+    }
+
+    public OrderResume getByIdWithThrow(Long orderResumeId){
+        return orderResumeRepository.getByIdWithThrow(orderResumeId);
     }
 }

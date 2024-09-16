@@ -19,6 +19,6 @@ public class PurchaseInfo {
     private final String resumeUrl;
 
     public String getSalePostTitle(){
-        return level.getDescription() + " : " + field.getDescription() + " 이력서 #" + getResumeId();
+        return level.getDescription() + " " + field.getDescription() + " 이력서 #" + getResumeId();
     }
 }
