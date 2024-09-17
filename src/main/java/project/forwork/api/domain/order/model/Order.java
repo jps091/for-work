@@ -128,4 +128,8 @@ public class Order {
                 .canceledAt(clockHolder.now())
                 .build();
     }
+
+    public String getBuyerEmail(){
+        return user.getEmail();
+    }
 }

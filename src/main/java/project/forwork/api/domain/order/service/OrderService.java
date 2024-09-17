@@ -10,11 +10,12 @@ import project.forwork.api.common.service.port.ClockHolder;
 import project.forwork.api.domain.cartresume.model.CartResume;
 import project.forwork.api.domain.cartresume.service.port.CartResumeRepository;
 import project.forwork.api.domain.order.controller.model.CancelRequest;
+import project.forwork.api.domain.order.controller.model.OrderDetailResponse;
 import project.forwork.api.domain.order.controller.model.OrderRequest;
 import project.forwork.api.domain.order.infrastructure.enums.OrderStatus;
 import project.forwork.api.domain.order.model.Order;
 import project.forwork.api.domain.order.service.port.OrderRepository;
-import project.forwork.api.domain.orderresume.infrastructure.enums.OrderResumeStatus;
+import project.forwork.api.domain.orderresume.controller.model.OrderResumeResponse;
 import project.forwork.api.domain.orderresume.model.OrderResume;
 import project.forwork.api.domain.orderresume.service.OrderResumeService;
 import project.forwork.api.domain.orderresume.service.port.OrderResumeRepository;
@@ -80,7 +81,7 @@ public class OrderService {
     }
     @Scheduled(fixedRate = 60000) // TODO 시간 변경 페이징처리(do while)
     public void markAsWaiting(){
-        List<Order> orders = orderRepository.findAllByStatus(OrderStatus.ORDER);
+        List<Order> orders = orderRepository.findByStatus(OrderStatus.ORDER);
         orders = orders.stream()
                 .map(order -> order.markAsWaiting(OrderStatus.WAIT)).toList();
         orderRepository.saveAll(orders);
@@ -88,14 +89,14 @@ public class OrderService {
 
     @Scheduled(fixedRate = 60000)
     public void markPartialAsWaiting(){
-        List<Order> partialOrders = orderRepository.findAllByStatus(OrderStatus.PARTIAL_CANCEL);
+        List<Order> partialOrders = orderRepository.findByStatus(OrderStatus.PARTIAL_CANCEL);
         partialOrders = partialOrders.stream()
                 .map(order -> order.markAsWaiting(OrderStatus.PARTIAL_WAIT)).toList();
         orderRepository.saveAll(partialOrders);
     }
     @Scheduled(fixedRate = 70000)
     public void markAsConfirm(){
-        List<Order> orders = orderRepository.findAllByStatus(OrderStatus.WAIT);
+        List<Order> orders = orderRepository.findByStatus(OrderStatus.WAIT);
 
         orders = orders.stream()
                 .map(order -> order.markAsConfirm(OrderStatus.CONFIRM, clockHolder)).toList();
@@ -106,7 +107,7 @@ public class OrderService {
 
     @Scheduled(fixedRate = 70000)
     public void markPartialAsConfirm(){
-        List<Order> partialOrders = orderRepository.findAllByStatus(OrderStatus.PARTIAL_WAIT);
+        List<Order> partialOrders = orderRepository.findByStatus(OrderStatus.PARTIAL_WAIT);
 
         partialOrders = partialOrders.stream()
                 .map(order -> order.markAsConfirm(OrderStatus.PARTIAL_CONFIRM, clockHolder)).toList();
@@ -136,6 +137,21 @@ public class OrderService {
         Order order = orderRepository.getByIdWithThrow(orderId);
         order = order.cancelPartialOrder(currentUser.getId(), orderResumes, clockHolder);
         orderRepository.save(order);
+    }
+
+    public OrderDetailResponse getOrderDetail(CurrentUser currentUser, Long orderId){
+        // 검증로직이 필요하지않은이유 -> currentUser.getId() 자체로 레포에서 조회를 하기때문에
+        // currentUser 인터셉터와 쿠키에 의해 만들어진 검증된 객체
+        Order order = orderRepository.getOrderWithThrow(currentUser.getId(), orderId);
+        List<OrderResumeResponse> orderResumes = orderResumeRepository.findByOrderId(order.getId());
+
+        return OrderDetailResponse.builder()
+                .email(order.getBuyerEmail())
+                .totalPrice(order.getTotalPrice())
+                .orderedAt(order.getOrderedAt())
+                .orderId(order.getId())
+                .orderResumeResponses(orderResumes)
+                .build();
     }
 
     public Order getByIdWithThrow(Long orderId){

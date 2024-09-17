@@ -3,11 +3,11 @@ package project.forwork.api.domain.orderresume.infrastructure;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Repository;
-import project.forwork.api.common.error.OrderErrorCode;
 import project.forwork.api.common.error.OrderResumeErrorCode;
 import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.domain.order.infrastructure.OrderEntity;
 import project.forwork.api.domain.order.model.Order;
+import project.forwork.api.domain.orderresume.controller.model.OrderResumeResponse;
 import project.forwork.api.domain.orderresume.infrastructure.enums.OrderResumeStatus;
 import project.forwork.api.domain.orderresume.model.OrderResume;
 import project.forwork.api.domain.orderresume.model.PurchaseInfo;
@@ -49,6 +49,10 @@ public class OrderResumeRepositoryImpl implements OrderResumeRepository {
                 .map(OrderResumeEntity::toModel)
                 .toList();
     }
+    @Override
+    public List<OrderResumeResponse> findByOrderId(Long orderId) {
+        return orderResumeQueryDslRepository.getByOrderId(orderId);
+    }
 
     @Override
     public List<OrderResume> findByStatusAndOrder(OrderResumeStatus status, Order order) {
@@ -65,7 +69,12 @@ public class OrderResumeRepositoryImpl implements OrderResumeRepository {
     }
 
     @Override
-    public Page<PurchaseInfo> getPurchaseResume() {
+    public List<OrderResumeResponse> findByUserIdAndStatus(Long userId, List<OrderResumeStatus> statuses) {
+        return orderResumeQueryDslRepository.getByUserIdAndStatus(userId, statuses);
+    }
+
+    @Override
+    public Page<PurchaseInfo> findPurchaseResume() {
         return orderResumeQueryDslRepository.getPurchaseInfo();
     }
 }

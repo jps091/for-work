@@ -2,6 +2,7 @@ package project.forwork.api.domain.orderresume.service.port;
 
 import org.springframework.data.domain.Page;
 import project.forwork.api.domain.order.model.Order;
+import project.forwork.api.domain.orderresume.controller.model.OrderResumeResponse;
 import project.forwork.api.domain.orderresume.infrastructure.enums.OrderResumeStatus;
 import project.forwork.api.domain.orderresume.model.OrderResume;
 import project.forwork.api.domain.orderresume.model.PurchaseInfo;
@@ -15,7 +16,9 @@ public interface OrderResumeRepository {
     OrderResume getByIdWithThrow(long orderResumeId);
     Optional<OrderResume> findById(long orderResumeId);
     List<OrderResume> findByIds(List<Long> orderResumeIds);
+    List<OrderResumeResponse> findByOrderId(Long orderId);
     List<OrderResume> findByStatusAndOrder(OrderResumeStatus status, Order order);
     List<OrderResume> findByStatusAndOrders(OrderResumeStatus status, List<Order> orders);
-    Page<PurchaseInfo> getPurchaseResume();
+    List<OrderResumeResponse> findByUserIdAndStatus(Long userId, List<OrderResumeStatus> statuses);
+    Page<PurchaseInfo> findPurchaseResume();
 }
