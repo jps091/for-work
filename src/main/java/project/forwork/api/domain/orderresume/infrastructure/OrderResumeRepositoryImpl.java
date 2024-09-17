@@ -21,7 +21,7 @@ import java.util.Optional;
 public class OrderResumeRepositoryImpl implements OrderResumeRepository {
 
     private final OrderResumeJpaRepository orderResumeJpaRepository;
-    private final OrderResumeQueryDslRepository orderResumeQueryDslRepository;
+
     @Override
     public OrderResume save(OrderResume orderResume) {
         return orderResumeJpaRepository.save(OrderResumeEntity.from(orderResume)).toModel();
@@ -49,10 +49,6 @@ public class OrderResumeRepositoryImpl implements OrderResumeRepository {
                 .map(OrderResumeEntity::toModel)
                 .toList();
     }
-    @Override
-    public List<OrderResumeResponse> findByOrderId(Long orderId) {
-        return orderResumeQueryDslRepository.getByOrderId(orderId);
-    }
 
     @Override
     public List<OrderResume> findByStatusAndOrder(OrderResumeStatus status, Order order) {
@@ -66,15 +62,5 @@ public class OrderResumeRepositoryImpl implements OrderResumeRepository {
         return orderResumeJpaRepository.findByStatusAndOrder(status, orderEntities).stream()
                 .map(OrderResumeEntity::toModel)
                 .toList();
-    }
-
-    @Override
-    public List<OrderResumeResponse> findByUserIdAndStatus(Long userId, List<OrderResumeStatus> statuses) {
-        return orderResumeQueryDslRepository.getByUserIdAndStatus(userId, statuses);
-    }
-
-    @Override
-    public Page<PurchaseInfo> findPurchaseResume() {
-        return orderResumeQueryDslRepository.getPurchaseInfo();
     }
 }

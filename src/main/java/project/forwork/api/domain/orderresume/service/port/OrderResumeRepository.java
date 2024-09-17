@@ -16,9 +16,6 @@ public interface OrderResumeRepository {
     OrderResume getByIdWithThrow(long orderResumeId);
     Optional<OrderResume> findById(long orderResumeId);
     List<OrderResume> findByIds(List<Long> orderResumeIds);
-    List<OrderResumeResponse> findByOrderId(Long orderId);
     List<OrderResume> findByStatusAndOrder(OrderResumeStatus status, Order order);
     List<OrderResume> findByStatusAndOrders(OrderResumeStatus status, List<Order> orders);
-    List<OrderResumeResponse> findByUserIdAndStatus(Long userId, List<OrderResumeStatus> statuses);
-    Page<PurchaseInfo> findPurchaseResume();
 }

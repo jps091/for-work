@@ -29,7 +29,7 @@ public class OrderResumeQueryDslRepository {
         this.queryFactory = new JPAQueryFactory(em);
     }
 
-    public Page<PurchaseInfo> getPurchaseInfo() {
+    public Page<PurchaseInfo> findPurchaseResume() {
 
         PageRequest pageRequest = PageRequest.of(0, 20);
 
@@ -54,7 +54,7 @@ public class OrderResumeQueryDslRepository {
         return new PageImpl<>(content, pageRequest, content.size());
     }
 
-    public List<OrderResumeResponse> getByUserIdAndStatus(Long userId, List<OrderResumeStatus> statuses){
+    public List<OrderResumeResponse> findByUserIdAndStatus(Long userId, List<OrderResumeStatus> statuses){
         return queryFactory
                 .select(Projections.fields(OrderResumeResponse.class,
                         orderEntity.id.as("orderId"),
@@ -78,7 +78,7 @@ public class OrderResumeQueryDslRepository {
                 .fetch();
     }
 
-    public List<OrderResumeResponse> getByOrderId(Long orderId){
+    public List<OrderResumeResponse> findByOrderId(Long orderId){
         return queryFactory
                 .select(Projections.fields(OrderResumeResponse.class,
                         orderEntity.id.as("orderId"),

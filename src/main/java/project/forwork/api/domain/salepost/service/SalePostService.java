@@ -10,6 +10,7 @@ import project.forwork.api.common.domain.CurrentUser;
 import project.forwork.api.domain.resume.model.Resume;
 import project.forwork.api.domain.salepost.controller.model.SalePostPage;
 import project.forwork.api.domain.salepost.controller.model.SalePostResponse;
+import project.forwork.api.domain.salepost.infrastructure.SalePostQueryDslRepository;
 import project.forwork.api.domain.salepost.infrastructure.enums.SalesStatus;
 import project.forwork.api.domain.salepost.infrastructure.SalePostSearchCond;
 import project.forwork.api.domain.salepost.infrastructure.enums.SalePostSortType;
@@ -24,6 +25,7 @@ public class SalePostService {
 
     private final SellerValidationService sellerValidationService;
     private final SalePostRepository salePostRepository;
+    private final SalePostQueryDslRepository salePostQueryDslRepository;
 
     public SalePost register(CurrentUser currentUser, Long resumeId){
         Resume resume = sellerValidationService.validateSellerAndResumeStatus(currentUser, resumeId);
@@ -67,7 +69,7 @@ public class SalePostService {
             SalePostSearchCond cond
     ){
         PageRequest pageRequest = PageRequest.of(offset, limit);
-        Page<SalePostResponse> result = salePostRepository.searchByCondition(cond, pageRequest, sortType);
+        Page<SalePostResponse> result = salePostQueryDslRepository.searchByCondition(cond, pageRequest, sortType);
         return SalePostPage.from(result);
     }
 }

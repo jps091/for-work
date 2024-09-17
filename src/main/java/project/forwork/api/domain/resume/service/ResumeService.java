@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import project.forwork.api.common.error.ResumeErrorCode;
 import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.domain.resume.controller.model.*;
+import project.forwork.api.domain.resume.infrastructure.ResumeQueryDlsRepository;
 import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
 import project.forwork.api.domain.resume.model.Resume;
 import project.forwork.api.domain.resume.service.port.ResumeRepository;
@@ -27,6 +28,7 @@ public class ResumeService {
 
     private final ResumeRepository resumeRepository;
     private final ResumeDecisionRepository resumeDecisionRepository;
+    private final ResumeQueryDlsRepository resumeQueryDlsRepository;
     private final UserRepository userRepository;
 
     public Resume register(CurrentUser currentUser, ResumeRegisterRequest body){
@@ -101,7 +103,7 @@ public class ResumeService {
     ){
         Sort sort = Sort.by(ascending ? Sort.Order.asc(sortBy) : Sort.Order.desc(sortBy));
         PageRequest pageRequest = PageRequest.of(offset, limit, sort);
-        Page<ResumeResponse> result = resumeRepository.search(cond, pageRequest);
+        Page<ResumeResponse> result = resumeQueryDlsRepository.search(cond, pageRequest);
         return ResumePage.from(result);
     }
 

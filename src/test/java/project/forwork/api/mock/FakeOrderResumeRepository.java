@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import project.forwork.api.common.error.OrderResumeErrorCode;
 import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.domain.order.model.Order;
+import project.forwork.api.domain.orderresume.controller.model.OrderResumeResponse;
 import project.forwork.api.domain.orderresume.infrastructure.enums.OrderResumeStatus;
 import project.forwork.api.domain.orderresume.model.OrderResume;
 import project.forwork.api.domain.orderresume.model.PurchaseInfo;
@@ -24,9 +25,6 @@ public class FakeOrderResumeRepository implements OrderResumeRepository {
 
     private final AtomicLong id = new AtomicLong(0);
     private final List<OrderResume> data = new ArrayList<>();
-
-
-
 
     @Override
     public OrderResume save(OrderResume orderResume) {
@@ -85,20 +83,5 @@ public class FakeOrderResumeRepository implements OrderResumeRepository {
                 .filter(orderResume -> orderIds.contains(orderResume.getOrder().getId()) &&
                         Objects.equals(orderResume.getStatus(), OrderResumeStatus.ORDER))
                 .toList();
-    }
-
-    @Override
-    public Page<PurchaseInfo> getPurchaseResume() {
-        PurchaseInfo purchaseInfo = PurchaseInfo.builder()
-                .orderId(10L)
-                .resumeId(20L)
-                .email("user@naver.com")
-                .level(LevelType.NEW)
-                .field(FieldType.BACKEND)
-                .resumeUrl("www.test.com")
-                .build();
-
-        Pageable pageable = PageRequest.of(0, 20);
-        return new PageImpl<>(List.of(purchaseInfo), pageable, 1);
     }
 }

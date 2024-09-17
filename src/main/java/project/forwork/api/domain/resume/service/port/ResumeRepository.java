@@ -17,8 +17,6 @@ public interface ResumeRepository {
 
     void delete(Resume resume);
 
-    void deleteAllBySeller(User Seller);
-
     Resume getByIdWithThrow(Long id);
 
     Optional<Resume> findById(Long id);
@@ -28,6 +26,4 @@ public interface ResumeRepository {
     List<Resume> findAllByStatus(ResumeStatus status);
 
     List<Resume> findAllBySeller(User seller);
-
-    Page<ResumeResponse> search(ResumeSearchCond cond, PageRequest pageRequest);
 }

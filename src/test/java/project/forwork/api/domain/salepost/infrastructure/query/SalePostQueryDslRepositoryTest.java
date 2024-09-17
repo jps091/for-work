@@ -47,7 +47,7 @@ class SalePostQueryDslRepositoryTest {
 
 
         //when(상황발생)
-        Page<SalePostResponse> result = repository.search(cond, pageRequest, SalePostSortType.BEST_SELLING);
+        Page<SalePostResponse> result = repository.searchByCondition(cond, pageRequest, SalePostSortType.BEST_SELLING);
         List<SalePostResponse> content = result.getContent();
 
         //then(검증)
@@ -63,7 +63,7 @@ class SalePostQueryDslRepositoryTest {
 
 
         //when(상황발생)
-        Page<SalePostResponse> result = repository.search(cond, pageRequest, SalePostSortType.BEST_SELLING);
+        Page<SalePostResponse> result = repository.searchByCondition(cond, pageRequest, SalePostSortType.BEST_SELLING);
         List<SalePostResponse> content = result.getContent();
 
         //then(검증)
@@ -79,7 +79,7 @@ class SalePostQueryDslRepositoryTest {
         PageRequest pageRequest = PageRequest.of(0, 10);
 
         //when(상황발생)
-        Page<SalePostResponse> result = repository.search(cond, pageRequest, SalePostSortType.BEST_SELLING);
+        Page<SalePostResponse> result = repository.searchByCondition(cond, pageRequest, SalePostSortType.BEST_SELLING);
         List<SalePostResponse> content = result.getContent();
 
         //then(검증)
@@ -95,7 +95,7 @@ class SalePostQueryDslRepositoryTest {
         PageRequest pageRequest = PageRequest.of(0, 10);
 
         //when(상황발생)
-        Page<SalePostResponse> result = repository.search(cond, pageRequest, SalePostSortType.BEST_SELLING);
+        Page<SalePostResponse> result = repository.searchByCondition(cond, pageRequest, SalePostSortType.BEST_SELLING);
         List<SalePostResponse> content = result.getContent();
 
         //then(검증)
@@ -112,7 +112,7 @@ class SalePostQueryDslRepositoryTest {
         PageRequest pageRequest = PageRequest.of(0, 10);
 
         //when(상황발생)
-        Page<SalePostResponse> result = repository.search(cond, pageRequest, SalePostSortType.BEST_SELLING);
+        Page<SalePostResponse> result = repository.searchByCondition(cond, pageRequest, SalePostSortType.BEST_SELLING);
         List<SalePostResponse> content = result.getContent();
 
         //then(검증)
@@ -130,7 +130,7 @@ class SalePostQueryDslRepositoryTest {
         PageRequest pageRequest = PageRequest.of(0, 10);
 
         //when(상황발생)
-        Page<SalePostResponse> result = repository.search(cond, pageRequest, SalePostSortType.BEST_SELLING);
+        Page<SalePostResponse> result = repository.searchByCondition(cond, pageRequest, SalePostSortType.BEST_SELLING);
         List<SalePostResponse> content = result.getContent();
 
         //then(검증)
@@ -148,7 +148,7 @@ class SalePostQueryDslRepositoryTest {
         PageRequest pageRequest = PageRequest.of(0, 10);
 
         //when(상황발생)
-        Page<SalePostResponse> result = repository.search(cond, pageRequest, SalePostSortType.BEST_SELLING);
+        Page<SalePostResponse> result = repository.searchByCondition(cond, pageRequest, SalePostSortType.BEST_SELLING);
         List<SalePostResponse> content = result.getContent();
 
         //then(검증)
@@ -164,7 +164,7 @@ class SalePostQueryDslRepositoryTest {
         PageRequest pageRequest = PageRequest.of(0, 10);
 
         //when(상황발생)
-        Page<SalePostResponse> result = repository.search(cond, pageRequest, SalePostSortType.BEST_SELLING);
+        Page<SalePostResponse> result = repository.searchByCondition(cond, pageRequest, SalePostSortType.BEST_SELLING);
         List<SalePostResponse> content = result.getContent();
 
         //then(검증)
@@ -182,7 +182,7 @@ class SalePostQueryDslRepositoryTest {
         PageRequest pageRequest = PageRequest.of(0, 10);
 
         //when(상황발생)
-        Page<SalePostResponse> result = repository.search(cond, pageRequest, SalePostSortType.BEST_SELLING);
+        Page<SalePostResponse> result = repository.searchByCondition(cond, pageRequest, SalePostSortType.BEST_SELLING);
         List<SalePostResponse> content = result.getContent();
 
         //then(검증)
@@ -204,7 +204,7 @@ class SalePostQueryDslRepositoryTest {
         PageRequest pageRequest = PageRequest.of(0, 10);
 
         //when(상황발생)
-        Page<SalePostResponse> result = repository.search(cond, pageRequest, SalePostSortType.BEST_SELLING);
+        Page<SalePostResponse> result = repository.searchByCondition(cond, pageRequest, SalePostSortType.BEST_SELLING);
         List<SalePostResponse> content = result.getContent();
 
         //then(검증)

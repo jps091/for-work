@@ -16,6 +16,7 @@ import project.forwork.api.domain.order.infrastructure.enums.OrderStatus;
 import project.forwork.api.domain.order.model.Order;
 import project.forwork.api.domain.order.service.port.OrderRepository;
 import project.forwork.api.domain.orderresume.controller.model.OrderResumeResponse;
+import project.forwork.api.domain.orderresume.infrastructure.OrderResumeQueryDslRepository;
 import project.forwork.api.domain.orderresume.model.OrderResume;
 import project.forwork.api.domain.orderresume.service.OrderResumeService;
 import project.forwork.api.domain.orderresume.service.port.OrderResumeRepository;
@@ -47,6 +48,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final CartResumeRepository cartResumeRepository;
     private final OrderResumeRepository orderResumeRepository;
+    private final OrderResumeQueryDslRepository orderResumeQueryDslRepository;
     private final ResumeRepository resumeRepository;
     private final UserRepository userRepository;
     private final ClockHolder clockHolder;
@@ -143,7 +145,7 @@ public class OrderService {
         // 검증로직이 필요하지않은이유 -> currentUser.getId() 자체로 레포에서 조회를 하기때문에
         // currentUser 인터셉터와 쿠키에 의해 만들어진 검증된 객체
         Order order = orderRepository.getOrderWithThrow(currentUser.getId(), orderId);
-        List<OrderResumeResponse> orderResumes = orderResumeRepository.findByOrderId(order.getId());
+        List<OrderResumeResponse> orderResumes = orderResumeQueryDslRepository.findByOrderId(order.getId());
 
         return OrderDetailResponse.builder()
                 .email(order.getBuyerEmail())

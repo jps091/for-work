@@ -74,9 +74,4 @@ public class FakeSalePostRepository implements SalePostRepository {
                 .findAny()
                 .orElseThrow(() -> new ApiException(SalePostErrorCode.SALE_POST_NOT_FOUND));
     }
-
-    @Override
-    public Page<SalePostResponse> searchByCondition(SalePostSearchCond cond, PageRequest pageRequest, SalePostSortType sortType) {
-        return null;
-    }
 }

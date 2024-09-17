@@ -8,6 +8,7 @@ import project.forwork.api.common.domain.CurrentUser;
 import project.forwork.api.domain.cartresume.model.CartResume;
 import project.forwork.api.domain.order.model.Order;
 import project.forwork.api.domain.orderresume.controller.model.OrderResumeResponse;
+import project.forwork.api.domain.orderresume.infrastructure.OrderResumeQueryDslRepository;
 import project.forwork.api.domain.orderresume.infrastructure.enums.OrderResumeStatus;
 import project.forwork.api.domain.orderresume.model.OrderResume;
 import project.forwork.api.domain.orderresume.service.port.OrderResumeRepository;
@@ -22,6 +23,7 @@ public class OrderResumeService {
 
     private final OrderResumeRepository orderResumeRepository;
     private final SendPurchaseResumeService sendPurchaseResumeService;
+    private final OrderResumeQueryDslRepository orderResumeQueryDslRepository;
 
     public void registerByCartResume(Order order, List<CartResume> cartResumes){
         List<OrderResume> orderResumes = cartResumes.stream()
@@ -75,12 +77,12 @@ public class OrderResumeService {
 
     public List<OrderResumeResponse> getOrderResumeList(CurrentUser currentUser){
         List<OrderResumeStatus> statuses = List.of(OrderResumeStatus.ORDER, OrderResumeStatus.CONFIRM, OrderResumeStatus.SENT);
-        return orderResumeRepository.findByUserIdAndStatus(currentUser.getId(), statuses);
+        return orderResumeQueryDslRepository.findByUserIdAndStatus(currentUser.getId(), statuses);
     }
 
     public List<OrderResumeResponse> getCanceledOrderResumeList(CurrentUser currentUser){
         List<OrderResumeStatus> statuses = List.of(OrderResumeStatus.CANCEL);
-        return orderResumeRepository.findByUserIdAndStatus(currentUser.getId(), statuses);
+        return orderResumeQueryDslRepository.findByUserIdAndStatus(currentUser.getId(), statuses);
     }
 
     public OrderResume getByIdWithThrow(Long orderResumeId){

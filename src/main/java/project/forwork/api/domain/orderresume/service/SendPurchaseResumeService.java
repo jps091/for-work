@@ -6,6 +6,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.forwork.api.common.service.port.MailSender;
+import project.forwork.api.domain.orderresume.infrastructure.OrderResumeQueryDslRepository;
 import project.forwork.api.domain.orderresume.model.PurchaseInfo;
 import project.forwork.api.domain.orderresume.service.port.OrderResumeRepository;
 
@@ -16,11 +17,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SendPurchaseResumeService {
 
-    private final OrderResumeRepository orderResumeRepository;
+    private final OrderResumeQueryDslRepository orderResumeQueryDslRepository;
     private final MailSender mailSender;
 
     public void sendPurchaseResume(){
-        Page<PurchaseInfo> purchaseResumePage = orderResumeRepository.findPurchaseResume();
+        Page<PurchaseInfo> purchaseResumePage = orderResumeQueryDslRepository.findPurchaseResume();
         List<PurchaseInfo> purchaseInfos = purchaseResumePage.getContent();
 
         purchaseInfos.forEach(this::sendEmail);

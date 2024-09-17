@@ -35,7 +35,7 @@ public class SalePostQueryDslRepository {
         this.queryFactory  = new JPAQueryFactory(em);
     }
 
-    public Page<SalePostResponse> search(SalePostSearchCond cond, Pageable pageable, SalePostSortType sortType){
+    public Page<SalePostResponse> searchByCondition(SalePostSearchCond cond, Pageable pageable, SalePostSortType sortType){
 
         OrderSpecifier orderSpecifier = createOrderSpecifier(sortType);
 
