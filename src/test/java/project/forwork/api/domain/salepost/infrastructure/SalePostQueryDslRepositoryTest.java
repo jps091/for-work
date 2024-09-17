@@ -1,4 +1,4 @@
-package project.forwork.api.domain.salepost.infrastructure.query;
+package project.forwork.api.domain.salepost.infrastructure;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 @TestPropertySource("classpath:test-application.yml")
 @SqlGroup({
+        @Sql(value = "/sql/user-test-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
         @Sql(value = "/sql/resume-test-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
         @Sql(value = "/sql/sale-post-test-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
         @Sql(value = "/sql/delete-all-data.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
