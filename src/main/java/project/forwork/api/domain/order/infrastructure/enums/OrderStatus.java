@@ -7,9 +7,9 @@ import lombok.AllArgsConstructor;
 public enum OrderStatus {
     ORDER("결제완료"),
     WAIT("발송대기"),
+    PARTIAL_WAIT("부분대기"),
     CANCEL("주문취소"),
     PARTIAL_CANCEL("부분취소"),
-    PARTIAL_WAIT("부분대기"),
     CONFIRM("구매확정"),
     PARTIAL_CONFIRM("부분확정"),
     ;

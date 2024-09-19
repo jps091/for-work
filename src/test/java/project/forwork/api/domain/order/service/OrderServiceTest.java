@@ -13,9 +13,12 @@ import project.forwork.api.domain.cart.infrastructure.enums.CartStatus;
 import project.forwork.api.domain.cart.model.Cart;
 import project.forwork.api.domain.cartresume.model.CartResume;
 import project.forwork.api.domain.order.controller.model.CancelRequest;
+import project.forwork.api.domain.order.controller.model.OrderDetailResponse;
 import project.forwork.api.domain.order.controller.model.OrderRequest;
 import project.forwork.api.domain.order.infrastructure.enums.OrderStatus;
 import project.forwork.api.domain.order.model.Order;
+import project.forwork.api.domain.orderresume.controller.model.OrderResumeResponse;
+import project.forwork.api.domain.orderresume.infrastructure.OrderResumeQueryDslRepository;
 import project.forwork.api.domain.orderresume.infrastructure.enums.OrderResumeStatus;
 import project.forwork.api.domain.orderresume.model.OrderResume;
 import project.forwork.api.domain.orderresume.service.OrderResumeService;
@@ -41,12 +44,17 @@ class OrderServiceTest {
 
     private OrderService orderService;
 
+    private FakeOrderRepository fakeOrderRepository;
+
     @Mock
     private OrderResumeService orderResumeService;
 
+    @Mock
+    private OrderResumeQueryDslRepository orderResumeQueryDslRepository;
+
     @BeforeEach
     void init(){
-        FakeOrderRepository fakeOrderRepository = new FakeOrderRepository();
+        fakeOrderRepository = new FakeOrderRepository();
         FakeCartResumeRepository fakeCartResumeRepository = new FakeCartResumeRepository();
         FakeOrderResumeRepository fakeOrderResumeRepository = new FakeOrderResumeRepository();
         FakeResumeRepository fakeResumeRepository = new FakeResumeRepository();
@@ -61,6 +69,7 @@ class OrderServiceTest {
                 .resumeRepository(fakeResumeRepository)
                 .userRepository(fakeUserRepository)
                 .clockHolder(testClockHolder)
+                .orderResumeQueryDslRepository(orderResumeQueryDslRepository)
                 .build();
 
         User user1 = User.builder()
@@ -391,5 +400,35 @@ class OrderServiceTest {
         // then
         assertThat(order.getStatus()).isEqualTo(OrderStatus.PARTIAL_CANCEL);
         assertThat(order.getTotalPrice()).isEqualTo(new BigDecimal("34000.00"));  // 예상 금액
+    }
+
+    @Test
+    void 자신의_주문의_ID와_CurrentUser를_통해_OrderDetailResponse를_생성_할_수_있다(){
+        //given(상황환경 세팅)
+        // user1(1L)이 주문한 order3(3L)의 이력서1(1L)
+        CurrentUser currentUser = CurrentUser.builder()
+                .id(1L)
+                .build();
+
+        List<OrderResumeResponse> orderResumeResponses = List.of(
+                OrderResumeResponse.builder()
+                        .orderId(1L)
+                        .title("JUNIOR AI 이력서 #1")
+                        .status(OrderResumeStatus.CONFIRM)
+                        .price(new BigDecimal("40000.00"))
+                        .orderedAt(LocalDateTime.of(2024, 9, 16, 12, 0, 0))
+                        .build()
+        );
+
+        //when(상황발생)
+        when(orderResumeQueryDslRepository.findByOrderId(3L)).thenReturn(orderResumeResponses);
+        OrderDetailResponse orderDetail = orderService.getOrderDetail(currentUser, 3L);
+
+        //then(검증)
+        assertThat(orderDetail.getEmail()).isEqualTo("user1@naver.com");
+        assertThat(orderDetail.getTotalPrice()).isEqualTo(new BigDecimal("40000.00"));
+        assertThat(orderDetail.getOrderedAt()).isEqualTo(LocalDateTime.of(2024, 9, 16, 12, 0, 0));
+        assertThat(orderDetail.getOrderId()).isEqualTo(3L);
+        assertThat(orderDetail.getOrderResumeResponses()).isEqualTo(orderResumeResponses);
     }
 }

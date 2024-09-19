@@ -20,7 +20,6 @@ import java.util.Optional;
 public class ResumeRepositoryImpl implements ResumeRepository {
 
     private final ResumeJpaRepository resumeJpaRepository;
-    private final ResumeQueryDlsRepository resumeQueryDlsRepository;
 
 
     @Override
@@ -31,12 +30,6 @@ public class ResumeRepositoryImpl implements ResumeRepository {
     @Override
     public void delete(Resume resume) {
         resumeJpaRepository.delete(ResumeEntity.from(resume));
-    }
-
-    @Override
-    public void deleteAllBySeller(User seller) {
-        List<ResumeEntity> resumeEntities = resumeJpaRepository.findAllBySellerEntity(UserEntity.from(seller));
-        resumeJpaRepository.deleteAll(resumeEntities);
     }
 
     @Override
@@ -73,10 +66,5 @@ public class ResumeRepositoryImpl implements ResumeRepository {
                 .stream()
                 .map(ResumeEntity::toModel)
                 .toList();
-    }
-
-    @Override
-    public Page<ResumeResponse> search(ResumeSearchCond cond, PageRequest pageRequest) {
-        return resumeQueryDlsRepository.search(cond, pageRequest);
     }
 }

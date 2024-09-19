@@ -2,9 +2,11 @@ package project.forwork.api.domain.orderresume.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.forwork.api.common.service.port.MailSender;
+import project.forwork.api.domain.orderresume.infrastructure.OrderResumeQueryDslRepository;
 import project.forwork.api.domain.orderresume.model.PurchaseInfo;
 import project.forwork.api.domain.orderresume.service.port.OrderResumeRepository;
 
@@ -15,18 +17,18 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SendPurchaseResumeService {
 
-    private final OrderResumeRepository orderResumeRepository;
+    private final OrderResumeQueryDslRepository orderResumeQueryDslRepository;
     private final MailSender mailSender;
 
     public void sendPurchaseResume(){
-        Page<PurchaseInfo> purchaseResumePage = orderResumeRepository.getPurchaseResume();
+        Page<PurchaseInfo> purchaseResumePage = orderResumeQueryDslRepository.findPurchaseResume();
         List<PurchaseInfo> purchaseInfos = purchaseResumePage.getContent();
 
         purchaseInfos.forEach(this::sendEmail);
     }
 
-
-    private void sendEmail(PurchaseInfo purchaseInfo){
+    @Async
+    public void sendEmail(PurchaseInfo purchaseInfo){
         String title = "for-work 구매 이력서 : " + purchaseInfo.getSalePostTitle();
         String content = "주문 번호 #" + purchaseInfo.getOrderId() +" <URL> : "+ purchaseInfo.getResumeUrl();
         mailSender.send(purchaseInfo.getEmail(), title, content);

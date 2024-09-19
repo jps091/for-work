@@ -21,6 +21,4 @@ public interface SalePostRepository {
     SalePost getSellingPostWithThrow(Long resumeId);
 
     SalePost getByResumeWithThrow(Resume resume);
-
-    Page<SalePostResponse> searchByCondition(SalePostSearchCond cond, PageRequest pageRequest, SalePostSortType sortType);
 }

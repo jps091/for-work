@@ -22,7 +22,7 @@ import java.util.Optional;
 public class SalePostRepositoryImpl implements SalePostRepository {
 
     private final SalePostJpaRepository salePostJpaRepository;
-    private final SalePostQueryDslRepository salePostQueryDslRepository;
+
     @Override
     public SalePost save(SalePost salePost) {
         return salePostJpaRepository.save(SalePostEntity.from(salePost)).toModel();
@@ -50,10 +50,5 @@ public class SalePostRepositoryImpl implements SalePostRepository {
         return salePostJpaRepository.findByResumeEntity(ResumeEntity.from(resume))
                 .orElseThrow(() -> new ApiException(SalePostErrorCode.SALE_POST_NOT_FOUND))
                 .toModel();
-    }
-
-    @Override
-    public Page<SalePostResponse> searchByCondition(SalePostSearchCond cond, PageRequest pageRequest, SalePostSortType sortType) {
-        return salePostQueryDslRepository.search(cond, pageRequest, sortType);
     }
 }

@@ -7,10 +7,10 @@ import java.util.List;
 import java.util.Optional;
 
 public interface OrderRepository {
-
     Order save(Order order);
     void saveAll(List<Order> orders);
-    Order getByIdWithThrow(long id);
-    Optional<Order> findById(long id);
-    List<Order> findAllByStatus(OrderStatus status);
+    Order getByIdWithThrow(Long orderId);
+    Order getOrderWithThrow(Long userId, Long orderId);
+    Optional<Order> findById(Long orderId);
+    List<Order> findByStatus(OrderStatus status);
 }

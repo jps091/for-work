@@ -53,17 +53,26 @@ public class FakeOrderRepository implements OrderRepository {
     }
 
     @Override
-    public Order getByIdWithThrow(long id) {
-        return findById(id).orElseThrow(() -> new ApiException(OrderErrorCode.ORDER_NOT_FOUND, id));
+    public Order getByIdWithThrow(Long orderId) {
+        return findById(orderId).orElseThrow(() -> new ApiException(OrderErrorCode.ORDER_NOT_FOUND, orderId));
     }
 
     @Override
-    public Optional<Order> findById(long id) {
-        return data.stream().filter(o -> Objects.equals(o.getId(), id)).findAny();
+    public Order getOrderWithThrow(Long userId, Long orderId) {
+        return data.stream()
+                .filter(o -> Objects.equals(o.getId(), orderId) &&
+                Objects.equals(o.getUser().getId(), userId))
+                .findAny()
+                .orElseThrow(() -> new ApiException(OrderErrorCode.ORDER_NOT_FOUND, orderId));
     }
 
     @Override
-    public List<Order> findAllByStatus(OrderStatus status) {
+    public Optional<Order> findById(Long orderId) {
+        return data.stream().filter(o -> Objects.equals(o.getId(), orderId)).findAny();
+    }
+
+    @Override
+    public List<Order> findByStatus(OrderStatus status) {
         return data.stream().filter(order -> Objects.equals(order.getStatus(), status)).toList();
     }
 }

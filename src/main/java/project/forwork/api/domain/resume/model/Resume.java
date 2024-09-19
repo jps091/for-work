@@ -86,9 +86,8 @@ public class Resume {
     }
 
     public String createSalePostTitle(){
-        return level.getDescription() + " : " + field.getDescription() + " 이력서 #" + getId();
+        return level.getDescription() + " " + field.getDescription() + " 이력서 #" + getId();
     }
-
 
     public boolean isAuthorMismatch(Long sellerId){
         log.info("sellerId={}, sellerId={}",seller.getId(), sellerId);

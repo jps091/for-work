@@ -52,11 +52,6 @@ public class FakeResumeRepository implements ResumeRepository {
     }
 
     @Override
-    public void deleteAllBySeller(User Seller) {
-        //
-    }
-
-    @Override
     public Resume getByIdWithThrow(Long id) {
         return findById(id).orElseThrow(() -> new ApiException(ResumeErrorCode.RESUME_NOT_FOUND, id));
     }
@@ -79,10 +74,5 @@ public class FakeResumeRepository implements ResumeRepository {
     @Override
     public List<Resume> findAllBySeller(User seller) {
         return data.stream().filter(r -> Objects.equals(r.getSeller(), seller)).toList();
-    }
-
-    @Override
-    public Page<ResumeResponse> search(ResumeSearchCond cond, PageRequest pageRequest) {
-        return null; //querydsl
     }
 }

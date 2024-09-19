@@ -3,11 +3,11 @@ package project.forwork.api.domain.orderresume.infrastructure;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Repository;
-import project.forwork.api.common.error.OrderErrorCode;
 import project.forwork.api.common.error.OrderResumeErrorCode;
 import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.domain.order.infrastructure.OrderEntity;
 import project.forwork.api.domain.order.model.Order;
+import project.forwork.api.domain.orderresume.controller.model.OrderResumeResponse;
 import project.forwork.api.domain.orderresume.infrastructure.enums.OrderResumeStatus;
 import project.forwork.api.domain.orderresume.model.OrderResume;
 import project.forwork.api.domain.orderresume.model.PurchaseInfo;
@@ -21,7 +21,7 @@ import java.util.Optional;
 public class OrderResumeRepositoryImpl implements OrderResumeRepository {
 
     private final OrderResumeJpaRepository orderResumeJpaRepository;
-    private final OrderResumeQueryDslRepository orderResumeQueryDslRepository;
+
     @Override
     public OrderResume save(OrderResume orderResume) {
         return orderResumeJpaRepository.save(OrderResumeEntity.from(orderResume)).toModel();
@@ -62,10 +62,5 @@ public class OrderResumeRepositoryImpl implements OrderResumeRepository {
         return orderResumeJpaRepository.findByStatusAndOrder(status, orderEntities).stream()
                 .map(OrderResumeEntity::toModel)
                 .toList();
-    }
-
-    @Override
-    public Page<PurchaseInfo> getPurchaseResume() {
-        return orderResumeQueryDslRepository.getPurchaseInfo();
     }
 }
