@@ -1,17 +1,14 @@
 package project.forwork.api.domain.resumedecision.controller.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import project.forwork.api.domain.resume.infrastructure.enums.FieldType;
 import project.forwork.api.domain.resume.infrastructure.enums.LevelType;
-import project.forwork.api.domain.resumedecision.infrastructure.ResumeDecision;
+import project.forwork.api.domain.resumedecision.model.ResumeDecision;
 import project.forwork.api.domain.resumedecision.infrastructure.enums.DecisionStatus;
 
 import java.time.LocalDateTime;
 
-@Data
+@Getter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor

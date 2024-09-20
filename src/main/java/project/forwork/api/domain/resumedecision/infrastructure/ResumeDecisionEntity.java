@@ -5,6 +5,7 @@ import lombok.experimental.SuperBuilder;
 import project.forwork.api.common.infrastructure.BaseTimeEntity;
 import project.forwork.api.domain.resumedecision.infrastructure.enums.DecisionStatus;
 import project.forwork.api.domain.resume.infrastructure.ResumeEntity;
+import project.forwork.api.domain.resumedecision.model.ResumeDecision;
 import project.forwork.api.domain.user.infrastructure.UserEntity;
 
 import java.time.LocalDateTime;

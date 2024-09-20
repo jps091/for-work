@@ -1,14 +1,11 @@
 package project.forwork.api.domain.user.controller.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import project.forwork.api.domain.user.infrastructure.enums.RoleType;
 import project.forwork.api.domain.user.model.User;
 
 @Builder
-@Data
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserResponse {

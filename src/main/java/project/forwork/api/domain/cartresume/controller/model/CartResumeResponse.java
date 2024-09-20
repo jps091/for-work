@@ -1,14 +1,11 @@
 package project.forwork.api.domain.cartresume.controller.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import project.forwork.api.domain.cartresume.model.CartResume;
 
 import java.math.BigDecimal;
 
-@Data
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

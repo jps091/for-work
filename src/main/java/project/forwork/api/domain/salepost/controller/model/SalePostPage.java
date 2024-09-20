@@ -1,16 +1,13 @@
 package project.forwork.api.domain.salepost.controller.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import project.forwork.api.domain.resume.controller.model.ResumeResponse;
 
 import java.util.List;
 
-@Data
+@Getter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor

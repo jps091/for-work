@@ -1,5 +1,6 @@
 package project.forwork.api.domain.order.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import project.forwork.api.common.error.OrderErrorCode;
@@ -17,6 +18,8 @@ import java.util.List;
 import java.util.Objects;
 
 @Getter
+@AllArgsConstructor
+@Builder
 public class Order {
     private final Long id;
     private final User user;
@@ -25,17 +28,6 @@ public class Order {
     private final LocalDateTime orderedAt;
     private final LocalDateTime canceledAt;
     private final LocalDateTime confirmedAt;
-
-    @Builder
-    public Order(Long id, User user, BigDecimal totalPrice, OrderStatus status, LocalDateTime orderedAt, LocalDateTime canceledAt, LocalDateTime confirmedAt) {
-        this.id = id;
-        this.user = user;
-        this.totalPrice = totalPrice;
-        this.status = status;
-        this.orderedAt = orderedAt;
-        this.canceledAt = canceledAt;
-        this.confirmedAt = confirmedAt;
-    }
 
     public static Order create(User user, Resume resume, ClockHolder clockHolder){
         return Order.builder()

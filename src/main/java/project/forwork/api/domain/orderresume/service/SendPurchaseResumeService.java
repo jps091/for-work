@@ -7,8 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.forwork.api.common.service.port.MailSender;
 import project.forwork.api.domain.orderresume.infrastructure.OrderResumeQueryDslRepository;
-import project.forwork.api.domain.orderresume.model.PurchaseInfo;
-import project.forwork.api.domain.orderresume.service.port.OrderResumeRepository;
+import project.forwork.api.domain.orderresume.controller.model.PurchaseResponse;
 
 import java.util.List;
 
@@ -21,16 +20,16 @@ public class SendPurchaseResumeService {
     private final MailSender mailSender;
 
     public void sendPurchaseResume(){
-        Page<PurchaseInfo> purchaseResumePage = orderResumeQueryDslRepository.findPurchaseResume();
-        List<PurchaseInfo> purchaseInfos = purchaseResumePage.getContent();
+        Page<PurchaseResponse> purchaseResumePage = orderResumeQueryDslRepository.findPurchaseResume();
+        List<PurchaseResponse> purchaseResponses = purchaseResumePage.getContent();
 
-        purchaseInfos.forEach(this::sendEmail);
+        purchaseResponses.forEach(this::sendEmail);
     }
 
     @Async
-    public void sendEmail(PurchaseInfo purchaseInfo){
-        String title = "for-work 구매 이력서 : " + purchaseInfo.getSalePostTitle();
-        String content = "주문 번호 #" + purchaseInfo.getOrderId() +" <URL> : "+ purchaseInfo.getResumeUrl();
-        mailSender.send(purchaseInfo.getEmail(), title, content);
+    public void sendEmail(PurchaseResponse purchaseResponse){
+        String title = "for-work 구매 이력서 : " + purchaseResponse.getSalePostTitle();
+        String content = "주문 번호 #" + purchaseResponse.getOrderId() +" <URL> : "+ purchaseResponse.getResumeUrl();
+        mailSender.send(purchaseResponse.getEmail(), title, content);
     }
 }

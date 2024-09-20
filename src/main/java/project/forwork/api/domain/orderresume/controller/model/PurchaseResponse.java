@@ -1,4 +1,4 @@
-package project.forwork.api.domain.orderresume.model;
+package project.forwork.api.domain.orderresume.controller.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,7 +11,7 @@ import project.forwork.api.domain.resume.infrastructure.enums.LevelType;
 @AllArgsConstructor
 @Builder
 @NoArgsConstructor
-public class PurchaseInfo {
+public class PurchaseResponse {
 
     private Long orderId;
     private Long resumeId;

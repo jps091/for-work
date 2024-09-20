@@ -1,5 +1,6 @@
 package project.forwork.api.domain.user.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import project.forwork.api.common.error.UserErrorCode;
@@ -11,6 +12,8 @@ import project.forwork.api.domain.user.infrastructure.enums.RoleType;
 import java.util.Objects;
 
 @Getter
+@Builder
+@AllArgsConstructor
 public class User {
 
     private final Long id;
@@ -19,16 +22,6 @@ public class User {
     private final String password;
     private final RoleType roleType;
     private final Long lastLoginAt;
-
-    @Builder
-    public User(Long id, String name, String email, String password, RoleType roleType, Long lastLoginAt) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.password = password;
-        this.roleType = roleType;
-        this.lastLoginAt = lastLoginAt;
-    }
 
     public static User from(UserCreateRequest body){
         return User.builder()
