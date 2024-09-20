@@ -4,7 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
 import project.forwork.api.domain.resume.model.Resume;
-import project.forwork.api.domain.resumedecision.infrastructure.ResumeDecision;
+import project.forwork.api.domain.resumedecision.model.ResumeDecision;
 
 import java.util.Optional;
 

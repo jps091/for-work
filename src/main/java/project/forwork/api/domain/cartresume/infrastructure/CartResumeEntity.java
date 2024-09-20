@@ -11,7 +11,6 @@ import project.forwork.api.domain.resume.infrastructure.ResumeEntity;
 @Entity
 @Table(name = "cart_resumes")
 @Getter
-@Setter
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

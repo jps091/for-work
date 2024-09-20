@@ -9,13 +9,13 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlGroup;
 import project.forwork.api.domain.orderresume.controller.model.OrderResumeResponse;
 import project.forwork.api.domain.orderresume.infrastructure.enums.OrderResumeStatus;
-import project.forwork.api.domain.orderresume.model.PurchaseInfo;
+import project.forwork.api.domain.orderresume.controller.model.PurchaseResponse;
 
 import java.util.List;
 import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+
 @SpringBootTest
 @TestPropertySource("classpath:test-application.yml")
 @SqlGroup({
@@ -35,8 +35,8 @@ class OrderResumeQueryDslRepositoryTest {
         //given(상황환경 세팅)
 
         //when(상황발생)
-        Page<PurchaseInfo> purchaseResume = orderResumeQueryDslRepository.findPurchaseResume();
-        List<PurchaseInfo> content = purchaseResume.getContent();
+        Page<PurchaseResponse> purchaseResume = orderResumeQueryDslRepository.findPurchaseResume();
+        List<PurchaseResponse> content = purchaseResume.getContent();
 
         //then(검증)
         assertThat(content.size()).isEqualTo(2);

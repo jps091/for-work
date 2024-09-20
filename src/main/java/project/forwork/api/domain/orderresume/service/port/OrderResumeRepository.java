@@ -1,11 +1,8 @@
 package project.forwork.api.domain.orderresume.service.port;
 
-import org.springframework.data.domain.Page;
 import project.forwork.api.domain.order.model.Order;
-import project.forwork.api.domain.orderresume.controller.model.OrderResumeResponse;
 import project.forwork.api.domain.orderresume.infrastructure.enums.OrderResumeStatus;
 import project.forwork.api.domain.orderresume.model.OrderResume;
-import project.forwork.api.domain.orderresume.model.PurchaseInfo;
 
 import java.util.List;
 import java.util.Optional;

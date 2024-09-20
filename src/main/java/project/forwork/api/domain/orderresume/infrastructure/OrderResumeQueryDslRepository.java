@@ -11,7 +11,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 import project.forwork.api.domain.orderresume.controller.model.OrderResumeResponse;
 import project.forwork.api.domain.orderresume.infrastructure.enums.OrderResumeStatus;
-import project.forwork.api.domain.orderresume.model.PurchaseInfo;
+import project.forwork.api.domain.orderresume.controller.model.PurchaseResponse;
 
 import java.util.List;
 
@@ -29,12 +29,12 @@ public class OrderResumeQueryDslRepository {
         this.queryFactory = new JPAQueryFactory(em);
     }
 
-    public Page<PurchaseInfo> findPurchaseResume() {
+    public Page<PurchaseResponse> findPurchaseResume() {
 
         PageRequest pageRequest = PageRequest.of(0, 20);
 
-        List<PurchaseInfo> content = queryFactory
-                .select(Projections.fields(PurchaseInfo.class,
+        List<PurchaseResponse> content = queryFactory
+                .select(Projections.fields(PurchaseResponse.class,
                         orderEntity.id.as("orderId"),
                         userEntity.email.as("email"),
                         resumeEntity.resumeUrl.as("resumeUrl"),

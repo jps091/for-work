@@ -9,6 +9,7 @@ import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.domain.resume.infrastructure.ResumeEntity;
 import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
 import project.forwork.api.domain.resume.model.Resume;
+import project.forwork.api.domain.resumedecision.model.ResumeDecision;
 import project.forwork.api.domain.resumedecision.service.port.ResumeDecisionRepository;
 
 import java.util.Optional;

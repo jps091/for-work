@@ -13,7 +13,6 @@ import java.math.BigDecimal;
 @Entity
 @Table(name = "carts")
 @Getter
-@Setter
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

@@ -1,5 +1,6 @@
 package project.forwork.api.domain.salepost.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import project.forwork.api.common.error.ResumeErrorCode;
@@ -15,6 +16,8 @@ import project.forwork.api.domain.thumbnailimage.model.ThumbnailImage;
 import java.time.LocalDateTime;
 
 @Getter
+@AllArgsConstructor
+@Builder
 public class SalePost {
     private final Long id;
     private final Resume resume;
@@ -24,18 +27,6 @@ public class SalePost {
     private final Integer quantity;
     private final Integer viewCount;
     private final LocalDateTime modifiedAt;
-
-    @Builder
-    public SalePost(Long id, Resume resume, String title, ThumbnailImage thumbnailImage, SalesStatus salesStatus, Integer quantity, Integer viewCount, LocalDateTime modifiedAt) {
-        this.id = id;
-        this.resume = resume;
-        this.title = title;
-        this.thumbnailImage = thumbnailImage;
-        this.salesStatus = salesStatus;
-        this.quantity = quantity;
-        this.viewCount = viewCount;
-        this.modifiedAt = modifiedAt;
-    }
 
     public static SalePost create(Resume resume){
         return SalePost.builder()

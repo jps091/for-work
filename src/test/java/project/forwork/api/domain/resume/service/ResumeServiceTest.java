@@ -1,18 +1,16 @@
 package project.forwork.api.domain.resume.service;
 
-import jakarta.persistence.FetchType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import project.forwork.api.common.domain.CurrentUser;
 import project.forwork.api.common.exception.ApiException;
-import project.forwork.api.domain.resume.controller.model.ResumeDetailResponse;
 import project.forwork.api.domain.resume.controller.model.ResumeModifyRequest;
 import project.forwork.api.domain.resume.controller.model.ResumeRegisterRequest;
 import project.forwork.api.domain.resume.infrastructure.enums.FieldType;
 import project.forwork.api.domain.resume.infrastructure.enums.LevelType;
 import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
 import project.forwork.api.domain.resume.model.Resume;
-import project.forwork.api.domain.resumedecision.infrastructure.ResumeDecision;
+import project.forwork.api.domain.resumedecision.model.ResumeDecision;
 import project.forwork.api.domain.resumedecision.infrastructure.enums.DecisionStatus;
 import project.forwork.api.domain.user.infrastructure.enums.RoleType;
 import project.forwork.api.domain.user.model.User;
@@ -25,7 +23,6 @@ import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
 
 class ResumeServiceTest {
 

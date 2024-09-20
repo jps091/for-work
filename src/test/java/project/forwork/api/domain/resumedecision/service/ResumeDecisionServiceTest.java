@@ -3,14 +3,10 @@ package project.forwork.api.domain.resumedecision.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import project.forwork.api.common.domain.CurrentUser;
-import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.domain.resume.infrastructure.enums.FieldType;
 import project.forwork.api.domain.resume.infrastructure.enums.LevelType;
 import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
 import project.forwork.api.domain.resume.model.Resume;
-import project.forwork.api.domain.resume.service.ResumeService;
-import project.forwork.api.domain.resumedecision.infrastructure.ResumeDecision;
-import project.forwork.api.domain.resumedecision.infrastructure.enums.DecisionStatus;
 import project.forwork.api.domain.user.infrastructure.enums.RoleType;
 import project.forwork.api.domain.user.model.User;
 import project.forwork.api.mock.FakeResumeDecisionRepository;
@@ -18,10 +14,8 @@ import project.forwork.api.mock.FakeResumeRepository;
 import project.forwork.api.mock.FakeUserRepository;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 class ResumeDecisionServiceTest {
 

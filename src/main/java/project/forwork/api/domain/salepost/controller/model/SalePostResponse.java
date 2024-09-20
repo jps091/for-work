@@ -1,9 +1,6 @@
 package project.forwork.api.domain.salepost.controller.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import project.forwork.api.domain.resume.infrastructure.enums.FieldType;
 import project.forwork.api.domain.resume.infrastructure.enums.LevelType;
 import project.forwork.api.domain.salepost.infrastructure.enums.SalesStatus;
@@ -13,7 +10,7 @@ import project.forwork.api.domain.thumbnailimage.model.ThumbnailImage;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Data
+@Getter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor

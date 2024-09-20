@@ -1,8 +1,7 @@
-package project.forwork.api.domain.resumedecision.infrastructure;
+package project.forwork.api.domain.resumedecision.model;
 
 import lombok.Builder;
 import lombok.Getter;
-import project.forwork.api.common.service.port.ClockHolder;
 import project.forwork.api.domain.resume.model.Resume;
 import project.forwork.api.domain.resumedecision.infrastructure.enums.DecisionStatus;
 import project.forwork.api.domain.user.model.User;

@@ -12,7 +12,6 @@ import project.forwork.api.domain.thumbnailimage.infrastructure.ThumbnailImageEn
 @Entity
 @Table(name = "sale_posts")
 @Getter
-@Setter
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
