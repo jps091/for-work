@@ -2,10 +2,12 @@ package project.forwork.api.domain.user.controller.model;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import lombok.Data;
-import lombok.Getter;
+import lombok.*;
 
 @Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class EmailVerifyRequest {
     @NotBlank(message = "인증 하실 email을 입력 해주세요.")
     @Email

@@ -44,7 +44,7 @@ public class RedisStringUtilsImpl implements RedisUtils {
         return incrementedValue;
     }
 
-    public String createKeyForm(String prefix, Object userId) {
-        return prefix + userId;
+    public String createKeyForm(String prefix, Object value) {
+        return prefix + value;
     }
 }

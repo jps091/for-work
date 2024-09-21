@@ -13,5 +13,5 @@ public interface RedisUtils {
 
     Long incrementDataInitTimeOut(String key, long timeout);
 
-    String createKeyForm(String prefix, Object userId);
+    String createKeyForm(String prefix, Object value);
 }
