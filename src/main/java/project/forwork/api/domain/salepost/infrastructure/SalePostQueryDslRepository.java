@@ -56,7 +56,6 @@ public class SalePostQueryDslRepository {
                 .join(salePostEntity.resumeEntity, resumeEntity)
                 //.join(salePostEntity.thumbnailImageEntity, thumbnailImageEntity) // 썸네일
                 .where(salePostEntity.salesStatus.eq(SalesStatus.SELLING),
-                        titleSearchCond(cond.getTitle()),
                         priceRangeCond(cond.getMinPrice(), cond.getMaxPrice()),
                         fieldEqual(cond.getField()),
                         levelEqual(cond.getLevel()))
@@ -66,10 +65,6 @@ public class SalePostQueryDslRepository {
                 .fetch();
 
         return new PageImpl<>(content, pageable, pageable.isPaged() ? content.size() : 0);
-    }
-
-    private BooleanExpression titleSearchCond(String titleCond) {
-        return titleCond != null ? salePostEntity.title.like(titleCond + "%") : null;
     }
 
     private BooleanExpression fieldEqual(FieldType field) {
@@ -92,14 +87,6 @@ public class SalePostQueryDslRepository {
         }
 
         return priceCondition;
-    }
-
-    private OrderSpecifier<?> getSortOrder(String property, Order order) {
-        PathBuilder<Object> entityPath = new PathBuilder<>(resumeEntity.getType(), resumeEntity.getMetadata());
-
-        ComparableExpressionBase<?> path = entityPath.getComparable(property, Comparable.class);
-
-        return new OrderSpecifier<>(order, path);
     }
 
     private OrderSpecifier createOrderSpecifier(SalePostSortType sortType){

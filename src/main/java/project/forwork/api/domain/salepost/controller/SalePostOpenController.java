@@ -31,11 +31,11 @@ public class SalePostOpenController {
 
     @Operation(summary = "이력서 판매글 전체 조회 API",
             description = "정렬 조건 [등록날짜, 가격, 조회수, 팔린개수]" +
-                    "검색 조건 [분야, 년차, 가격범위, 제목]")
+                    "검색 조건 [분야, 년차, 가격범위]")
     @GetMapping // 조회이기 때문에 겟매핑을 하고 다만  그러면 RequestBody를 사용못한다 TODO
     public Api<SalePostPage> retrieveAllByCondition(
             @RequestParam(defaultValue = "0") int offset,
-            @RequestParam(defaultValue = "10") int limit,
+            @RequestParam(defaultValue = "3") int limit,
             @RequestParam SalePostSortType sortType,
             @ModelAttribute SalePostSearchCond cond
     ){

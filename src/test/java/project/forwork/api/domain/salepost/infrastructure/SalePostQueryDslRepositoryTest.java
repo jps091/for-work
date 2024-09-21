@@ -141,38 +141,6 @@ class SalePostQueryDslRepositoryTest {
     }
 
     @Test
-    void 이력서_제목_검색1() {
-        //given(상황환경 세팅)
-        SalePostSearchCond cond = new SalePostSearchCond();
-        cond.setTitle("test");
-
-        PageRequest pageRequest = PageRequest.of(0, 10);
-
-        //when(상황발생)
-        Page<SalePostResponse> result = repository.searchByCondition(cond, pageRequest, SalePostSortType.BEST_SELLING);
-        List<SalePostResponse> content = result.getContent();
-
-        //then(검증)
-        assertThat(content).allMatch(s -> s.getTitle().contains("test"));
-    }
-
-    @Test
-    void 이력서_제목_검색2() {
-        //given(상황환경 세팅)
-        SalePostSearchCond cond = new SalePostSearchCond();
-        cond.setTitle("백엔드");
-
-        PageRequest pageRequest = PageRequest.of(0, 10);
-
-        //when(상황발생)
-        Page<SalePostResponse> result = repository.searchByCondition(cond, pageRequest, SalePostSortType.BEST_SELLING);
-        List<SalePostResponse> content = result.getContent();
-
-        //then(검증)
-        assertThat(content).allMatch(s -> s.getTitle().contains("백엔드"));
-    }
-
-    @Test
     void 이력서_가격범위_분야_검색() {
         //given(상황환경 세팅)
         SalePostSearchCond cond = new SalePostSearchCond();
@@ -194,7 +162,7 @@ class SalePostQueryDslRepositoryTest {
     }
 
     @Test
-    void 이력서_가격범위_년차_검색() {
+    void 이력서_가격범위_분야_년차_검색() {
         //given(상황환경 세팅)
         SalePostSearchCond cond = new SalePostSearchCond();
         cond.setMinPrice(new BigDecimal(10000));

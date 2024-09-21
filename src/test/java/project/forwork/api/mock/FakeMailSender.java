@@ -1,8 +1,10 @@
 package project.forwork.api.mock;
 
 
+import lombok.Getter;
 import project.forwork.api.common.service.port.MailSender;
 
+@Getter
 public class FakeMailSender implements MailSender {
 
     public String email;
