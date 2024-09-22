@@ -38,7 +38,8 @@ public class WebConfig implements WebMvcConfigurer {
             "/health",
             "/favicon.ico",
             "/css/**",
-            "/error"
+            "/error",
+            "/actuator/**"
     );
 
     private List<String> SWAGGER = List.of(
