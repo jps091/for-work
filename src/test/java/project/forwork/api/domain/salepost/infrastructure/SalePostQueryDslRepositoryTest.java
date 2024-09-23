@@ -41,6 +41,178 @@ class SalePostQueryDslRepositoryTest {
      */
 
     @Test
+    void 조건_없이_첫_페이지_검색(){
+        //given(상황환경 세팅)
+        SalePostSearchCond cond = new SalePostSearchCond();
+
+        //when(상황발생) 기본 정렬 최신 등록순
+        List<SalePostResponse> result = repository.findFirstPage(cond, null, 2);
+
+        //then(검증)
+        assertThat(result).hasSize(2);
+        assertThat(result.get(0).getId()).isEqualTo(8L);
+        assertThat(result.get(1).getId()).isEqualTo(7L);
+    }
+// 7,5,4,3,1 back
+    @Test
+    void 조건_BACKEND_첫_페이지_검색(){
+        //given(상황환경 세팅)
+        SalePostSearchCond cond = new SalePostSearchCond();
+        cond.setField(FieldType.BACKEND);
+
+        //when(상황발생) 기본 정렬 최신 등록순
+        List<SalePostResponse> result = repository.findFirstPage(cond, null, 2);
+
+        //then(검증)
+        assertThat(result).hasSize(2);
+        assertThat(result.get(0).getId()).isEqualTo(7L);
+        assertThat(result.get(1).getId()).isEqualTo(5L);
+        assertThat(result).allMatch(salePostResponse -> salePostResponse.getField().equals(FieldType.BACKEND));
+    }
+
+    @Test
+    void 조건_BACKEND_조회순_첫_페이지_검색(){
+        //given(상황환경 세팅)
+        SalePostSearchCond cond = new SalePostSearchCond();
+        cond.setField(FieldType.BACKEND);
+
+        //when(상황발생) 기본 정렬 최신 등록순
+        List<SalePostResponse> result = repository.findFirstPage(cond, SalePostSortType.VIEW_COUNT, 3);
+
+        //then(검증)
+        assertThat(result).hasSize(3);
+        assertThat(result.get(0).getId()).isEqualTo(5L);
+        assertThat(result.get(1).getId()).isEqualTo(7L);
+        assertThat(result.get(2).getId()).isEqualTo(1L);
+        assertThat(result).allMatch(salePostResponse -> salePostResponse.getField().equals(FieldType.BACKEND));
+    }
+
+    @Test
+    void 조건_BACKEND_가격_범위_조회순_첫_페이지_검색(){
+        //given(상황환경 세팅)
+        SalePostSearchCond cond = new SalePostSearchCond();
+        cond.setField(FieldType.BACKEND);
+        cond.setMinPrice(new BigDecimal("60000.00"));
+        cond.setMaxPrice(new BigDecimal("90000.00"));
+
+        //when(상황발생) 기본 정렬 최신 등록순
+        List<SalePostResponse> result = repository.findFirstPage(cond, SalePostSortType.VIEW_COUNT, 3);
+
+        //then(검증)
+        assertThat(result).hasSize(3);
+        assertThat(result.get(0).getId()).isEqualTo(5L);
+        assertThat(result.get(1).getId()).isEqualTo(1L);
+        assertThat(result.get(2).getId()).isEqualTo(4L);
+        assertThat(result).allMatch(salePostResponse -> salePostResponse.getField().equals(FieldType.BACKEND));
+    }
+
+    @Test
+    void 조건_없이_다음_페이지_검색(){
+        //given(상황환경 세팅)
+        SalePostSearchCond cond = new SalePostSearchCond();
+
+        //when(상황발생) 기본 정렬 최신 등록순
+        List<SalePostResponse> result = repository.findNextPage(cond, 7L, null, 2);
+
+        //then(검증)
+        assertThat(result).hasSize(2);
+        assertThat(result.get(0).getId()).isEqualTo(6L);
+        assertThat(result.get(1).getId()).isEqualTo(5L);
+    }
+
+    @Test
+    void 조건_AI_다음_페이지_검색(){
+        //given(상황환경 세팅)
+        SalePostSearchCond cond = new SalePostSearchCond();
+        cond.setField(FieldType.AI);
+
+        //when(상황발생) 기본 정렬 최신 등록순
+        List<SalePostResponse> result = repository.findNextPage(cond, 7L,null, 1);
+
+        //then(검증)
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).getId()).isEqualTo(2L);
+        assertThat(result).allMatch(salePostResponse -> salePostResponse.getField().equals(FieldType.AI));
+    }
+
+    @Test
+    void 조건_BACKEND_오랜된순_다음_페이지_검색(){
+        //given(상황환경 세팅)
+        SalePostSearchCond cond = new SalePostSearchCond();
+        cond.setField(FieldType.BACKEND);
+
+        //when(상황발생) 기본 정렬 최신 등록순
+        List<SalePostResponse> result = repository.findNextPage(cond, 5L, SalePostSortType.OLD, 2);
+
+        //then(검증)
+        assertThat(result).hasSize(2);
+        assertThat(result.get(0).getId()).isEqualTo(1L);
+        assertThat(result.get(1).getId()).isEqualTo(4L);
+        assertThat(result).allMatch(salePostResponse -> salePostResponse.getField().equals(FieldType.BACKEND));
+    }
+
+    @Test
+    void 조건_없이_이전_페이지_검색(){
+        //given(상황환경 세팅)
+        SalePostSearchCond cond = new SalePostSearchCond();
+
+        //when(상황발생) 기본 정렬 최신 등록순
+        List<SalePostResponse> result = repository.findPreviousPage(cond, 1L, null, 2);
+
+        //then(검증)
+        assertThat(result).hasSize(2);
+        assertThat(result.get(0).getId()).isEqualTo(4L);
+        assertThat(result.get(1).getId()).isEqualTo(2L);
+    }
+
+    @Test
+    void 조건_SENIOR_이전_페이지_검색(){
+        //given(상황환경 세팅)
+        SalePostSearchCond cond = new SalePostSearchCond();
+        cond.setLevel(LevelType.SENIOR);
+
+        //when(상황발생) 기본 정렬 최신 등록순
+        List<SalePostResponse> result = repository.findNextPage(cond, 6L,null, 2);
+
+        //then(검증)
+        assertThat(result).hasSize(2);
+        assertThat(result.get(0).getId()).isEqualTo(2L);
+        assertThat(result.get(1).getId()).isEqualTo(1L);
+        assertThat(result).allMatch(salePostResponse -> salePostResponse.getLevel().equals(LevelType.SENIOR));
+    }
+
+    @Test
+    void 조건_없이_마지막_페이지_검색(){
+        //given(상황환경 세팅)
+        SalePostSearchCond cond = new SalePostSearchCond();
+
+        //when(상황발생) 기본 정렬 최신 등록순
+        List<SalePostResponse> result = repository.findLastPage(cond, null, 2);
+
+        //then(검증)
+        assertThat(result).hasSize(2);
+        assertThat(result.get(0).getId()).isEqualTo(2L);
+        assertThat(result.get(1).getId()).isEqualTo(1L);
+    }
+
+    @Test
+    void 조건_BACKEND_조회순_마지막_페이지_검색(){
+        //given(상황환경 세팅)
+        SalePostSearchCond cond = new SalePostSearchCond();
+        cond.setField(FieldType.BACKEND);
+
+        //when(상황발생) 기본 정렬 최신 등록순
+        List<SalePostResponse> result = repository.findLastPage(cond, SalePostSortType.VIEW_COUNT, 3);
+
+        //then(검증)
+        assertThat(result).hasSize(3);
+        assertThat(result.get(0).getId()).isEqualTo(7L);
+        assertThat(result.get(1).getId()).isEqualTo(1L);
+        assertThat(result.get(2).getId()).isEqualTo(4L);
+        assertThat(result).allMatch(salePostResponse -> salePostResponse.getField().equals(FieldType.BACKEND));
+    }
+
+    @Test
     void 조건_없이_검색(){
         //given(상황환경 세팅)
         SalePostSearchCond cond = new SalePostSearchCond();

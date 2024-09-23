@@ -56,10 +56,12 @@ public class SalePostQueryDslRepository {
                 .from(salePostEntity)
                 .join(salePostEntity.resumeEntity, resumeEntity)
                 //.join(salePostEntity.thumbnailImageEntity, thumbnailImageEntity) // 썸네일
-                .where(salePostEntity.salesStatus.eq(SalesStatus.SELLING),
+                .where(
                         priceRangeCond(cond.getMinPrice(), cond.getMaxPrice()),
                         fieldEqual(cond.getField()),
-                        levelEqual(cond.getLevel()))
+                        levelEqual(cond.getLevel()),
+                        salePostEntity.salesStatus.eq(SalesStatus.SELLING)
+                )
                 .orderBy(orderSpecifier, salePostEntity.id.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -94,10 +96,12 @@ public class SalePostQueryDslRepository {
                 .from(salePostEntity)
                 .join(salePostEntity.resumeEntity, resumeEntity)
                 //.join(salePostEntity.thumbnailImageEntity, thumbnailImageEntity) // 썸네일
-                .where(salePostEntity.salesStatus.eq(SalesStatus.SELLING),
+                .where(
                         priceRangeCond(cond.getMinPrice(), cond.getMaxPrice()),
                         fieldEqual(cond.getField()),
-                        levelEqual(cond.getLevel()))
+                        levelEqual(cond.getLevel()),
+                        salePostEntity.salesStatus.eq(SalesStatus.SELLING)
+                )
                 .orderBy(orderSpecifier)
                 .limit(limit).fetch();
     }
@@ -123,10 +127,12 @@ public class SalePostQueryDslRepository {
                 .from(salePostEntity)
                 .join(salePostEntity.resumeEntity, resumeEntity)
                 //.join(salePostEntity.thumbnailImageEntity, thumbnailImageEntity) // 썸네일
-                .where(salePostEntity.salesStatus.eq(SalesStatus.SELLING),
+                .where(
                         priceRangeCond(cond.getMinPrice(), cond.getMaxPrice()),
                         fieldEqual(cond.getField()),
-                        levelEqual(cond.getLevel()))
+                        levelEqual(cond.getLevel()),
+                        salePostEntity.salesStatus.eq(SalesStatus.SELLING)
+                )
                 .orderBy(orderSpecifier)
                 .limit(limit).fetch();
 
@@ -155,11 +161,12 @@ public class SalePostQueryDslRepository {
                 .from(salePostEntity)
                 .join(salePostEntity.resumeEntity, resumeEntity)
                 //.join(salePostEntity.thumbnailImageEntity, thumbnailImageEntity) // 썸네일
-                .where(salePostEntity.salesStatus.eq(SalesStatus.SELLING)
-                                .and(salePostEntity.id.lt(lastId)),
+                .where(salePostEntity.id.lt(lastId).
+                                and(salePostEntity.salesStatus.eq(SalesStatus.SELLING)),
                         priceRangeCond(cond.getMinPrice(), cond.getMaxPrice()),
                         fieldEqual(cond.getField()),
-                        levelEqual(cond.getLevel()))
+                        levelEqual(cond.getLevel())
+                )
                 .orderBy(orderSpecifier)
                 .limit(limit).fetch();
     }
@@ -185,11 +192,12 @@ public class SalePostQueryDslRepository {
                 .from(salePostEntity)
                 .join(salePostEntity.resumeEntity, resumeEntity)
                 //.join(salePostEntity.thumbnailImageEntity, thumbnailImageEntity) // 썸네일
-                .where(salePostEntity.salesStatus.eq(SalesStatus.SELLING)
-                                .and(salePostEntity.id.gt(lastId)),
+                .where(salePostEntity.id.gt(lastId).
+                                and(salePostEntity.salesStatus.eq(SalesStatus.SELLING)),
                         priceRangeCond(cond.getMinPrice(), cond.getMaxPrice()),
                         fieldEqual(cond.getField()),
-                        levelEqual(cond.getLevel()))
+                        levelEqual(cond.getLevel())
+                )
                 .orderBy(orderSpecifier)
                 .limit(limit).fetch();
 
