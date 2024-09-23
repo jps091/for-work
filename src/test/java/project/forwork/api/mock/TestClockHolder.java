@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import project.forwork.api.common.service.port.ClockHolder;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 @AllArgsConstructor
@@ -13,6 +14,7 @@ public class TestClockHolder implements ClockHolder {
 
     private long mills;
     private LocalDateTime localDateTime;
+    private LocalDate localDate;
 
     public TestClockHolder(long mills) {
         this.mills = mills;
@@ -36,7 +38,10 @@ public class TestClockHolder implements ClockHolder {
     public LocalDateTime now() {
         return localDateTime;
     }
-
+    @Override
+    public LocalDate nowDate(){
+        return localDate;
+    }
     @Override
     public Date convertExpiredDateFrom(long millis) {
         long expiredMillis = millis * 1000 + millis();

@@ -1,5 +1,7 @@
 package project.forwork.api.domain.resume.infrastructure;
 
+import jakarta.persistence.EntityManager;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,8 +16,12 @@ import project.forwork.api.domain.resume.infrastructure.ResumeQueryDlsRepository
 import project.forwork.api.domain.resume.infrastructure.ResumeSearchCond;
 import project.forwork.api.domain.resume.infrastructure.enums.FieldType;
 import project.forwork.api.domain.resume.infrastructure.enums.LevelType;
+import project.forwork.api.domain.resume.infrastructure.enums.PeriodCond;
 import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
+import project.forwork.api.mock.TestClockHolder;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 
@@ -33,6 +39,18 @@ class ResumeQueryDlsRepositoryTest {
     @Autowired
     private ResumeQueryDlsRepository repository;
 
+    @Autowired
+    private EntityManager entityManager;
+
+    @BeforeEach
+    void init(){
+        TestClockHolder clockHolder = TestClockHolder.builder()
+                .localDate(LocalDate.of(2024, 9, 10))
+                .localDateTime(LocalDateTime.of(2024, 9, 10, 23, 58))
+                .build();
+        repository = new ResumeQueryDlsRepository(entityManager, clockHolder);
+    }
+
     /***
      * ('test1', 'FRONTEND', 'NEW', 'PENDING')
      * ('test2', 'AI', 'SENIOR', 'REJECTED')
@@ -40,22 +58,219 @@ class ResumeQueryDlsRepositoryTest {
      * ('test4', 'FRONTEND', 'NEW', 'ACTIVE')
      */
     @Test
-    void 이력서_조건X_검색() {
-        // Given: 검색 조건을 설정
+    void 이력서_첫페이지_조건X_검색() {
+        //given(상황환경 세팅)
         ResumeSearchCond cond = new ResumeSearchCond();
 
-        // 페이징 설정 (0번 페이지, 10개씩 가져옴)
-        PageRequest pageRequest = PageRequest.of(0, 10);
+        //when(상황발생)
+        List<ResumeResponse> result = repository.findFirstPage(cond, 2);
 
-        // When: search 메서드를 호출하여 쿼리 실행
-        Page<ResumeResponse> result = repository.search(cond, pageRequest);
-        List<ResumeResponse> content = result.getContent();
+        //then(검증)
+        assertThat(result).hasSize(2);
+    }
+    @Test
+    void 이력서_첫페이지_조건_TODAY_검색() {
+        //given(상황환경 세팅)
+        ResumeSearchCond cond = new ResumeSearchCond();
+        cond.setPeriodCond(PeriodCond.TODAY);
 
-        // Then: 결과 검증
-        assertThat(content).hasSize(8);
+        //when(상황발생)
+        List<ResumeResponse> result = repository.findFirstPage(cond, 2);
+
+        //then(검증)
+        assertThat(result).hasSize(1);
     }
 
     @Test
+    void 이력서_첫페이지_조건_WEEK_검색() {
+        //given(상황환경 세팅)
+        ResumeSearchCond cond = new ResumeSearchCond();
+        cond.setPeriodCond(PeriodCond.WEEK);
+
+        //when(상황발생)
+        List<ResumeResponse> result = repository.findFirstPage(cond, 10);
+
+        //then(검증)
+        assertThat(result).hasSize(7);
+    }
+
+    @Test
+    void 이력서_첫페이지_조건_WEEK_ACTIVE_검색() {
+        //given(상황환경 세팅)
+        ResumeSearchCond cond = new ResumeSearchCond();
+        cond.setPeriodCond(PeriodCond.WEEK);
+        cond.setResumeStatus(ResumeStatus.ACTIVE);
+
+        //when(상황발생)
+        List<ResumeResponse> result = repository.findFirstPage(cond, 10);
+
+        //then(검증)
+        assertThat(result).hasSize(5);
+    }
+
+    @Test
+    void 이력서_첫페이지_조건_MONTH_PENDING_검색() {
+        //given(상황환경 세팅)
+        ResumeSearchCond cond = new ResumeSearchCond();
+        cond.setPeriodCond(PeriodCond.MONTH);
+        cond.setResumeStatus(ResumeStatus.PENDING);
+
+        //when(상황발생)
+        List<ResumeResponse> result = repository.findFirstPage(cond, 20);
+
+        //then(검증)
+        assertThat(result).hasSize(2);
+    }
+
+    @Test
+    void 이력서_다음페이지_요청시간이_같다면_ID_값이_낮은게_먼저_반환_된다() {
+        //given(상황환경 세팅)
+        ResumeSearchCond cond = new ResumeSearchCond();
+        //2024-09-04 00:18:39
+        LocalDateTime last = LocalDateTime.of(2024, 9, 5, 0, 18, 39);
+
+        //when(상황발생)
+        List<ResumeResponse> result = repository.findNextPage(cond, last, 4L, 2);
+
+        //then(검증)
+        assertThat(result).hasSize(2);
+        assertThat(result.get(0).getId()).isEqualTo(5L);
+        assertThat(result.get(0).getModifiedAt()).isEqualTo(last);
+    }
+
+
+    @Test
+    void 이력서_다음페이지_조건_WEEK() {
+        //given(상황환경 세팅)
+        ResumeSearchCond cond = new ResumeSearchCond();
+        cond.setPeriodCond(PeriodCond.WEEK);
+        //2024-09-04 00:18:39
+        LocalDateTime last = LocalDateTime.of(2024, 9, 4, 0, 18, 39);
+
+        //when(상황발생)
+        List<ResumeResponse> result = repository.findNextPage(cond, last, 3L, 2);
+
+        //then(검증)
+        assertThat(result).hasSize(2);
+        assertThat(result.get(0).getId()).isEqualTo(4L);
+        assertThat(result.get(1).getId()).isEqualTo(5L);
+    }
+
+    @Test
+    void 이력서_다음페이지_조건_WEEK_PENDING() {
+        //given(상황환경 세팅)
+        ResumeSearchCond cond = new ResumeSearchCond();
+        cond.setPeriodCond(PeriodCond.WEEK);
+        cond.setResumeStatus(ResumeStatus.PENDING);
+        //2024-09-04 00:18:39
+        LocalDateTime last = LocalDateTime.of(2024, 9, 4, 0, 18, 39);
+
+        //when(상황발생)
+        List<ResumeResponse> result = repository.findNextPage(cond, last, 3L, 2);
+
+        //then(검증)
+        assertThat(result).hasSize(0);
+    }
+
+    @Test
+    void 이력서_다음페이지_조건_MONTH_ACTIVE() {
+        //given(상황환경 세팅)
+        ResumeSearchCond cond = new ResumeSearchCond();
+        cond.setPeriodCond(PeriodCond.MONTH);
+        cond.setResumeStatus(ResumeStatus.ACTIVE);
+        //2024-09-05 00:18:39
+        LocalDateTime last = LocalDateTime.of(2024, 9, 5, 0, 18, 39);
+
+        //when(상황발생)
+        List<ResumeResponse> result = repository.findNextPage(cond, last, 5L, 4);
+
+        //then(검증)
+        assertThat(result).hasSize(3);
+        assertThat(result.get(0).getId()).isEqualTo(6L);
+        assertThat(result.get(1).getId()).isEqualTo(7L);
+        assertThat(result.get(2).getId()).isEqualTo(8L);
+    }
+
+    @Test
+    void 이력서_이전페이지_요청시간이_같다면_ID_값이_높은게_먼저_반환_된다() {
+        //given(상황환경 세팅)
+        ResumeSearchCond cond = new ResumeSearchCond();
+        //2024-09-05 00:18:39
+        LocalDateTime first = LocalDateTime.of(2024, 9, 5, 0, 18, 39);
+
+        //when(상황발생)
+        List<ResumeResponse> result = repository.findPreviousPage(cond, first, 5L, 1);
+
+        //then(검증)
+        assertThat(result.get(0).getId()).isEqualTo(4L);
+        assertThat(result.get(0).getModifiedAt()).isEqualTo(first);
+    }
+
+    @Test
+    void 이력서_이전_페이지_조건_WEEK_ACTIVE_검색() {
+        //given(상황환경 세팅)
+        ResumeSearchCond cond = new ResumeSearchCond();
+        cond.setPeriodCond(PeriodCond.WEEK);
+        cond.setResumeStatus(ResumeStatus.ACTIVE);
+
+        LocalDateTime first = LocalDateTime.of(2024, 9, 7, 0, 18, 39);
+
+        //when(상황발생)
+        List<ResumeResponse> result = repository.findPreviousPage(cond, first, 7L, 2);
+
+        //then(검증)
+        assertThat(result.get(0).getId()).isEqualTo(5L);
+        assertThat(result.get(1).getId()).isEqualTo(6L);
+    }
+
+    @Test
+    void 이력서_이전_페이지_조건_MONTH_PENDING_검색() {
+        //given(상황환경 세팅)
+        ResumeSearchCond cond = new ResumeSearchCond();
+        cond.setPeriodCond(PeriodCond.MONTH);
+        cond.setResumeStatus(ResumeStatus.PENDING);
+
+        LocalDateTime first = LocalDateTime.of(2024, 9, 4, 0, 18, 39);
+
+        //when(상황발생)
+        List<ResumeResponse> result = repository.findPreviousPage(cond, first, 3L, 2);
+
+        //then(검증)
+        assertThat(result.get(0).getId()).isEqualTo(1L);
+    }
+
+    @Test
+    void 이력서_마지막_페이지_조건X_검색() {
+        //given(상황환경 세팅)
+        ResumeSearchCond cond = new ResumeSearchCond();
+
+        //when(상황발생)
+        List<ResumeResponse> result = repository.findLastPage(cond, 2);
+
+        //then(검증)
+        assertThat(result).hasSize(2);
+        assertThat(result.get(0).getId()).isEqualTo(8L);
+        assertThat(result.get(1).getId()).isEqualTo(2L);
+    }
+
+    @Test
+    void 이력서_마지막_페이지_조건_WEEK_ACTIVE_검색() {
+        //given(상황환경 세팅)
+        ResumeSearchCond cond = new ResumeSearchCond();
+        cond.setPeriodCond(PeriodCond.WEEK);
+        cond.setResumeStatus(ResumeStatus.ACTIVE);
+
+        //when(상황발생)
+        List<ResumeResponse> result = repository.findLastPage(cond, 2);
+
+        //then(검증)
+        assertThat(result).hasSize(2);
+        assertThat(result.get(0).getId()).isEqualTo(7L);
+        assertThat(result.get(1).getId()).isEqualTo(8L);
+    }
+// TODO 주석삭제 필요
+
+/*    @Test
     void 이력서_필드조건_검색() {
         // Given: 검색 조건을 설정
         ResumeSearchCond cond = new ResumeSearchCond();
@@ -177,5 +392,5 @@ class ResumeQueryDlsRepositoryTest {
             // 내림차순일 경우 첫 번째 값이 두 번째 값보다 크거나 같아야 함 (등록 날짜가 더 오래됨)
             assertThat(content).isSortedAccordingTo(Comparator.comparing(ResumeResponse::getModifiedAt).reversed());
         }
-    }
+    }*/
 }

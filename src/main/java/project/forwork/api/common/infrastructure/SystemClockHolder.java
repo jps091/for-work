@@ -3,6 +3,7 @@ package project.forwork.api.common.infrastructure;
 import org.springframework.stereotype.Component;
 import project.forwork.api.common.service.port.ClockHolder;
 import java.time.Clock;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
@@ -23,5 +24,9 @@ public class SystemClockHolder implements ClockHolder {
 
     public LocalDateTime now() {
         return LocalDateTime.now();
+    }
+
+    public LocalDate nowDate(){
+        return LocalDate.now();
     }
 }
