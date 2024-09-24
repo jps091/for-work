@@ -8,10 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import project.forwork.api.common.api.Api;
-import project.forwork.api.domain.user.controller.model.EmailVerifyRequest;
-import project.forwork.api.domain.user.controller.model.UserCreateRequest;
-import project.forwork.api.domain.user.controller.model.UserLoginRequest;
-import project.forwork.api.domain.user.controller.model.UserResponse;
+import project.forwork.api.domain.user.controller.model.*;
 import project.forwork.api.domain.user.model.User;
 import project.forwork.api.domain.user.service.LoginService;
 import project.forwork.api.domain.user.service.UserService;
@@ -25,7 +22,6 @@ public class UserOpenApiController {
 
     private final UserService userService;
     private final LoginService loginService;
-
 
     @Operation(summary = "회원 등록 API", description = "ID, 패스워드, 이름, 이메일 입력")
     @PostMapping("/register")
@@ -57,7 +53,6 @@ public class UserOpenApiController {
         return Api.OK("인증코드 검증 성공");
     }
 
-
     @Operation(summary = "회원 로그인 API", description = "ID, 패스워드 입력")
     @PostMapping("/login")
     public Api<UserResponse> login(
@@ -67,5 +62,14 @@ public class UserOpenApiController {
     ){
         UserResponse userResponse = loginService.login(response, userLoginRequest);
         return Api.OK(userResponse);
+    }
+
+    @Operation(summary = "임시 비밀번호 발급 API", description = "계정의 이메일, 성함 입력")
+    @PutMapping
+    public Api<String> initTemporaryPassword(
+            @Valid @RequestBody PasswordInitRequest passwordInitRequest
+    ){
+        loginService.initTemporaryPassword(passwordInitRequest);
+        return Api.OK("임시 비밀번호 발급 성공");
     }
 }

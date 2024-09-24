@@ -13,7 +13,8 @@ import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.common.service.port.RedisUtils;
 import project.forwork.api.domain.token.service.TokenCookieService;
 import project.forwork.api.domain.user.controller.model.EmailVerifyRequest;
-import project.forwork.api.domain.user.controller.model.ModifyPasswordRequest;
+import project.forwork.api.domain.user.controller.model.PasswordModifyRequest;
+import project.forwork.api.domain.user.controller.model.PasswordVerifyRequest;
 import project.forwork.api.domain.user.controller.model.UserCreateRequest;
 import project.forwork.api.domain.user.infrastructure.enums.RoleType;
 import project.forwork.api.domain.user.model.User;
@@ -22,7 +23,6 @@ import project.forwork.api.mock.FakeUserRepository;
 import project.forwork.api.mock.TestUuidHolder;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -83,18 +83,52 @@ class UserServiceTest {
     }
 
     @Test
+    void PasswordVerifyRequest_와_CurrentUser_로_비밀번호_검증을_할_수_있다(){
+        //given(상황환경 세팅)
+        CurrentUser currentUser = CurrentUser.builder()
+                .id(1L)
+                .build();
+
+        PasswordVerifyRequest body = PasswordVerifyRequest.builder()
+                .password("123")
+                .build();
+
+        //when(상황발생)
+        //then(검증)
+        assertThatCode(() -> userService.verifyPassword(currentUser, body))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    void PasswordVerifyRequest_비밀번호가_일치_하지_않으면_예외가_발생_한다(){
+        //given(상황환경 세팅)
+        CurrentUser currentUser = CurrentUser.builder()
+                .id(1L)
+                .build();
+
+        PasswordVerifyRequest body = PasswordVerifyRequest.builder()
+                .password("455")
+                .build();
+
+        //when(상황발생)
+        //then(검증)
+        assertThatThrownBy(() -> userService.verifyPassword(currentUser, body))
+                .isInstanceOf(ApiException.class);
+    }
+
+    @Test
     void CurrentUser_와_ModifyPasswordRequest_로_비밀번호를_수정할_수_있다(){
         //given(상황환경 세팅)
         CurrentUser currentUser = CurrentUser.builder()
                 .id(1L)
                 .build();
 
-        ModifyPasswordRequest modifyPasswordRequest = ModifyPasswordRequest.builder()
+        PasswordModifyRequest passwordModifyRequest = PasswordModifyRequest.builder()
                 .password("567")
                 .build();
 
         //when(상황발생)
-        userService.updatePassword(currentUser, modifyPasswordRequest);
+        userService.updatePassword(currentUser, passwordModifyRequest);
         User user = userService.getByIdWithThrow(1L);
 
         //then(검증)
@@ -102,18 +136,16 @@ class UserServiceTest {
     }
 
     @Test
-    void CurrentUser_와_입력한_비밀번호로_회원탈퇴를_하면_쿠키와_리프레쉬_토큰은_만료_된다(){
+    void 회원탈퇴를_하면_쿠키와_리프레쉬_토큰은_만료_된다(){
         //given(상황환경 세팅)
         CurrentUser currentUser = CurrentUser.builder()
                 .id(1L)
                 .build();
 
-        String password = "123";
-
         //when(상황발생)
         HttpServletResponse response = mock(HttpServletResponse.class);
         HttpServletRequest request = mock(HttpServletRequest.class);
-        userService.delete(currentUser, password, request, response);
+        userService.delete(currentUser, request, response);
 
         //then(검증)
         assertThat(fakeUserRepository.findById(currentUser.getId())).isEmpty();
@@ -121,20 +153,19 @@ class UserServiceTest {
     }
 
     @Test
-    void 비밀번호_입력을_올바르게_해야_회원탈퇴를_할_수_있다(){
+    void 회원탈퇴를_할_수_있다(){
         //given(상황환경 세팅)
         CurrentUser currentUser = CurrentUser.builder()
                 .id(1L)
                 .build();
 
-        String password = "456";
-
         //when(상황발생)
         HttpServletResponse response = mock(HttpServletResponse.class);
         HttpServletRequest request = mock(HttpServletRequest.class);
+        userService.delete(currentUser, request, response);
 
         //then(검증)
-        assertThatThrownBy(() -> userService.delete(currentUser, password, request, response))
+        assertThatThrownBy(() -> fakeUserRepository.getByIdWithThrow(1L))
                 .isInstanceOf(ApiException.class);
     }
 
