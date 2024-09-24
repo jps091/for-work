@@ -2,11 +2,11 @@ package project.forwork.api.domain.salespost.service;
 
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.forwork.api.common.domain.CurrentUser;
+import project.forwork.api.common.error.SalesPostErrorCode;
+import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.domain.resume.model.Resume;
 import project.forwork.api.domain.salespost.controller.model.SalesPostPage;
 import project.forwork.api.domain.salespost.controller.model.SalesPostResponse;
@@ -16,6 +16,8 @@ import project.forwork.api.domain.salespost.infrastructure.SalesPostSearchCond;
 import project.forwork.api.domain.salespost.infrastructure.enums.SalesPostSortType;
 import project.forwork.api.domain.salespost.model.SalesPost;
 import project.forwork.api.domain.salespost.service.port.SalesPostRepository;
+
+import java.util.List;
 
 @Service
 @Builder
@@ -62,14 +64,47 @@ public class SalesPostService {
         return salesPost;
     }
 
-    public SalesPostPage getResumesByCondition(
-            int offset,
-            int limit,
-            SalesPostSortType sortType,
-            SalesPostSearchCond cond
+    @Transactional(readOnly = true)
+    public SalesPostPage findFirstPage(
+            SalesPostSortType sortType, SalesPostSearchCond cond, int limit
     ){
-        PageRequest pageRequest = PageRequest.of(offset, limit);
-        Page<SalesPostResponse> result = salesPostQueryDslRepository.searchByCondition(cond, pageRequest, sortType);
-        return SalesPostPage.from(result);
+        List<SalesPostResponse> results = salesPostQueryDslRepository.findFirstPage(cond, sortType, limit);
+        return createSalesPostPage(results);
+    }
+    @Transactional(readOnly = true)
+    public SalesPostPage findLastPage(
+            SalesPostSortType sortType, SalesPostSearchCond cond, int limit
+    ){
+        List<SalesPostResponse> results = salesPostQueryDslRepository.findLastPage(cond, sortType, limit);
+        return createSalesPostPage(results);
+    }
+
+    @Transactional(readOnly = true)
+    public SalesPostPage findNextPage(
+            SalesPostSortType sortType, SalesPostSearchCond cond, int limit, Long lastId
+    ){
+        List<SalesPostResponse> results = salesPostQueryDslRepository.findNextPage(cond, lastId, sortType, limit);
+
+        if(results.isEmpty()){
+            throw new ApiException(SalesPostErrorCode.SALES_POST_NO_CONTENT);
+        }
+
+        return createSalesPostPage(results);
+    }
+
+    @Transactional(readOnly = true)
+    public SalesPostPage findPreviousPage(
+            SalesPostSortType sortType, SalesPostSearchCond cond, int limit, Long lastId
+    ){
+        List<SalesPostResponse> results = salesPostQueryDslRepository.findPreviousPage(cond, lastId, sortType, limit);
+        return createSalesPostPage(results);
+    }
+    private static SalesPostPage createSalesPostPage(List<SalesPostResponse> results) {
+        SalesPostResponse lastRecord = results.get(results.size() - 1);
+
+        return SalesPostPage.builder()
+                .results(results)
+                .lastId(lastRecord.getId())
+                .build();
     }
 }

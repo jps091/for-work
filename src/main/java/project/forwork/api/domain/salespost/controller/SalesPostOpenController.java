@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import project.forwork.api.common.api.Api;
 import project.forwork.api.domain.salespost.controller.model.SalesPostPage;
+import project.forwork.api.domain.salespost.controller.model.SalesPostPage3;
 import project.forwork.api.domain.salespost.controller.model.SalesPostResponse;
 import project.forwork.api.domain.salespost.infrastructure.SalesPostSearchCond;
 import project.forwork.api.domain.salespost.infrastructure.enums.SalesPostSortType;
@@ -29,17 +30,49 @@ public class SalesPostOpenController {
         return Api.OK(SalesPostResponse.from(salesPost));
     }
 
-    @Operation(summary = "이력서 판매글 전체 조회 API",
-            description = "정렬 조건 [등록날짜, 가격, 조회수, 팔린개수]" +
-                    "검색 조건 [분야, 년차, 가격범위]")
-    @GetMapping // 조회이기 때문에 겟매핑을 하고 다만  그러면 RequestBody를 사용못한다 TODO
-    public Api<SalesPostPage> retrieveAllByCondition(
-            @RequestParam(defaultValue = "0") int offset,
-            @RequestParam(defaultValue = "3") int limit,
+    @Operation(summary = "첫 페이지 sale-post 조회 API", description = "필터링 및 정렬 조건을 선택 할 경우 첫 페이지로 이동")
+    @GetMapping("/first")
+    public Api<SalesPostPage> findFirstPage(
+            @RequestParam SalesPostSearchCond cond,
             @RequestParam SalesPostSortType sortType,
-            @ModelAttribute SalesPostSearchCond cond
+            @RequestParam(defaultValue = "6") int limit
     ){
-        SalesPostPage result = salesPostService.getResumesByCondition(offset, limit, sortType, cond);
-        return Api.OK(result);
+        SalesPostPage salesPostPage = salesPostService.findFirstPage(sortType, cond, limit);
+        return Api.OK(salesPostPage);
+    }
+
+    @Operation(summary = "마지막 페이지 sale-post 조회 API", description = "마지막 페이지로 바로 이동")
+    @GetMapping("/last")
+    public Api<SalesPostPage> findLastPage(
+            @RequestParam SalesPostSearchCond cond,  // 새로운 필터링 조건
+            @RequestParam SalesPostSortType sortType,
+            @RequestParam(defaultValue = "6") int limit
+    ){
+        SalesPostPage salesPostPage = salesPostService.findLastPage(sortType, cond, limit);
+        return Api.OK(salesPostPage);
+    }
+
+    @Operation(summary = "다음 페이지 sale-post 조회 API", description = "다음 페이지로 이동")
+    @GetMapping("/next")
+    public Api<SalesPostPage> findNextPage(
+            @RequestParam SalesPostSearchCond cond,  // 새로운 필터링 조건
+            @RequestParam SalesPostSortType sortType,
+            @RequestParam(defaultValue = "6") int limit,
+            @RequestParam Long lastId
+    ){
+        SalesPostPage salesPostPage = salesPostService.findNextPage(sortType, cond, limit, lastId);
+        return Api.OK(salesPostPage);
+    }
+
+    @Operation(summary = "이전 페이지 sale-post 조회 API", description = "이전 페이지로 이동")
+    @GetMapping("/previous")
+    public Api<SalesPostPage> findPreviousPage(
+            @RequestParam SalesPostSearchCond cond,  // 새로운 필터링 조건
+            @RequestParam SalesPostSortType sortType,
+            @RequestParam(defaultValue = "6") int limit,
+            @RequestParam Long lastId
+    ){
+        SalesPostPage salesPostPage = salesPostService.findPreviousPage(sortType, cond, limit, lastId);
+        return Api.OK(salesPostPage);
     }
 }

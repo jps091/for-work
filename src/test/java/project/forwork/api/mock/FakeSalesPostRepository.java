@@ -44,7 +44,7 @@ public class FakeSalesPostRepository implements SalesPostRepository {
 
     @Override
     public SalesPost getByIdWithThrow(Long id) {
-        return findById(id).orElseThrow(() -> new ApiException(SalesPostErrorCode.SALE_POST_NOT_FOUND, id));
+        return findById(id).orElseThrow(() -> new ApiException(SalesPostErrorCode.SALES_POST_NOT_FOUND, id));
     }
 
     @Override
@@ -59,7 +59,7 @@ public class FakeSalesPostRepository implements SalesPostRepository {
                         s.getResume().getStatus() == ResumeStatus.ACTIVE &&
                         s.getSalesStatus() == SalesStatus.SELLING)
                 .findAny()
-                .orElseThrow(() -> new ApiException(SalesPostErrorCode.SALE_POST_NOT_FOUND, salesPostId));
+                .orElseThrow(() -> new ApiException(SalesPostErrorCode.SALES_POST_NOT_FOUND, salesPostId));
     }
 
     @Override
@@ -67,6 +67,6 @@ public class FakeSalesPostRepository implements SalesPostRepository {
         return data.stream()
                 .filter(s -> Objects.equals(s.getResume(), resume))
                 .findAny()
-                .orElseThrow(() -> new ApiException(SalesPostErrorCode.SALE_POST_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(SalesPostErrorCode.SALES_POST_NOT_FOUND));
     }
 }

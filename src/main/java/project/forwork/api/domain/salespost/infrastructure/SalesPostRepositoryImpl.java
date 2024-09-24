@@ -26,7 +26,7 @@ public class SalesPostRepositoryImpl implements SalesPostRepository {
 
     @Override
     public SalesPost getByIdWithThrow(Long salesPostId) {
-        return findById(salesPostId).orElseThrow(() -> new ApiException(SalesPostErrorCode.SALE_POST_NOT_FOUND, salesPostId));
+        return findById(salesPostId).orElseThrow(() -> new ApiException(SalesPostErrorCode.SALES_POST_NOT_FOUND, salesPostId));
     }
 
     @Override
@@ -37,14 +37,14 @@ public class SalesPostRepositoryImpl implements SalesPostRepository {
     @Override
     public SalesPost getSellingPostWithThrow(Long salesPostId) {
         return salesPostJpaRepository.findSellingPost(salesPostId, ResumeStatus.ACTIVE, SalesStatus.SELLING)
-                .orElseThrow(() -> new ApiException(SalesPostErrorCode.SALE_POST_NOT_FOUND))
+                .orElseThrow(() -> new ApiException(SalesPostErrorCode.SALES_POST_NOT_FOUND))
                 .toModel();
     }
 
     @Override
     public SalesPost getByResumeWithThrow(Resume resume) {
         return salesPostJpaRepository.findByResumeEntity(ResumeEntity.from(resume))
-                .orElseThrow(() -> new ApiException(SalesPostErrorCode.SALE_POST_NOT_FOUND))
+                .orElseThrow(() -> new ApiException(SalesPostErrorCode.SALES_POST_NOT_FOUND))
                 .toModel();
     }
 }
