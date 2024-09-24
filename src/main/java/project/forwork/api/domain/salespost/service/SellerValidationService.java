@@ -1,4 +1,4 @@
-package project.forwork.api.domain.salepost.service;
+package project.forwork.api.domain.salespost.service;
 
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.forwork.api.common.domain.CurrentUser;
 import project.forwork.api.common.error.ResumeErrorCode;
-import project.forwork.api.common.error.SalePostErrorCode;
+import project.forwork.api.common.error.SalesPostErrorCode;
 import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.domain.resume.model.Resume;
 import project.forwork.api.domain.resume.service.port.ResumeRepository;
@@ -29,7 +29,7 @@ public class SellerValidationService {
 
         log.info("userId={}, currentUserId={}",user.getId(), currentUser.getId());
         if(resume.isAuthorMismatch(user.getId())){
-            throw new ApiException(SalePostErrorCode.ACCESS_NOT_PERMISSION, user.getId());
+            throw new ApiException(SalesPostErrorCode.ACCESS_NOT_PERMISSION, user.getId());
         }
 
         if(resume.isActiveMismatch()){

@@ -1,9 +1,8 @@
-package project.forwork.api.domain.salepost.controller.model;
+package project.forwork.api.domain.salespost.controller.model;
 
 import lombok.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import project.forwork.api.domain.resume.controller.model.ResumeResponse;
 
 import java.util.List;
 
@@ -11,15 +10,15 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class SalePostPage {
+public class SalesPostPage3 {
     private int offset;
     private int limit;
-    private List<SalePostResponse> contents;
+    private List<SalesPostResponse> contents;
 
-    public static SalePostPage from(Page<SalePostResponse> response){
+    public static SalesPostPage3 from(Page<SalesPostResponse> response){
         Pageable pageable = response.getPageable();
 
-        return SalePostPage.builder()
+        return SalesPostPage3.builder()
                 .offset((int)pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .contents(response.getContent())

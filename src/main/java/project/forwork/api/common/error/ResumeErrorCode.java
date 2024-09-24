@@ -11,6 +11,7 @@ public enum ResumeErrorCode implements ErrorCodeIfs{
     ACCESS_NOT_PERMISSION(403, 3402, "이력서 접근 권한이 없습니다."),
     STATUS_NOT_PENDING(404, 3403, "이력서를 수정하려면 대기 상태여야 합니다."),
     STATUS_NOT_ACTIVE(404, 3404, "이력서를 판매 등록 하려면 활성 상태여야 합니다."),
+    RESUME_NO_CONTENT(204, 3405, "컨텐츠가 존재 하지 않습니다."),
     ;
 
     private final Integer httpStatusCode;

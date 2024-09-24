@@ -15,6 +15,8 @@ import project.forwork.api.domain.resume.model.Resume;
 import project.forwork.api.domain.resume.service.ResumeService;
 import project.forwork.api.common.domain.CurrentUser;
 
+import java.time.LocalDateTime;
+
 @RestController
 @Slf4j
 @RequiredArgsConstructor
@@ -25,21 +27,6 @@ public class ResumeAdminController {
 
     private final ResumeService resumeService;
 
-    @Operation(summary = "이력서 판매 요청 전체 조회 API",
-            description = "요청시간, 결정시간 오름차순, 내림차순으로 정렬 선택 가능" +
-                          "검색 조건 [분야, 년차, 판매여부 상태]")
-    @GetMapping
-    public Api<ResumePage> retrieveAllByCondition(
-            @RequestParam(defaultValue = "0") int offset,
-            @RequestParam(defaultValue = "10") int limit,
-            @RequestParam(defaultValue = "modifiedAt") String sortBy,
-            @RequestParam(defaultValue = "true") boolean ascending,
-            @ModelAttribute ResumeSearchCond cond
-    ){
-        ResumePage result = resumeService.getResumesByCondition(offset, limit, sortBy, ascending, cond);
-        return Api.OK(result);
-    }
-
     @Operation(summary = "요청 Resume 상세 조회 API", description = "요청 Resume 상세 조회 API")
     @GetMapping("{resumeId}")
     public Api<ResumeDetailResponse> retrieve(
@@ -48,5 +35,49 @@ public class ResumeAdminController {
     ){
         Resume resume = resumeService.getByIdWithThrow(currentUser, resumeId);
         return Api.OK(ResumeDetailResponse.from(resume));
+    }
+
+    @Operation(summary = "첫 페이지 resume 요청 조회 API", description = "필터링 및 정렬 조건을 선택 할 경우 첫 페이지로 이동")
+    @GetMapping("/first")
+    public Api<ResumePage> findFirstPage(
+            @RequestBody ResumeSearchCond cond,
+            @RequestParam(defaultValue = "6") int limit
+    ){
+        ResumePage resumePage = resumeService.findFirstPage(cond, limit);
+        return Api.OK(resumePage);
+    }
+
+    @Operation(summary = "마지막 페이지 resume 요청 조회 API", description = "마지막 페이지로 바로 이동")
+    @GetMapping("/last")
+    public Api<ResumePage> findLastPage(
+            @RequestBody ResumeSearchCond cond,
+            @RequestParam(defaultValue = "6") int limit
+    ){
+        ResumePage resumePage = resumeService.findLastPage(cond, limit);
+        return Api.OK(resumePage);
+    }
+
+    @Operation(summary = "다음 페이지 resume 요청 조회 API", description = "다음 페이지로 이동")
+    @GetMapping("/next")
+    public Api<ResumePage> findNextPage(
+            @RequestBody ResumeSearchCond cond,
+            @RequestParam LocalDateTime lastModifiedAt,
+            @RequestParam Long lastId,
+            @RequestParam(defaultValue = "6") int limit
+    ){
+        ResumePage resumePage = resumeService.findNextPage(cond, lastModifiedAt, lastId, limit);
+        return Api.OK(resumePage);
+    }
+
+    @Operation(summary = "이전 페이지 resume 요청 조회 API", description = "이전 페이지로 이동")
+    @GetMapping("/previous")
+    public Api<ResumePage> findPreviousPage(
+            @RequestBody ResumeSearchCond cond,
+            @RequestParam LocalDateTime lastModifiedAt,
+            @RequestParam Long lastId,
+            @RequestParam(defaultValue = "6") int limit
+    ){
+        ResumePage resumePage = resumeService.findPreviousPage(cond, lastModifiedAt, lastId, limit);
+        return Api.OK(resumePage);
     }
 }

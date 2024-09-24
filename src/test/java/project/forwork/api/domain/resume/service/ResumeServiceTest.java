@@ -27,11 +27,12 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class ResumeServiceTest {
 
     private ResumeService resumeService;
+    private FakeResumeRepository fakeResumeRepository;
 
     @BeforeEach
     void init(){
         FakeUserRepository fakeUserRepository = new FakeUserRepository();
-        FakeResumeRepository fakeResumeRepository = new FakeResumeRepository();
+        fakeResumeRepository = new FakeResumeRepository();
         FakeResumeDecisionRepository fakeResumeDecisionRepository = new FakeResumeDecisionRepository();
         this.resumeService = ResumeService.builder()
                 .resumeRepository(fakeResumeRepository)
@@ -180,7 +181,7 @@ class ResumeServiceTest {
 
         // 자신이 작성한 대기 상태인 이력서 수정하는 경우
         resumeService.modifyIfPending(3L, currentUser, request); // 성공
-        Resume resume = resumeService.getByIdWithThrow(3L);
+        Resume resume = fakeResumeRepository.getByIdWithThrow(3L);
         assertThat(resume.getField()).isEqualTo(FieldType.DEVOPS);
 
         // 자신이 작성 했지만 대기 상태가 아닌 이력서 수정하는 경우
@@ -202,23 +203,11 @@ class ResumeServiceTest {
         resumeService.updatePending(1L, currentUser);
 
         //then 자신이 작성한 경우
-        Resume resume = resumeService.getByIdWithThrow(1L);
+        Resume resume = fakeResumeRepository.getByIdWithThrow(1L);
         assertThat(resume.getStatus()).isEqualTo(ResumeStatus.PENDING);
 
         //자신이 작성하지 않은 경우
         assertThatThrownBy(() -> resumeService.updatePending(2L, currentUser))
                 .isInstanceOf(ApiException.class);
-    }
-
-    @Test
-    void 자신이_요청한_이력서를_전체_삭제_할_수있다(){
-        //given(상황환경 세팅)
-        CurrentUser currentUser = CurrentUser.builder()
-                .id(1L)
-                .build();
-        //when(상황발생)
-        resumeService.deleteByUser(currentUser.getId());
-        //then(검증)
-        assertThat(resumeService.findAll().size()).isEqualTo(2);
     }
 }

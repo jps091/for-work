@@ -1,9 +1,8 @@
 package project.forwork.api.domain.resume.controller.model;
 
 import lombok.*;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -11,17 +10,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ResumePage {
-    private int offset;
-    private int limit;
-    private List<ResumeResponse> contents;
-
-    public static ResumePage from(Page<ResumeResponse> response){
-        Pageable pageable = response.getPageable();
-
-        return ResumePage.builder()
-                .offset((int)pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .contents(response.getContent())
-                .build();
-    }
+    private Long lastId;
+    private LocalDateTime lastModifiedAt;
+    private List<ResumeResponse> results;
 }

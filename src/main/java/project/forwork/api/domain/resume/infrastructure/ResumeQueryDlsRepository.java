@@ -9,7 +9,6 @@ import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
-import lombok.Builder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -22,7 +21,6 @@ import project.forwork.api.domain.resume.infrastructure.enums.LevelType;
 import project.forwork.api.domain.resume.infrastructure.enums.PeriodCond;
 import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -41,7 +39,7 @@ public class ResumeQueryDlsRepository {
         this.clockHolder = clockHolder;
     }
 
-    public Page<ResumeResponse> search(ResumeSearchCond cond, Pageable pageable) {
+    public Page<ResumeResponse> search(ResumeSearchCond2 cond, Pageable pageable) {
         List<ResumeResponse> content = queryFactory
                 .select(Projections.fields(ResumeResponse.class,
                         resumeEntity.id.as("id"),

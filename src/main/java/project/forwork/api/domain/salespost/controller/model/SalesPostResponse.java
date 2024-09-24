@@ -1,11 +1,10 @@
-package project.forwork.api.domain.salepost.controller.model;
+package project.forwork.api.domain.salespost.controller.model;
 
 import lombok.*;
 import project.forwork.api.domain.resume.infrastructure.enums.FieldType;
 import project.forwork.api.domain.resume.infrastructure.enums.LevelType;
-import project.forwork.api.domain.salepost.infrastructure.enums.SalesStatus;
-import project.forwork.api.domain.salepost.model.SalePost;
-import project.forwork.api.domain.thumbnailimage.model.ThumbnailImage;
+import project.forwork.api.domain.salespost.infrastructure.enums.SalesStatus;
+import project.forwork.api.domain.salespost.model.SalesPost;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -14,7 +13,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class SalePostResponse {
+public class SalesPostResponse {
 
     private Long id;
     private String title;
@@ -27,12 +26,12 @@ public class SalePostResponse {
     private SalesStatus salesStatus;
     private LocalDateTime registerAt;
 
-    public static SalePostResponse from(SalePost salePost){
-        return SalePostResponse.builder()
-                .id(salePost.getId())
-                .title(salePost.getTitle())
-                .price(salePost.getResume().getPrice()) // TODO
-                //.thumbnailImage(salePost.getThumbnailImage()) TODO 썸네일
+    public static SalesPostResponse from(SalesPost salesPost){
+        return SalesPostResponse.builder()
+                .id(salesPost.getId())
+                .title(salesPost.getTitle())
+                .price(salesPost.getResume().getPrice()) // TODO
+                //.thumbnailImage(salesPost.getThumbnailImage()) TODO 썸네일
                 .build();
     }
 }

@@ -1,4 +1,4 @@
-package project.forwork.api.domain.salepost.controller;
+package project.forwork.api.domain.salespost.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -10,28 +10,28 @@ import org.springframework.web.bind.annotation.*;
 import project.forwork.api.common.annotation.Current;
 import project.forwork.api.common.api.Api;
 import project.forwork.api.common.domain.CurrentUser;
-import project.forwork.api.domain.salepost.controller.model.SalePostResponse;
-import project.forwork.api.domain.salepost.model.SalePost;
-import project.forwork.api.domain.salepost.service.SalePostService;
+import project.forwork.api.domain.salespost.controller.model.SalesPostResponse;
+import project.forwork.api.domain.salespost.model.SalesPost;
+import project.forwork.api.domain.salespost.service.SalesPostService;
 
 @RestController
 @Slf4j
 @RequiredArgsConstructor
 @RequestMapping("/api/sale-resumes")
-@Tag(name = "SalePostController", description = "이력서 판매글 관리 컨트롤러")
-public class SalePostController {
+@Tag(name = "SalesPostController", description = "이력서 판매글 관리 컨트롤러")
+public class SalesPostController {
 
-    private final SalePostService salePostService;
+    private final SalesPostService salesPostService;
 
     @Operation(summary = "sale-resume 생성", description = "sale-resume 생성")
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/{resumeId}/register")
-    public Api<SalePostResponse> register(
+    public Api<SalesPostResponse> register(
             @Parameter(hidden = true) @Current CurrentUser currentUser,
             @PathVariable Long resumeId
     ){
-        SalePost salePost = salePostService.register(currentUser, resumeId);
-        return Api.CREATED(SalePostResponse.from(salePost));
+        SalesPost salesPost = salesPostService.register(currentUser, resumeId);
+        return Api.CREATED(SalesPostResponse.from(salesPost));
     }
 
     @Operation(summary = "sale-resume 판매 재게", description = "자신의 resume이 상태가 active일때만 가능")
@@ -40,7 +40,7 @@ public class SalePostController {
             @Parameter(hidden = true) @Current CurrentUser currentUser,
             @PathVariable Long resumeId
     ){
-        salePostService.startSelling(currentUser, resumeId);
+        salesPostService.startSelling(currentUser, resumeId);
         return Api.OK("판매중으로 변경 완료 하였습니다.");
     }
 
@@ -50,7 +50,7 @@ public class SalePostController {
             @Parameter(hidden = true) @Current CurrentUser currentUser,
             @PathVariable Long resumeId
     ){
-        salePostService.cancelSelling(currentUser, resumeId);
+        salesPostService.cancelSelling(currentUser, resumeId);
         return Api.OK("판매 중단으로 변경 완료 하였습니다.");
     }
 }
