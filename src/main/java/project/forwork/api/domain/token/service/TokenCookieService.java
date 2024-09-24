@@ -46,6 +46,12 @@ public class TokenCookieService {
         deleteCookie(request, response, REFRESH_TOKEN);
     }
 
+    public void reissueRefreshTokenAndCookies(HttpServletRequest request, HttpServletResponse response){
+        String refreshToken = extractTokenFromCookies(request, TokenCookieService.REFRESH_TOKEN);
+        TokenResponse tokenResponse = tokenService.reissueTokenResponse(refreshToken);
+        addCookies(response, tokenResponse);
+    }
+
     public String extractTokenFromCookies(HttpServletRequest request, String tokenKey) {
         return Optional.ofNullable(request.getCookies())
                 .stream()
