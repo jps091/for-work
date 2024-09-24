@@ -209,16 +209,4 @@ class ResumeServiceTest {
         assertThatThrownBy(() -> resumeService.updatePending(2L, currentUser))
                 .isInstanceOf(ApiException.class);
     }
-
-    @Test
-    void 자신이_요청한_이력서를_전체_삭제_할_수있다(){
-        //given(상황환경 세팅)
-        CurrentUser currentUser = CurrentUser.builder()
-                .id(1L)
-                .build();
-        //when(상황발생)
-        resumeService.deleteByUser(currentUser.getId());
-        //then(검증)
-        assertThat(resumeService.findAll().size()).isEqualTo(2);
-    }
 }

@@ -8,17 +8,15 @@ import project.forwork.api.domain.resume.infrastructure.enums.FieldType;
 import project.forwork.api.domain.resume.infrastructure.enums.LevelType;
 import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
 import project.forwork.api.domain.resume.model.Resume;
-import project.forwork.api.domain.resumedecision.service.ResumeDecisionService;
+import project.forwork.api.domain.salespost.service.SellerValidationService;
 import project.forwork.api.domain.user.infrastructure.enums.RoleType;
 import project.forwork.api.domain.user.model.User;
-import project.forwork.api.mock.FakeResumeDecisionRepository;
 import project.forwork.api.mock.FakeResumeRepository;
 import project.forwork.api.mock.FakeUserRepository;
 
 import java.math.BigDecimal;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 class SellerValidationServiceTest {
 

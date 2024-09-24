@@ -65,23 +65,12 @@ public class ResumeService {
         resumeRepository.delete(resume);
     }
 
-    public void deleteByUser(Long userId){
-        User seller = userRepository.getByIdWithThrow(userId);
-        List<Resume> resumes = resumeRepository.findAllBySeller(seller);
-
-        for (Resume resume : resumes) {
-            resumeDecisionRepository.findByResume(resume).ifPresent(resumeDecisionRepository::delete);
-            resumeRepository.delete(resume);
-        }
-    }
-
     public Resume getByIdWithThrow(CurrentUser currentUser, Long resumeId){
         Resume resume = resumeRepository.getByIdWithThrow(resumeId);
 
         validateAuthorOrAdmin(currentUser, resume);
         return resume;
     }
-
 
     public Resume getByIdWithThrow(Long resumeId){
         return resumeRepository.getByIdWithThrow(resumeId);

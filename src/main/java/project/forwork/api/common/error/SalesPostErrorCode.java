@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public enum SalePostErrorCode implements ErrorCodeIfs{
+public enum SalesPostErrorCode implements ErrorCodeIfs{
 
     SALE_POST_NOT_FOUND(404, 5401, "이력서 판매글을 찾을 수 없습니다."),
     ACCESS_NOT_PERMISSION(403, 5402, "이력서 판매글 접근 권한이 없습니다."),

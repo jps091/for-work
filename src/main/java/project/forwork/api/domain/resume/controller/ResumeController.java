@@ -47,7 +47,7 @@ public class ResumeController {
             @Parameter(description = "삭제할 Resume ID", required = true, example = "1")
             @PathVariable Long resumeId,
             @Parameter(hidden = true) @Current CurrentUser currentUser
-            ){
+    ){
         resumeService.delete(resumeId, currentUser);
         return Api.OK("Resume 삭제 성공");
     }

@@ -1,26 +1,26 @@
-package project.forwork.api.domain.salepost.infrastructure;
+package project.forwork.api.domain.salespost.infrastructure;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import project.forwork.api.domain.resume.infrastructure.ResumeEntity;
 import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
-import project.forwork.api.domain.salepost.infrastructure.enums.SalesStatus;
+import project.forwork.api.domain.salespost.infrastructure.enums.SalesStatus;
 
 import java.util.Optional;
 
-public interface SalePostJpaRepository extends JpaRepository<SalePostEntity, Long> {
+public interface SalesPostJpaRepository extends JpaRepository<SalesPostEntity, Long> {
 
-    Optional<SalePostEntity> findByResumeEntity(ResumeEntity resumeEntity);
+    Optional<SalesPostEntity> findByResumeEntity(ResumeEntity resumeEntity);
 
 
-    @Query("select s from SalePostEntity s" +
+    @Query("select s from SalesPostEntity s" +
             " join s.resumeEntity r" +
             " where r.resumeStatus = :resumeStatus" +
-            " and s.id = :salePostId" +
+            " and s.id = :salesPostId" +
             " and s.salesStatus = :salesStatus")
-    Optional<SalePostEntity> findSellingPost(
-            @Param("salePostId") Long salePostId,
+    Optional<SalesPostEntity> findSellingPost(
+            @Param("salesPostId") Long salesPostId,
             @Param("resumeStatus") ResumeStatus resumeStatus,
             @Param("salesStatus") SalesStatus salesStatus);
 

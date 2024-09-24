@@ -20,7 +20,7 @@ public class PurchaseResponse {
     private FieldType field;
     private String resumeUrl;
 
-    public String getSalePostTitle(){
+    public String getSalesPostTitle(){
         return level.getDescription() + " " + field.getDescription() + " 이력서 #" + getResumeId();
     }
 }

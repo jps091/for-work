@@ -85,7 +85,7 @@ public class Resume {
                 .build();
     }
 
-    public String createSalePostTitle(){
+    public String createSalesPostTitle(){
         return level.getDescription() + " " + field.getDescription() + " 이력서 #" + getId();
     }
 

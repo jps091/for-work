@@ -1,4 +1,4 @@
-package project.forwork.api.domain.salepost.infrastructure.enums;
+package project.forwork.api.domain.salespost.infrastructure.enums;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.AllArgsConstructor;
