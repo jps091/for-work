@@ -7,7 +7,9 @@ import project.forwork.api.domain.resume.infrastructure.enums.PeriodCond;
 import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
 
 @Data
-public class ResumeSearchCond {
+public class ResumeSearchCond2 {
     private ResumeStatus resumeStatus;
     private PeriodCond periodCond;
+    private FieldType field;
+    private LevelType level;
 }

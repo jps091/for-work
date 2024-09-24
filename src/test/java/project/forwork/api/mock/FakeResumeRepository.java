@@ -1,12 +1,8 @@
 package project.forwork.api.mock;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import project.forwork.api.common.error.ResumeErrorCode;
 import project.forwork.api.common.exception.ApiException;
-import project.forwork.api.domain.resume.controller.model.ResumeResponse;
 import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
-import project.forwork.api.domain.resume.infrastructure.ResumeSearchCond;
 import project.forwork.api.domain.resume.model.Resume;
 import project.forwork.api.domain.resume.service.port.ResumeRepository;
 import project.forwork.api.domain.user.model.User;

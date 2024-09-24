@@ -1,10 +1,6 @@
 package project.forwork.api.domain.resume.service.port;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import project.forwork.api.domain.resume.controller.model.ResumeResponse;
 import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
-import project.forwork.api.domain.resume.infrastructure.ResumeSearchCond;
 import project.forwork.api.domain.resume.model.Resume;
 import project.forwork.api.domain.user.model.User;
 

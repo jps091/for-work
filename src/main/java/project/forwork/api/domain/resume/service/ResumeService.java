@@ -10,15 +10,17 @@ import project.forwork.api.common.error.ResumeErrorCode;
 import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.domain.resume.controller.model.*;
 import project.forwork.api.domain.resume.infrastructure.ResumeQueryDlsRepository;
+import project.forwork.api.domain.resume.infrastructure.ResumeSearchCond;
 import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
 import project.forwork.api.domain.resume.model.Resume;
 import project.forwork.api.domain.resume.service.port.ResumeRepository;
-import project.forwork.api.domain.resume.infrastructure.ResumeSearchCond;
+import project.forwork.api.domain.resume.infrastructure.ResumeSearchCond2;
 import project.forwork.api.common.domain.CurrentUser;
 import project.forwork.api.domain.resumedecision.service.port.ResumeDecisionRepository;
 import project.forwork.api.domain.user.model.User;
 import project.forwork.api.domain.user.service.port.UserRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -72,28 +74,35 @@ public class ResumeService {
         return resume;
     }
 
-    public Resume getByIdWithThrow(Long resumeId){
-        return resumeRepository.getByIdWithThrow(resumeId);
+    public ResumePage findFirstPage(ResumeSearchCond cond, int limit){
+        List<ResumeResponse> results = resumeQueryDlsRepository.findFirstPage(cond, limit);
+        return createResumePage(results);
     }
 
-    public List<ResumeResponse> findAll(){
-        return resumeRepository.findAll()
-                .stream()
-                .map(ResumeResponse::from)
-                .toList();
+    public ResumePage findLastPage(ResumeSearchCond cond, int limit){
+        List<ResumeResponse> results = resumeQueryDlsRepository.findLastPage(cond, limit);
+        return createResumePage(results);
     }
 
-    public ResumePage getResumesByCondition(
-            int offset,
-            int limit,
-            String sortBy,
-            boolean ascending,
-            ResumeSearchCond cond
+    public ResumePage findNextPage(
+            ResumeSearchCond cond, LocalDateTime lastModifiedAt,
+            Long lastId, int limit
     ){
-        Sort sort = Sort.by(ascending ? Sort.Order.asc(sortBy) : Sort.Order.desc(sortBy));
-        PageRequest pageRequest = PageRequest.of(offset, limit, sort);
-        Page<ResumeResponse> result = resumeQueryDlsRepository.search(cond, pageRequest);
-        return ResumePage.from(result);
+        List<ResumeResponse> results = resumeQueryDlsRepository.findNextPage(cond, lastModifiedAt, lastId, limit);
+
+        if(results.isEmpty()){
+            throw new ApiException(ResumeErrorCode.RESUME_NO_CONTENT);
+        }
+
+        return createResumePage(results);
+    }
+
+    public ResumePage findPreviousPage(
+            ResumeSearchCond cond, LocalDateTime lastModifiedAt,
+            Long lastId, int limit
+    ){
+        List<ResumeResponse> results = resumeQueryDlsRepository.findPreviousPage(cond, lastModifiedAt, lastId, limit);
+        return createResumePage(results);
     }
 
     public List<ResumeResponse> findResumesBySeller(CurrentUser currentUser){
@@ -115,5 +124,15 @@ public class ResumeService {
         if(currentUser.isAdminMismatch() && resume.isAuthorMismatch(currentUser.getId())){
             throw new ApiException(ResumeErrorCode.ACCESS_NOT_PERMISSION);
         }
+    }
+
+    private static ResumePage createResumePage(List<ResumeResponse> results) {
+        ResumeResponse lastRecord = results.get(results.size() - 1);
+
+        return ResumePage.builder()
+                .lastId(lastRecord.getId())
+                .lastModifiedAt(lastRecord.getModifiedAt())
+                .results(results)
+                .build();
     }
 }
