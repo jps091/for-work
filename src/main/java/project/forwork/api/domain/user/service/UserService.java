@@ -35,6 +35,11 @@ public class UserService {
 
     @Transactional
     public User register(UserCreateRequest body){
+
+        if(userRepository.findByEmail(body.getEmail()).isPresent()){
+            throw new ApiException(UserErrorCode.EMAIL_DUPLICATION);
+        }
+
         User user = User.from(body);
         user = userRepository.save(user);
         return user;

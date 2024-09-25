@@ -83,6 +83,21 @@ class UserServiceTest {
     }
 
     @Test
+    void 이미_존재하는_이메일로_User_를_생성할_수_없다(){
+        //given(상황환경 세팅)
+        UserCreateRequest userCreateRequest = UserCreateRequest.builder()
+                .name("test")
+                .email("user@naver.com")
+                .password("123")
+                .build();
+
+        //when(상황발생)
+        //then(검증)
+        assertThatThrownBy(() -> userService.register(userCreateRequest))
+                .isInstanceOf(ApiException.class);
+    }
+
+    @Test
     void PasswordVerifyRequest_와_CurrentUser_로_비밀번호_검증을_할_수_있다(){
         //given(상황환경 세팅)
         CurrentUser currentUser = CurrentUser.builder()

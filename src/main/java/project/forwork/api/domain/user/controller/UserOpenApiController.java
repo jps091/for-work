@@ -16,7 +16,7 @@ import project.forwork.api.domain.user.service.UserService;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/open-api/users")
+@RequestMapping("/open-api/v1/users")
 @Tag(name = "OpenController", description = "개방된 서비스 컨트롤롤러")
 public class UserOpenApiController {
 
@@ -35,7 +35,7 @@ public class UserOpenApiController {
     }
 
     @Operation(summary = "이메일 인증코드 발송 API", description = "이메일 입력")
-    @PostMapping("/send")
+    @PostMapping("/code/send")
     public Api<String> sendCertificationCode(
             @RequestParam String email
     ){
@@ -44,7 +44,7 @@ public class UserOpenApiController {
     }
 
     @Operation(summary = "인증 코드 검증 API", description = "이메일, 받은 검증코드 입력")
-    @PostMapping("/verify")
+    @PostMapping("/code/verify")
     public Api<String> verifyEmail(
             @Valid @RequestBody
             EmailVerifyRequest emailVerifyRequest
@@ -65,7 +65,7 @@ public class UserOpenApiController {
     }
 
     @Operation(summary = "임시 비밀번호 발급 API", description = "계정의 이메일, 성함 입력")
-    @PutMapping
+    @PostMapping("/password/issue-temporary")
     public Api<String> initTemporaryPassword(
             @Valid @RequestBody PasswordInitRequest passwordInitRequest
     ){

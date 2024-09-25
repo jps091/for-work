@@ -22,7 +22,7 @@ import project.forwork.api.domain.user.service.UserService;
 @RestController
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping("/api/users")
+@RequestMapping("/api/v1/users")
 @Tag(name = "UserController", description = "유저 서비스 컨트롤러")
 public class UserController {
 
@@ -30,7 +30,7 @@ public class UserController {
     private final LoginService loginService;
 
     @Operation(summary = "My Page API", description = "현재 나의 정보 출력")
-    @GetMapping("/mypage")
+    @GetMapping("/me")
     public Api<UserResponse> me(
             @Parameter(hidden = true) @Current CurrentUser currentUser
     ){
@@ -49,7 +49,7 @@ public class UserController {
     }
 
     @Operation(summary = "회원 비밀번호 검증 API", description = "비밀번호 입력")
-    @PutMapping
+    @PostMapping("/verify-password")
     public Api<String> verifyPassword(
             @Parameter(hidden = true) @Current CurrentUser currentUser,
             @Valid @RequestBody PasswordVerifyRequest passwordVerifyRequest
@@ -59,7 +59,7 @@ public class UserController {
     }
 
     @Operation(summary = "회원 비밀번호 수정 API", description = "비밀번호 검증 성공후 호출, 수정할 비밀번호 입력")
-    @PutMapping
+    @PutMapping("/password")
     public Api<String> updatePassword(
             @Parameter(hidden = true) @Current CurrentUser currentUser,
             @Valid @RequestBody PasswordModifyRequest passwordModifyRequest
