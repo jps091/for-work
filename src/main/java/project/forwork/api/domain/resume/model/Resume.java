@@ -36,6 +36,7 @@ public class Resume {
 
 
     public static Resume from(User user, ResumeRegisterRequest body){
+        validPrice(body.getPrice());
         return Resume.builder()
                 .seller(user)
                 .field(body.getField())
@@ -50,10 +51,8 @@ public class Resume {
                 .build();
     }
 
-    public Resume modifyIfPending(ResumeModifyRequest body){
-        if(status != ResumeStatus.PENDING){
-            throw new ApiException(ResumeErrorCode.STATUS_NOT_PENDING);
-        }
+    public Resume modifyResumePending(ResumeModifyRequest body){
+        validPrice(body.getPrice());
         return Resume.builder()
                 .id(id)
                 .seller(seller)
@@ -65,7 +64,7 @@ public class Resume {
                 .architectureImageUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
                 .price(body.getPrice())
                 .description(body.getDescription())
-                .status(status)
+                .status(ResumeStatus.PENDING)
                 .build();
     }
 
@@ -96,5 +95,11 @@ public class Resume {
 
     public boolean isActiveMismatch(){
         return status != ResumeStatus.ACTIVE;
+    }
+
+    private static void validPrice(BigDecimal price) {
+        if(price.compareTo(new BigDecimal("100000")) > 0){
+            throw new ApiException(ResumeErrorCode.PRICE_NOT_VALID);
+        }
     }
 }

@@ -12,7 +12,7 @@ import project.forwork.api.common.domain.CurrentUser;
 import project.forwork.api.domain.cart.service.CartService;
 
 @RestController
-@RequestMapping("/api/cart")
+@RequestMapping("/api/v1/cart")
 @RequiredArgsConstructor
 @Tag(name = "CartApiController", description = "Cart Api 서비스 컨트롤러")
 public class CartController {

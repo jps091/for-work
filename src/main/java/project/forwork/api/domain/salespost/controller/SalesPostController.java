@@ -17,7 +17,7 @@ import project.forwork.api.domain.salespost.service.SalesPostService;
 @RestController
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping("/api/sale-resumes")
+@RequestMapping("/api/v1/sale-resumes")
 @Tag(name = "SalesPostController", description = "이력서 판매글 관리 컨트롤러")
 public class SalesPostController {
 

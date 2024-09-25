@@ -15,7 +15,7 @@ import project.forwork.api.common.domain.CurrentUser;
 @RestController
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping("/admin-api")
+@RequestMapping("/admin-api/v1")
 @Tag(name = "ResumeDecisionController for Admin", description = "어드민 전용 판매 이력서 관리 컨트롤러")
 
 public class ResumeDecisionController {

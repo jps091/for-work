@@ -15,7 +15,7 @@ import project.forwork.api.domain.salespost.service.SalesPostService;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/open-api/sale-resumes")
+@RequestMapping("/open-api/v1/sale-resumes")
 @Tag(name = "SalesPostOpenController", description = "모든 사용자를 위한 이력서 판매글 컨트롤러")
 public class SalesPostOpenController {
 

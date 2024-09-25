@@ -13,7 +13,6 @@ import project.forwork.api.domain.resume.controller.model.ResumeModifyRequest;
 import project.forwork.api.domain.resume.controller.model.ResumeRegisterRequest;
 import project.forwork.api.domain.resume.controller.model.ResumeDetailResponse;
 import project.forwork.api.domain.resume.controller.model.ResumeResponse;
-import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
 import project.forwork.api.domain.resume.model.Resume;
 import project.forwork.api.domain.resume.service.ResumeService;
 import project.forwork.api.common.domain.CurrentUser;
@@ -21,7 +20,7 @@ import project.forwork.api.common.domain.CurrentUser;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/resumes")
+@RequestMapping("/api/v1/resumes")
 @RequiredArgsConstructor
 @Tag(name = "ResumeApiController", description = "Resume Api 서비스 컨트롤러")
 public class ResumeController {
@@ -60,7 +59,7 @@ public class ResumeController {
             @Parameter(hidden = true) @Current CurrentUser currentUser,
             @Valid @RequestBody ResumeModifyRequest resumeModifyRequest
     ){
-        resumeService.modifyIfPending(resumeId, currentUser, resumeModifyRequest);
+        resumeService.modifyResumePending(resumeId, currentUser, resumeModifyRequest);
         return Api.OK("Resume 변경 완료 되었습니다.");
     }
 
@@ -75,7 +74,7 @@ public class ResumeController {
         return Api.OK("Resume 상태 Pending 변경 완료 되었습니다.");
     }
 
-    @Operation(summary = "회원 Resume 조회 API", description = "로그인한 회원의 전체 Resume 조회")
+    @Operation(summary = "자신의 Resume 단건 조회 API", description = "로그인한 회원의 전체 Resume 조회")
     @GetMapping("{resumeId}")
     public Api<ResumeDetailResponse> retrieve(
             @Parameter(hidden = true) @Current CurrentUser currentUser,
@@ -85,7 +84,7 @@ public class ResumeController {
         return Api.OK(ResumeDetailResponse.from(resume));
     }
 
-    @Operation(summary = "회원 Resume 전체조회 API", description = "로그인한 회원의 전체 Resume 조회")
+    @Operation(summary = "자신의 Resume 전체조회 API", description = "로그인한 회원의 전체 Resume 조회")
     @GetMapping
     public Api<List<ResumeResponse>> retrieveAll(
             @Parameter(hidden = true) @Current CurrentUser currentUser

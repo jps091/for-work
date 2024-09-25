@@ -165,6 +165,27 @@ class ResumeServiceTest {
     }
 
     @Test
+    void 가격이_10만원이_넘는_Resume을_등록할_수_없다(){
+        //given(상황환경 세팅)
+        CurrentUser currentUser = CurrentUser.builder()
+                .id(1L)
+                .build();
+        ResumeRegisterRequest request = ResumeRegisterRequest.builder()
+                .field(FieldType.AI)
+                .level(LevelType.NEW)
+                .resumeUrl("www.naver.com")
+                .architectureImageUrl("www.google.com")
+                .price(new BigDecimal("150000.00"))
+                .description("test resume")
+                .build();
+
+        //when(상황발생)
+        //then(검증)
+        assertThatThrownBy(() -> resumeService.register(currentUser, request))
+                .isInstanceOf(ApiException.class);
+    }
+
+    @Test
     void CurrentUser_ResumeModifyRequest를_가지고_자신이_작성한_PENDING상태인_Resume만_수정할_수_있다(){
         //given(상황환경 세팅)
         CurrentUser currentUser = CurrentUser.builder()
@@ -180,16 +201,36 @@ class ResumeServiceTest {
                 .build();
 
         // 자신이 작성한 대기 상태인 이력서 수정하는 경우
-        resumeService.modifyIfPending(3L, currentUser, request); // 성공
-        Resume resume = fakeResumeRepository.getByIdWithThrow(3L);
-        assertThat(resume.getField()).isEqualTo(FieldType.DEVOPS);
+        resumeService.modifyResumePending(1L, currentUser, request); // 성공
+        Resume resume = fakeResumeRepository.getByIdWithThrow(1L);
 
-        // 자신이 작성 했지만 대기 상태가 아닌 이력서 수정하는 경우
-        assertThatThrownBy(() -> resumeService.modifyIfPending(1L, currentUser, request))
-                .isInstanceOf(ApiException.class);
+        // then
+        assertThat(resume.getField()).isEqualTo(FieldType.DEVOPS);
+        assertThat(resume.getStatus()).isEqualTo(ResumeStatus.PENDING);
+
 
         // 다른사람이 작성한 대기 상태인 이력서 수정하는 경우
-        assertThatThrownBy(() -> resumeService.modifyIfPending(2L, currentUser, request))
+        assertThatThrownBy(() -> resumeService.modifyResumePending(2L, currentUser, request))
+                .isInstanceOf(ApiException.class);
+    }
+
+    @Test
+    void CurrentUser_ResumeModifyRequest를_가지고_다른_사람이_작성한_Resume는_수정할_수_없다(){
+        //given(상황환경 세팅)
+        CurrentUser currentUser = CurrentUser.builder()
+                .id(1L)
+                .build();
+        ResumeModifyRequest request = ResumeModifyRequest.builder()
+                .field(FieldType.DEVOPS)
+                .level(LevelType.SENIOR)
+                .resumeUrl("www.naver.com")
+                .architectureImageUrl("www.google.com")
+                .price(new BigDecimal("70000.00"))
+                .description("test resume")
+                .build();
+
+        // then
+        assertThatThrownBy(() -> resumeService.modifyResumePending(2L, currentUser, request))
                 .isInstanceOf(ApiException.class);
     }
 
