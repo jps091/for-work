@@ -112,10 +112,16 @@ public class ResumeService {
     public List<ResumeResponse> findResumesBySeller(CurrentUser currentUser){
         User user = userRepository.getByIdWithThrow(currentUser.getId());
 
-        return resumeRepository.findAllBySeller(user)
+        List<ResumeResponse> resumeResponses = resumeRepository.findAllBySeller(user)
                 .stream()
                 .map(ResumeResponse::from)
                 .toList();
+
+        if(resumeResponses.isEmpty()){
+            throw new ApiException(ResumeErrorCode.RESUME_NO_CONTENT);
+        }
+
+        return resumeResponses;
     }
 
     private static void validateAuthor(CurrentUser currentUser, Resume resume) {

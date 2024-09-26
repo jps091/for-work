@@ -25,7 +25,7 @@ public class ResumeRegisterRequest {
     private String resumeUrl;
 
     //@NotBlank(message = "이력서 공유 URL을 입력 해주세요.")
-    private String architectureImageUrl;
+    private String descriptionImageUrl;
 
     @NotNull(message = "희망 판매 가격을 입력 해주세요.")
     @DecimalMin(value = "10000.0", inclusive = false, message = "최소 판매 가격은 10,000원 이상입니다.")

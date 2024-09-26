@@ -27,7 +27,6 @@ public class ResumeController {
 
     private final ResumeService resumeService;
 
-
     @Operation(summary = "Resume 생성", description = "Resume 생성")
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/register")

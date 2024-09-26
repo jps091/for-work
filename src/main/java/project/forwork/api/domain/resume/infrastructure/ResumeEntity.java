@@ -40,8 +40,8 @@ public class ResumeEntity extends BaseTimeEntity {
     @Column(name = "resume_url", nullable = false)
     private String resumeUrl;
 
-    @Column(name = "architecture_image_url", nullable = false)
-    private String architectureImageUrl;
+    @Column(name = "description_image_url", nullable = false)
+    private String descriptionImageUrl;
 
     @Column(precision = 6, nullable = false)
     private BigDecimal price;
@@ -61,7 +61,7 @@ public class ResumeEntity extends BaseTimeEntity {
         resumeEntity.fieldType = resume.getField();
         resumeEntity.levelType = resume.getLevel();
         resumeEntity.resumeUrl = resume.getResumeUrl();
-        resumeEntity.architectureImageUrl = resume.getResumeUrl();
+        resumeEntity.descriptionImageUrl = resume.getResumeUrl();
         resumeEntity.price = resume.getPrice();
         resumeEntity.description = resume.getDescription();
         resumeEntity.resumeStatus = resume.getStatus();
@@ -75,7 +75,7 @@ public class ResumeEntity extends BaseTimeEntity {
                 .field(fieldType)
                 .level(levelType)
                 .resumeUrl(resumeUrl)
-                .architectureImageUrl(architectureImageUrl)
+                .descriptionImageUrl(descriptionImageUrl)
                 .price(price)
                 .description(description)
                 .status(resumeStatus)

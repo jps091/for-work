@@ -28,7 +28,7 @@ public class Resume {
     private final FieldType field;
     private final LevelType level;
     private final String resumeUrl;
-    private final String architectureImageUrl;
+    private final String descriptionImageUrl;
     private final BigDecimal price;
     private final String description;
     private final ResumeStatus status;
@@ -42,9 +42,9 @@ public class Resume {
                 .field(body.getField())
                 .level(body.getLevel())
                 //.resumeUrl(resumeRegisterRequest.getResumeUrl()) TODO Test
-                //.architectureImageUrl(resumeRegisterRequest.getArchitectureImageUrl())
+                //.descriptionImageUrl(resumeRegisterRequest.getdescriptionImageUrl())
                 .resumeUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
-                .architectureImageUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
+                .descriptionImageUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
                 .price(body.getPrice())
                 .description(body.getDescription())
                 .status(ResumeStatus.PENDING)
@@ -59,9 +59,9 @@ public class Resume {
                 .field(body.getField())
                 .level(body.getLevel())
                 //.resumeUrl(request.getResumeUrl()) TODO Test
-                //.architectureImageUrl(request.getArchitectureImageUrl())
+                //.descriptionImageUrl(request.getdescriptionImageUrl())
                 .resumeUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
-                .architectureImageUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
+                .descriptionImageUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
                 .price(body.getPrice())
                 .description(body.getDescription())
                 .status(ResumeStatus.PENDING)
@@ -75,9 +75,9 @@ public class Resume {
                 .field(field)
                 .level(level)
                 //.resumeUrl(request.getResumeUrl()) TODO Test
-                //.architectureImageUrl(request.getArchitectureImageUrl())
+                //.descriptionImageUrl(request.getdescriptionImageUrl())
                 .resumeUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
-                .architectureImageUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
+                .descriptionImageUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
                 .price(price)
                 .description(description)
                 .status(status)
