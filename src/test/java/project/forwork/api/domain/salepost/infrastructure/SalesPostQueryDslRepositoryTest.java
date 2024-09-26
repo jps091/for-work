@@ -46,7 +46,8 @@ class SalesPostQueryDslRepositoryTest {
         SalesPostSearchCond cond = new SalesPostSearchCond();
 
         //when(상황발생) 기본 정렬 최신 등록순
-        List<SalesPostResponse> result = repository.findFirstPage(cond, null, 2);
+        List<SalesPostResponse> result = repository
+                .findFirstPage(null, null, null, null, null, 2);
 
         //then(검증)
         assertThat(result).hasSize(2);
@@ -61,7 +62,8 @@ class SalesPostQueryDslRepositoryTest {
         cond.setField(FieldType.BACKEND);
 
         //when(상황발생) 기본 정렬 최신 등록순
-        List<SalesPostResponse> result = repository.findFirstPage(cond, null, 2);
+        List<SalesPostResponse> result = repository
+                .findFirstPage(null, null, null, FieldType.BACKEND, null, 2);
 
         //then(검증)
         assertThat(result).hasSize(2);
@@ -73,11 +75,9 @@ class SalesPostQueryDslRepositoryTest {
     @Test
     void 조건_BACKEND_조회순_첫_페이지_검색(){
         //given(상황환경 세팅)
-        SalesPostSearchCond cond = new SalesPostSearchCond();
-        cond.setField(FieldType.BACKEND);
-
         //when(상황발생) 기본 정렬 최신 등록순
-        List<SalesPostResponse> result = repository.findFirstPage(cond, SalesPostSortType.VIEW_COUNT, 3);
+        List<SalesPostResponse> result = repository
+                .findFirstPage(SalesPostSortType.VIEW_COUNT, null, null, FieldType.BACKEND, null, 3);
 
         //then(검증)
         assertThat(result).hasSize(3);
@@ -90,13 +90,9 @@ class SalesPostQueryDslRepositoryTest {
     @Test
     void 조건_BACKEND_가격_범위_조회순_첫_페이지_검색(){
         //given(상황환경 세팅)
-        SalesPostSearchCond cond = new SalesPostSearchCond();
-        cond.setField(FieldType.BACKEND);
-        cond.setMinPrice(new BigDecimal("60000.00"));
-        cond.setMaxPrice(new BigDecimal("90000.00"));
-
         //when(상황발생) 기본 정렬 최신 등록순
-        List<SalesPostResponse> result = repository.findFirstPage(cond, SalesPostSortType.VIEW_COUNT, 3);
+        List<SalesPostResponse> result = repository
+                .findFirstPage(SalesPostSortType.VIEW_COUNT, new BigDecimal("60000.00"), new BigDecimal("90000.00"), FieldType.BACKEND, null, 3);
 
         //then(검증)
         assertThat(result).hasSize(3);
@@ -112,7 +108,8 @@ class SalesPostQueryDslRepositoryTest {
         SalesPostSearchCond cond = new SalesPostSearchCond();
 
         //when(상황발생) 기본 정렬 최신 등록순
-        List<SalesPostResponse> result = repository.findNextPage(cond, 7L, null, 2);
+        List<SalesPostResponse> result = repository
+                .findNextPage(null, null, null, null, null, 7L, 2);
 
         //then(검증)
         assertThat(result).hasSize(2);
@@ -123,11 +120,9 @@ class SalesPostQueryDslRepositoryTest {
     @Test
     void 조건_AI_다음_페이지_검색(){
         //given(상황환경 세팅)
-        SalesPostSearchCond cond = new SalesPostSearchCond();
-        cond.setField(FieldType.AI);
-
         //when(상황발생) 기본 정렬 최신 등록순
-        List<SalesPostResponse> result = repository.findNextPage(cond, 7L,null, 1);
+        List<SalesPostResponse> result = repository
+                .findNextPage(null, null, null, FieldType.AI, null, 7L, 1);
 
         //then(검증)
         assertThat(result).hasSize(1);
@@ -142,7 +137,8 @@ class SalesPostQueryDslRepositoryTest {
         cond.setField(FieldType.BACKEND);
 
         //when(상황발생) 기본 정렬 최신 등록순
-        List<SalesPostResponse> result = repository.findNextPage(cond, 5L, SalesPostSortType.OLD, 2);
+        List<SalesPostResponse> result = repository
+                .findNextPage(SalesPostSortType.OLD, null, null, FieldType.BACKEND, null, 5L, 2);
 
         //then(검증)
         assertThat(result).hasSize(2);
@@ -157,7 +153,8 @@ class SalesPostQueryDslRepositoryTest {
         SalesPostSearchCond cond = new SalesPostSearchCond();
 
         //when(상황발생) 기본 정렬 최신 등록순
-        List<SalesPostResponse> result = repository.findPreviousPage(cond, 1L, null, 2);
+        List<SalesPostResponse> result = repository
+                .findPreviousPage(null, null, null, null, null, 1L, 2);
 
         //then(검증)
         assertThat(result).hasSize(2);
@@ -168,11 +165,9 @@ class SalesPostQueryDslRepositoryTest {
     @Test
     void 조건_SENIOR_이전_페이지_검색(){
         //given(상황환경 세팅)
-        SalesPostSearchCond cond = new SalesPostSearchCond();
-        cond.setLevel(LevelType.SENIOR);
-
         //when(상황발생) 기본 정렬 최신 등록순
-        List<SalesPostResponse> result = repository.findNextPage(cond, 6L,null, 2);
+        List<SalesPostResponse> result = repository
+                .findPreviousPage(null, null, null, null, LevelType.SENIOR, 6L, 2);
 
         //then(검증)
         assertThat(result).hasSize(2);
@@ -187,7 +182,8 @@ class SalesPostQueryDslRepositoryTest {
         SalesPostSearchCond cond = new SalesPostSearchCond();
 
         //when(상황발생) 기본 정렬 최신 등록순
-        List<SalesPostResponse> result = repository.findLastPage(cond, null, 2);
+        List<SalesPostResponse> result = repository
+                .findLastPage(null, null, null, null, null, 2);
 
         //then(검증)
         assertThat(result).hasSize(2);
@@ -198,11 +194,9 @@ class SalesPostQueryDslRepositoryTest {
     @Test
     void 조건_BACKEND_조회순_마지막_페이지_검색(){
         //given(상황환경 세팅)
-        SalesPostSearchCond cond = new SalesPostSearchCond();
-        cond.setField(FieldType.BACKEND);
-
         //when(상황발생) 기본 정렬 최신 등록순
-        List<SalesPostResponse> result = repository.findLastPage(cond, SalesPostSortType.VIEW_COUNT, 3);
+        List<SalesPostResponse> result = repository
+                .findLastPage(SalesPostSortType.VIEW_COUNT, null, null, FieldType.BACKEND, null, 3);
 
         //then(검증)
         assertThat(result).hasSize(3);

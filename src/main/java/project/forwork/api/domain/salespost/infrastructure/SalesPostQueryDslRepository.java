@@ -1,9 +1,11 @@
 package project.forwork.api.domain.salespost.infrastructure;
 
+import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,15 +15,20 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import project.forwork.api.domain.resume.infrastructure.enums.FieldType;
 import project.forwork.api.domain.resume.infrastructure.enums.LevelType;
+import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
+import project.forwork.api.domain.salespost.controller.model.SalesPostDetailResponse;
 import project.forwork.api.domain.salespost.controller.model.SalesPostResponse;
+import project.forwork.api.domain.salespost.controller.model.SalesPostSellerResponse;
 import project.forwork.api.domain.salespost.infrastructure.enums.SalesPostSortType;
 import project.forwork.api.domain.salespost.infrastructure.enums.SalesStatus;
 
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import static project.forwork.api.domain.resume.infrastructure.QResumeEntity.*;
+import static project.forwork.api.domain.salespost.infrastructure.QSalesPostEntity.*;
 
 @Repository
 public class SalesPostQueryDslRepository {
@@ -40,26 +47,26 @@ public class SalesPostQueryDslRepository {
 
         List<SalesPostResponse> content = queryFactory
                 .select(Projections.constructor(SalesPostResponse.class,
-                        QSalesPostEntity.salesPostEntity.id,
-                        QSalesPostEntity.salesPostEntity.title,
+                        salesPostEntity.id,
+                        salesPostEntity.title,
                         resumeEntity.price,
                         //thumbnailImageEntity.url, TODO 썸네일
-                        QSalesPostEntity.salesPostEntity.viewCount,
-                        QSalesPostEntity.salesPostEntity.quantity,
+                        salesPostEntity.viewCount,
+                        salesPostEntity.salesQuantity,
                         resumeEntity.fieldType,
                         resumeEntity.levelType,
-                        QSalesPostEntity.salesPostEntity.salesStatus,
-                        QSalesPostEntity.salesPostEntity.modifiedAt))
-                .from(QSalesPostEntity.salesPostEntity)
-                .join(QSalesPostEntity.salesPostEntity.resumeEntity, resumeEntity)
+                        salesPostEntity.salesStatus,
+                        salesPostEntity.modifiedAt))
+                .from(salesPostEntity)
+                .join(salesPostEntity.resumeEntity, resumeEntity)
                 //.join(salesPostEntity.thumbnailImageEntity, thumbnailImageEntity) // 썸네일
                 .where(
                         priceRangeCond(cond.getMinPrice(), cond.getMaxPrice()),
                         fieldEqual(cond.getField()),
                         levelEqual(cond.getLevel()),
-                        QSalesPostEntity.salesPostEntity.salesStatus.eq(SalesStatus.SELLING)
+                        salesPostEntity.salesStatus.eq(SalesStatus.SELLING)
                 )
-                .orderBy(orderSpecifier, QSalesPostEntity.salesPostEntity.id.desc())
+                .orderBy(orderSpecifier, salesPostEntity.id.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -72,63 +79,106 @@ public class SalesPostQueryDslRepository {
      * 3. 검색 조건 : 가격(범위), 분야, 년차
      * 4. 페이징처리 :
      */
+
+    public SalesPostDetailResponse getSellingPostWithThrow(Long salesPostId){
+        return queryFactory
+                .select(Projections.fields(SalesPostDetailResponse.class,
+                        salesPostEntity.id.as("id"),
+                        salesPostEntity.title.as("title"),
+                        resumeEntity.price.as("price"),
+                        //thumbnailImageEntity.url, TODO 썸네일
+                        salesPostEntity.viewCount.as("viewCount"),
+                        resumeEntity.descriptionImageUrl.as("descriptionImageUrl"),
+                        resumeEntity.description.as("description"),
+                        resumeEntity.fieldType.as("field"),
+                        resumeEntity.levelType.as("level"),
+                        salesPostEntity.salesStatus.as("status"),
+                        salesPostEntity.registeredAt.as("registeredAt")))
+                .from(salesPostEntity)
+                .join(salesPostEntity.resumeEntity, resumeEntity)
+                //.join(salesPostEntity.thumbnailImageEntity, thumbnailImageEntity) // 썸네일
+                .where(
+                        salesPostEntity.id.eq(salesPostId),
+                        resumeEntity.resumeStatus.eq(ResumeStatus.ACTIVE),
+                        salesPostEntity.salesStatus.eq(SalesStatus.SELLING)
+                )
+                .fetchOne();
+    }
+
+    public List<SalesPostSellerResponse> findBySeller(Long sellerId){
+
+        return queryFactory
+                .select(Projections.fields(SalesPostSellerResponse.class,
+                        salesPostEntity.id.as("id"),
+                        salesPostEntity.title.as("title"),
+                        salesPostEntity.salesQuantity.as("salesQuantity"),
+                        salesPostEntity.registeredAt.as("registeredAt"),
+                        salesPostEntity.salesStatus.as("status")
+                        ))
+                .from(salesPostEntity)
+                .join(salesPostEntity.resumeEntity, resumeEntity)
+                .where(resumeEntity.sellerEntity.id.eq(sellerId))
+                .fetch();
+    }
+
+
     public List<SalesPostResponse> findFirstPage(
-            SalesPostSearchCond cond,
-            SalesPostSortType sortType, int limit
+            SalesPostSortType sortType, BigDecimal minPrice, BigDecimal maxPrice,
+            FieldType field, LevelType level, int limit
     ){
         OrderSpecifier<?> orderSpecifier = createOrderSpecifier(sortType);
 
         return queryFactory
-                .select(Projections.constructor(SalesPostResponse.class,
-                        QSalesPostEntity.salesPostEntity.id,
-                        QSalesPostEntity.salesPostEntity.title,
-                        resumeEntity.price,
+                .select(Projections.fields(SalesPostResponse.class,
+                        salesPostEntity.id.as("id"),
+                        salesPostEntity.title.as("title"),
+                        resumeEntity.price.as("price"),
                         //thumbnailImageEntity.url, TODO 썸네일
-                        QSalesPostEntity.salesPostEntity.viewCount,
-                        QSalesPostEntity.salesPostEntity.quantity,
-                        resumeEntity.fieldType,
-                        resumeEntity.levelType,
-                        QSalesPostEntity.salesPostEntity.salesStatus,
-                        QSalesPostEntity.salesPostEntity.modifiedAt))
-                .from(QSalesPostEntity.salesPostEntity)
-                .join(QSalesPostEntity.salesPostEntity.resumeEntity, resumeEntity)
+                        salesPostEntity.viewCount.as("viewCount"),
+                        salesPostEntity.salesQuantity.as("salesQuantity"),
+                        resumeEntity.fieldType.as("field"),
+                        resumeEntity.levelType.as("level"),
+                        salesPostEntity.salesStatus.as("status"),
+                        salesPostEntity.registeredAt.as("registeredAt")))
+                .from(salesPostEntity)
+                .join(salesPostEntity.resumeEntity, resumeEntity)
                 //.join(salesPostEntity.thumbnailImageEntity, thumbnailImageEntity) // 썸네일
                 .where(
-                        priceRangeCond(cond.getMinPrice(), cond.getMaxPrice()),
-                        fieldEqual(cond.getField()),
-                        levelEqual(cond.getLevel()),
-                        QSalesPostEntity.salesPostEntity.salesStatus.eq(SalesStatus.SELLING)
+                        priceRangeCond(minPrice, maxPrice),
+                        fieldEqual(field),
+                        levelEqual(level),
+                        salesPostEntity.salesStatus.eq(SalesStatus.SELLING)
                 )
                 .orderBy(orderSpecifier)
                 .limit(limit).fetch();
     }
 
     public List<SalesPostResponse> findLastPage(
-            SalesPostSearchCond cond,
-            SalesPostSortType sortType, int limit
+            SalesPostSortType sortType, BigDecimal minPrice, BigDecimal maxPrice,
+            FieldType field, LevelType level, int limit
     ){
         OrderSpecifier<?> orderSpecifier = createReversedOrderSpecifier(sortType);
 
         List<SalesPostResponse> results = queryFactory
-                .select(Projections.constructor(SalesPostResponse.class,
-                        QSalesPostEntity.salesPostEntity.id,
-                        QSalesPostEntity.salesPostEntity.title,
-                        resumeEntity.price,
+                .select(Projections.fields(SalesPostResponse.class,
+                        salesPostEntity.id.as("id"),
+                        salesPostEntity.title.as("title"),
+                        resumeEntity.price.as("price"),
                         //thumbnailImageEntity.url, TODO 썸네일
-                        QSalesPostEntity.salesPostEntity.viewCount,
-                        QSalesPostEntity.salesPostEntity.quantity,
-                        resumeEntity.fieldType,
-                        resumeEntity.levelType,
-                        QSalesPostEntity.salesPostEntity.salesStatus,
-                        QSalesPostEntity.salesPostEntity.modifiedAt))
-                .from(QSalesPostEntity.salesPostEntity)
-                .join(QSalesPostEntity.salesPostEntity.resumeEntity, resumeEntity)
+                        salesPostEntity.viewCount.as("viewCount"),
+                        salesPostEntity.salesQuantity.as("salesQuantity"),
+                        resumeEntity.fieldType.as("field"),
+                        resumeEntity.levelType.as("level"),
+                        salesPostEntity.salesStatus.as("status"),
+                        salesPostEntity.registeredAt.as("registeredAt")))
+                .from(salesPostEntity)
+                .join(salesPostEntity.resumeEntity, resumeEntity)
                 //.join(salesPostEntity.thumbnailImageEntity, thumbnailImageEntity) // 썸네일
                 .where(
-                        priceRangeCond(cond.getMinPrice(), cond.getMaxPrice()),
-                        fieldEqual(cond.getField()),
-                        levelEqual(cond.getLevel()),
-                        QSalesPostEntity.salesPostEntity.salesStatus.eq(SalesStatus.SELLING)
+                        priceRangeCond(minPrice, maxPrice),
+                        fieldEqual(field),
+                        levelEqual(level),
+                        salesPostEntity.salesStatus.eq(SalesStatus.SELLING)
                 )
                 .orderBy(orderSpecifier)
                 .limit(limit).fetch();
@@ -138,62 +188,64 @@ public class SalesPostQueryDslRepository {
     }
 
     public List<SalesPostResponse> findNextPage(
-            SalesPostSearchCond cond, Long lastId,
-            SalesPostSortType sortType, int limit
+            SalesPostSortType sortType, BigDecimal minPrice, BigDecimal maxPrice,
+            FieldType field, LevelType level,
+            Long lastId, int limit
     ){
         OrderSpecifier<?> orderSpecifier = createOrderSpecifier(sortType);
 
         return queryFactory
-                .select(Projections.constructor(SalesPostResponse.class,
-                        QSalesPostEntity.salesPostEntity.id,
-                        QSalesPostEntity.salesPostEntity.title,
-                        resumeEntity.price,
+                .select(Projections.fields(SalesPostResponse.class,
+                        salesPostEntity.id.as("id"),
+                        salesPostEntity.title.as("title"),
+                        resumeEntity.price.as("price"),
                         //thumbnailImageEntity.url, TODO 썸네일
-                        QSalesPostEntity.salesPostEntity.viewCount,
-                        QSalesPostEntity.salesPostEntity.quantity,
-                        resumeEntity.fieldType,
-                        resumeEntity.levelType,
-                        QSalesPostEntity.salesPostEntity.salesStatus,
-                        QSalesPostEntity.salesPostEntity.modifiedAt))
-                .from(QSalesPostEntity.salesPostEntity)
-                .join(QSalesPostEntity.salesPostEntity.resumeEntity, resumeEntity)
+                        salesPostEntity.viewCount.as("viewCount"),
+                        salesPostEntity.salesQuantity.as("salesQuantity"),
+                        resumeEntity.fieldType.as("field"),
+                        resumeEntity.levelType.as("level"),
+                        salesPostEntity.salesStatus.as("status"),
+                        salesPostEntity.registeredAt.as("registeredAt")))
+                .from(salesPostEntity)
+                .join(salesPostEntity.resumeEntity, resumeEntity)
                 //.join(salesPostEntity.thumbnailImageEntity, thumbnailImageEntity) // 썸네일
-                .where(QSalesPostEntity.salesPostEntity.id.lt(lastId).
-                                and(QSalesPostEntity.salesPostEntity.salesStatus.eq(SalesStatus.SELLING)),
-                        priceRangeCond(cond.getMinPrice(), cond.getMaxPrice()),
-                        fieldEqual(cond.getField()),
-                        levelEqual(cond.getLevel())
+                .where(salesPostEntity.id.lt(lastId).
+                                and(salesPostEntity.salesStatus.eq(SalesStatus.SELLING)),
+                        priceRangeCond(minPrice, maxPrice),
+                        fieldEqual(field),
+                        levelEqual(level)
                 )
                 .orderBy(orderSpecifier)
                 .limit(limit).fetch();
     }
 
     public List<SalesPostResponse> findPreviousPage(
-            SalesPostSearchCond cond, Long lastId,
-            SalesPostSortType sortType, int limit
+            SalesPostSortType sortType, BigDecimal minPrice, BigDecimal maxPrice,
+            FieldType field, LevelType level,
+            Long lastId, int limit
     ){
         OrderSpecifier<?> orderSpecifier = createReversedOrderSpecifier(sortType);
 
         List<SalesPostResponse> results = queryFactory
-                .select(Projections.constructor(SalesPostResponse.class,
-                        QSalesPostEntity.salesPostEntity.id,
-                        QSalesPostEntity.salesPostEntity.title,
-                        resumeEntity.price,
+                .select(Projections.fields(SalesPostResponse.class,
+                        salesPostEntity.id.as("id"),
+                        salesPostEntity.title.as("title"),
+                        resumeEntity.price.as("price"),
                         //thumbnailImageEntity.url, TODO 썸네일
-                        QSalesPostEntity.salesPostEntity.viewCount,
-                        QSalesPostEntity.salesPostEntity.quantity,
-                        resumeEntity.fieldType,
-                        resumeEntity.levelType,
-                        QSalesPostEntity.salesPostEntity.salesStatus,
-                        QSalesPostEntity.salesPostEntity.modifiedAt))
-                .from(QSalesPostEntity.salesPostEntity)
-                .join(QSalesPostEntity.salesPostEntity.resumeEntity, resumeEntity)
+                        salesPostEntity.viewCount.as("viewCount"),
+                        salesPostEntity.salesQuantity.as("salesQuantity"),
+                        resumeEntity.fieldType.as("field"),
+                        resumeEntity.levelType.as("level"),
+                        salesPostEntity.salesStatus.as("status"),
+                        salesPostEntity.registeredAt.as("registeredAt")))
+                .from(salesPostEntity)
+                .join(salesPostEntity.resumeEntity, resumeEntity)
                 //.join(salesPostEntity.thumbnailImageEntity, thumbnailImageEntity) // 썸네일
-                .where(QSalesPostEntity.salesPostEntity.id.gt(lastId).
-                                and(QSalesPostEntity.salesPostEntity.salesStatus.eq(SalesStatus.SELLING)),
-                        priceRangeCond(cond.getMinPrice(), cond.getMaxPrice()),
-                        fieldEqual(cond.getField()),
-                        levelEqual(cond.getLevel())
+                .where(salesPostEntity.id.gt(lastId).
+                                and(salesPostEntity.salesStatus.eq(SalesStatus.SELLING)),
+                        priceRangeCond(minPrice, maxPrice),
+                        fieldEqual(field),
+                        levelEqual(level)
                 )
                 .orderBy(orderSpecifier)
                 .limit(limit).fetch();
@@ -208,6 +260,22 @@ public class SalesPostQueryDslRepository {
 
     private BooleanExpression levelEqual(LevelType level) {
         return level != null ? resumeEntity.levelType.eq(level) : null;
+    }
+
+    private BooleanExpression priceRangeCond3(SalesPostSearchCond cond){
+        BigDecimal minPrice = cond.getMinPrice() != null ? cond.getMinPrice() : BigDecimal.ZERO;
+        BigDecimal maxPrice = cond.getMaxPrice() != null ? cond.getMaxPrice() : new BigDecimal("100000");
+
+        return resumeEntity.price.goe(minPrice).and(resumeEntity.price.loe(maxPrice));
+    }
+
+    private BooleanExpression priceRangeCond2(BigDecimal minPrice, BigDecimal maxPrice){
+        BooleanExpression priceCondition = null;
+
+        priceCondition = resumeEntity.price.goe(Objects.requireNonNullElse(minPrice, BigDecimal.ZERO));
+        priceCondition = priceCondition.and(resumeEntity.price.loe(Objects.requireNonNullElseGet(maxPrice, () -> new BigDecimal("100000"))));
+
+        return priceCondition;
     }
 
     private BooleanExpression priceRangeCond(BigDecimal minPrice, BigDecimal maxPrice){
@@ -227,32 +295,32 @@ public class SalesPostQueryDslRepository {
     private OrderSpecifier<?> createOrderSpecifier(SalesPostSortType sortType){
 
         if(sortType == null){
-            return new OrderSpecifier<>(Order.DESC, QSalesPostEntity.salesPostEntity.id);
+            return new OrderSpecifier<>(Order.DESC, salesPostEntity.id);
         }
 
         return switch(sortType){
-            case OLD -> new OrderSpecifier<>(Order.ASC, QSalesPostEntity.salesPostEntity.id);
-            case NEW -> new OrderSpecifier<>(Order.DESC, QSalesPostEntity.salesPostEntity.id);
+            case OLD -> new OrderSpecifier<>(Order.ASC, salesPostEntity.id);
+            case NEW -> new OrderSpecifier<>(Order.DESC, salesPostEntity.id);
             case HIGHEST_PRICE -> new OrderSpecifier<>(Order.DESC, resumeEntity.price);
             case LOWEST_PRICE -> new OrderSpecifier<>(Order.ASC, resumeEntity.price);
-            case VIEW_COUNT -> new OrderSpecifier<>(Order.DESC, QSalesPostEntity.salesPostEntity.viewCount);
-            case BEST_SELLING -> new OrderSpecifier<>(Order.ASC, QSalesPostEntity.salesPostEntity.quantity);
+            case VIEW_COUNT -> new OrderSpecifier<>(Order.DESC, salesPostEntity.viewCount);
+            case BEST_SELLING -> new OrderSpecifier<>(Order.DESC, salesPostEntity.salesQuantity);
         };
     }
 
     private OrderSpecifier<?> createReversedOrderSpecifier(SalesPostSortType sortType) {
 
         if(sortType == null){
-            return new OrderSpecifier<>(Order.ASC, QSalesPostEntity.salesPostEntity.id);
+            return new OrderSpecifier<>(Order.ASC, salesPostEntity.id);
         }
 
         return switch (sortType) {
-            case OLD -> new OrderSpecifier<>(Order.DESC, QSalesPostEntity.salesPostEntity.id);
-            case NEW -> new OrderSpecifier<>(Order.ASC, QSalesPostEntity.salesPostEntity.id);
+            case OLD -> new OrderSpecifier<>(Order.DESC, salesPostEntity.id);
+            case NEW -> new OrderSpecifier<>(Order.ASC, salesPostEntity.id);
             case HIGHEST_PRICE -> new OrderSpecifier<>(Order.ASC, resumeEntity.price);
             case LOWEST_PRICE -> new OrderSpecifier<>(Order.DESC, resumeEntity.price);
-            case VIEW_COUNT -> new OrderSpecifier<>(Order.ASC, QSalesPostEntity.salesPostEntity.viewCount);
-            case BEST_SELLING -> new OrderSpecifier<>(Order.DESC, QSalesPostEntity.salesPostEntity.quantity);
+            case VIEW_COUNT -> new OrderSpecifier<>(Order.ASC, salesPostEntity.viewCount);
+            case BEST_SELLING -> new OrderSpecifier<>(Order.ASC, salesPostEntity.salesQuantity);
         };
     }
 }

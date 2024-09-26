@@ -95,7 +95,8 @@ public class TokenService {
     }
 
     private boolean isTimeOutRefreshToken(long remainingTtl) {
-        return remainingTtl <= clockHolder.millis();
+        return remainingTtl <= 0;
+        //return remainingTtl <= clockHolder.millis();
     }
 
     private boolean isTokenValueMismatch(String requestTokenValue, String targetTokenValue){

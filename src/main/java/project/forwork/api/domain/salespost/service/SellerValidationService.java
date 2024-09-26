@@ -33,7 +33,7 @@ public class SellerValidationService {
         }
 
         if(resume.isActiveMismatch()){
-            throw new ApiException(ResumeErrorCode.STATUS_NOT_ACTIVE, resume.getId());
+            throw new ApiException(SalesPostErrorCode.STATUS_NOT_ACTIVE, resume.getId());
         }
 
         return resume;

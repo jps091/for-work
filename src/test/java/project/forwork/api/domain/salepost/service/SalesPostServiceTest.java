@@ -24,12 +24,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SalesPostServiceTest {
 
     private SalesPostService salesPostService;
+    private FakeSalesPostRepository fakeSalesPostRepository;
 
     @BeforeEach
     void init(){
         FakeUserRepository fakeUserRepository = new FakeUserRepository();
         FakeResumeRepository fakeResumeRepository = new FakeResumeRepository();
-        FakeSalesPostRepository fakeSalesPostRepository = new FakeSalesPostRepository();
+        fakeSalesPostRepository = new FakeSalesPostRepository();
         this.salesPostService = SalesPostService.builder()
                 .sellerValidationService(new SellerValidationService(fakeUserRepository, fakeResumeRepository))
                 .salesPostRepository(fakeSalesPostRepository)
@@ -60,7 +61,7 @@ class SalesPostServiceTest {
                 .field(FieldType.AI)
                 .level(LevelType.JUNIOR)
                 .resumeUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
-                .architectureImageUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
+                .descriptionImageUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
                 .price(new BigDecimal("10000.00"))
                 .description("test resume1")
                 .status(ResumeStatus.ACTIVE)
@@ -72,7 +73,7 @@ class SalesPostServiceTest {
                 .field(FieldType.BACKEND)
                 .level(LevelType.NEW)
                 .resumeUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
-                .architectureImageUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
+                .descriptionImageUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
                 .price(new BigDecimal("98000.00"))
                 .description("test resume2")
                 .status(ResumeStatus.ACTIVE)
@@ -86,7 +87,7 @@ class SalesPostServiceTest {
                 .resume(resume1)
                 .title(resume1.createSalesPostTitle())
                 .salesStatus(SalesStatus.SELLING)
-                .quantity(30)
+                .salesQuantity(30)
                 .viewCount(0)
                 .build();
 
@@ -95,7 +96,7 @@ class SalesPostServiceTest {
                 .resume(resume2)
                 .title(resume2.createSalesPostTitle())
                 .salesStatus(SalesStatus.CANCELED)
-                .quantity(30)
+                .salesQuantity(30)
                 .viewCount(0)
                 .build();
 
@@ -111,12 +112,13 @@ class SalesPostServiceTest {
                 .build();
 
         // when
-        SalesPost salesPost = salesPostService.register(user1, 1L);
+        salesPostService.register(user1, 1L);
+        SalesPost salesPost = fakeSalesPostRepository.getByIdWithThrow(1L);
 
         //then
         assertThat(salesPost.getId()).isNotNull();
         assertThat(salesPost.getSalesStatus()).isEqualTo(SalesStatus.SELLING);
-        assertThat(salesPost.getQuantity()).isEqualTo(30);
+        assertThat(salesPost.getSalesQuantity()).isEqualTo(30);
     }
 
     @Test
@@ -128,7 +130,7 @@ class SalesPostServiceTest {
 
         //when(상황발생)
         salesPostService.startSelling(user1, 1L);
-        SalesPost salesPost = salesPostService.getSalesPostWithThrow(1L);
+        SalesPost salesPost = fakeSalesPostRepository.getByIdWithThrow(1L);
 
         //then(검증)
         assertThat(salesPost.getSalesStatus()).isEqualTo(SalesStatus.SELLING);
@@ -143,7 +145,7 @@ class SalesPostServiceTest {
 
         //when(상황발생)
         salesPostService.cancelSelling(user2, 2L);
-        SalesPost salesPost = salesPostService.getSalesPostWithThrow(2L);
+        SalesPost salesPost = fakeSalesPostRepository.getByIdWithThrow(2L);
 
         //then(검증)
         assertThat(salesPost.getSalesStatus()).isEqualTo(SalesStatus.CANCELED);
