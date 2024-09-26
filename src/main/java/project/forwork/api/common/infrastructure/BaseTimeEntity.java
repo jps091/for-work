@@ -21,13 +21,13 @@ public class BaseTimeEntity {
 
     @PrePersist
     public void prePersist(){
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now().withSecond(0).withNano(0);
         registeredAt = now;
         modifiedAt = now;
     }
 
     @PreUpdate
     public void preUpdate(){
-        modifiedAt = LocalDateTime.now();
+        modifiedAt = LocalDateTime.now().withSecond(0).withNano(0);
     }
 }
