@@ -10,14 +10,15 @@ import org.springframework.web.bind.annotation.*;
 import project.forwork.api.common.annotation.Current;
 import project.forwork.api.common.api.Api;
 import project.forwork.api.common.domain.CurrentUser;
-import project.forwork.api.domain.salespost.controller.model.SalesPostResponse;
-import project.forwork.api.domain.salespost.model.SalesPost;
+import project.forwork.api.domain.salespost.controller.model.SalesPostSellerResponse;
 import project.forwork.api.domain.salespost.service.SalesPostService;
+
+import java.util.List;
 
 @RestController
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping("/api/sale-resumes")
+@RequestMapping("/api/v1/sales-resumes")
 @Tag(name = "SalesPostController", description = "이력서 판매글 관리 컨트롤러")
 public class SalesPostController {
 
@@ -26,12 +27,21 @@ public class SalesPostController {
     @Operation(summary = "sale-resume 생성", description = "sale-resume 생성")
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/{resumeId}/register")
-    public Api<SalesPostResponse> register(
+    public Api<String> register(
             @Parameter(hidden = true) @Current CurrentUser currentUser,
             @PathVariable Long resumeId
     ){
-        SalesPost salesPost = salesPostService.register(currentUser, resumeId);
-        return Api.CREATED(SalesPostResponse.from(salesPost));
+        salesPostService.register(currentUser, resumeId);
+        return Api.CREATED("이력서 판매글 등록 성공");
+    }
+
+    @Operation(summary = "자신의 판매글 조회 ", description = "판매량, 판매금액도 같이 볼수 있다.")
+    @GetMapping
+    public Api<List<SalesPostSellerResponse>> find(
+            @Parameter(hidden = true) @Current CurrentUser currentUser
+    ){
+        List<SalesPostSellerResponse> salesPostResponses = salesPostService.findBySeller(currentUser);
+        return Api.OK(salesPostResponses);
     }
 
     @Operation(summary = "sale-resume 판매 재게", description = "자신의 resume이 상태가 active일때만 가능")

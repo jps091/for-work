@@ -2,19 +2,17 @@ package project.forwork.api.domain.resume.service;
 
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import project.forwork.api.common.error.ResumeErrorCode;
 import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.domain.resume.controller.model.*;
 import project.forwork.api.domain.resume.infrastructure.ResumeQueryDlsRepository;
 import project.forwork.api.domain.resume.infrastructure.ResumeSearchCond;
+import project.forwork.api.domain.resume.infrastructure.enums.PeriodCond;
 import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
 import project.forwork.api.domain.resume.model.Resume;
 import project.forwork.api.domain.resume.service.port.ResumeRepository;
-import project.forwork.api.domain.resume.infrastructure.ResumeSearchCond2;
 import project.forwork.api.common.domain.CurrentUser;
 import project.forwork.api.domain.resumedecision.service.port.ResumeDecisionRepository;
 import project.forwork.api.domain.user.model.User;
@@ -25,6 +23,7 @@ import java.util.List;
 
 @Service
 @Builder
+@Slf4j
 @RequiredArgsConstructor
 public class ResumeService {
 
@@ -40,7 +39,7 @@ public class ResumeService {
         return resume;
     }
 
-    public void modifyIfPending(
+    public void modifyResumePending(
             Long resumeId,
             CurrentUser currentUser,
             ResumeModifyRequest body
@@ -48,7 +47,7 @@ public class ResumeService {
         Resume resume = resumeRepository.getByIdWithThrow(resumeId);
         validateAuthor(currentUser, resume);
 
-        resume = resume.modifyIfPending(body);
+        resume = resume.modifyResumePending(body);
         resumeRepository.save(resume);
     }
 
@@ -74,21 +73,25 @@ public class ResumeService {
         return resume;
     }
 
-    public ResumePage findFirstPage(ResumeSearchCond cond, int limit){
-        List<ResumeResponse> results = resumeQueryDlsRepository.findFirstPage(cond, limit);
+    public ResumePage findFirstPage(
+            PeriodCond periodCond, ResumeStatus status, int limit
+    ){
+        List<ResumeResponse> results = resumeQueryDlsRepository.findFirstPage(periodCond, status, limit);
         return createResumePage(results);
     }
 
-    public ResumePage findLastPage(ResumeSearchCond cond, int limit){
-        List<ResumeResponse> results = resumeQueryDlsRepository.findLastPage(cond, limit);
+    public ResumePage findLastPage(
+            PeriodCond periodCond, ResumeStatus status, int limit
+    ){
+        List<ResumeResponse> results = resumeQueryDlsRepository.findLastPage(periodCond, status, limit);
         return createResumePage(results);
     }
 
     public ResumePage findNextPage(
-            ResumeSearchCond cond, LocalDateTime lastModifiedAt,
-            Long lastId, int limit
+            PeriodCond periodCond, ResumeStatus status,
+            LocalDateTime lastModifiedAt, Long lastId, int limit
     ){
-        List<ResumeResponse> results = resumeQueryDlsRepository.findNextPage(cond, lastModifiedAt, lastId, limit);
+        List<ResumeResponse> results = resumeQueryDlsRepository.findNextPage(periodCond, status, lastModifiedAt, lastId, limit);
 
         if(results.isEmpty()){
             throw new ApiException(ResumeErrorCode.RESUME_NO_CONTENT);
@@ -98,20 +101,27 @@ public class ResumeService {
     }
 
     public ResumePage findPreviousPage(
-            ResumeSearchCond cond, LocalDateTime lastModifiedAt,
-            Long lastId, int limit
+            PeriodCond periodCond, ResumeStatus status,
+            LocalDateTime lastModifiedAt, Long lastId, int limit
     ){
-        List<ResumeResponse> results = resumeQueryDlsRepository.findPreviousPage(cond, lastModifiedAt, lastId, limit);
+        List<ResumeResponse> results = resumeQueryDlsRepository.findPreviousPage(periodCond, status, lastModifiedAt, lastId, limit);
+        log.info("results size={}",results.size());
         return createResumePage(results);
     }
 
     public List<ResumeResponse> findResumesBySeller(CurrentUser currentUser){
         User user = userRepository.getByIdWithThrow(currentUser.getId());
 
-        return resumeRepository.findAllBySeller(user)
+        List<ResumeResponse> resumeResponses = resumeRepository.findAllBySeller(user)
                 .stream()
                 .map(ResumeResponse::from)
                 .toList();
+
+        if(resumeResponses.isEmpty()){
+            throw new ApiException(ResumeErrorCode.RESUME_NO_CONTENT);
+        }
+
+        return resumeResponses;
     }
 
     private static void validateAuthor(CurrentUser currentUser, Resume resume) {

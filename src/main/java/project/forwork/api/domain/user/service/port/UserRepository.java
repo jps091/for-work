@@ -12,4 +12,5 @@ public interface UserRepository {
     User getByIdWithThrow(long id);
     Optional<User> findById(long id);
     Optional<User> findByEmail(String email);
+    Optional<User> findByEmailAndName(String email, String name);
 }

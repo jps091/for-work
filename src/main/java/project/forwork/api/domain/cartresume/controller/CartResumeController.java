@@ -16,7 +16,7 @@ import project.forwork.api.domain.cartresume.service.CartResumeService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/order/cart")
+@RequestMapping("/api/v1/order/cart")
 @RequiredArgsConstructor
 @Tag(name = "CartResumeApiController", description = "CartResume Api 서비스 컨트롤러")
 public class CartResumeController {

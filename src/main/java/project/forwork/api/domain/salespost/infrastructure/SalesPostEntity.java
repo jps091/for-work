@@ -36,8 +36,8 @@ public class SalesPostEntity extends BaseTimeEntity {
     @Column(name = "status", nullable = false)
     private SalesStatus salesStatus;
 
-    @Column(nullable = false)
-    private Integer quantity;
+    @Column(name = "sales_quantity", nullable = false)
+    private Integer salesQuantity;
 
     @Column(name = "view_count", nullable = false)
     private Integer viewCount;
@@ -49,7 +49,7 @@ public class SalesPostEntity extends BaseTimeEntity {
         salesPostEntity.title = salesPost.getTitle();
         //salesPostEntity.thumbnailImageEntity = ThumbnailImageEntity.from(salesPost.getThumbnailImage()); TODO 썸네일 등록
         salesPostEntity.salesStatus = salesPost.getSalesStatus();
-        salesPostEntity.quantity = salesPost.getQuantity();
+        salesPostEntity.salesQuantity = salesPost.getSalesQuantity();
         salesPostEntity.viewCount = salesPost.getViewCount();
         return salesPostEntity;
     }
@@ -61,9 +61,9 @@ public class SalesPostEntity extends BaseTimeEntity {
                 .title(title)
                 //.thumbnailImage(thumbnailImageEntity.toModel())
                 .salesStatus(salesStatus)
-                .quantity(quantity)
+                .salesQuantity(salesQuantity)
                 .viewCount(viewCount)
-                .modifiedAt(getModifiedAt())
+                .registeredAt(getModifiedAt())
                 .build();
     }
 }

@@ -28,7 +28,7 @@ public class Resume {
     private final FieldType field;
     private final LevelType level;
     private final String resumeUrl;
-    private final String architectureImageUrl;
+    private final String descriptionImageUrl;
     private final BigDecimal price;
     private final String description;
     private final ResumeStatus status;
@@ -36,36 +36,35 @@ public class Resume {
 
 
     public static Resume from(User user, ResumeRegisterRequest body){
+        validPrice(body.getPrice());
         return Resume.builder()
                 .seller(user)
                 .field(body.getField())
                 .level(body.getLevel())
                 //.resumeUrl(resumeRegisterRequest.getResumeUrl()) TODO Test
-                //.architectureImageUrl(resumeRegisterRequest.getArchitectureImageUrl())
+                //.descriptionImageUrl(resumeRegisterRequest.getdescriptionImageUrl())
                 .resumeUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
-                .architectureImageUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
+                .descriptionImageUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
                 .price(body.getPrice())
                 .description(body.getDescription())
                 .status(ResumeStatus.PENDING)
                 .build();
     }
 
-    public Resume modifyIfPending(ResumeModifyRequest body){
-        if(status != ResumeStatus.PENDING){
-            throw new ApiException(ResumeErrorCode.STATUS_NOT_PENDING);
-        }
+    public Resume modifyResumePending(ResumeModifyRequest body){
+        validPrice(body.getPrice());
         return Resume.builder()
                 .id(id)
                 .seller(seller)
                 .field(body.getField())
                 .level(body.getLevel())
                 //.resumeUrl(request.getResumeUrl()) TODO Test
-                //.architectureImageUrl(request.getArchitectureImageUrl())
+                //.descriptionImageUrl(request.getdescriptionImageUrl())
                 .resumeUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
-                .architectureImageUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
+                .descriptionImageUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
                 .price(body.getPrice())
                 .description(body.getDescription())
-                .status(status)
+                .status(ResumeStatus.PENDING)
                 .build();
     }
 
@@ -76,9 +75,9 @@ public class Resume {
                 .field(field)
                 .level(level)
                 //.resumeUrl(request.getResumeUrl()) TODO Test
-                //.architectureImageUrl(request.getArchitectureImageUrl())
+                //.descriptionImageUrl(request.getdescriptionImageUrl())
                 .resumeUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
-                .architectureImageUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
+                .descriptionImageUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
                 .price(price)
                 .description(description)
                 .status(status)
@@ -96,5 +95,11 @@ public class Resume {
 
     public boolean isActiveMismatch(){
         return status != ResumeStatus.ACTIVE;
+    }
+
+    private static void validPrice(BigDecimal price) {
+        if(price.compareTo(new BigDecimal("100000")) > 0){
+            throw new ApiException(ResumeErrorCode.PRICE_NOT_VALID);
+        }
     }
 }

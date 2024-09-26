@@ -6,15 +6,19 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import project.forwork.api.common.domain.CurrentUser;
 import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.common.service.port.RedisUtils;
 import project.forwork.api.domain.token.service.TokenCookieService;
+import project.forwork.api.domain.user.controller.model.PasswordInitRequest;
 import project.forwork.api.domain.user.controller.model.UserLoginRequest;
 import project.forwork.api.domain.user.controller.model.UserResponse;
 import project.forwork.api.domain.user.infrastructure.enums.RoleType;
 import project.forwork.api.domain.user.model.User;
 import project.forwork.api.mock.FakeUserRepository;
 import project.forwork.api.mock.TestClockHolder;
+
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -97,7 +101,7 @@ class LoginServiceTest {
     }
     
     @Test
-    void 비밀번호가_일치하지_않으면_예외발생(){
+    void 로그인시_비밀번호가_일치하지_않으면_예외발생(){
         //given(상황환경 세팅)
         UserLoginRequest loginUser = UserLoginRequest.builder()
                 .email("user@naver.com")

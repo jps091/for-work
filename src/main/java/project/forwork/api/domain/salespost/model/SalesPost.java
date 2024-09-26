@@ -18,9 +18,9 @@ public class SalesPost {
     private final String title;
     private final ThumbnailImage thumbnailImage;
     private final SalesStatus salesStatus;
-    private final Integer quantity;
+    private final Integer salesQuantity;
     private final Integer viewCount;
-    private final LocalDateTime modifiedAt;
+    private final LocalDateTime registeredAt;
 
     public static SalesPost create(Resume resume){
         return SalesPost.builder()
@@ -28,7 +28,7 @@ public class SalesPost {
                 .title(resume.createSalesPostTitle())
                 //.thumbnailImage() TODO 썸네일
                 .salesStatus(SalesStatus.SELLING)
-                .quantity(30)
+                .salesQuantity(0)
                 .viewCount(0)
                 .build();
     }
@@ -40,9 +40,9 @@ public class SalesPost {
                 .title(title)
                 .thumbnailImage(thumbnailImage)
                 .salesStatus(status)
-                .quantity(quantity)
+                .salesQuantity(salesQuantity)
                 .viewCount(viewCount)
-                .modifiedAt(modifiedAt)
+                .registeredAt(registeredAt)
                 .build();
     }
 
@@ -53,9 +53,9 @@ public class SalesPost {
                 .title(title)
                 .thumbnailImage(thumbnailImage)
                 .salesStatus(salesStatus)
-                .quantity(quantity)
+                .salesQuantity(salesQuantity)
                 .viewCount(viewCount + 1)
-                .modifiedAt(modifiedAt)
+                .registeredAt(registeredAt)
                 .build();
     }
 }

@@ -61,7 +61,9 @@ public class ResumeQueryDlsRepository {
         return new PageImpl<>(content, pageable, pageable.isPaged() ? content.size() : 0);
     }
 
-    public List<ResumeResponse> findFirstPage(ResumeSearchCond cond, int limit) {
+    public List<ResumeResponse> findFirstPage(
+            PeriodCond periodCond, ResumeStatus status, int limit
+    ){
         return  queryFactory
                 .select(Projections.fields(ResumeResponse.class,
                         resumeEntity.id.as("id"),
@@ -72,15 +74,17 @@ public class ResumeQueryDlsRepository {
                         userEntity.email.as("email")))
                 .from(resumeEntity)
                 .join(resumeEntity.sellerEntity, userEntity)
-                .where(dateRangeCond(cond.getPeriodCond()),
-                        resumeStatusEqual(cond.getResumeStatus())
+                .where(dateRangeCond(periodCond),
+                        resumeStatusEqual(status)
                 )
                 .orderBy(resumeEntity.modifiedAt.asc(), resumeEntity.id.asc())
                 .limit(limit)
                 .fetch();
     }
 
-    public List<ResumeResponse> findLastPage(ResumeSearchCond cond, int limit) {
+    public List<ResumeResponse> findLastPage(
+            PeriodCond periodCond, ResumeStatus status, int limit
+    ){
         List<ResumeResponse> results = queryFactory
                 .select(Projections.fields(ResumeResponse.class,
                         resumeEntity.id.as("id"),
@@ -91,8 +95,8 @@ public class ResumeQueryDlsRepository {
                         userEntity.email.as("email")))
                 .from(resumeEntity)
                 .join(resumeEntity.sellerEntity, userEntity)
-                .where(dateRangeCond(cond.getPeriodCond()),
-                        resumeStatusEqual(cond.getResumeStatus())
+                .where(dateRangeCond(periodCond),
+                        resumeStatusEqual(status)
                 )
                 .orderBy(resumeEntity.modifiedAt.desc(), resumeEntity.id.desc())
                 .limit(limit)
@@ -105,9 +109,9 @@ public class ResumeQueryDlsRepository {
     }
 
     public List<ResumeResponse> findNextPage(
-            ResumeSearchCond cond, LocalDateTime lastModifiedAt,
-            Long lastId, int limit
-    ) {
+            PeriodCond periodCond, ResumeStatus status,
+            LocalDateTime lastModifiedAt, Long lastId, int limit
+    ){
         return  queryFactory
                 .select(Projections.fields(ResumeResponse.class,
                         resumeEntity.id.as("id"),
@@ -119,8 +123,8 @@ public class ResumeQueryDlsRepository {
                 .from(resumeEntity)
                 .join(resumeEntity.sellerEntity, userEntity)
                 // TODO 필터링 조건 순서에 따른 성능 테스트 필요
-                .where(dateRangeCond(cond.getPeriodCond()),
-                        resumeStatusEqual(cond.getResumeStatus()),
+                .where(dateRangeCond(periodCond),
+                        resumeStatusEqual(status),
                         resumeEntity.modifiedAt.eq(lastModifiedAt)
                                 .and(resumeEntity.id.gt(lastId))
                                 .or(resumeEntity.modifiedAt.gt(lastModifiedAt))
@@ -131,9 +135,9 @@ public class ResumeQueryDlsRepository {
     }
 
     public List<ResumeResponse> findPreviousPage(
-            ResumeSearchCond cond, LocalDateTime firstModifiedAt,
-            Long firstId, int limit
-    ) {
+            PeriodCond periodCond, ResumeStatus status,
+            LocalDateTime lastModifiedAt, Long lastId, int limit
+    ){
         List<ResumeResponse> results = queryFactory
                 .select(Projections.fields(ResumeResponse.class,
                         resumeEntity.id.as("id"),
@@ -144,13 +148,13 @@ public class ResumeQueryDlsRepository {
                         userEntity.email.as("email")))
                 .from(resumeEntity)
                 .join(resumeEntity.sellerEntity, userEntity)
-                .where(dateRangeCond(cond.getPeriodCond()),
-                        resumeStatusEqual(cond.getResumeStatus()),
+                .where(dateRangeCond(periodCond),
+                        resumeStatusEqual(status),
                         (
-                                resumeEntity.modifiedAt.eq(firstModifiedAt)
-                                        .and(resumeEntity.id.lt(firstId))
+                                resumeEntity.modifiedAt.eq(lastModifiedAt)
+                                        .and(resumeEntity.id.lt(lastId))
                         )
-                                .or(resumeEntity.modifiedAt.lt(firstModifiedAt))
+                                .or(resumeEntity.modifiedAt.lt(lastModifiedAt))
                 )
                 .orderBy(resumeEntity.modifiedAt.desc(), resumeEntity.id.desc())
                 .limit(limit)

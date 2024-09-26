@@ -35,12 +35,19 @@ public class UserService {
 
     @Transactional
     public User register(UserCreateRequest body){
+
+        if(userRepository.findByEmail(body.getEmail()).isPresent()){
+            throw new ApiException(UserErrorCode.EMAIL_DUPLICATION);
+        }
+
         User user = User.from(body);
         user = userRepository.save(user);
         return user;
     }
     @Transactional
-    public void updatePassword(CurrentUser currentUser, ModifyPasswordRequest body){
+    public void updatePassword(
+            CurrentUser currentUser, PasswordModifyRequest body
+    ){
         User user = userRepository.getByIdWithThrow(currentUser.getId());
         user = user.updatePassword(body.getPassword());
         userRepository.save(user);
@@ -49,17 +56,19 @@ public class UserService {
     @Transactional
     public void delete(
             @Current CurrentUser currentUser,
-            String password,
             HttpServletRequest request,
             HttpServletResponse response
     ){
         User user = userRepository.getByIdWithThrow(currentUser.getId());
-        if(user.isPasswordMismatch(password)){
-            throw new ApiException(UserErrorCode.PASSWORD_NOT_MATCH);
-        }
-
         tokenCookieService.expiredCookiesAndRefreshToken(user.getId(), request, response);
         userRepository.delete(user);
+    }
+
+    public void verifyPassword(CurrentUser currentUser, PasswordVerifyRequest body){
+        User user = userRepository.getByIdWithThrow(currentUser.getId());
+        if(user.isPasswordMismatch(body.getPassword())){
+            throw new ApiException(UserErrorCode.PASSWORD_NOT_MATCH);
+        }
     }
 
     @Transactional(readOnly = true)

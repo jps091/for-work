@@ -12,6 +12,7 @@ import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.common.service.port.ClockHolder;
 import project.forwork.api.common.service.port.RedisUtils;
 import project.forwork.api.domain.token.service.TokenCookieService;
+import project.forwork.api.domain.user.controller.model.PasswordInitRequest;
 import project.forwork.api.domain.user.controller.model.UserLoginRequest;
 import project.forwork.api.domain.user.controller.model.UserResponse;
 import project.forwork.api.domain.user.model.User;
@@ -52,6 +53,15 @@ public class LoginService {
     @Transactional
     public void logout(HttpServletRequest request, HttpServletResponse response){
         tokenCookieService.expiredCookies(request, response);
+    }
+
+    @Transactional
+    public void initTemporaryPassword(PasswordInitRequest body){
+        User user = userRepository.findByEmailAndName(body.getEmail(), body.getName())
+                .orElseThrow(() -> new ApiException(UserErrorCode.USER_NOT_FOUND));
+
+        passwordInitializationService.issueTemporaryPassword(user);
+
     }
 
     private void loginAttempt(User user){

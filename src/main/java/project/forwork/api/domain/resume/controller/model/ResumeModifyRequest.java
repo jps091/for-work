@@ -13,7 +13,7 @@ public class ResumeModifyRequest {
     private FieldType field;
     private LevelType level;
     private String resumeUrl;
-    private String architectureImageUrl;
+    private String descriptionImageUrl;
     private BigDecimal price;
     private String description;
 }

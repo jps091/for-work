@@ -18,7 +18,7 @@ public class ResumeDetailResponse {
     private FieldType field;
     private LevelType level;
     private String resumeUrl;
-    private String architectureImageUrl;
+    private String descriptionImageUrl;
     private BigDecimal price;
     private String description;
     private ResumeStatus status;
@@ -30,7 +30,7 @@ public class ResumeDetailResponse {
                 .field(resume.getField())
                 .level(resume.getLevel())
                 .resumeUrl(resume.getResumeUrl())
-                .architectureImageUrl(resume.getArchitectureImageUrl())
+                .descriptionImageUrl(resume.getDescriptionImageUrl())
                 .price(resume.getPrice())
                 .description(resume.getDescription())
                 .status(resume.getStatus())
