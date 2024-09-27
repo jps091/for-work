@@ -52,16 +52,6 @@ public class FakeSalesPostRepository implements SalesPostRepository {
         return data.stream().filter(s -> Objects.equals(s.getId(), id)).findAny();
     }
 
-    public SalesPost getSellingPostWithThrow(Long salesPostId) {
-        // 해당 조건 (resumeStatus == ACTIVE && salesStatus == SELLING)에 맞는 SalesPost를 찾음
-        return data.stream()
-                .filter(s -> Objects.equals(s.getId(), salesPostId) &&
-                        s.getResume().getStatus() == ResumeStatus.ACTIVE &&
-                        s.getSalesStatus() == SalesStatus.SELLING)
-                .findAny()
-                .orElseThrow(() -> new ApiException(SalesPostErrorCode.SALES_POST_NOT_FOUND, salesPostId));
-    }
-
     @Override
     public SalesPost getByResumeWithThrow(Resume resume) {
         return data.stream()

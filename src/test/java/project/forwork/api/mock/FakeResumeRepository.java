@@ -28,7 +28,7 @@ public class FakeResumeRepository implements ResumeRepository {
                     .field(resume.getField())
                     .level(resume.getLevel())
                     .resumeUrl(resume.getResumeUrl())
-                    .architectureImageUrl(resume.getArchitectureImageUrl())
+                    .descriptionImageUrl(resume.getDescriptionImageUrl())
                     .price(resume.getPrice())
                     .description(resume.getDescription())
                     .status(ResumeStatus.PENDING)

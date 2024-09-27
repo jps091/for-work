@@ -5,11 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import project.forwork.api.domain.orderresume.infrastructure.OrderResumeQueryDslRepository;
 import project.forwork.api.domain.orderresume.controller.model.PurchaseResponse;
+import project.forwork.api.domain.orderresume.service.port.OrderResumeRepositoryCustom;
 import project.forwork.api.domain.resume.infrastructure.enums.FieldType;
 import project.forwork.api.domain.resume.infrastructure.enums.LevelType;
 import project.forwork.api.mock.FakeMailSender;
@@ -22,7 +19,7 @@ import java.util.List;
 public class SendPurchaseResumeServiceTest {
 
     @Mock
-    private OrderResumeQueryDslRepository orderResumeQueryDslRepository;
+    private OrderResumeRepositoryCustom orderResumeRepositoryCustom;
 
     private FakeMailSender fakeMailSender;
 
@@ -31,13 +28,12 @@ public class SendPurchaseResumeServiceTest {
     @BeforeEach
     public void init() {
         fakeMailSender = new FakeMailSender();
-        sendPurchaseResumeService = new SendPurchaseResumeService(orderResumeQueryDslRepository, fakeMailSender);
+        sendPurchaseResumeService = new SendPurchaseResumeService(orderResumeRepositoryCustom, fakeMailSender);
     }
 
     @Test
     public void testSendPurchaseResume() {
 
-        PageRequest pageRequest = PageRequest.of(0, 20);
         PurchaseResponse purchaseResponse = PurchaseResponse.builder()
                 .orderId(1L)
                 .resumeId(4L)
@@ -46,9 +42,10 @@ public class SendPurchaseResumeServiceTest {
                 .field(FieldType.BACKEND)
                 .resumeUrl("www.test.com")
                 .build();
-        Page<PurchaseResponse> purchaseInfoPage = new PageImpl<>(List.of(purchaseResponse), pageRequest, 1);
 
-        when(orderResumeQueryDslRepository.findPurchaseResume()).thenReturn(purchaseInfoPage);
+        List<PurchaseResponse> purchaseResponses = List.of(purchaseResponse);
+
+        when(orderResumeRepositoryCustom.findPurchaseResume()).thenReturn(purchaseResponses);
 
         sendPurchaseResumeService.sendPurchaseResume();
 

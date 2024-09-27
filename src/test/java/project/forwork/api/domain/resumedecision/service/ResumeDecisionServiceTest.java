@@ -58,7 +58,7 @@ class ResumeDecisionServiceTest {
                 .field(FieldType.AI)
                 .level(LevelType.JUNIOR)
                 .resumeUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
-                .architectureImageUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
+                .descriptionImageUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
                 .price(new BigDecimal("10000.00"))
                 .description("test resume1")
                 .status(ResumeStatus.ACTIVE)

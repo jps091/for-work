@@ -3,8 +3,11 @@ package project.forwork.api.domain.orderresume.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
@@ -12,9 +15,9 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlGroup;
 import project.forwork.api.domain.cartresume.model.CartResume;
 import project.forwork.api.domain.order.model.Order;
-import project.forwork.api.domain.orderresume.infrastructure.OrderResumeQueryDslRepository;
 import project.forwork.api.domain.orderresume.infrastructure.enums.OrderResumeStatus;
 import project.forwork.api.domain.orderresume.model.OrderResume;
+import project.forwork.api.domain.orderresume.service.port.OrderResumeRepositoryCustom;
 import project.forwork.api.domain.resume.infrastructure.enums.FieldType;
 import project.forwork.api.domain.resume.infrastructure.enums.LevelType;
 import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
@@ -29,21 +32,12 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
-@TestPropertySource("classpath:test-application.yml")
-@SqlGroup({
-        @Sql(value = "/sql/user-test-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
-        @Sql(value = "/sql/resume-test-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
-        @Sql(value = "/sql/order-test-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
-        @Sql(value = "/sql/order-resume-test-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
-        @Sql(value = "/sql/delete-all-data.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-})
+@ExtendWith(MockitoExtension.class)
 class OrderResumeServiceTest {
 
-    @Autowired
-    private OrderResumeQueryDslRepository orderResumeQueryDslRepository;
+    @Mock
+    private OrderResumeRepositoryCustom orderResumeRepositoryCustom;
     private OrderResumeService orderResumeService;
 
     @BeforeEach
@@ -52,7 +46,7 @@ class OrderResumeServiceTest {
         FakeMailSender fakeMailSender = new FakeMailSender();
         this.orderResumeService = OrderResumeService.builder()
                 .orderResumeRepository(fakeOrderResumeRepository)
-                .sendPurchaseResumeService(new SendPurchaseResumeService(orderResumeQueryDslRepository, fakeMailSender))
+                .sendPurchaseResumeService(new SendPurchaseResumeService(orderResumeRepositoryCustom, fakeMailSender))
                 .build();
 
         User user1 = User.builder()
@@ -77,7 +71,7 @@ class OrderResumeServiceTest {
                 .field(FieldType.AI)
                 .level(LevelType.JUNIOR)
                 .resumeUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
-                .architectureImageUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
+                .descriptionImageUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
                 .price(new BigDecimal("10000.00"))
                 .description("test resume1")
                 .status(ResumeStatus.ACTIVE)
@@ -89,7 +83,7 @@ class OrderResumeServiceTest {
                 .field(FieldType.BACKEND)
                 .level(LevelType.NEW)
                 .resumeUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
-                .architectureImageUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
+                .descriptionImageUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
                 .price(new BigDecimal("98000.00"))
                 .description("test resume2")
                 .status(ResumeStatus.PENDING)
@@ -101,7 +95,7 @@ class OrderResumeServiceTest {
                 .field(FieldType.BACKEND)
                 .level(LevelType.SENIOR)
                 .resumeUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
-                .architectureImageUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
+                .descriptionImageUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
                 .price(new BigDecimal("98000.00"))
                 .description("test resume3")
                 .status(ResumeStatus.PENDING)

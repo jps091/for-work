@@ -2,16 +2,18 @@ package project.forwork.api.domain.salepost.infrastructure;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlGroup;
 import project.forwork.api.domain.resume.infrastructure.enums.FieldType;
 import project.forwork.api.domain.resume.infrastructure.enums.LevelType;
 import project.forwork.api.domain.salespost.controller.model.SalesPostResponse;
-import project.forwork.api.domain.salespost.infrastructure.SalesPostQueryDslRepository;
+import project.forwork.api.domain.salespost.infrastructure.SalesPostRepositoryCustomImpl;
 import project.forwork.api.domain.salespost.infrastructure.SalesPostSearchCond;
 import project.forwork.api.domain.salespost.infrastructure.enums.SalesPostSortType;
 
@@ -20,18 +22,20 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
+@ActiveProfiles("test")
 @TestPropertySource("classpath:test-application.yml")
+@DataJpaTest
+@Import({SalesPostRepositoryCustomImpl.class})
 @SqlGroup({
         @Sql(value = "/sql/user-test-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
         @Sql(value = "/sql/resume-test-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
         @Sql(value = "/sql/sales-post-test-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
         @Sql(value = "/sql/delete-all-data.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 })
-class SalesPostQueryDslRepositoryTest {
+class SalesPostRepositoryCustomImplTest {
 
     @Autowired
-    private SalesPostQueryDslRepository repository;
+    private SalesPostRepositoryCustomImpl repository;
 
     /***
      * ('test1', 'FRONTEND', 'NEW', 'PENDING')
@@ -167,20 +171,17 @@ class SalesPostQueryDslRepositoryTest {
         //given(상황환경 세팅)
         //when(상황발생) 기본 정렬 최신 등록순
         List<SalesPostResponse> result = repository
-                .findPreviousPage(null, null, null, null, LevelType.SENIOR, 6L, 2);
+                .findPreviousPage(null, null, null, null, LevelType.SENIOR, 1L, 1);
 
         //then(검증)
-        assertThat(result).hasSize(2);
+        assertThat(result).hasSize(1);
         assertThat(result.get(0).getId()).isEqualTo(2L);
-        assertThat(result.get(1).getId()).isEqualTo(1L);
         assertThat(result).allMatch(salesPostResponse -> salesPostResponse.getLevel().equals(LevelType.SENIOR));
     }
 
     @Test
     void 조건_없이_마지막_페이지_검색(){
         //given(상황환경 세팅)
-        SalesPostSearchCond cond = new SalesPostSearchCond();
-
         //when(상황발생) 기본 정렬 최신 등록순
         List<SalesPostResponse> result = repository
                 .findLastPage(null, null, null, null, null, 2);

@@ -1,20 +1,21 @@
 package project.forwork.api.domain.resume.infrastructure;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlGroup;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.transaction.annotation.Transactional;
+import project.forwork.api.config.TestConfig;
 import project.forwork.api.domain.resume.controller.model.ResumeResponse;
 import project.forwork.api.domain.resume.infrastructure.enums.PeriodCond;
 import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
@@ -26,30 +27,29 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
 @ActiveProfiles("test")
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @TestPropertySource("classpath:test-application.yml")
+@DataJpaTest
+@Import({ResumeRepositoryCustomImpl.class})
 @SqlGroup({
         @Sql(value = "/sql/user-test-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
         @Sql(value = "/sql/resume-test-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
         @Sql(value = "/sql/delete-all-data.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 })
-class ResumeQueryDlsRepositoryTest {
+class ResumeRepositoryCustomImplTest {
 
     @Autowired
-    private ResumeQueryDlsRepository repository;
+    private ResumeRepositoryCustomImpl repository;
 
-    @Autowired
-    private EntityManager entityManager;
-
-    @BeforeEach
-    void init(){
-        TestClockHolder clockHolder = TestClockHolder.builder()
-                .localDate(LocalDate.of(2024, 9, 10))
-                .localDateTime(LocalDateTime.of(2024, 9, 10, 23, 58))
-                .build();
-        repository = new ResumeQueryDlsRepository(entityManager, clockHolder);
+    @TestConfiguration
+    static class TestClockHolderConfig{
+        @Bean
+        public TestClockHolder testClockHolder(){
+            return TestClockHolder.builder()
+                    .localDate(LocalDate.of(2024, 9, 10))
+                    .localDateTime(LocalDateTime.of(2024, 9, 10, 23, 58))
+                    .build();
+        }
     }
 
     /***
