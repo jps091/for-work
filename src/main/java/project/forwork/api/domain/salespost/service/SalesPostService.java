@@ -14,11 +14,11 @@ import project.forwork.api.domain.salespost.controller.model.SalesPostDetailResp
 import project.forwork.api.domain.salespost.controller.model.SalesPostPage;
 import project.forwork.api.domain.salespost.controller.model.SalesPostResponse;
 import project.forwork.api.domain.salespost.controller.model.SalesPostSellerResponse;
-import project.forwork.api.domain.salespost.infrastructure.SalesPostQueryDslRepository;
 import project.forwork.api.domain.salespost.infrastructure.enums.SalesStatus;
 import project.forwork.api.domain.salespost.infrastructure.enums.SalesPostSortType;
 import project.forwork.api.domain.salespost.model.SalesPost;
 import project.forwork.api.domain.salespost.service.port.SalesPostRepository;
+import project.forwork.api.domain.salespost.service.port.SalesPostRepositoryCustom;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -31,7 +31,7 @@ public class SalesPostService {
 
     private final SellerValidationService sellerValidationService;
     private final SalesPostRepository salesPostRepository;
-    private final SalesPostQueryDslRepository salesPostQueryDslRepository;
+    private final SalesPostRepositoryCustom salesPostRepositoryCustom;
 
     public void register(CurrentUser currentUser, Long resumeId){
         Resume resume = sellerValidationService.validateSellerAndResumeStatus(currentUser, resumeId);
@@ -54,7 +54,7 @@ public class SalesPostService {
     }
 
     public List<SalesPostSellerResponse> findBySeller(CurrentUser currentUser){
-        List<SalesPostSellerResponse> salesResponse = salesPostQueryDslRepository.findBySeller(currentUser.getId());
+        List<SalesPostSellerResponse> salesResponse = salesPostRepositoryCustom.findBySeller(currentUser.getId());
 
         if(salesResponse.isEmpty()){
             throw new ApiException(SalesPostErrorCode.SALES_POST_NO_CONTENT);
@@ -70,7 +70,7 @@ public class SalesPostService {
         salesPost = salesPost.addViewCount();
         salesPostRepository.save(salesPost);
 
-        return salesPostQueryDslRepository.getSellingPostWithThrow(salesPostId);
+        return salesPostRepositoryCustom.getSellingPostWithThrow(salesPostId);
     }
 
     @Transactional(readOnly = true)
@@ -78,7 +78,7 @@ public class SalesPostService {
             SalesPostSortType sortType, BigDecimal minPrice, BigDecimal maxPrice,
             FieldType field, LevelType level, int limit
     ){
-        List<SalesPostResponse> results = salesPostQueryDslRepository
+        List<SalesPostResponse> results = salesPostRepositoryCustom
                 .findFirstPage(sortType, minPrice, maxPrice, field, level, limit);
         return createSalesPostPage(results);
     }
@@ -87,7 +87,7 @@ public class SalesPostService {
             SalesPostSortType sortType, BigDecimal minPrice, BigDecimal maxPrice,
             FieldType field, LevelType level, int limit
     ){
-        List<SalesPostResponse> results = salesPostQueryDslRepository
+        List<SalesPostResponse> results = salesPostRepositoryCustom
                 .findLastPage(sortType, minPrice, maxPrice, field, level, limit);
         return createSalesPostPage(results);
     }
@@ -97,7 +97,7 @@ public class SalesPostService {
             SalesPostSortType sortType, BigDecimal minPrice, BigDecimal maxPrice,
             FieldType field, LevelType level, Long lastId, int limit
     ){
-        List<SalesPostResponse> results = salesPostQueryDslRepository
+        List<SalesPostResponse> results = salesPostRepositoryCustom
                 .findNextPage(sortType, minPrice, maxPrice, field, level, lastId, limit);
 
         if(results.isEmpty()){
@@ -112,7 +112,7 @@ public class SalesPostService {
             SalesPostSortType sortType, BigDecimal minPrice, BigDecimal maxPrice,
             FieldType field, LevelType level, Long lastId, int limit
     ){
-        List<SalesPostResponse> results = salesPostQueryDslRepository
+        List<SalesPostResponse> results = salesPostRepositoryCustom
                 .findPreviousPage(sortType, minPrice, maxPrice, field, level, lastId, limit);
         return createSalesPostPage(results);
     }

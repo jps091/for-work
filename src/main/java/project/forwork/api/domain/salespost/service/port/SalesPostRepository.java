@@ -13,7 +13,5 @@ public interface SalesPostRepository {
 
     Optional<SalesPost> findById(Long salesPostId);
 
-    SalesPost getSellingPostWithThrow(Long resumeId);
-
     SalesPost getByResumeWithThrow(Resume resume);
 }

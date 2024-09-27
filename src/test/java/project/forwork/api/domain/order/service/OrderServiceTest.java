@@ -18,7 +18,7 @@ import project.forwork.api.domain.order.controller.model.OrderRequest;
 import project.forwork.api.domain.order.infrastructure.enums.OrderStatus;
 import project.forwork.api.domain.order.model.Order;
 import project.forwork.api.domain.orderresume.controller.model.OrderResumeResponse;
-import project.forwork.api.domain.orderresume.infrastructure.OrderResumeQueryDslRepository;
+import project.forwork.api.domain.orderresume.infrastructure.OrderResumeRepositoryCustomImpl;
 import project.forwork.api.domain.orderresume.infrastructure.enums.OrderResumeStatus;
 import project.forwork.api.domain.orderresume.model.OrderResume;
 import project.forwork.api.domain.orderresume.service.OrderResumeService;
@@ -36,7 +36,6 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -50,7 +49,7 @@ class OrderServiceTest {
     private OrderResumeService orderResumeService;
 
     @Mock
-    private OrderResumeQueryDslRepository orderResumeQueryDslRepository;
+    private OrderResumeRepositoryCustomImpl orderResumeQueryDslRepository;
 
     @BeforeEach
     void init(){
@@ -69,7 +68,7 @@ class OrderServiceTest {
                 .resumeRepository(fakeResumeRepository)
                 .userRepository(fakeUserRepository)
                 .clockHolder(testClockHolder)
-                .orderResumeQueryDslRepository(orderResumeQueryDslRepository)
+                .orderResumeRepositoryCustom(orderResumeQueryDslRepository)
                 .build();
 
         User user1 = User.builder()
@@ -97,7 +96,7 @@ class OrderServiceTest {
                 .field(FieldType.AI)
                 .level(LevelType.JUNIOR)
                 .resumeUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
-                .architectureImageUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
+                .descriptionImageUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
                 .price(new BigDecimal("40000.00"))
                 .description("test resume1")
                 .status(ResumeStatus.ACTIVE)
@@ -109,7 +108,7 @@ class OrderServiceTest {
                 .field(FieldType.BACKEND)
                 .level(LevelType.NEW)
                 .resumeUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
-                .architectureImageUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
+                .descriptionImageUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
                 .price(new BigDecimal("22000.00"))
                 .description("test resume2")
                 .status(ResumeStatus.ACTIVE)
@@ -121,7 +120,7 @@ class OrderServiceTest {
                 .field(FieldType.BACKEND)
                 .level(LevelType.SENIOR)
                 .resumeUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
-                .architectureImageUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
+                .descriptionImageUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
                 .price(new BigDecimal("34000.00"))
                 .description("test resume3")
                 .status(ResumeStatus.ACTIVE)

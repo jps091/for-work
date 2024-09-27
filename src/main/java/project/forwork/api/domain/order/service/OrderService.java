@@ -2,6 +2,7 @@ package project.forwork.api.domain.order.service;
 
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,10 +17,10 @@ import project.forwork.api.domain.order.infrastructure.enums.OrderStatus;
 import project.forwork.api.domain.order.model.Order;
 import project.forwork.api.domain.order.service.port.OrderRepository;
 import project.forwork.api.domain.orderresume.controller.model.OrderResumeResponse;
-import project.forwork.api.domain.orderresume.infrastructure.OrderResumeQueryDslRepository;
 import project.forwork.api.domain.orderresume.model.OrderResume;
 import project.forwork.api.domain.orderresume.service.OrderResumeService;
 import project.forwork.api.domain.orderresume.service.port.OrderResumeRepository;
+import project.forwork.api.domain.orderresume.service.port.OrderResumeRepositoryCustom;
 import project.forwork.api.domain.resume.model.Resume;
 import project.forwork.api.domain.resume.service.port.ResumeRepository;
 import project.forwork.api.domain.user.model.User;
@@ -31,6 +32,7 @@ import java.util.List;
 @Builder
 @Transactional
 @RequiredArgsConstructor
+@Slf4j
 /***
  * 1. 주문 (바로구매 / 장바구니구매)
  * 2. 주문 상태 변경 (확정, 취소, 부분취소) 확정 : 30분뒤 자동확정 or 즉시확정기능
@@ -48,7 +50,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final CartResumeRepository cartResumeRepository;
     private final OrderResumeRepository orderResumeRepository;
-    private final OrderResumeQueryDslRepository orderResumeQueryDslRepository;
+    private final OrderResumeRepositoryCustom orderResumeRepositoryCustom;
     private final ResumeRepository resumeRepository;
     private final UserRepository userRepository;
     private final ClockHolder clockHolder;
@@ -81,40 +83,63 @@ public class OrderService {
 
         return order;
     }
-    @Scheduled(fixedRate = 60000) // TODO 시간 변경 페이징처리(do while)
+
+    //@Scheduled(fixedRate = 30000, initialDelay = 30000) // TODO 시간 변경 페이징처리(do while)
     public void markAsWaiting(){
         List<Order> orders = orderRepository.findByStatus(OrderStatus.ORDER);
         orders = orders.stream()
                 .map(order -> order.markAsWaiting(OrderStatus.WAIT)).toList();
+
+        if(orders.isEmpty()){
+            log.info("markAsWaiting orders IsEmpty");
+            return;
+        }
+
         orderRepository.saveAll(orders);
     }
 
-    @Scheduled(fixedRate = 60000)
+    @Scheduled(fixedRate = 30000, initialDelay = 30000)
     public void markPartialAsWaiting(){
         List<Order> partialOrders = orderRepository.findByStatus(OrderStatus.PARTIAL_CANCEL);
         partialOrders = partialOrders.stream()
                 .map(order -> order.markAsWaiting(OrderStatus.PARTIAL_WAIT)).toList();
+
+        if(partialOrders.isEmpty()){
+            log.info("markPartialAsWaiting partialOrders IsEmpty");
+            return;
+        }
+
         orderRepository.saveAll(partialOrders);
     }
-    @Scheduled(fixedRate = 70000)
+
+    //@Scheduled(fixedRate = 50000, initialDelay = 50000)
     public void markAsConfirm(){
         List<Order> orders = orderRepository.findByStatus(OrderStatus.WAIT);
-
         orders = orders.stream()
                 .map(order -> order.markAsConfirm(OrderStatus.CONFIRM, clockHolder)).toList();
-        orderRepository.saveAll(orders);
 
+        if(orders.isEmpty()){
+            log.info("markAsConfirm orders IsEmpty");
+            return;
+        }
+
+        orderRepository.saveAll(orders);
         orderResumeService.sendMailForConfirmedOrders(orders);
     }
 
-    @Scheduled(fixedRate = 70000)
+    @Scheduled(fixedRate = 50000, initialDelay = 50000)
     public void markPartialAsConfirm(){
         List<Order> partialOrders = orderRepository.findByStatus(OrderStatus.PARTIAL_WAIT);
 
         partialOrders = partialOrders.stream()
                 .map(order -> order.markAsConfirm(OrderStatus.PARTIAL_CONFIRM, clockHolder)).toList();
-        orderRepository.saveAll(partialOrders);
 
+        if(partialOrders.isEmpty()){
+            log.info("markPartialAsConfirm partialOrders IsEmpty");
+            return;
+        }
+
+        orderRepository.saveAll(partialOrders);
         orderResumeService.sendMailForConfirmedOrders(partialOrders);
     }
 
@@ -145,7 +170,7 @@ public class OrderService {
         // 검증로직이 필요하지않은이유 -> currentUser.getId() 자체로 레포에서 조회를 하기때문에
         // currentUser 인터셉터와 쿠키에 의해 만들어진 검증된 객체
         Order order = orderRepository.getOrderWithThrow(currentUser.getId(), orderId);
-        List<OrderResumeResponse> orderResumes = orderResumeQueryDslRepository.findByOrderId(order.getId());
+        List<OrderResumeResponse> orderResumes = orderResumeRepositoryCustom.findByOrderId(order.getId());
 
         return OrderDetailResponse.builder()
                 .email(order.getBuyerEmail())

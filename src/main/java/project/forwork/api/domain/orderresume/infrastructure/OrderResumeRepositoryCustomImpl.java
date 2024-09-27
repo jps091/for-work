@@ -5,13 +5,11 @@ import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 import project.forwork.api.domain.orderresume.controller.model.OrderResumeResponse;
 import project.forwork.api.domain.orderresume.infrastructure.enums.OrderResumeStatus;
 import project.forwork.api.domain.orderresume.controller.model.PurchaseResponse;
+import project.forwork.api.domain.orderresume.service.port.OrderResumeRepositoryCustom;
 
 import java.util.List;
 
@@ -21,19 +19,17 @@ import static project.forwork.api.domain.resume.infrastructure.QResumeEntity.res
 import static project.forwork.api.domain.user.infrastructure.QUserEntity.userEntity;
 
 @Repository
-public class OrderResumeQueryDslRepository {
+public class OrderResumeRepositoryCustomImpl implements OrderResumeRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
     @Autowired
-    public OrderResumeQueryDslRepository(EntityManager em) {
+    public OrderResumeRepositoryCustomImpl(EntityManager em) {
         this.queryFactory = new JPAQueryFactory(em);
     }
 
-    public Page<PurchaseResponse> findPurchaseResume() {
+    public List<PurchaseResponse> findPurchaseResume() {
 
-        PageRequest pageRequest = PageRequest.of(0, 20);
-
-        List<PurchaseResponse> content = queryFactory
+        return queryFactory
                 .select(Projections.fields(PurchaseResponse.class,
                         orderEntity.id.as("orderId"),
                         userEntity.email.as("email"),
@@ -47,11 +43,7 @@ public class OrderResumeQueryDslRepository {
                 .join(orderResumeEntity.resumeEntity, resumeEntity)
                 .join(orderEntity.userEntity, userEntity)
                 .where(orderResumeEntity.status.eq(OrderResumeStatus.CONFIRM))
-                .offset(pageRequest.getOffset())
-                .limit(pageRequest.getPageSize())
                 .fetch();
-
-        return new PageImpl<>(content, pageRequest, content.size());
     }
 
     public List<OrderResumeResponse> findByUserIdAndStatus(Long userId, List<OrderResumeStatus> statuses){

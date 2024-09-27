@@ -20,6 +20,7 @@ import project.forwork.api.domain.resume.infrastructure.enums.FieldType;
 import project.forwork.api.domain.resume.infrastructure.enums.LevelType;
 import project.forwork.api.domain.resume.infrastructure.enums.PeriodCond;
 import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
+import project.forwork.api.domain.resume.service.port.ResumeRepositoryCustom;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -29,12 +30,12 @@ import static project.forwork.api.domain.resume.infrastructure.QResumeEntity.*;
 import static project.forwork.api.domain.user.infrastructure.QUserEntity.*;
 
 @Repository
-public class ResumeQueryDlsRepository {
+public class ResumeRepositoryCustomImpl implements ResumeRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
     private final ClockHolder clockHolder;
     @Autowired
-    public ResumeQueryDlsRepository(EntityManager em, ClockHolder clockHolder) {
+    public ResumeRepositoryCustomImpl(EntityManager em, ClockHolder clockHolder) {
         this.queryFactory = new JPAQueryFactory(em);
         this.clockHolder = clockHolder;
     }

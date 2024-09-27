@@ -2,8 +2,9 @@ package project.forwork.api.domain.orderresume.infrastructure;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Page;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlGroup;
@@ -16,8 +17,10 @@ import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
+@ActiveProfiles("test")
 @TestPropertySource("classpath:test-application.yml")
+@DataJpaTest
+@Import({OrderResumeRepositoryCustomImpl.class})
 @SqlGroup({
         @Sql(value = "/sql/user-test-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
         @Sql(value = "/sql/resume-test-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
@@ -28,15 +31,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 class OrderResumeQueryDslRepositoryTest {
 
     @Autowired
-    private OrderResumeQueryDslRepository orderResumeQueryDslRepository;
+    private OrderResumeRepositoryCustomImpl orderResumeRepositoryCustom;
 
     @Test
     void findPurchaseResume_메서드는_CONFIRM_상태인_OrderResume_들로_PurchaseInfo_들을_반환_한다(){
         //given(상황환경 세팅)
 
         //when(상황발생)
-        Page<PurchaseResponse> purchaseResume = orderResumeQueryDslRepository.findPurchaseResume();
-        List<PurchaseResponse> content = purchaseResume.getContent();
+        List<PurchaseResponse> content = orderResumeRepositoryCustom.findPurchaseResume();
 
         //then(검증)
         assertThat(content.size()).isEqualTo(2);
@@ -48,7 +50,7 @@ class OrderResumeQueryDslRepositoryTest {
         List<OrderResumeStatus> statuses = List.of(OrderResumeStatus.ORDER, OrderResumeStatus.CONFIRM, OrderResumeStatus.SENT);
 
         //when(상황발생)
-        List<OrderResumeResponse> orderResumeResponses = orderResumeQueryDslRepository.findByUserIdAndStatus(1L, statuses);
+        List<OrderResumeResponse> orderResumeResponses = orderResumeRepositoryCustom.findByUserIdAndStatus(1L, statuses);
 
         //then(검증)
         assertThat(orderResumeResponses).isNotEmpty();
@@ -62,7 +64,7 @@ class OrderResumeQueryDslRepositoryTest {
     void findByOrderId_메서드는_ORDER_ID_로_ORDER_에_속한_모든_OrderResumeResponse_을_반환_한다(){
         //given(상황환경 세팅)
         //when(상황발생)
-        List<OrderResumeResponse> orderResumeResponses = orderResumeQueryDslRepository.findByOrderId(8L);
+        List<OrderResumeResponse> orderResumeResponses = orderResumeRepositoryCustom.findByOrderId(8L);
 
         //then(검증)
         assertThat(orderResumeResponses).isNotEmpty();
