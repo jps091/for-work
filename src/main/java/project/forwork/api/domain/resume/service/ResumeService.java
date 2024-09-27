@@ -7,13 +7,12 @@ import org.springframework.stereotype.Service;
 import project.forwork.api.common.error.ResumeErrorCode;
 import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.domain.resume.controller.model.*;
-import project.forwork.api.domain.resume.infrastructure.ResumeQueryDlsRepository;
-import project.forwork.api.domain.resume.infrastructure.ResumeSearchCond;
 import project.forwork.api.domain.resume.infrastructure.enums.PeriodCond;
 import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
 import project.forwork.api.domain.resume.model.Resume;
 import project.forwork.api.domain.resume.service.port.ResumeRepository;
 import project.forwork.api.common.domain.CurrentUser;
+import project.forwork.api.domain.resume.service.port.ResumeRepositoryCustom;
 import project.forwork.api.domain.resumedecision.service.port.ResumeDecisionRepository;
 import project.forwork.api.domain.user.model.User;
 import project.forwork.api.domain.user.service.port.UserRepository;
@@ -29,7 +28,7 @@ public class ResumeService {
 
     private final ResumeRepository resumeRepository;
     private final ResumeDecisionRepository resumeDecisionRepository;
-    private final ResumeQueryDlsRepository resumeQueryDlsRepository;
+    private final ResumeRepositoryCustom resumeRepositoryCustom;
     private final UserRepository userRepository;
 
     public Resume register(CurrentUser currentUser, ResumeRegisterRequest body){
@@ -76,14 +75,14 @@ public class ResumeService {
     public ResumePage findFirstPage(
             PeriodCond periodCond, ResumeStatus status, int limit
     ){
-        List<ResumeResponse> results = resumeQueryDlsRepository.findFirstPage(periodCond, status, limit);
+        List<ResumeResponse> results = resumeRepositoryCustom.findFirstPage(periodCond, status, limit);
         return createResumePage(results);
     }
 
     public ResumePage findLastPage(
             PeriodCond periodCond, ResumeStatus status, int limit
     ){
-        List<ResumeResponse> results = resumeQueryDlsRepository.findLastPage(periodCond, status, limit);
+        List<ResumeResponse> results = resumeRepositoryCustom.findLastPage(periodCond, status, limit);
         return createResumePage(results);
     }
 
@@ -91,7 +90,7 @@ public class ResumeService {
             PeriodCond periodCond, ResumeStatus status,
             LocalDateTime lastModifiedAt, Long lastId, int limit
     ){
-        List<ResumeResponse> results = resumeQueryDlsRepository.findNextPage(periodCond, status, lastModifiedAt, lastId, limit);
+        List<ResumeResponse> results = resumeRepositoryCustom.findNextPage(periodCond, status, lastModifiedAt, lastId, limit);
 
         if(results.isEmpty()){
             throw new ApiException(ResumeErrorCode.RESUME_NO_CONTENT);
@@ -104,7 +103,7 @@ public class ResumeService {
             PeriodCond periodCond, ResumeStatus status,
             LocalDateTime lastModifiedAt, Long lastId, int limit
     ){
-        List<ResumeResponse> results = resumeQueryDlsRepository.findPreviousPage(periodCond, status, lastModifiedAt, lastId, limit);
+        List<ResumeResponse> results = resumeRepositoryCustom.findPreviousPage(periodCond, status, lastModifiedAt, lastId, limit);
         log.info("results size={}",results.size());
         return createResumePage(results);
     }

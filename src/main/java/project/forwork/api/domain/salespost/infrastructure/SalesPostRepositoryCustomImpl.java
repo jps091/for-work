@@ -1,11 +1,9 @@
 package project.forwork.api.domain.salespost.infrastructure;
 
-import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +19,7 @@ import project.forwork.api.domain.salespost.controller.model.SalesPostResponse;
 import project.forwork.api.domain.salespost.controller.model.SalesPostSellerResponse;
 import project.forwork.api.domain.salespost.infrastructure.enums.SalesPostSortType;
 import project.forwork.api.domain.salespost.infrastructure.enums.SalesStatus;
+import project.forwork.api.domain.salespost.service.port.SalesPostRepositoryCustom;
 
 import java.math.BigDecimal;
 import java.util.Collections;
@@ -31,12 +30,12 @@ import static project.forwork.api.domain.resume.infrastructure.QResumeEntity.*;
 import static project.forwork.api.domain.salespost.infrastructure.QSalesPostEntity.*;
 
 @Repository
-public class SalesPostQueryDslRepository {
+public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
 
     @Autowired
-    public SalesPostQueryDslRepository(EntityManager em) {
+    public SalesPostRepositoryCustomImpl(EntityManager em) {
         this.queryFactory  = new JPAQueryFactory(em);
     }
 
