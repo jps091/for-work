@@ -45,9 +45,9 @@ public class SendPurchaseResumeServiceTest {
 
         List<PurchaseResponse> purchaseResponses = List.of(purchaseResponse);
 
-        when(orderResumeRepositoryCustom.findPurchaseResume()).thenReturn(purchaseResponses);
+        when(orderResumeRepositoryCustom.findAllPurchaseResume()).thenReturn(purchaseResponses);
 
-        sendPurchaseResumeService.sendPurchaseResume();
+        sendPurchaseResumeService.sendAllPurchaseResume();
 
         assertEquals("user@naver.com", fakeMailSender.email);
         assertEquals("for-work 구매 이력서 : 신입 백엔드 이력서 #4", fakeMailSender.title);

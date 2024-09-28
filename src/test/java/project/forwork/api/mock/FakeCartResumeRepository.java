@@ -46,6 +46,13 @@ public class FakeCartResumeRepository implements CartResumeRepository {
     }
 
     @Override
+    public void deleteAllInCart(Long userId) {
+        data.forEach(cartResume ->
+                data.removeIf(c -> Objects.equals(c.getCart().getUser().getId(), userId))
+        );
+    }
+
+    @Override
     public Optional<CartResume> findById(Long cartResumeId) {
         return data.stream().filter(c -> Objects.equals(c.getId(), cartResumeId)).findAny();
     }

@@ -27,9 +27,13 @@ public class CartResumeRepositoryImpl implements CartResumeRepository {
 
     @Override
     public void delete(List<CartResume> cartResumes) {
-
         List<CartResumeEntity> cartResumeEntities = cartResumes.stream().map(CartResumeEntity::from).toList();
         cartResumeJpaRepository.deleteAll(cartResumeEntities);
+    }
+
+    @Override
+    public void deleteAllInCart(Long userId) {
+        cartResumeJpaRepository.deleteAllInCart(userId);
     }
 
     @Override
@@ -39,7 +43,7 @@ public class CartResumeRepositoryImpl implements CartResumeRepository {
 
     @Override
     public boolean existsByCartAndResume(Cart cart, Resume resume) {
-        return cartResumeJpaRepository.findByCartEntityAndResumeEntity(CartEntity.from(cart), ResumeEntity.from(resume));
+        return cartResumeJpaRepository.existsByCartEntityAndResumeEntity(CartEntity.from(cart), ResumeEntity.from(resume));
     }
 
     @Override

@@ -11,13 +11,13 @@ import java.math.BigDecimal;
 @Builder
 public class CartResumeResponse {
 
-    private Long id;
+    private Long cartResumeId;
     private String title;
     private BigDecimal price;
 
     public static CartResumeResponse from(CartResume cartResume){
         return CartResumeResponse.builder()
-                .id(cartResume.getId())
+                .cartResumeId(cartResume.getId())
                 .title(cartResume.getTitle())
                 .price(cartResume.getPrice())
                 .build();
