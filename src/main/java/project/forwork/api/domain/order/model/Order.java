@@ -77,6 +77,10 @@ public class Order {
             throw new ApiException(OrderErrorCode.ORDER_NOT_PERMISSION, userId);
         }
 
+        if(status.equals(OrderStatus.CONFIRM)){
+            throw new ApiException(OrderErrorCode.ORDER_IS_CONFIRM);
+        }
+
         return Order.builder()
                 .id(id)
                 .user(user)

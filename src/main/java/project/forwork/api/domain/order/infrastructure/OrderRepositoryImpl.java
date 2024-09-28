@@ -1,6 +1,8 @@
 package project.forwork.api.domain.order.infrastructure;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Limit;
 import org.springframework.stereotype.Repository;
 import project.forwork.api.common.error.OrderErrorCode;
 import project.forwork.api.common.exception.ApiException;
@@ -12,6 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
+@Slf4j
 @RequiredArgsConstructor
 public class OrderRepositoryImpl implements OrderRepository {
 
@@ -49,5 +52,15 @@ public class OrderRepositoryImpl implements OrderRepository {
         return orderJpaRepository.findAllByStatus(status).stream()
                 .map(OrderEntity::toModel)
                 .toList();
+    }
+
+    @Override
+    public List<Order> findByUserId(Long userId) {
+        return orderJpaRepository.findByUserEntity_Id(userId).stream().map(OrderEntity::toModel).toList();
+    }
+
+    @Override
+    public List<Order> findByStatus(OrderStatus status, int limit) {
+        return orderJpaRepository.findByStatus(status, Limit.of(limit)).stream().map(OrderEntity::toModel).toList();
     }
 }

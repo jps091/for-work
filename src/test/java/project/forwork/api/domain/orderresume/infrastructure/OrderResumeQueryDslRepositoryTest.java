@@ -38,10 +38,10 @@ class OrderResumeQueryDslRepositoryTest {
         //given(상황환경 세팅)
 
         //when(상황발생)
-        List<PurchaseResponse> content = orderResumeRepositoryCustom.findPurchaseResume();
+        List<PurchaseResponse> content = orderResumeRepositoryCustom.findAllPurchaseResume();
 
         //then(검증)
-        assertThat(content.size()).isEqualTo(2);
+        assertThat(content.size()).isEqualTo(1);
     }
 
     @Test

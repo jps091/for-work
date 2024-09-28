@@ -13,4 +13,6 @@ public interface OrderRepository {
     Order getOrderWithThrow(Long userId, Long orderId);
     Optional<Order> findById(Long orderId);
     List<Order> findByStatus(OrderStatus status);
+    List<Order> findByUserId(Long userId);
+    List<Order> findByStatus(OrderStatus status, int limit);
 }

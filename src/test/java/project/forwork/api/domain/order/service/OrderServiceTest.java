@@ -26,6 +26,8 @@ import project.forwork.api.domain.resume.infrastructure.enums.FieldType;
 import project.forwork.api.domain.resume.infrastructure.enums.LevelType;
 import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
 import project.forwork.api.domain.resume.model.Resume;
+import project.forwork.api.domain.salespost.infrastructure.enums.SalesStatus;
+import project.forwork.api.domain.salespost.model.SalesPost;
 import project.forwork.api.domain.user.infrastructure.enums.RoleType;
 import project.forwork.api.domain.user.model.User;
 import project.forwork.api.mock.*;
@@ -56,8 +58,8 @@ class OrderServiceTest {
         fakeOrderRepository = new FakeOrderRepository();
         FakeCartResumeRepository fakeCartResumeRepository = new FakeCartResumeRepository();
         FakeOrderResumeRepository fakeOrderResumeRepository = new FakeOrderResumeRepository();
-        FakeResumeRepository fakeResumeRepository = new FakeResumeRepository();
         FakeUserRepository fakeUserRepository = new FakeUserRepository();
+        FakeSalesPostRepository fakeSalesPostRepository = new FakeSalesPostRepository();
         TestClockHolder testClockHolder = new TestClockHolder(LocalDateTime.of(2024, 9, 16, 12, 0, 0));
 
         orderService = OrderService.builder()
@@ -65,8 +67,8 @@ class OrderServiceTest {
                 .orderRepository(fakeOrderRepository)
                 .orderResumeRepository(fakeOrderResumeRepository)
                 .cartResumeRepository(fakeCartResumeRepository)
-                .resumeRepository(fakeResumeRepository)
                 .userRepository(fakeUserRepository)
+                .salesPostRepository(fakeSalesPostRepository)
                 .clockHolder(testClockHolder)
                 .orderResumeRepositoryCustom(orderResumeQueryDslRepository)
                 .build();
@@ -126,9 +128,36 @@ class OrderServiceTest {
                 .status(ResumeStatus.ACTIVE)
                 .build();
 
-        fakeResumeRepository.save(resume1);
-        fakeResumeRepository.save(resume2);
-        fakeResumeRepository.save(resume3);
+        SalesPost salesPost1 = SalesPost.builder()
+                .id(1L)
+                .resume(resume1)
+                .title(resume1.createSalesPostTitle())
+                .salesStatus(SalesStatus.SELLING)
+                .salesQuantity(30)
+                .viewCount(0)
+                .build();
+
+        SalesPost salesPost2 = SalesPost.builder()
+                .id(2L)
+                .resume(resume2)
+                .title(resume2.createSalesPostTitle())
+                .salesStatus(SalesStatus.CANCELED)
+                .salesQuantity(30)
+                .viewCount(0)
+                .build();
+
+        SalesPost salesPost3 = SalesPost.builder()
+                .id(2L)
+                .resume(resume3)
+                .title(resume3.createSalesPostTitle())
+                .salesStatus(SalesStatus.CANCELED)
+                .salesQuantity(30)
+                .viewCount(0)
+                .build();
+
+        fakeSalesPostRepository.save(salesPost1);
+        fakeSalesPostRepository.save(salesPost2);
+        fakeSalesPostRepository.save(salesPost3);
 
         Cart cart1 = Cart.builder()
                 .id(1L)
@@ -152,9 +181,6 @@ class OrderServiceTest {
 
         fakeCartResumeRepository.save(cartResume1);
         fakeCartResumeRepository.save(cartResume2);
-
-
-
 
         // resume 1,2,3 구매
         Order order1 = Order.builder()
@@ -254,7 +280,7 @@ class OrderServiceTest {
 
         //when(상황발생)
         orderService.markAsWaiting();
-        Order order = orderService.getByIdWithThrow(1L);
+        Order order = fakeOrderRepository.getByIdWithThrow(1L);
 
         //then(검증)
         assertThat(order.getStatus()).isEqualTo(OrderStatus.WAIT);
@@ -266,7 +292,7 @@ class OrderServiceTest {
 
         //when(상황발생)
         orderService.markPartialAsWaiting();
-        Order order = orderService.getByIdWithThrow(4L);
+        Order order = fakeOrderRepository.getByIdWithThrow(4L);
 
         //then(검증)
         assertThat(order.getStatus()).isEqualTo(OrderStatus.PARTIAL_WAIT);
@@ -278,7 +304,7 @@ class OrderServiceTest {
 
         //when(상황발생)
         orderService.markAsConfirm();
-        Order order = orderService.getByIdWithThrow(3L);
+        Order order = fakeOrderRepository.getByIdWithThrow(3L);
 
         //then(검증)
         assertThat(order.getStatus()).isEqualTo(OrderStatus.CONFIRM);
@@ -290,7 +316,7 @@ class OrderServiceTest {
 
         //when(상황발생)
         orderService.markPartialAsConfirm();
-        Order order = orderService.getByIdWithThrow(2L);
+        Order order = fakeOrderRepository.getByIdWithThrow(2L);
 
         //then(검증)
         assertThat(order.getStatus()).isEqualTo(OrderStatus.PARTIAL_CONFIRM);
@@ -306,7 +332,7 @@ class OrderServiceTest {
 
         //when(상황발생)
         orderService.confirmOrderNow(currentUser, orderId);
-        Order order = orderService.getByIdWithThrow(orderId);
+        Order order = fakeOrderRepository.getByIdWithThrow(orderId);
 
         //then(검증)
         assertThat(order.getStatus()).isEqualTo(OrderStatus.CONFIRM);
@@ -336,7 +362,7 @@ class OrderServiceTest {
 
         //when(상황발생)
         orderService.cancelOrder(currentUser, orderId);
-        Order order = orderService.getByIdWithThrow(orderId);
+        Order order = fakeOrderRepository.getByIdWithThrow(orderId);
 
         //then(검증)
         assertThat(order.getStatus()).isEqualTo(OrderStatus.CANCEL);
@@ -394,7 +420,7 @@ class OrderServiceTest {
 
         // when
         orderService.cancelPartialOrder(currentUser, 1L, cancelRequest);
-        Order order = orderService.getByIdWithThrow(1L);
+        Order order = fakeOrderRepository.getByIdWithThrow(1L);
 
         // then
         assertThat(order.getStatus()).isEqualTo(OrderStatus.PARTIAL_CANCEL);
