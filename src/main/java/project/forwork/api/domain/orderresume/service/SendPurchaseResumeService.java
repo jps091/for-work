@@ -6,7 +6,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.forwork.api.common.service.port.MailSender;
-import project.forwork.api.domain.orderresume.infrastructure.OrderResumeRepositoryCustomImpl;
+import project.forwork.api.domain.order.model.Order;
 import project.forwork.api.domain.orderresume.controller.model.PurchaseResponse;
 import project.forwork.api.domain.orderresume.service.port.OrderResumeRepositoryCustom;
 
@@ -21,8 +21,13 @@ public class SendPurchaseResumeService {
     private final OrderResumeRepositoryCustom orderResumeRepositoryCustom;
     private final MailSender mailSender;
 
-    public void sendPurchaseResume(){
-        List<PurchaseResponse> purchaseResponses = orderResumeRepositoryCustom.findPurchaseResume();
+    public void sendAllPurchaseResume(){
+        List<PurchaseResponse> purchaseResponses = orderResumeRepositoryCustom.findAllPurchaseResume();
+        purchaseResponses.forEach(this::sendEmail);
+    }
+
+    public void sendNowPurchaseResume(Order order){
+        List<PurchaseResponse> purchaseResponses = orderResumeRepositoryCustom.findPurchaseResume(order);
         purchaseResponses.forEach(this::sendEmail);
     }
 

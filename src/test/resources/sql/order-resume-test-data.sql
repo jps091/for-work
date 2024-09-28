@@ -3,7 +3,7 @@ INSERT INTO `order_resumes` (`order_id`, `order_resume_id`, `resume_id`, `status
 INSERT INTO `order_resumes` (`order_id`, `order_resume_id`, `resume_id`, `status`) VALUES ('2', '3', '7', 'CANCEL');
 INSERT INTO `order_resumes` (`order_id`, `order_resume_id`, `resume_id`, `status`) VALUES ('3', '4', '7', 'SENT');
 INSERT INTO `order_resumes` (`order_id`, `order_resume_id`, `resume_id`, `status`) VALUES ('3', '5', '8', 'SENT');
-INSERT INTO `order_resumes` (`order_id`, `order_resume_id`, `resume_id`, `status`) VALUES ('4', '6', '5', 'CONFIRM');
+INSERT INTO `order_resumes` (`order_id`, `order_resume_id`, `resume_id`, `status`) VALUES ('4', '6', '5', 'SENT');
 INSERT INTO `order_resumes` (`order_id`, `order_resume_id`, `resume_id`, `status`) VALUES ('5', '7', '7', 'CONFIRM');
 INSERT INTO `order_resumes` (`order_id`, `order_resume_id`, `resume_id`, `status`) VALUES ('5', '8', '5', 'CANCEL');
 INSERT INTO `order_resumes` (`order_id`, `order_resume_id`, `resume_id`, `status`) VALUES ('6', '9', '4', 'CANCEL');

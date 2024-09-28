@@ -31,7 +31,7 @@ public class CartEntity extends BaseTimeEntity {
     @Column(nullable = false, name = "status")
     private CartStatus status;
 
-    @Column(name = "total_price", precision = 8, scale = 0, nullable = false)
+    @Column(name = "total_price", precision = 8, nullable = false)
     private BigDecimal totalPrice;
 
     @Column(name = "total_quantity", nullable = false)
@@ -41,6 +41,8 @@ public class CartEntity extends BaseTimeEntity {
         CartEntity cartEntity = new CartEntity();
         cartEntity.id = cart.getId();
         cartEntity.userEntity = UserEntity.from(cart.getUser());
+        cartEntity.totalQuantity = cart.getTotalQuantity();
+        cartEntity.totalPrice = cart.getTotalPrice();
         cartEntity.status = cart.getStatus();
         return cartEntity;
     }
@@ -49,6 +51,8 @@ public class CartEntity extends BaseTimeEntity {
         return Cart.builder()
                 .id(id)
                 .user(userEntity.toModel())
+                .totalQuantity(totalQuantity)
+                .totalPrice(totalPrice)
                 .status(status)
                 .modifiedAt(getModifiedAt())
                 .build();

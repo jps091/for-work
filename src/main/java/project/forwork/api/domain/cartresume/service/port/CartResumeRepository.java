@@ -13,6 +13,8 @@ public interface CartResumeRepository {
 
     void delete(List<CartResume> cartResumeList);
 
+    void deleteAllInCart(Long userId);
+
     Optional<CartResume> findById(Long cartResumeId);
 
     boolean existsByCartAndResume(Cart cart, Resume resume);

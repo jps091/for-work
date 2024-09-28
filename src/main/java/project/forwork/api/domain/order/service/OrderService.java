@@ -13,6 +13,7 @@ import project.forwork.api.domain.cartresume.service.port.CartResumeRepository;
 import project.forwork.api.domain.order.controller.model.CancelRequest;
 import project.forwork.api.domain.order.controller.model.OrderDetailResponse;
 import project.forwork.api.domain.order.controller.model.OrderRequest;
+import project.forwork.api.domain.order.controller.model.OrderResponse;
 import project.forwork.api.domain.order.infrastructure.enums.OrderStatus;
 import project.forwork.api.domain.order.model.Order;
 import project.forwork.api.domain.order.service.port.OrderRepository;
@@ -22,7 +23,8 @@ import project.forwork.api.domain.orderresume.service.OrderResumeService;
 import project.forwork.api.domain.orderresume.service.port.OrderResumeRepository;
 import project.forwork.api.domain.orderresume.service.port.OrderResumeRepositoryCustom;
 import project.forwork.api.domain.resume.model.Resume;
-import project.forwork.api.domain.resume.service.port.ResumeRepository;
+import project.forwork.api.domain.salespost.model.SalesPost;
+import project.forwork.api.domain.salespost.service.port.SalesPostRepository;
 import project.forwork.api.domain.user.model.User;
 import project.forwork.api.domain.user.service.port.UserRepository;
 
@@ -51,14 +53,15 @@ public class OrderService {
     private final CartResumeRepository cartResumeRepository;
     private final OrderResumeRepository orderResumeRepository;
     private final OrderResumeRepositoryCustom orderResumeRepositoryCustom;
-    private final ResumeRepository resumeRepository;
     private final UserRepository userRepository;
     private final ClockHolder clockHolder;
     private final OrderResumeService orderResumeService;
+    private final SalesPostRepository salesPostRepository;
 
-    public Order orderNow(CurrentUser currentUser, Long resumeId){
+    public Order orderNow(CurrentUser currentUser, Long salesPostId){
         User user = userRepository.getByIdWithThrow(currentUser.getId());
-        Resume resume = resumeRepository.getByIdWithThrow(resumeId);
+        SalesPost salesPost = salesPostRepository.getByIdWithThrow(salesPostId);
+        Resume resume = salesPost.getResume();
 
         Order order = Order.create(user, resume, clockHolder);
         order = orderRepository.save(order);
@@ -81,66 +84,29 @@ public class OrderService {
 
         orderResumeService.registerByCartResume(order, cartResumes);
 
+        cartResumeRepository.delete(cartResumes);
+
         return order;
     }
 
-    //@Scheduled(fixedRate = 30000, initialDelay = 30000) // TODO 시간 변경 페이징처리(do while)
+    //@Scheduled(fixedRate = 10000, initialDelay = 10000) // TODO 시간 변경
     public void markAsWaiting(){
-        List<Order> orders = orderRepository.findByStatus(OrderStatus.ORDER);
-        orders = orders.stream()
-                .map(order -> order.markAsWaiting(OrderStatus.WAIT)).toList();
-
-        if(orders.isEmpty()){
-            log.info("markAsWaiting orders IsEmpty");
-            return;
-        }
-
-        orderRepository.saveAll(orders);
+        updatedOrderStatus(OrderStatus.ORDER, OrderStatus.WAIT);
     }
 
-    @Scheduled(fixedRate = 30000, initialDelay = 30000)
+    //@Scheduled(fixedRate = 10000, initialDelay = 10000)
     public void markPartialAsWaiting(){
-        List<Order> partialOrders = orderRepository.findByStatus(OrderStatus.PARTIAL_CANCEL);
-        partialOrders = partialOrders.stream()
-                .map(order -> order.markAsWaiting(OrderStatus.PARTIAL_WAIT)).toList();
-
-        if(partialOrders.isEmpty()){
-            log.info("markPartialAsWaiting partialOrders IsEmpty");
-            return;
-        }
-
-        orderRepository.saveAll(partialOrders);
+        updatedOrderStatus(OrderStatus.PARTIAL_CANCEL, OrderStatus.PARTIAL_WAIT);
     }
 
-    //@Scheduled(fixedRate = 50000, initialDelay = 50000)
+    //@Scheduled(fixedRate = 10000, initialDelay = 10000)
     public void markAsConfirm(){
-        List<Order> orders = orderRepository.findByStatus(OrderStatus.WAIT);
-        orders = orders.stream()
-                .map(order -> order.markAsConfirm(OrderStatus.CONFIRM, clockHolder)).toList();
-
-        if(orders.isEmpty()){
-            log.info("markAsConfirm orders IsEmpty");
-            return;
-        }
-
-        orderRepository.saveAll(orders);
-        orderResumeService.sendMailForConfirmedOrders(orders);
+        updatedOrderStatus(OrderStatus.WAIT, OrderStatus.CONFIRM);
     }
 
-    @Scheduled(fixedRate = 50000, initialDelay = 50000)
+    //@Scheduled(fixedRate = 30000, initialDelay = 30000)
     public void markPartialAsConfirm(){
-        List<Order> partialOrders = orderRepository.findByStatus(OrderStatus.PARTIAL_WAIT);
-
-        partialOrders = partialOrders.stream()
-                .map(order -> order.markAsConfirm(OrderStatus.PARTIAL_CONFIRM, clockHolder)).toList();
-
-        if(partialOrders.isEmpty()){
-            log.info("markPartialAsConfirm partialOrders IsEmpty");
-            return;
-        }
-
-        orderRepository.saveAll(partialOrders);
-        orderResumeService.sendMailForConfirmedOrders(partialOrders);
+        updatedOrderStatus(OrderStatus.PARTIAL_WAIT, OrderStatus.PARTIAL_CONFIRM);
     }
 
     public void confirmOrderNow(CurrentUser currentUser, Long orderId){
@@ -166,6 +132,18 @@ public class OrderService {
         orderRepository.save(order);
     }
 
+    @Transactional(readOnly = true)
+    public List<OrderResponse> findAll(CurrentUser currentUser){
+        return orderRepository.findByUserId(currentUser.getId()).stream()
+                .map(order -> {
+                    List<OrderResumeResponse> orderResumeResponses = orderResumeRepositoryCustom.findByOrderId(order.getId());
+                    String orderResumeTitle = orderResumeResponses.get(0).getTitle();
+                    String orderTitle = orderResumeResponses.size() == 1 ? orderResumeTitle : orderResumeTitle + "...";
+                    return OrderResponse.from(order, orderTitle);
+                }).toList();
+    }
+
+    @Transactional(readOnly = true)
     public OrderDetailResponse getOrderDetail(CurrentUser currentUser, Long orderId){
         // 검증로직이 필요하지않은이유 -> currentUser.getId() 자체로 레포에서 조회를 하기때문에
         // currentUser 인터셉터와 쿠키에 의해 만들어진 검증된 객체
@@ -181,7 +159,43 @@ public class OrderService {
                 .build();
     }
 
-    public Order getByIdWithThrow(Long orderId){
-        return orderRepository.getByIdWithThrow(orderId);
+    public void updatedOrderStatus(OrderStatus oldStatus, OrderStatus updatedStatus) {
+        List<Order> orders;
+        int limit = 2;
+        log.info("updatedOrderStatus {} -> {}", oldStatus, updatedStatus);
+        do {
+            orders = orderRepository.findByStatus(oldStatus, limit);
+
+            // 더 이상 처리할 주문이 없으면 반복 종료
+            if (isOrdersEmpty(oldStatus, orders)) break;
+
+            // 상태를 WAIT으로 업데이트 후 저장
+            updateOrdersByStatus(orders, updatedStatus);
+
+            sendMailByOrderConfirm(updatedStatus, orders);
+
+        } while (!orders.isEmpty());
+    }
+
+    public void updateOrdersByStatus(List<Order> orders, OrderStatus status) {
+        List<Order> updatedOrders = orders.stream()
+                .map(order -> order.markAsWaiting(status))
+                .toList();
+
+        orderRepository.saveAll(updatedOrders);
+    }
+
+    private static boolean isOrdersEmpty(OrderStatus oldStatus, List<Order> orders) {
+        if (orders.isEmpty()) {
+            log.info(oldStatus.toString() + " : status orders IsEmpty" );
+            return true;
+        }
+        return false;
+    }
+
+    private void sendMailByOrderConfirm(OrderStatus updatedStatus, List<Order> orders) {
+        if(updatedStatus.equals(OrderStatus.PARTIAL_CONFIRM) || updatedStatus.equals(OrderStatus.CONFIRM)){
+            orderResumeService.sendMailForConfirmedOrders(orders);
+        }
     }
 }

@@ -6,6 +6,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import project.forwork.api.domain.order.model.Order;
 import project.forwork.api.domain.orderresume.controller.model.OrderResumeResponse;
 import project.forwork.api.domain.orderresume.infrastructure.enums.OrderResumeStatus;
 import project.forwork.api.domain.orderresume.controller.model.PurchaseResponse;
@@ -27,7 +28,27 @@ public class OrderResumeRepositoryCustomImpl implements OrderResumeRepositoryCus
         this.queryFactory = new JPAQueryFactory(em);
     }
 
-    public List<PurchaseResponse> findPurchaseResume() {
+    @Override
+    public List<PurchaseResponse> findPurchaseResume(Order order) {
+        return queryFactory
+                .select(Projections.fields(PurchaseResponse.class,
+                        orderEntity.id.as("orderId"),
+                        userEntity.email.as("email"),
+                        resumeEntity.resumeUrl.as("resumeUrl"),
+                        resumeEntity.id.as("resumeId"),
+                        resumeEntity.fieldType.as("field"),
+                        resumeEntity.levelType.as("level")
+                ))
+                .from(orderResumeEntity)
+                .join(orderResumeEntity.orderEntity, orderEntity)
+                .join(orderResumeEntity.resumeEntity, resumeEntity)
+                .join(orderEntity.userEntity, userEntity)
+                .where(orderResumeEntity.status.eq(OrderResumeStatus.CONFIRM)
+                        .and(orderEntity.id.eq(order.getId())))
+                .fetch();
+    }
+
+    public List<PurchaseResponse> findAllPurchaseResume() {
 
         return queryFactory
                 .select(Projections.fields(PurchaseResponse.class,

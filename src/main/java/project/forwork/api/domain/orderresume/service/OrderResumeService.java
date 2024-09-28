@@ -34,15 +34,26 @@ public class OrderResumeService {
         orderResumes.forEach(orderResumeRepository::save);
     }
 
+    // 즉시 주문확정에 대해
     public void sendMailForConfirmedOrder(Order order){
         List<OrderResume> orderResumes = orderResumeRepository.findByStatusAndOrder(OrderResumeStatus.ORDER, order).stream()
                 .map(orderResume -> orderResume.changeStatus(OrderResumeStatus.CONFIRM))
                 .toList();
         orderResumeRepository.saveAll(orderResumes);
 
-        confirmAndSendMails(orderResumes);
+        confirmAndSendMail(order, orderResumes);
     }
 
+    public void confirmAndSendMail(Order order, List<OrderResume> orderResumes){
+        sendPurchaseResumeService.sendNowPurchaseResume(order);
+
+        orderResumes = orderResumes.stream()
+                .map(orderResume -> orderResume.changeStatus(OrderResumeStatus.SENT)).toList();
+        log.info("confirmAndSendMails");
+        orderResumeRepository.saveAll(orderResumes);
+    }
+
+    // 자동 주문 확정에 대해
     public void sendMailForConfirmedOrders(List<Order> orders){
         List<OrderResume> orderResumes = orderResumeRepository.findByStatusAndOrders(OrderResumeStatus.ORDER, orders).stream()
                 .map(orderResume -> orderResume.changeStatus(OrderResumeStatus.CONFIRM))
@@ -53,7 +64,7 @@ public class OrderResumeService {
     }
 
     public void confirmAndSendMails(List<OrderResume> orderResumes){
-        sendPurchaseResumeService.sendPurchaseResume();
+        sendPurchaseResumeService.sendAllPurchaseResume();
 
         orderResumes = orderResumes.stream()
                 .map(orderResume -> orderResume.changeStatus(OrderResumeStatus.SENT)).toList();
@@ -77,17 +88,18 @@ public class OrderResumeService {
 
         return orderResumes;
     }
-
+    @Transactional(readOnly = true)
     public List<OrderResumeResponse> getOrderResumeList(CurrentUser currentUser){
         List<OrderResumeStatus> statuses = List.of(OrderResumeStatus.ORDER, OrderResumeStatus.CONFIRM, OrderResumeStatus.SENT);
         return orderResumeRepositoryCustom.findByUserIdAndStatus(currentUser.getId(), statuses);
     }
-
+    @Transactional(readOnly = true)
     public List<OrderResumeResponse> getCanceledOrderResumeList(CurrentUser currentUser){
         List<OrderResumeStatus> statuses = List.of(OrderResumeStatus.CANCEL);
         return orderResumeRepositoryCustom.findByUserIdAndStatus(currentUser.getId(), statuses);
     }
 
+    @Transactional(readOnly = true)
     public OrderResume getByIdWithThrow(Long orderResumeId){
         return orderResumeRepository.getByIdWithThrow(orderResumeId);
     }
