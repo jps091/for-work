@@ -12,7 +12,7 @@ import project.forwork.api.common.service.port.MailSender;
 public class MailSenderImpl implements MailSender {
     private final JavaMailSender javaMailSender;
 
-    @Async // TODO 비동기 공부필요
+    @Async // TODO 공부필요 1. 톰캣의 쓰레드, 스프링 쓰레드 별개의 것 2. 하지만 둘다 JVM 리소스 사용
     @Override
     public void send(String email, String title, String content) {
         SimpleMailMessage message = new SimpleMailMessage();

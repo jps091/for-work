@@ -12,6 +12,7 @@ import project.forwork.api.common.domain.CurrentUser;
 import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.common.service.port.RedisUtils;
 import project.forwork.api.domain.token.service.TokenCookieService;
+import project.forwork.api.domain.token.service.TokenHeaderService;
 import project.forwork.api.domain.user.controller.model.EmailVerifyRequest;
 import project.forwork.api.domain.user.controller.model.PasswordModifyRequest;
 import project.forwork.api.domain.user.controller.model.PasswordVerifyRequest;
@@ -36,7 +37,7 @@ class UserServiceTest {
     private TestUuidHolder testUuidHolder;
     private FakeMailSender fakeMailSender;
     @Mock
-    private TokenCookieService tokenCookieService;
+    private TokenHeaderService tokenHeaderService;
     @Mock
     private RedisUtils redisUtils;
     @BeforeEach
@@ -49,7 +50,7 @@ class UserServiceTest {
                 .userRepository(fakeUserRepository)
                 .redisUtils(redisUtils)
                 .uuidHolder(testUuidHolder)
-                .tokenCookieService(tokenCookieService)
+                .tokenHeaderService(tokenHeaderService)
                 .build();
 
         User user = User.builder()
@@ -164,7 +165,7 @@ class UserServiceTest {
 
         //then(검증)
         assertThat(fakeUserRepository.findById(currentUser.getId())).isEmpty();
-        verify(tokenCookieService).expiredCookiesAndRefreshToken(eq(currentUser.getId()), eq(request), eq(response));
+        verify(tokenHeaderService).expiredRefreshTokenAndHeaders(eq(currentUser.getId()), eq(request), eq(response));
     }
 
     @Test

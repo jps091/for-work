@@ -31,7 +31,6 @@ public class SendPurchaseResumeService {
         purchaseResponses.forEach(this::sendEmail);
     }
 
-    @Async //TODO 공부필요 1. 톰캣의 쓰레드, 스프링 쓰레드 별개의 것 2. 하지만 둘다 JVM 리소스 사용
     public void sendEmail(PurchaseResponse purchaseResponse){
         String title = "for-work 구매 이력서 : " + purchaseResponse.getSalesPostTitle();
         String content = "주문 번호 #" + purchaseResponse.getOrderId() +" <URL> : "+ purchaseResponse.getResumeUrl();

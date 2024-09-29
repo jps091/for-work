@@ -26,6 +26,6 @@ public class CartController {
             @Parameter(hidden = true) @Current CurrentUser currentUser
     ){
         cartService.register(currentUser);
-        return Api.CREATED("장바구니 생성");
+        return Api.CREATED("장바구니 생성 성공");
     }
 }
