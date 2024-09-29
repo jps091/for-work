@@ -6,10 +6,15 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import project.forwork.api.common.domain.CurrentUser;
 import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.common.service.port.RedisUtils;
+import project.forwork.api.domain.token.model.TokenResponse;
 import project.forwork.api.domain.token.service.TokenCookieService;
+import project.forwork.api.domain.token.service.TokenHeaderService;
+import project.forwork.api.domain.user.controller.model.LoginResponse;
 import project.forwork.api.domain.user.controller.model.PasswordInitRequest;
 import project.forwork.api.domain.user.controller.model.UserLoginRequest;
 import project.forwork.api.domain.user.controller.model.UserResponse;
@@ -27,10 +32,11 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 class LoginServiceTest {
     private LoginService loginService;
     @Mock
-    private TokenCookieService tokenCookieService;
+    private TokenHeaderService tokenHeaderService;
     @Mock
     private RedisUtils redisUtils;
     @Mock
@@ -44,7 +50,7 @@ class LoginServiceTest {
         fakeUserRepository = new FakeUserRepository();
         testClockHolder = new TestClockHolder(123L);
         loginService = LoginService.builder()
-                .tokenCookieService(tokenCookieService)
+                .tokenHeaderService(tokenHeaderService)
                 .redisUtils(redisUtils)
                 .clockHolder(testClockHolder)
                 .userRepository(fakeUserRepository)
@@ -61,9 +67,9 @@ class LoginServiceTest {
 
         fakeUserRepository.save(user);
     }
-    @Test
-    void UserLoginRequest_으로_로그인을_할_수_있다(){
-        //given(상황환경 세팅)
+    @Test //TODO Mockito 공부 필요
+    void UserLoginRequest_으로_로그인을_할_수_있다() {
+        // given(상황환경 세팅)
         UserLoginRequest loginUser = UserLoginRequest.builder()
                 .email("user@naver.com")
                 .password("123")
@@ -73,15 +79,22 @@ class LoginServiceTest {
         when(redisUtils.createKeyForm(anyString(), anyLong())).thenReturn(key);
         when(redisUtils.incrementDataInitTimeOut(eq(key), anyLong())).thenReturn(1L);
 
-        //when(상황발생)
+        // HttpServletResponse와 User 객체를 모킹
         HttpServletResponse response = mock(HttpServletResponse.class);
-        UserResponse result = loginService.login(response, loginUser);
         User user = fakeUserRepository.getByIdWithThrow(1L);
 
-        //then(검증)
-        assertThat(result.getEmail()).isEqualTo(user.getEmail());
-        assertThat(result.getRoleType()).isEqualTo(user.getRoleType());
-        verify(tokenCookieService).createCookies(eq(response), eq(user));
+        // TokenResponse를 모킹해서 반환하도록 설정
+        TokenResponse tokenResponse = new TokenResponse("access-token", System.currentTimeMillis() + 3600000, "refresh-token", System.currentTimeMillis() + 7200000);
+
+        // tokenHeaderService.addTokenToHeaders()를 모킹
+        when(tokenHeaderService.addTokenToHeaders(eq(response), eq(user))).thenReturn(tokenResponse);  // tokenResponse가 null이 아니도록 설정
+
+        // when(상황발생)
+        LoginResponse loginResponse = loginService.login(response, loginUser);
+
+        // then(검증)
+        assertThat(loginResponse.getUserId()).isEqualTo(user.getId());
+        verify(tokenHeaderService).addTokenToHeaders(eq(response), eq(user));
         verify(redisUtils).deleteData(anyString());  // 로그인 시도 횟수 초기화
     }
 

@@ -55,13 +55,13 @@ public class UserOpenApiController {
 
     @Operation(summary = "회원 로그인 API", description = "ID, 패스워드 입력")
     @PostMapping("/login")
-    public Api<UserResponse> login(
+    public Api<LoginResponse> login(
             @Valid @RequestBody
             UserLoginRequest userLoginRequest,
             HttpServletResponse response
     ){
-        UserResponse userResponse = loginService.login(response, userLoginRequest);
-        return Api.OK(userResponse);
+        LoginResponse loginResponse = loginService.login(response, userLoginRequest);
+        return Api.OK(loginResponse);
     }
 
     @Operation(summary = "임시 비밀번호 발급 API", description = "계정의 이메일, 성함 입력")

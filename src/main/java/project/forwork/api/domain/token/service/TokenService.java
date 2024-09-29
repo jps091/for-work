@@ -22,7 +22,6 @@ public class TokenService {
 
     public static final String PREFIX_TOKEN_KEY = "refreshToken:userId:";
     private final TokenHelperIfs tokenHelper;
-    private final ClockHolder clockHolder;
     private final RedisUtils redisUtils;
     public TokenResponse issueTokenResponse(User user) {
 

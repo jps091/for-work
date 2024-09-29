@@ -3,7 +3,11 @@ package project.forwork.api.common.config.swageer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.core.jackson.ModelResolver;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.context.annotation.Bean;
@@ -15,7 +19,15 @@ import org.springframework.core.annotation.Order;
 @OpenAPIDefinition(
         info = @Info(title = "For-work Service Api 명세서",
                 description = "Spring Boot 기반 RESTful Api",
-                version = "v1.0.0")
+                version = "v1.0.0"),
+        security = @SecurityRequirement(name = "bearerAuth")
+)
+@SecurityScheme(
+        name = "bearerAuth",
+        type = SecuritySchemeType.HTTP,
+        scheme = "bearer",
+        bearerFormat = "JWT",
+        in = SecuritySchemeIn.HEADER
 )
 public class SwaggerConfig {
     @Bean
