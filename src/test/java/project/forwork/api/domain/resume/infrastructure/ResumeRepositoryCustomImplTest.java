@@ -60,7 +60,7 @@ class ResumeRepositoryCustomImplTest {
      */
     @Test
     void 이력서_첫페이지_조건X_검색() {
-        //given(상황환경 세팅)
+        //given(상황환경 세팅
         //when(상황발생)
         List<ResumeResponse> result = repository.findFirstPage(null, null, 2);
 
@@ -111,7 +111,6 @@ class ResumeRepositoryCustomImplTest {
     @Test
     void 이력서_다음페이지_요청시간이_같다면_ID_값이_낮은게_먼저_반환_된다() {
         //given(상황환경 세팅)
-        ResumeSearchCond cond = new ResumeSearchCond();
         //2024-09-04 00:18:39
         LocalDateTime last = LocalDateTime.of(2024, 9, 5, 0, 18, 39);
 
@@ -219,10 +218,6 @@ class ResumeRepositoryCustomImplTest {
     @Test
     void 이력서_마지막_페이지_조건_WEEK_ACTIVE_검색() {
         //given(상황환경 세팅)
-        ResumeSearchCond cond = new ResumeSearchCond();
-        cond.setPeriodCond(PeriodCond.WEEK);
-        cond.setResumeStatus(ResumeStatus.ACTIVE);
-
         //when(상황발생)
         List<ResumeResponse> result = repository.findLastPage(PeriodCond.WEEK, ResumeStatus.ACTIVE, 2);
 

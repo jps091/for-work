@@ -8,8 +8,8 @@ import project.forwork.api.common.error.ResumeErrorCode;
 import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.domain.resume.controller.model.ResumeModifyRequest;
 import project.forwork.api.domain.resume.controller.model.ResumeRegisterRequest;
-import project.forwork.api.domain.resume.infrastructure.enums.FieldType;
-import project.forwork.api.domain.resume.infrastructure.enums.LevelType;
+import project.forwork.api.common.infrastructure.enums.FieldType;
+import project.forwork.api.common.infrastructure.enums.LevelType;
 import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
 import project.forwork.api.domain.user.model.User;
 

@@ -4,9 +4,11 @@ import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 import project.forwork.api.common.error.ResumeErrorCode;
 import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.domain.resume.controller.model.*;
+import project.forwork.api.domain.resume.infrastructure.enums.PageStep;
 import project.forwork.api.domain.resume.infrastructure.enums.PeriodCond;
 import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
 import project.forwork.api.domain.resume.model.Resume;
@@ -14,9 +16,15 @@ import project.forwork.api.domain.resume.service.port.ResumeRepository;
 import project.forwork.api.common.domain.CurrentUser;
 import project.forwork.api.domain.resume.service.port.ResumeRepositoryCustom;
 import project.forwork.api.domain.resumedecision.service.port.ResumeDecisionRepository;
+import project.forwork.api.domain.salespost.controller.model.SalesPostFilterCond;
+import project.forwork.api.domain.salespost.controller.model.SalesPostPage;
+import project.forwork.api.domain.salespost.infrastructure.enums.FieldCond;
+import project.forwork.api.domain.salespost.infrastructure.enums.LevelCond;
+import project.forwork.api.domain.salespost.infrastructure.enums.SalesPostSortType;
 import project.forwork.api.domain.user.model.User;
 import project.forwork.api.domain.user.service.port.UserRepository;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -72,6 +80,19 @@ public class ResumeService {
         return resume;
     }
 
+    public ResumePage getFilteredAndPagedResults(
+            PeriodCond periodCond, ResumeStatus status, PageStep pageStep,
+            LocalDateTime lastModifiedAt, Long lastId, int limit
+    ){
+
+        return switch(pageStep){
+            case FIRST -> findFirstPage(periodCond, status, limit);
+            case LAST -> findLastPage(periodCond, status, limit);
+            case NEXT -> findNextPage(periodCond, status, lastModifiedAt, lastId, limit);
+            case PREVIOUS -> findPreviousPage(periodCond, status, lastModifiedAt, lastId, limit);
+        };
+    }
+
     public ResumePage findFirstPage(
             PeriodCond periodCond, ResumeStatus status, int limit
     ){
@@ -91,11 +112,6 @@ public class ResumeService {
             LocalDateTime lastModifiedAt, Long lastId, int limit
     ){
         List<ResumeResponse> results = resumeRepositoryCustom.findNextPage(periodCond, status, lastModifiedAt, lastId, limit);
-
-        if(results.isEmpty()){
-            throw new ApiException(ResumeErrorCode.RESUME_NO_CONTENT);
-        }
-
         return createResumePage(results);
     }
 
@@ -104,7 +120,6 @@ public class ResumeService {
             LocalDateTime lastModifiedAt, Long lastId, int limit
     ){
         List<ResumeResponse> results = resumeRepositoryCustom.findPreviousPage(periodCond, status, lastModifiedAt, lastId, limit);
-        log.info("results size={}",results.size());
         return createResumePage(results);
     }
 
@@ -136,6 +151,10 @@ public class ResumeService {
     }
 
     private static ResumePage createResumePage(List<ResumeResponse> results) {
+        if(results.isEmpty()){
+            throw new ApiException(ResumeErrorCode.RESUME_NO_CONTENT);
+        }
+
         ResumeResponse lastRecord = results.get(results.size() - 1);
 
         return ResumePage.builder()

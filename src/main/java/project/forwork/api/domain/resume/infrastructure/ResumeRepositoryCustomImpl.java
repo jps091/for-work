@@ -16,8 +16,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import project.forwork.api.common.service.port.ClockHolder;
 import project.forwork.api.domain.resume.controller.model.ResumeResponse;
-import project.forwork.api.domain.resume.infrastructure.enums.FieldType;
-import project.forwork.api.domain.resume.infrastructure.enums.LevelType;
+import project.forwork.api.common.infrastructure.enums.FieldType;
+import project.forwork.api.common.infrastructure.enums.LevelType;
 import project.forwork.api.domain.resume.infrastructure.enums.PeriodCond;
 import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
 import project.forwork.api.domain.resume.service.port.ResumeRepositoryCustom;
@@ -38,28 +38,6 @@ public class ResumeRepositoryCustomImpl implements ResumeRepositoryCustom {
     public ResumeRepositoryCustomImpl(EntityManager em, ClockHolder clockHolder) {
         this.queryFactory = new JPAQueryFactory(em);
         this.clockHolder = clockHolder;
-    }
-
-    public Page<ResumeResponse> search(ResumeSearchCond2 cond, Pageable pageable) {
-        List<ResumeResponse> content = queryFactory
-                .select(Projections.fields(ResumeResponse.class,
-                        resumeEntity.id.as("id"),
-                        resumeEntity.fieldType.as("field"),
-                        resumeEntity.levelType.as("level"),
-                        resumeEntity.resumeStatus.as("status"),
-                        resumeEntity.modifiedAt.as("modifiedAt"),
-                        userEntity.email.as("email")))
-                .from(resumeEntity)
-                .join(resumeEntity.sellerEntity, userEntity)
-                .where(resumeStatusEqual(cond.getResumeStatus()),
-                        fieldEqual(cond.getField()),
-                        levelEqual(cond.getLevel()))
-                .orderBy(getSortOrders(pageable))
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .fetch();
-
-        return new PageImpl<>(content, pageable, pageable.isPaged() ? content.size() : 0);
     }
 
     public List<ResumeResponse> findFirstPage(
@@ -186,27 +164,5 @@ public class ResumeRepositoryCustomImpl implements ResumeRepositoryCustom {
 
     private BooleanExpression resumeStatusEqual(ResumeStatus status) {
         return status == null ? null : resumeEntity.resumeStatus.eq(status);
-    }
-
-    private BooleanExpression fieldEqual(FieldType field) {
-        return field == null ? null : resumeEntity.fieldType.eq(field);
-    }
-
-    private BooleanExpression levelEqual(LevelType level) {
-        return level == null ? null : resumeEntity.levelType.eq(level);
-    }
-
-    private OrderSpecifier<?> getSortOrder(String property, Order order) {
-        PathBuilder<Object> entityPath = new PathBuilder<>(resumeEntity.getType(), resumeEntity.getMetadata());
-
-        ComparableExpressionBase<?> path = entityPath.getComparable(property, Comparable.class);
-
-        return new OrderSpecifier<>(order, path);
-    }
-
-    private OrderSpecifier<?>[] getSortOrders(Pageable pageable) {
-        return pageable.getSort().stream()
-                .map(order -> getSortOrder(order.getProperty(), order.isAscending() ? Order.ASC : Order.DESC))
-                .toArray(OrderSpecifier[]::new);
     }
 }
