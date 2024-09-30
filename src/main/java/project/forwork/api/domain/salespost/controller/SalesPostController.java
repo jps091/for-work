@@ -5,7 +5,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import project.forwork.api.common.annotation.Current;
 import project.forwork.api.common.api.Api;
@@ -24,17 +23,6 @@ public class SalesPostController {
 
     private final SalesPostService salesPostService;
 
-    @Operation(summary = "sale-resume 생성", description = "sale-resume 생성")
-    @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping("/{resumeId}/register")
-    public Api<String> register(
-            @Parameter(hidden = true) @Current CurrentUser currentUser,
-            @PathVariable Long resumeId
-    ){
-        salesPostService.register(currentUser, resumeId);
-        return Api.CREATED("이력서 판매글 등록 성공");
-    }
-
     @Operation(summary = "자신의 판매글 조회 ", description = "판매량, 판매금액도 같이 볼수 있다.")
     @GetMapping
     public Api<List<SalesPostSellerResponse>> find(
@@ -44,23 +32,23 @@ public class SalesPostController {
         return Api.OK(salesPostResponses);
     }
 
-    @Operation(summary = "sale-resume 판매 재게", description = "자신의 resume이 상태가 active일때만 가능")
-    @PutMapping("/{resumeId}/start")
+    @Operation(summary = "sale-resume 판매 시작", description = "자신의 resume이 상태가 active일때만 가능")
+    @PutMapping("/{salesPostId}/start")
     public Api<String> startSelling(
             @Parameter(hidden = true) @Current CurrentUser currentUser,
-            @PathVariable Long resumeId
+            @PathVariable Long salesPostId
     ){
-        salesPostService.startSelling(currentUser, resumeId);
+        salesPostService.startSelling(currentUser, salesPostId);
         return Api.OK("판매중으로 변경 완료 하였습니다.");
     }
 
     @Operation(summary = "sale-resume 판매 중단", description = "자신의 resume이 상태가 active일때만 가능")
-    @PutMapping("/{resumeId}/cancel")
+    @PutMapping("/{salesPostId}/cancel")
     public Api<String> cancelSelling(
             @Parameter(hidden = true) @Current CurrentUser currentUser,
-            @PathVariable Long resumeId
+            @PathVariable Long salesPostId
     ){
-        salesPostService.cancelSelling(currentUser, resumeId);
+        salesPostService.cancelSelling(currentUser, salesPostId);
         return Api.OK("판매 중단으로 변경 완료 하였습니다.");
     }
 }
