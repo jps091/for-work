@@ -19,7 +19,7 @@ public class CartController {
 
     private final CartService cartService;
 
-    @Operation(summary = "장바구니 생성", description = "장바구니 생성")
+/*    @Operation(summary = "장바구니 생성", description = "장바구니 생성")
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/register")
     public Api<String> register(
@@ -27,5 +27,5 @@ public class CartController {
     ){
         cartService.register(currentUser);
         return Api.CREATED("장바구니 생성 성공");
-    }
+    }*/
 }

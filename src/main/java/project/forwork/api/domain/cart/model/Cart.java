@@ -18,16 +18,11 @@ import java.time.LocalDateTime;
 public class Cart {
     private final Long id;
     private final User user;
-    private final BigDecimal totalPrice;
-    private final int totalQuantity;
     private final CartStatus status;
-    private final LocalDateTime modifiedAt;
 
     public static Cart create(User user){
         return Cart.builder()
                 .user(user)
-                .totalPrice(BigDecimal.ZERO)
-                .totalQuantity(0)
                 .status(CartStatus.ACTIVE)
                 .build();
     }

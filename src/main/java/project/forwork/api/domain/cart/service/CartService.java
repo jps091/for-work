@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 @Service
 @RequiredArgsConstructor
 public class CartService {
-    private final CartRepository cartRepository;
+/*    private final CartRepository cartRepository;
     private final UserRepository userRepository;
 
     public Cart register(CurrentUser currentUser){
@@ -21,5 +21,5 @@ public class CartService {
         User user = userRepository.getByIdWithThrow(currentUser.getId());
         Cart cart = Cart.create(user);
         return cartRepository.save(cart);
-    }
+    }*/
 }
