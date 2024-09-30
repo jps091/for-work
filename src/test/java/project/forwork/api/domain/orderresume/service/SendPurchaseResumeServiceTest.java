@@ -7,8 +7,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import project.forwork.api.domain.orderresume.controller.model.PurchaseResponse;
 import project.forwork.api.domain.orderresume.service.port.OrderResumeRepositoryCustom;
-import project.forwork.api.domain.resume.infrastructure.enums.FieldType;
-import project.forwork.api.domain.resume.infrastructure.enums.LevelType;
+import project.forwork.api.common.infrastructure.enums.FieldType;
+import project.forwork.api.common.infrastructure.enums.LevelType;
 import project.forwork.api.mock.FakeMailSender;
 
 import static org.mockito.Mockito.*;

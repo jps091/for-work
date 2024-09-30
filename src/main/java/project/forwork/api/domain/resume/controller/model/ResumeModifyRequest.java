@@ -1,8 +1,8 @@
 package project.forwork.api.domain.resume.controller.model;
 
 import lombok.*;
-import project.forwork.api.domain.resume.infrastructure.enums.FieldType;
-import project.forwork.api.domain.resume.infrastructure.enums.LevelType;
+import project.forwork.api.common.infrastructure.enums.FieldType;
+import project.forwork.api.common.infrastructure.enums.LevelType;
 
 import java.math.BigDecimal;
 @Getter

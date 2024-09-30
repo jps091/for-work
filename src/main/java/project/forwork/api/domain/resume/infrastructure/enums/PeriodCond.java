@@ -7,7 +7,8 @@ import lombok.AllArgsConstructor;
 public enum PeriodCond {
     TODAY("오늘"),
     WEEK("1주일"),
-    MONTH("1달")
+    MONTH("1달"),
+
     ;
 
     private String description;

@@ -2,7 +2,7 @@ package project.forwork.api.domain.thumbnailimage.model;
 
 import lombok.Builder;
 import lombok.Getter;
-import project.forwork.api.domain.resume.infrastructure.enums.FieldType;
+import project.forwork.api.common.infrastructure.enums.FieldType;
 
 @Getter
 public class ThumbnailImage {

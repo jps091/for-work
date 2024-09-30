@@ -11,6 +11,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import project.forwork.api.common.domain.CurrentUser;
 import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.common.service.port.RedisUtils;
+import project.forwork.api.domain.cart.infrastructure.enums.CartStatus;
+import project.forwork.api.domain.cart.model.Cart;
 import project.forwork.api.domain.token.service.TokenCookieService;
 import project.forwork.api.domain.token.service.TokenHeaderService;
 import project.forwork.api.domain.user.controller.model.EmailVerifyRequest;
@@ -19,6 +21,7 @@ import project.forwork.api.domain.user.controller.model.PasswordVerifyRequest;
 import project.forwork.api.domain.user.controller.model.UserCreateRequest;
 import project.forwork.api.domain.user.infrastructure.enums.RoleType;
 import project.forwork.api.domain.user.model.User;
+import project.forwork.api.mock.FakeCartRepository;
 import project.forwork.api.mock.FakeMailSender;
 import project.forwork.api.mock.FakeUserRepository;
 import project.forwork.api.mock.TestUuidHolder;
@@ -34,6 +37,7 @@ class UserServiceTest {
 
     private UserService userService;
     private FakeUserRepository fakeUserRepository;
+    private FakeCartRepository fakeCartRepository;
     private TestUuidHolder testUuidHolder;
     private FakeMailSender fakeMailSender;
     @Mock
@@ -45,10 +49,12 @@ class UserServiceTest {
         fakeUserRepository = new FakeUserRepository();
         testUuidHolder = new TestUuidHolder("aaaaa-111111-eeeee");
         fakeMailSender = new FakeMailSender();
+        fakeCartRepository = new FakeCartRepository();
         userService = UserService.builder()
                 .mailSender(fakeMailSender)
                 .userRepository(fakeUserRepository)
                 .redisUtils(redisUtils)
+                .cartRepository(fakeCartRepository)
                 .uuidHolder(testUuidHolder)
                 .tokenHeaderService(tokenHeaderService)
                 .build();
@@ -62,10 +68,18 @@ class UserServiceTest {
                 .build();
 
         fakeUserRepository.save(user);
+
+ /*       Cart cart = Cart.builder()
+                .id(1L)
+                .user(user)
+                .status(CartStatus.ACTIVE)
+                .build();
+
+        fakeCartRepository.save(cart);*/
     }
     
     @Test
-    void UserCreateRequest_로_User_를_생성할_수_있다(){
+    void UserCreateRequest_로_User_와_Cart_를_생성할_수_있다(){
         //given(상황환경 세팅)
         UserCreateRequest userCreateRequest = UserCreateRequest.builder()
                 .name("test")
@@ -75,12 +89,14 @@ class UserServiceTest {
         
         //when(상황발생)
         User user = userService.register(userCreateRequest);
+        Cart cart = fakeCartRepository.getByUserIdWithThrow(user.getId());
 
         //then(검증)
         assertThat(user.getId()).isNotNull();
         assertThat(user.getEmail()).isEqualTo("test@naver.com");
         assertThat(user.getName()).isEqualTo("test");
         assertThat(user.getPassword()).isEqualTo("123");
+        assertThat(cart.getUser()).isEqualTo(user);
     }
 
     @Test

@@ -22,8 +22,8 @@ import project.forwork.api.domain.orderresume.infrastructure.OrderResumeReposito
 import project.forwork.api.domain.orderresume.infrastructure.enums.OrderResumeStatus;
 import project.forwork.api.domain.orderresume.model.OrderResume;
 import project.forwork.api.domain.orderresume.service.OrderResumeService;
-import project.forwork.api.domain.resume.infrastructure.enums.FieldType;
-import project.forwork.api.domain.resume.infrastructure.enums.LevelType;
+import project.forwork.api.common.infrastructure.enums.FieldType;
+import project.forwork.api.common.infrastructure.enums.LevelType;
 import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
 import project.forwork.api.domain.resume.model.Resume;
 import project.forwork.api.domain.salespost.infrastructure.enums.SalesStatus;
@@ -163,7 +163,6 @@ class OrderServiceTest {
                 .id(1L)
                 .user(user1)
                 .status(CartStatus.ACTIVE)
-                .modifiedAt(LocalDateTime.of(2024, 9, 13, 12, 0, 0))
                 .build();
 
 

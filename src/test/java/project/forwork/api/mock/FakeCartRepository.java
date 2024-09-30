@@ -23,7 +23,6 @@ public class FakeCartRepository implements CartRepository {
                     .id(id.incrementAndGet())
                     .user(cart.getUser())
                     .status(cart.getStatus())
-                    .modifiedAt(cart.getModifiedAt())
                     .build();
             data.add(newCart);
             return newCart;

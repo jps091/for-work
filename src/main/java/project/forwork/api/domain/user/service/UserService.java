@@ -13,6 +13,8 @@ import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.common.service.port.MailSender;
 import project.forwork.api.common.service.port.RedisUtils;
 import project.forwork.api.common.service.port.UuidHolder;
+import project.forwork.api.domain.cart.model.Cart;
+import project.forwork.api.domain.cart.service.port.CartRepository;
 import project.forwork.api.domain.token.service.TokenCookieService;
 import project.forwork.api.domain.token.service.TokenHeaderService;
 import project.forwork.api.domain.user.controller.model.*;
@@ -29,8 +31,8 @@ public class UserService {
     public static final String EMAIL_PREFIX = "email:";
 
     private final UserRepository userRepository;
-    //private final TokenCookieService tokenCookieService;
     private final TokenHeaderService tokenHeaderService;
+    private final CartRepository cartRepository;
     private final MailSender mailSender;
     private final UuidHolder uuidHolder;
     private final RedisUtils redisUtils;
@@ -44,6 +46,10 @@ public class UserService {
 
         User user = User.from(body);
         user = userRepository.save(user);
+
+        Cart cart = Cart.create(user);
+        cartRepository.save(cart);
+
         return user;
     }
     @Transactional

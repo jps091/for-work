@@ -4,7 +4,7 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 import project.forwork.api.common.infrastructure.BaseTimeEntity;
 
-import project.forwork.api.domain.resume.infrastructure.enums.FieldType;
+import project.forwork.api.common.infrastructure.enums.FieldType;
 import project.forwork.api.domain.thumbnailimage.model.ThumbnailImage;
 
 

@@ -7,16 +7,15 @@ import org.springframework.transaction.annotation.Transactional;
 import project.forwork.api.common.domain.CurrentUser;
 import project.forwork.api.common.error.SalesPostErrorCode;
 import project.forwork.api.common.exception.ApiException;
-import project.forwork.api.domain.resume.infrastructure.enums.FieldType;
-import project.forwork.api.domain.resume.infrastructure.enums.LevelType;
+import project.forwork.api.domain.resume.infrastructure.enums.PageStep;
 import project.forwork.api.domain.resume.model.Resume;
 import project.forwork.api.domain.salespost.controller.model.SalesPostDetailResponse;
 import project.forwork.api.domain.salespost.controller.model.SalesPostPage;
 import project.forwork.api.domain.salespost.controller.model.SalesPostResponse;
 import project.forwork.api.domain.salespost.controller.model.SalesPostSellerResponse;
-import project.forwork.api.domain.salespost.infrastructure.enums.SalesStatus;
-import project.forwork.api.domain.salespost.infrastructure.enums.SalesPostSortType;
+import project.forwork.api.domain.salespost.infrastructure.enums.*;
 import project.forwork.api.domain.salespost.model.SalesPost;
+import project.forwork.api.domain.salespost.controller.model.SalesPostFilterCond;
 import project.forwork.api.domain.salespost.service.port.SalesPostRepository;
 import project.forwork.api.domain.salespost.service.port.SalesPostRepositoryCustom;
 
@@ -70,50 +69,45 @@ public class SalesPostService {
         salesPost = salesPost.addViewCount();
         salesPostRepository.save(salesPost);
 
-        return salesPostRepositoryCustom.getSellingPostWithThrow(salesPostId);
+        return salesPostRepositoryCustom.getDetailSalesPost(salesPostId);
+    }
+
+    public SalesPostPage getFilteredAndPagedResults(
+            SalesPostSortType sortType, BigDecimal minPrice, BigDecimal maxPrice,
+            FieldCond field, LevelCond level,
+            PageStep pageStep, Long lastId, int limit
+    ){
+        SalesPostFilterCond cond = SalesPostFilterCond.from(sortType, minPrice, maxPrice, field, level);
+
+        return switch(pageStep){
+            case FIRST -> findFirstPage(cond, limit);
+            case LAST -> findLastPage(cond, limit);
+            case NEXT -> findNextPage(cond, lastId, limit);
+            case PREVIOUS -> findPreviousPage(cond, lastId, limit);
+        };
     }
 
     @Transactional(readOnly = true)
-    public SalesPostPage findFirstPage(
-            SalesPostSortType sortType, BigDecimal minPrice, BigDecimal maxPrice,
-            FieldType field, LevelType level, int limit
-    ){
-        List<SalesPostResponse> results = salesPostRepositoryCustom
-                .findFirstPage(sortType, minPrice, maxPrice, field, level, limit);
-        return createSalesPostPage(results);
-    }
-    @Transactional(readOnly = true)
-    public SalesPostPage findLastPage(
-            SalesPostSortType sortType, BigDecimal minPrice, BigDecimal maxPrice,
-            FieldType field, LevelType level, int limit
-    ){
-        List<SalesPostResponse> results = salesPostRepositoryCustom
-                .findLastPage(sortType, minPrice, maxPrice, field, level, limit);
-        return createSalesPostPage(results);
-    }
-
-    @Transactional(readOnly = true)
-    public SalesPostPage findNextPage(
-            SalesPostSortType sortType, BigDecimal minPrice, BigDecimal maxPrice,
-            FieldType field, LevelType level, Long lastId, int limit
-    ){
-        List<SalesPostResponse> results = salesPostRepositoryCustom
-                .findNextPage(sortType, minPrice, maxPrice, field, level, lastId, limit);
-
-        if(results.isEmpty()){
-            throw new ApiException(SalesPostErrorCode.SALES_POST_NO_CONTENT);
-        }
-
+    public SalesPostPage findFirstPage(SalesPostFilterCond cond, int limit){
+        List<SalesPostResponse> results = salesPostRepositoryCustom.findFirstPage(cond, limit);
         return createSalesPostPage(results);
     }
 
     @Transactional(readOnly = true)
-    public SalesPostPage findPreviousPage(
-            SalesPostSortType sortType, BigDecimal minPrice, BigDecimal maxPrice,
-            FieldType field, LevelType level, Long lastId, int limit
-    ){
-        List<SalesPostResponse> results = salesPostRepositoryCustom
-                .findPreviousPage(sortType, minPrice, maxPrice, field, level, lastId, limit);
+    public SalesPostPage findLastPage(SalesPostFilterCond cond, int limit){
+        List<SalesPostResponse> results = salesPostRepositoryCustom.findLastPage(cond, limit);
+        return createSalesPostPage(results);
+    }
+
+    @Transactional(readOnly = true)
+    public SalesPostPage findNextPage(SalesPostFilterCond cond, Long lastId, int limit){
+        List<SalesPostResponse> results = salesPostRepositoryCustom.findNextPage(cond, lastId, limit);
+        return createSalesPostPage(results);
+    }
+
+    @Transactional(readOnly = true)
+    public SalesPostPage findPreviousPage(SalesPostFilterCond cond, Long lastId, int limit){
+        List<SalesPostResponse> results = salesPostRepositoryCustom.findPreviousPage(cond, lastId, limit);
         return createSalesPostPage(results);
     }
 
