@@ -11,12 +11,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
-import project.forwork.api.domain.resume.infrastructure.enums.FieldType;
-import project.forwork.api.domain.resume.infrastructure.enums.LevelType;
+import project.forwork.api.common.infrastructure.enums.FieldType;
+import project.forwork.api.common.infrastructure.enums.LevelType;
 import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
 import project.forwork.api.domain.salespost.controller.model.SalesPostDetailResponse;
+import project.forwork.api.domain.salespost.controller.model.SalesPostFilterCond;
 import project.forwork.api.domain.salespost.controller.model.SalesPostResponse;
 import project.forwork.api.domain.salespost.controller.model.SalesPostSellerResponse;
+import project.forwork.api.domain.salespost.infrastructure.enums.FieldCond;
+import project.forwork.api.domain.salespost.infrastructure.enums.LevelCond;
 import project.forwork.api.domain.salespost.infrastructure.enums.SalesPostSortType;
 import project.forwork.api.domain.salespost.infrastructure.enums.SalesStatus;
 import project.forwork.api.domain.salespost.service.port.SalesPostRepositoryCustom;
@@ -39,39 +42,6 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
         this.queryFactory  = new JPAQueryFactory(em);
     }
 
-    public Page<SalesPostResponse> searchByCondition(SalesPostSearchCond cond, Pageable pageable, SalesPostSortType sortType){
-
-        OrderSpecifier<?> orderSpecifier = createOrderSpecifier(sortType);
-
-
-        List<SalesPostResponse> content = queryFactory
-                .select(Projections.constructor(SalesPostResponse.class,
-                        salesPostEntity.id,
-                        salesPostEntity.title,
-                        resumeEntity.price,
-                        //thumbnailImageEntity.url, TODO 썸네일
-                        salesPostEntity.viewCount,
-                        salesPostEntity.salesQuantity,
-                        resumeEntity.fieldType,
-                        resumeEntity.levelType,
-                        salesPostEntity.salesStatus,
-                        salesPostEntity.modifiedAt))
-                .from(salesPostEntity)
-                .join(salesPostEntity.resumeEntity, resumeEntity)
-                //.join(salesPostEntity.thumbnailImageEntity, thumbnailImageEntity) // 썸네일
-                .where(
-                        priceRangeCond(cond.getMinPrice(), cond.getMaxPrice()),
-                        fieldEqual(cond.getField()),
-                        levelEqual(cond.getLevel()),
-                        salesPostEntity.salesStatus.eq(SalesStatus.SELLING)
-                )
-                .orderBy(orderSpecifier, salesPostEntity.id.desc())
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .fetch();
-
-        return new PageImpl<>(content, pageable, pageable.isPaged() ? content.size() : 0);
-    }
     /***
      * 1. 기본적으로 최신 등록순으로 정렬
      * 2. 정렬 조건 : 최신 등록순, 조회순, 많이팔린순
@@ -79,7 +49,7 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
      * 4. 페이징처리 :
      */
 
-    public SalesPostDetailResponse getSellingPostWithThrow(Long salesPostId){
+    public SalesPostDetailResponse getDetailSalesPost(Long salesPostId){
         return queryFactory
                 .select(Projections.fields(SalesPostDetailResponse.class,
                         salesPostEntity.id.as("id"),
@@ -121,11 +91,8 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
     }
 
 
-    public List<SalesPostResponse> findFirstPage(
-            SalesPostSortType sortType, BigDecimal minPrice, BigDecimal maxPrice,
-            FieldType field, LevelType level, int limit
-    ){
-        OrderSpecifier<?> orderSpecifier = createOrderSpecifier(sortType);
+    public List<SalesPostResponse> findFirstPage(SalesPostFilterCond cond, int limit){
+        OrderSpecifier<?> orderSpecifier = createOrderSpecifier(cond.getSortType());
 
         return queryFactory
                 .select(Projections.fields(SalesPostResponse.class,
@@ -143,20 +110,17 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
                 .join(salesPostEntity.resumeEntity, resumeEntity)
                 //.join(salesPostEntity.thumbnailImageEntity, thumbnailImageEntity) // 썸네일
                 .where(
-                        priceRangeCond(minPrice, maxPrice),
-                        fieldEqual(field),
-                        levelEqual(level),
+                        priceRangeCond(cond.getMinPrice(), cond.getMaxPrice()),
+                        fieldEqual(cond.getField()),
+                        levelEqual(cond.getLevel()),
                         salesPostEntity.salesStatus.eq(SalesStatus.SELLING)
                 )
                 .orderBy(orderSpecifier)
                 .limit(limit).fetch();
     }
 
-    public List<SalesPostResponse> findLastPage(
-            SalesPostSortType sortType, BigDecimal minPrice, BigDecimal maxPrice,
-            FieldType field, LevelType level, int limit
-    ){
-        OrderSpecifier<?> orderSpecifier = createReversedOrderSpecifier(sortType);
+    public List<SalesPostResponse> findLastPage(SalesPostFilterCond cond, int limit){
+        OrderSpecifier<?> orderSpecifier = createReversedOrderSpecifier(cond.getSortType());
 
         List<SalesPostResponse> results = queryFactory
                 .select(Projections.fields(SalesPostResponse.class,
@@ -174,9 +138,9 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
                 .join(salesPostEntity.resumeEntity, resumeEntity)
                 //.join(salesPostEntity.thumbnailImageEntity, thumbnailImageEntity) // 썸네일
                 .where(
-                        priceRangeCond(minPrice, maxPrice),
-                        fieldEqual(field),
-                        levelEqual(level),
+                        priceRangeCond(cond.getMinPrice(), cond.getMaxPrice()),
+                        fieldEqual(cond.getField()),
+                        levelEqual(cond.getLevel()),
                         salesPostEntity.salesStatus.eq(SalesStatus.SELLING)
                 )
                 .orderBy(orderSpecifier)
@@ -186,12 +150,8 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
         return results;
     }
 
-    public List<SalesPostResponse> findNextPage(
-            SalesPostSortType sortType, BigDecimal minPrice, BigDecimal maxPrice,
-            FieldType field, LevelType level,
-            Long lastId, int limit
-    ){
-        OrderSpecifier<?> orderSpecifier = createOrderSpecifier(sortType);
+    public List<SalesPostResponse> findNextPage(SalesPostFilterCond cond, Long lastId, int limit){
+        OrderSpecifier<?> orderSpecifier = createOrderSpecifier(cond.getSortType());
 
         return queryFactory
                 .select(Projections.fields(SalesPostResponse.class,
@@ -210,20 +170,16 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
                 //.join(salesPostEntity.thumbnailImageEntity, thumbnailImageEntity) // 썸네일
                 .where(salesPostEntity.id.lt(lastId).
                                 and(salesPostEntity.salesStatus.eq(SalesStatus.SELLING)),
-                        priceRangeCond(minPrice, maxPrice),
-                        fieldEqual(field),
-                        levelEqual(level)
+                        priceRangeCond(cond.getMinPrice(), cond.getMaxPrice()),
+                        fieldEqual(cond.getField()),
+                        levelEqual(cond.getLevel())
                 )
                 .orderBy(orderSpecifier)
                 .limit(limit).fetch();
     }
 
-    public List<SalesPostResponse> findPreviousPage(
-            SalesPostSortType sortType, BigDecimal minPrice, BigDecimal maxPrice,
-            FieldType field, LevelType level,
-            Long lastId, int limit
-    ){
-        OrderSpecifier<?> orderSpecifier = createReversedOrderSpecifier(sortType);
+    public List<SalesPostResponse> findPreviousPage(SalesPostFilterCond cond, Long lastId, int limit){
+        OrderSpecifier<?> orderSpecifier = createReversedOrderSpecifier(cond.getSortType());
 
         List<SalesPostResponse> results = queryFactory
                 .select(Projections.fields(SalesPostResponse.class,
@@ -242,9 +198,9 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
                 //.join(salesPostEntity.thumbnailImageEntity, thumbnailImageEntity) // 썸네일
                 .where(salesPostEntity.id.gt(lastId).
                                 and(salesPostEntity.salesStatus.eq(SalesStatus.SELLING)),
-                        priceRangeCond(minPrice, maxPrice),
-                        fieldEqual(field),
-                        levelEqual(level)
+                        priceRangeCond(cond.getMinPrice(), cond.getMaxPrice()),
+                        fieldEqual(cond.getField()),
+                        levelEqual(cond.getLevel())
                 )
                 .orderBy(orderSpecifier)
                 .limit(limit).fetch();
@@ -253,12 +209,22 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
         return results;
     }
 
-    private BooleanExpression fieldEqual(FieldType field) {
-        return field != null ? resumeEntity.fieldType.eq(field) : null;
+    private BooleanExpression fieldEqual(FieldCond fieldCond) {
+        if (fieldCond.getFieldType() == null) {
+            return null;
+        }
+        return resumeEntity.fieldType.eq(fieldCond.getFieldType());
     }
 
-    private BooleanExpression levelEqual(LevelType level) {
-        return level != null ? resumeEntity.levelType.eq(level) : null;
+    private BooleanExpression levelEqual(LevelCond levelCond) {
+        if (levelCond.getLevelType() == null) {
+            return null;
+        }
+        return resumeEntity.levelType.eq(levelCond.getLevelType());
+    }
+
+    private BooleanExpression priceRangeCond(BigDecimal minPrice, BigDecimal maxPrice) {
+        return resumeEntity.price.goe(minPrice).and(resumeEntity.price.loe(maxPrice));
     }
 
     private BooleanExpression priceRangeCond3(SalesPostSearchCond cond){
@@ -277,7 +243,7 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
         return priceCondition;
     }
 
-    private BooleanExpression priceRangeCond(BigDecimal minPrice, BigDecimal maxPrice){
+    private BooleanExpression priceRangeCond1(BigDecimal minPrice, BigDecimal maxPrice){
         BooleanExpression priceCondition = null;
 
         if(minPrice != null){
@@ -293,13 +259,9 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
 
     private OrderSpecifier<?> createOrderSpecifier(SalesPostSortType sortType){
 
-        if(sortType == null){
-            return new OrderSpecifier<>(Order.DESC, salesPostEntity.id);
-        }
-
         return switch(sortType){
             case OLD -> new OrderSpecifier<>(Order.ASC, salesPostEntity.id);
-            case NEW -> new OrderSpecifier<>(Order.DESC, salesPostEntity.id);
+            case NEW, DEFAULT -> new OrderSpecifier<>(Order.DESC, salesPostEntity.id);
             case HIGHEST_PRICE -> new OrderSpecifier<>(Order.DESC, resumeEntity.price);
             case LOWEST_PRICE -> new OrderSpecifier<>(Order.ASC, resumeEntity.price);
             case VIEW_COUNT -> new OrderSpecifier<>(Order.DESC, salesPostEntity.viewCount);
@@ -309,13 +271,9 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
 
     private OrderSpecifier<?> createReversedOrderSpecifier(SalesPostSortType sortType) {
 
-        if(sortType == null){
-            return new OrderSpecifier<>(Order.ASC, salesPostEntity.id);
-        }
-
         return switch (sortType) {
             case OLD -> new OrderSpecifier<>(Order.DESC, salesPostEntity.id);
-            case NEW -> new OrderSpecifier<>(Order.ASC, salesPostEntity.id);
+            case NEW, DEFAULT -> new OrderSpecifier<>(Order.ASC, salesPostEntity.id);
             case HIGHEST_PRICE -> new OrderSpecifier<>(Order.ASC, resumeEntity.price);
             case LOWEST_PRICE -> new OrderSpecifier<>(Order.DESC, resumeEntity.price);
             case VIEW_COUNT -> new OrderSpecifier<>(Order.ASC, salesPostEntity.viewCount);

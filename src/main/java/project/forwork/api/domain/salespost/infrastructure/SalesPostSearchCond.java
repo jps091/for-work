@@ -2,9 +2,8 @@ package project.forwork.api.domain.salespost.infrastructure;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
-import project.forwork.api.domain.resume.infrastructure.enums.FieldType;
-import project.forwork.api.domain.resume.infrastructure.enums.LevelType;
-import project.forwork.api.domain.salespost.infrastructure.enums.SalesPostSortType;
+import project.forwork.api.common.infrastructure.enums.FieldType;
+import project.forwork.api.common.infrastructure.enums.LevelType;
 
 import java.math.BigDecimal;
 
