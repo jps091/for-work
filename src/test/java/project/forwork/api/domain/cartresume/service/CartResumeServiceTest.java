@@ -9,11 +9,9 @@ import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.domain.cart.infrastructure.enums.CartStatus;
 import project.forwork.api.domain.cart.model.Cart;
 import project.forwork.api.domain.cartresume.controller.model.CartResumeDetailResponse;
-import project.forwork.api.domain.cartresume.controller.model.CartResumeResponse;
-import project.forwork.api.domain.cartresume.controller.model.CartSummary;
 import project.forwork.api.domain.cartresume.model.CartResume;
-import project.forwork.api.domain.resume.infrastructure.enums.FieldType;
-import project.forwork.api.domain.resume.infrastructure.enums.LevelType;
+import project.forwork.api.common.infrastructure.enums.FieldType;
+import project.forwork.api.common.infrastructure.enums.LevelType;
 import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
 import project.forwork.api.domain.resume.model.Resume;
 import project.forwork.api.domain.salespost.infrastructure.enums.SalesStatus;
@@ -23,7 +21,6 @@ import project.forwork.api.domain.user.model.User;
 import project.forwork.api.mock.*;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
@@ -117,14 +114,12 @@ class CartResumeServiceTest {
                 .id(1L)
                 .user(user1)
                 .status(CartStatus.ACTIVE)
-                .modifiedAt(LocalDateTime.of(2024, 9, 13, 12, 0, 0))
                 .build();
 
         Cart cart2 = Cart.builder()
                 .id(2L)
                 .user(user2)
                 .status(CartStatus.ACTIVE)
-                .modifiedAt(LocalDateTime.of(2024, 9, 13, 12, 0, 0))
                 .build();
 
         fakeCartRepository.save(cart1);

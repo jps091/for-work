@@ -32,6 +32,14 @@ public class SalesPostOpenController {
         return Api.OK(salesPostResponse);
     }
 
+    @Operation(summary = "전체 sale-post 조회 API",
+            description = "sortType 정렬조건[OLD, NEW, HIGHEST_PRICE, LOWEST_PRICE, VIEW_COUNT, BEST_SELLING, DEFAULT]" +
+                    " minPrice, maxPrice 가격 범위 필터링 조건" +
+                    " 분야 조건 : field [FRONTEND BACKEND ANDROID IOS DEVOPS AI ETC UNSELECTED]" +
+                    " 년차 조건 : level [NEW, JUNIOR, SENIOR]" +
+                    " pageStep : [FIRST(default), NEXT, PREVIOUS, LAST]" +
+                    " limit 가져올 개수 기본 6개" +
+                    " lastId : 이전, 다음 페이지 호출시 반드시 필요")
     @GetMapping("/page")
     public Api<SalesPostPage> getFilteredPage(
             @RequestParam(required = false) SalesPostSortType sortType,
@@ -48,66 +56,4 @@ public class SalesPostOpenController {
                 .getFilteredAndPagedResults(sortType, minPrice, maxPrice, field, level, pageStep, lastId, limit);
         return Api.OK(result);
     }
-
-/*    @Operation(summary = "첫 페이지 sale-post 조회 API", description = "필터링 및 정렬 조건을 선택 할 경우 첫 페이지로 이동")
-    @GetMapping("/first")
-    public Api<SalesPostPage> findFirstPage(
-            @RequestParam(required = false) SalesPostSortType sortType,
-            @RequestParam(required = false) BigDecimal minPrice,
-            @RequestParam(required = false) BigDecimal maxPrice,
-            @RequestParam(required = false) FieldType field,
-            @RequestParam(required = false) LevelType level,
-            @RequestParam(defaultValue = "6") int limit
-    ){
-        SalesPostPage salesPostPage = salesPostService
-                .findFirstPage(sortType, minPrice, maxPrice, field, level, limit);
-        return Api.OK(salesPostPage);
-    }
-
-    @Operation(summary = "마지막 페이지 sale-post 조회 API", description = "마지막 페이지로 바로 이동")
-    @GetMapping("/last")
-    public Api<SalesPostPage> findLastPage(
-            @RequestParam(required = false) SalesPostSortType sortType,
-            @RequestParam(required = false) BigDecimal minPrice,
-            @RequestParam(required = false) BigDecimal maxPrice,
-            @RequestParam(required = false) FieldType field,
-            @RequestParam(required = false) LevelType level,
-            @RequestParam(defaultValue = "6") int limit
-    ){
-        SalesPostPage salesPostPage = salesPostService
-                .findLastPage(sortType, minPrice, maxPrice, field, level, limit);
-        return Api.OK(salesPostPage);
-    }
-
-    @Operation(summary = "다음 페이지 sale-post 조회 API", description = "다음 페이지로 이동")
-    @GetMapping("/next")
-    public Api<SalesPostPage> findNextPage(
-            @RequestParam(required = false) SalesPostSortType sortType,
-            @RequestParam(required = false) BigDecimal minPrice,
-            @RequestParam(required = false) BigDecimal maxPrice,
-            @RequestParam(required = false) FieldType field,
-            @RequestParam(required = false) LevelType level,
-            @RequestParam(defaultValue = "6") int limit,
-            @RequestParam Long lastId
-    ){
-        SalesPostPage salesPostPage = salesPostService
-                .findNextPage(sortType, minPrice, maxPrice, field, level, lastId, limit);
-        return Api.OK(salesPostPage);
-    }
-
-    @Operation(summary = "이전 페이지 sale-post 조회 API", description = "이전 페이지로 이동")
-    @GetMapping("/previous")
-    public Api<SalesPostPage> findPreviousPage(
-            @RequestParam(required = false) SalesPostSortType sortType,
-            @RequestParam(required = false) BigDecimal minPrice,
-            @RequestParam(required = false) BigDecimal maxPrice,
-            @RequestParam(required = false) FieldType field,
-            @RequestParam(required = false) LevelType level,
-            @RequestParam(defaultValue = "6") int limit,
-            @RequestParam Long lastId
-    ){
-        SalesPostPage salesPostPage = salesPostService
-                .findPreviousPage(sortType, minPrice, maxPrice, field, level, lastId, limit);
-        return Api.OK(salesPostPage);
-    }*/
 }

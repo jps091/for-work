@@ -38,6 +38,15 @@ public class ResumeAdminController {
         return Api.OK(ResumeDetailResponse.from(resume));
     }
 
+    @Operation(summary = "전체 요청 Resume 조회 API",
+            description = "sortType 정렬조건[OLD, NEW, HIGHEST_PRICE, LOWEST_PRICE, VIEW_COUNT, BEST_SELLING, DEFAULT]" +
+                    " minPrice, maxPrice 가격 범위 필터링 조건" +
+                    " 분야 조건 : field [FRONTEND BACKEND ANDROID IOS DEVOPS AI ETC UNSELECTED]" +
+                    " 년차 조건 : level [NEW, JUNIOR, SENIOR]" +
+                    " pageStep : [FIRST(default), NEXT, PREVIOUS, LAST]" +
+                    " lastModifiedAt : 이전, 다음 페이지 호출시 반드시 필요" +
+                    " limit 가져올 개수 기본 6개" +
+                    " lastId : 이전, 다음 페이지 호출시 반드시 필요")
     @GetMapping("/page")
     public Api<ResumePage> getFilteredPage(
             @RequestParam(required = false) PeriodCond periodCond,
@@ -52,52 +61,4 @@ public class ResumeAdminController {
                 .getFilteredAndPagedResults(periodCond, status, pageStep, lastModifiedAt, lastId, limit);
         return Api.OK(result);
     }
-
-/*    @Operation(summary = "첫 페이지 resume 요청 조회 API", description = "필터링 및 정렬 조건을 선택 할 경우 첫 페이지로 이동")
-    @GetMapping("/first")
-    public Api<ResumePage> findFirstPage(
-            @RequestParam(required = false) PeriodCond periodCond,
-            @RequestParam(required = false) ResumeStatus status,
-            @RequestParam(defaultValue = "6") int limit
-    ){
-        ResumePage resumePage = resumeService.findFirstPage(periodCond, status, limit);
-        return Api.OK(resumePage);
-    }
-
-    @Operation(summary = "마지막 페이지 resume 요청 조회 API", description = "마지막 페이지로 바로 이동")
-    @GetMapping("/last")
-    public Api<ResumePage> findLastPage(
-            @RequestParam(required = false) PeriodCond periodCond,
-            @RequestParam(required = false) ResumeStatus status,
-            @RequestParam(defaultValue = "6") int limit
-    ){
-        ResumePage resumePage = resumeService.findLastPage(periodCond, status, limit);
-        return Api.OK(resumePage);
-    }
-
-    @Operation(summary = "다음 페이지 resume 요청 조회 API", description = "다음 페이지로 이동")
-    @GetMapping("/next")
-    public Api<ResumePage> findNextPage(
-            @RequestParam(required = false) PeriodCond periodCond,
-            @RequestParam(required = false) ResumeStatus status,
-            @RequestParam LocalDateTime lastModifiedAt,
-            @RequestParam Long lastId,
-            @RequestParam(defaultValue = "6") int limit
-    ){
-        ResumePage resumePage = resumeService.findNextPage(periodCond, status, lastModifiedAt, lastId, limit);
-        return Api.OK(resumePage);
-    }
-
-    @Operation(summary = "이전 페이지 resume 요청 조회 API", description = "이전 페이지로 이동")
-    @GetMapping("/previous")
-    public Api<ResumePage> findPreviousPage(
-            @RequestParam(required = false) PeriodCond periodCond,
-            @RequestParam(required = false) ResumeStatus status,
-            @RequestParam LocalDateTime lastModifiedAt,
-            @RequestParam Long lastId,
-            @RequestParam(defaultValue = "6") int limit
-    ){
-        ResumePage resumePage = resumeService.findPreviousPage(periodCond, status, lastModifiedAt, lastId, limit);
-        return Api.OK(resumePage);
-    }*/
 }

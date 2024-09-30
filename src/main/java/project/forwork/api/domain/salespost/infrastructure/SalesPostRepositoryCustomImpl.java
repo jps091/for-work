@@ -227,36 +227,6 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
         return resumeEntity.price.goe(minPrice).and(resumeEntity.price.loe(maxPrice));
     }
 
-    private BooleanExpression priceRangeCond3(SalesPostSearchCond cond){
-        BigDecimal minPrice = cond.getMinPrice() != null ? cond.getMinPrice() : BigDecimal.ZERO;
-        BigDecimal maxPrice = cond.getMaxPrice() != null ? cond.getMaxPrice() : new BigDecimal("100000");
-
-        return resumeEntity.price.goe(minPrice).and(resumeEntity.price.loe(maxPrice));
-    }
-
-    private BooleanExpression priceRangeCond2(BigDecimal minPrice, BigDecimal maxPrice){
-        BooleanExpression priceCondition = null;
-
-        priceCondition = resumeEntity.price.goe(Objects.requireNonNullElse(minPrice, BigDecimal.ZERO));
-        priceCondition = priceCondition.and(resumeEntity.price.loe(Objects.requireNonNullElseGet(maxPrice, () -> new BigDecimal("100000"))));
-
-        return priceCondition;
-    }
-
-    private BooleanExpression priceRangeCond1(BigDecimal minPrice, BigDecimal maxPrice){
-        BooleanExpression priceCondition = null;
-
-        if(minPrice != null){
-            priceCondition = resumeEntity.price.goe(minPrice);
-        }
-
-        if(maxPrice != null){
-            priceCondition = priceCondition != null ? priceCondition.and(resumeEntity.price.loe(maxPrice)) : resumeEntity.price.loe(maxPrice);
-        }
-
-        return priceCondition;
-    }
-
     private OrderSpecifier<?> createOrderSpecifier(SalesPostSortType sortType){
 
         return switch(sortType){
