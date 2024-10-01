@@ -51,7 +51,7 @@ public class Resume {
                 .build();
     }
 
-    public Resume modifyResumePending(ResumeModifyRequest body){
+    public Resume modify(ResumeModifyRequest body){
         validPrice(body.getPrice());
         return Resume.builder()
                 .id(id)

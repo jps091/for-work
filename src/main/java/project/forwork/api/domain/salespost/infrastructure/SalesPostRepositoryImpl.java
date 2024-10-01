@@ -40,4 +40,9 @@ public class SalesPostRepositoryImpl implements SalesPostRepository {
                 .orElseThrow(() -> new ApiException(SalesPostErrorCode.SALES_POST_NOT_FOUND))
                 .toModel();
     }
+
+    @Override
+    public Optional<SalesPost> findByResume(Resume resume) {
+        return salesPostJpaRepository.findByResumeEntity(ResumeEntity.from(resume)).map(SalesPostEntity::toModel);
+    }
 }

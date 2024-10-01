@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import project.forwork.api.common.domain.CurrentUser;
 import project.forwork.api.common.error.SalesPostErrorCode;
 import project.forwork.api.common.exception.ApiException;
+import project.forwork.api.domain.resume.controller.model.ResumeModifyRequest;
 import project.forwork.api.domain.resume.infrastructure.enums.PageStep;
 import project.forwork.api.domain.resume.model.Resume;
 import project.forwork.api.domain.salespost.controller.model.SalesPostDetailResponse;
@@ -18,6 +19,8 @@ import project.forwork.api.domain.salespost.model.SalesPost;
 import project.forwork.api.domain.salespost.controller.model.SalesPostFilterCond;
 import project.forwork.api.domain.salespost.service.port.SalesPostRepository;
 import project.forwork.api.domain.salespost.service.port.SalesPostRepositoryCustom;
+import project.forwork.api.domain.user.model.User;
+import project.forwork.api.domain.user.service.port.UserRepository;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -28,28 +31,32 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SalesPostService {
 
-    private final SellerValidationService sellerValidationService;
     private final SalesPostRepository salesPostRepository;
     private final SalesPostRepositoryCustom salesPostRepositoryCustom;
+    private final UserRepository userRepository;
 
-    public void register(CurrentUser currentUser, Long resumeId){
-        Resume resume = sellerValidationService.validateSellerAndResumeStatus(currentUser, resumeId);
-        SalesPost salesPost = SalesPost.create(resume);
+    public void changeSalesStatus(CurrentUser currentUser, Long salesPostId, SalesStatus status){
+        Resume resume = validateSellerAndResumeStatus(currentUser, salesPostId);
+
+        SalesPost salesPost = salesPostRepository.getByResumeWithThrow(resume);
+        salesPost = salesPost.changeStatus(status);
         salesPostRepository.save(salesPost);
     }
 
-    public void startSelling(CurrentUser currentUser, Long resumeId){
-        Resume resume = sellerValidationService.validateSellerAndResumeStatus(currentUser, resumeId);
-        SalesPost salesPost = salesPostRepository.getByResumeWithThrow(resume);
-        salesPost = salesPost.changeStatus(SalesStatus.SELLING);
-        salesPostRepository.save(salesPost);
-    }
+    public Resume validateSellerAndResumeStatus(CurrentUser currentUser, Long salesPostId){
+        User user = userRepository.getByIdWithThrow(currentUser.getId());
+        SalesPost salesPost = salesPostRepository.getByIdWithThrow(salesPostId);
+        Resume resume = salesPost.getResume();
 
-    public void cancelSelling(CurrentUser currentUser, Long resumeId){
-        Resume resume = sellerValidationService.validateSellerAndResumeStatus(currentUser, resumeId);
-        SalesPost salesPost = salesPostRepository.getByResumeWithThrow(resume);
-        salesPost = salesPost.changeStatus(SalesStatus.CANCELED);
-        salesPostRepository.save(salesPost);
+        if(resume.isAuthorMismatch(user.getId())){
+            throw new ApiException(SalesPostErrorCode.ACCESS_NOT_PERMISSION, user.getId());
+        }
+
+        if(resume.isActiveMismatch()){
+            throw new ApiException(SalesPostErrorCode.STATUS_NOT_ACTIVE, resume.getId());
+        }
+
+        return resume;
     }
 
     public List<SalesPostSellerResponse> findBySeller(CurrentUser currentUser){

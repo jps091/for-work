@@ -55,8 +55,15 @@ public class FakeSalesPostRepository implements SalesPostRepository {
     @Override
     public SalesPost getByResumeWithThrow(Resume resume) {
         return data.stream()
-                .filter(s -> Objects.equals(s.getResume(), resume))
+                .filter(s -> Objects.equals(s.getResume().getId(), resume.getId()))
                 .findAny()
                 .orElseThrow(() -> new ApiException(SalesPostErrorCode.SALES_POST_NOT_FOUND));
+    }
+
+    @Override
+    public Optional<SalesPost> findByResume(Resume resume) {
+        return data.stream()
+                .filter(s -> Objects.equals(s.getResume().getId(), resume.getId()))
+                .findAny();
     }
 }

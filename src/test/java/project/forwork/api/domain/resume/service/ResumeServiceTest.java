@@ -12,10 +12,13 @@ import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
 import project.forwork.api.domain.resume.model.Resume;
 import project.forwork.api.domain.resumedecision.model.ResumeDecision;
 import project.forwork.api.domain.resumedecision.infrastructure.enums.DecisionStatus;
+import project.forwork.api.domain.salespost.infrastructure.enums.SalesStatus;
+import project.forwork.api.domain.salespost.model.SalesPost;
 import project.forwork.api.domain.user.infrastructure.enums.RoleType;
 import project.forwork.api.domain.user.model.User;
 import project.forwork.api.mock.FakeResumeDecisionRepository;
 import project.forwork.api.mock.FakeResumeRepository;
+import project.forwork.api.mock.FakeSalesPostRepository;
 import project.forwork.api.mock.FakeUserRepository;
 
 import java.math.BigDecimal;
@@ -28,16 +31,19 @@ class ResumeServiceTest {
 
     private ResumeService resumeService;
     private FakeResumeRepository fakeResumeRepository;
+    private FakeSalesPostRepository fakeSalesPostRepository;
 
     @BeforeEach
     void init(){
         FakeUserRepository fakeUserRepository = new FakeUserRepository();
         fakeResumeRepository = new FakeResumeRepository();
+        fakeSalesPostRepository = new FakeSalesPostRepository();
         FakeResumeDecisionRepository fakeResumeDecisionRepository = new FakeResumeDecisionRepository();
         this.resumeService = ResumeService.builder()
                 .resumeRepository(fakeResumeRepository)
                 .userRepository(fakeUserRepository)
                 .resumeDecisionRepository(fakeResumeDecisionRepository)
+                .salesPostRepository(fakeSalesPostRepository)
                 .build();
 
         User user1 = User.builder()
@@ -138,6 +144,17 @@ class ResumeServiceTest {
 
         fakeResumeDecisionRepository.save(resumeDecision1);
         fakeResumeDecisionRepository.save(resumeDecision2);
+
+        SalesPost salesPost1 = SalesPost.builder()
+                .id(1L)
+                .resume(resume1)
+                .title(resume1.createSalesPostTitle())
+                .salesStatus(SalesStatus.SELLING)
+                .salesQuantity(30)
+                .viewCount(0)
+                .build();
+
+        fakeSalesPostRepository.save(salesPost1);
     }
 
     @Test
@@ -186,7 +203,7 @@ class ResumeServiceTest {
     }
 
     @Test
-    void CurrentUser_ResumeModifyRequest를_가지고_자신이_작성한_PENDING상태인_Resume만_수정할_수_있다(){
+    void CurrentUser_ResumeModifyRequest를_가지고_자신이_작성한_Resume만_수정할_수_있고_Resume의_상태는_PENDING으로_변경_된다(){
         //given(상황환경 세팅)
         CurrentUser currentUser = CurrentUser.builder()
                 .id(1L)
@@ -200,18 +217,37 @@ class ResumeServiceTest {
                 .description("test resume")
                 .build();
 
-        // 자신이 작성한 대기 상태인 이력서 수정하는 경우
-        resumeService.modifyResumePending(1L, currentUser, request); // 성공
+        // when
+        resumeService.modify(1L, currentUser, request);
         Resume resume = fakeResumeRepository.getByIdWithThrow(1L);
 
         // then
         assertThat(resume.getField()).isEqualTo(FieldType.DEVOPS);
         assertThat(resume.getStatus()).isEqualTo(ResumeStatus.PENDING);
+    }
 
+    @Test
+    void 이미_판매중인_이력서를_수정_한다면_판매글_상태가_CANCELED_로_변경_된다(){
+        //given(상황환경 세팅)
+        CurrentUser currentUser = CurrentUser.builder()
+                .id(1L)
+                .build();
+        ResumeModifyRequest request = ResumeModifyRequest.builder()
+                .field(FieldType.DEVOPS)
+                .level(LevelType.SENIOR)
+                .resumeUrl("www.naver.com")
+                .descriptionImageUrl("www.google.com")
+                .price(new BigDecimal("70000.00"))
+                .description("test resume")
+                .build();
 
-        // 다른사람이 작성한 대기 상태인 이력서 수정하는 경우
-        assertThatThrownBy(() -> resumeService.modifyResumePending(2L, currentUser, request))
-                .isInstanceOf(ApiException.class);
+        //when
+        resumeService.modify(1L, currentUser, request);
+        Resume resume = fakeResumeRepository.getByIdWithThrow(1L);
+
+        // then
+        SalesPost salesPost = fakeSalesPostRepository.getByResumeWithThrow(resume);
+        assertThat(salesPost.getSalesStatus()).isEqualTo(SalesStatus.CANCELED);
     }
 
     @Test
@@ -230,7 +266,7 @@ class ResumeServiceTest {
                 .build();
 
         // then
-        assertThatThrownBy(() -> resumeService.modifyResumePending(2L, currentUser, request))
+        assertThatThrownBy(() -> resumeService.modify(2L, currentUser, request))
                 .isInstanceOf(ApiException.class);
     }
 

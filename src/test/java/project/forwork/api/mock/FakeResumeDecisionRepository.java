@@ -1,9 +1,6 @@
 package project.forwork.api.mock;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
-import project.forwork.api.domain.resume.model.Resume;
+
 import project.forwork.api.domain.resumedecision.model.ResumeDecision;
 import project.forwork.api.domain.resumedecision.service.port.ResumeDecisionRepository;
 
@@ -45,16 +42,6 @@ public class FakeResumeDecisionRepository implements ResumeDecisionRepository {
 
     @Override
     public ResumeDecision getByIdWithThrow(Long id) {
-        return null;
-    }
-
-    @Override
-    public Optional<ResumeDecision> findByResume(Resume resume) {
-        return data.stream().filter(r -> Objects.equals(r.getResume(), resume)).findAny();
-    }
-
-    @Override
-    public Page<ResumeDecision> findAllByResumeStatus(PageRequest pageRequest, ResumeStatus resumeStatus) {
         return null;
     }
 
