@@ -10,6 +10,9 @@ import project.forwork.api.domain.resume.service.port.ResumeRepository;
 import project.forwork.api.domain.resumedecision.model.ResumeDecision;
 import project.forwork.api.domain.resumedecision.service.port.ResumeDecisionRepository;
 import project.forwork.api.common.domain.CurrentUser;
+import project.forwork.api.domain.salespost.infrastructure.enums.SalesStatus;
+import project.forwork.api.domain.salespost.model.SalesPost;
+import project.forwork.api.domain.salespost.service.port.SalesPostRepository;
 import project.forwork.api.domain.user.model.User;
 import project.forwork.api.domain.user.service.port.UserRepository;
 
@@ -20,6 +23,7 @@ import project.forwork.api.domain.user.service.port.UserRepository;
 public class  ResumeDecisionService {
 
     private final ResumeDecisionRepository resumeDecisionRepository;
+    private final SalesPostRepository salesPostRepository;
     private final ResumeRepository resumeRepository;
     private final UserRepository userRepository;
 
@@ -28,10 +32,23 @@ public class  ResumeDecisionService {
 
         Resume resume = resumeRepository.getByIdWithThrow(resumeId);
         resume = resume.updateStatus(ResumeStatus.ACTIVE);
-        resumeRepository.save(resume);
+        Resume newResume = resumeRepository.save(resume);
 
         ResumeDecision resumeDecision = ResumeDecision.approve(admin, resume);
         resumeDecisionRepository.save(resumeDecision);
+
+        salesPostRepository.findByResume(newResume).ifPresentOrElse(
+                salesPost -> {
+                    // 판매 상태를 SELLING으로 변경 후 저장
+                    SalesPost newSalesPost = salesPost.changeStatus(SalesStatus.SELLING);
+                    salesPostRepository.save(newSalesPost);
+                },
+                () -> {
+                    // 새로운 SalesPost 생성 후 저장
+                    SalesPost newSalesPost = SalesPost.create(newResume);
+                    salesPostRepository.save(newSalesPost);
+                }
+        );
     }
 
     public void deny(CurrentUser currentUser, Long resumeId){
@@ -43,9 +60,5 @@ public class  ResumeDecisionService {
 
         ResumeDecision resumeDecision = ResumeDecision.deny(admin, resume);
         resumeDecisionRepository.save(resumeDecision);
-    }
-
-    public ResumeDecision getByIdWithThrow(Long resumeDecisionId){
-        return resumeDecisionRepository.getByIdWithThrow(resumeDecisionId);
     }
 }

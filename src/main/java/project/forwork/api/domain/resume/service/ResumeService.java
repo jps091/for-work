@@ -4,7 +4,6 @@ import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 import project.forwork.api.common.error.ResumeErrorCode;
 import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.domain.resume.controller.model.*;
@@ -16,15 +15,12 @@ import project.forwork.api.domain.resume.service.port.ResumeRepository;
 import project.forwork.api.common.domain.CurrentUser;
 import project.forwork.api.domain.resume.service.port.ResumeRepositoryCustom;
 import project.forwork.api.domain.resumedecision.service.port.ResumeDecisionRepository;
-import project.forwork.api.domain.salespost.controller.model.SalesPostFilterCond;
-import project.forwork.api.domain.salespost.controller.model.SalesPostPage;
-import project.forwork.api.domain.salespost.infrastructure.enums.FieldCond;
-import project.forwork.api.domain.salespost.infrastructure.enums.LevelCond;
-import project.forwork.api.domain.salespost.infrastructure.enums.SalesPostSortType;
+import project.forwork.api.domain.salespost.infrastructure.enums.SalesStatus;
+import project.forwork.api.domain.salespost.model.SalesPost;
+import project.forwork.api.domain.salespost.service.port.SalesPostRepository;
 import project.forwork.api.domain.user.model.User;
 import project.forwork.api.domain.user.service.port.UserRepository;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -38,6 +34,7 @@ public class ResumeService {
     private final ResumeDecisionRepository resumeDecisionRepository;
     private final ResumeRepositoryCustom resumeRepositoryCustom;
     private final UserRepository userRepository;
+    private final SalesPostRepository salesPostRepository;
 
     public Resume register(CurrentUser currentUser, ResumeRegisterRequest body){
         User user = userRepository.getByIdWithThrow(currentUser.getId());
@@ -46,7 +43,7 @@ public class ResumeService {
         return resume;
     }
 
-    public void modifyResumePending(
+    public void modify(
             Long resumeId,
             CurrentUser currentUser,
             ResumeModifyRequest body
@@ -54,8 +51,13 @@ public class ResumeService {
         Resume resume = resumeRepository.getByIdWithThrow(resumeId);
         validateAuthor(currentUser, resume);
 
-        resume = resume.modifyResumePending(body);
+        resume = resume.modify(body);
         resumeRepository.save(resume);
+
+        salesPostRepository.findByResume(resume).ifPresent(salesPost -> {
+            salesPost = salesPost.changeStatus(SalesStatus.CANCELED);
+            salesPostRepository.save(salesPost);
+        });
     }
 
     public void updatePending(Long resumeId, CurrentUser currentUser){

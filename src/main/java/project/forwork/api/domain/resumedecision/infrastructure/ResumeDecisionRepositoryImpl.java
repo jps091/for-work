@@ -39,15 +39,4 @@ public class ResumeDecisionRepositoryImpl implements ResumeDecisionRepository {
     public ResumeDecision getByIdWithThrow(Long id) {
         return findById(id).orElseThrow(() -> new ApiException(ResumeDecisionErrorCode.RESUME_DECISION_NOT_FOUND, id));
     }
-
-    @Override
-    public Optional<ResumeDecision> findByResume(Resume resume) {
-        return resumeDecisionJpaRepository.findByResumeEntity(ResumeEntity.from(resume)).map(ResumeDecisionEntity::toModel);
-    }
-
-    @Override
-    public Page<ResumeDecision> findAllByResumeStatus(PageRequest pageRequest, ResumeStatus resumeStatus) {
-        return resumeDecisionJpaRepository.findAllByResumeStatus(pageRequest, resumeStatus)
-                .map(ResumeDecisionEntity::toModel);
-    }
 }
