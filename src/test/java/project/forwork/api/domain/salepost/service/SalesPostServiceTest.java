@@ -132,7 +132,7 @@ class SalesPostServiceTest {
                 .build();
 
         //when(상황발생)
-        salesPostService.startSelling(user1, 1L);
+        salesPostService.changeSalesStatus(user1, 1L, SalesStatus.SELLING);
         SalesPost salesPost = fakeSalesPostRepository.getByIdWithThrow(1L);
 
         //then(검증)
@@ -147,7 +147,7 @@ class SalesPostServiceTest {
                 .build();
 
         //when(상황발생)
-        salesPostService.cancelSelling(user2, 2L);
+        salesPostService.changeSalesStatus(user2, 2L, SalesStatus.CANCELED);
         SalesPost salesPost = fakeSalesPostRepository.getByIdWithThrow(2L);
 
         //then(검증)

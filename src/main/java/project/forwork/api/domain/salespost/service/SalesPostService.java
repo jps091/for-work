@@ -35,19 +35,11 @@ public class SalesPostService {
     private final SalesPostRepositoryCustom salesPostRepositoryCustom;
     private final UserRepository userRepository;
 
-    public void startSelling(CurrentUser currentUser, Long salesPostId){
+    public void changeSalesStatus(CurrentUser currentUser, Long salesPostId, SalesStatus status){
         Resume resume = validateSellerAndResumeStatus(currentUser, salesPostId);
-        changeSalesPostStatus(resume, SalesStatus.SELLING);
-    }
 
-    public void cancelSelling(CurrentUser currentUser, Long salesPostId){
-        Resume resume = validateSellerAndResumeStatus(currentUser, salesPostId);
-        changeSalesPostStatus(resume, SalesStatus.CANCELED);
-    }
-
-    public void changeSalesPostStatus(Resume resume, SalesStatus newStatus) {
         SalesPost salesPost = salesPostRepository.getByResumeWithThrow(resume);
-        salesPost = salesPost.changeStatus(newStatus);
+        salesPost = salesPost.changeStatus(status);
         salesPostRepository.save(salesPost);
     }
 

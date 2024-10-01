@@ -10,6 +10,7 @@ import project.forwork.api.common.annotation.Current;
 import project.forwork.api.common.api.Api;
 import project.forwork.api.common.domain.CurrentUser;
 import project.forwork.api.domain.salespost.controller.model.SalesPostSellerResponse;
+import project.forwork.api.domain.salespost.infrastructure.enums.SalesStatus;
 import project.forwork.api.domain.salespost.service.SalesPostService;
 
 import java.util.List;
@@ -32,23 +33,16 @@ public class SalesPostController {
         return Api.OK(salesPostResponses);
     }
 
-    @Operation(summary = "sale-resume 판매 시작", description = "자신의 resume이 상태가 active일때만 가능")
-    @PutMapping("/{salesPostId}/start")
-    public Api<String> startSelling(
+    @Operation(summary = "sale-resume 상태 변경",
+            description = "자신의 resume이 상태가 active일때만 가능\n" +
+                    " SELLING, CANCEL 변경 가능")
+    @PutMapping("/{salesPostId}/status")
+    public Api<String> changeSalesStatus(
             @Parameter(hidden = true) @Current CurrentUser currentUser,
-            @PathVariable Long salesPostId
+            @PathVariable Long salesPostId,
+            @RequestParam SalesStatus status
     ){
-        salesPostService.startSelling(currentUser, salesPostId);
-        return Api.OK("판매중으로 변경 완료 하였습니다.");
-    }
-
-    @Operation(summary = "sale-resume 판매 중단", description = "자신의 resume이 상태가 active일때만 가능")
-    @PutMapping("/{salesPostId}/cancel")
-    public Api<String> cancelSelling(
-            @Parameter(hidden = true) @Current CurrentUser currentUser,
-            @PathVariable Long salesPostId
-    ){
-        salesPostService.cancelSelling(currentUser, salesPostId);
-        return Api.OK("판매 중단으로 변경 완료 하였습니다.");
+        salesPostService.changeSalesStatus(currentUser, salesPostId, status);
+        return Api.OK("판매글 상태를 변경 완료 하였습니다.");
     }
 }
