@@ -41,15 +41,4 @@ public class ResumeDecisionController {
         resumeDecisionService.deny(currentUser, resumeId);
         return Api.OK("거부 되었습니다.");
     }
-
-/*    @Operation(summary = "관리자 권한 Post 삭제 API", description = "삭제할 post_id 입력")
-    @DeleteMapping("/posts/{postId}")
-    public ResponseEntity<Api<String>> deletePostByAdmin(
-            HttpServletRequest request,
-            @Parameter(description = "관리자 권한으로 삭제 할 Post ID", required = true, example = "1")
-            @PathVariable Long postId
-    ){
-        userRoleBusiness.deletePostByAdmin(request, postId);
-        return ResponseEntity.status(HttpStatus.OK).body(Api.OK("글 삭제가 완료 되었습니다."));
-    }*/
 }

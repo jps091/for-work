@@ -39,14 +39,16 @@ public class ResumeAdminController {
     }
 
     @Operation(summary = "전체 요청 Resume 조회 API",
-            description = "sortType 정렬조건[OLD, NEW, HIGHEST_PRICE, LOWEST_PRICE, VIEW_COUNT, BEST_SELLING, DEFAULT]" +
-                    " minPrice, maxPrice 가격 범위 필터링 조건" +
-                    " 분야 조건 : field [FRONTEND BACKEND ANDROID IOS DEVOPS AI ETC UNSELECTED]" +
-                    " 년차 조건 : level [NEW, JUNIOR, SENIOR]" +
-                    " pageStep : [FIRST(default), NEXT, PREVIOUS, LAST]" +
-                    " lastModifiedAt : 이전, 다음 페이지 호출시 반드시 필요" +
-                    " limit 가져올 개수 기본 6개" +
-                    " lastId : 이전, 다음 페이지 호출시 반드시 필요")
+            description = """
+                    sortType 정렬조건[OLD, NEW, HIGHEST_PRICE, LOWEST_PRICE, VIEW_COUNT, BEST_SELLING, DEFAULT]
+                     minPrice, maxPrice 가격 범위 필터링 조건
+                     분야 조건 : field [FRONTEND BACKEND ANDROID IOS DEVOPS AI ETC UNSELECTED]
+                     년차 조건 : level [NEW, JUNIOR, SENIOR]
+                     pageStep : [FIRST(default), NEXT, PREVIOUS, LAST]
+                     lastModifiedAt : 이전, 다음 페이지 호출시 반드시 필요
+                     limit 가져올 개수 기본 6개
+                     lastId : 이전, 다음 페이지 호출시 반드시 필요
+                    """)
     @GetMapping("/page")
     public Api<ResumePage> getFilteredPage(
             @RequestParam(required = false) PeriodCond periodCond,
