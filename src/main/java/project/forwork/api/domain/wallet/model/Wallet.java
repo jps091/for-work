@@ -24,9 +24,9 @@ public class Wallet {
     private final LocalDateTime chargedAt;
     private final LocalDateTime payedAt;
 
-    public static Wallet create(CurrentUser currentUser){
+    public static Wallet create(User user){
         return Wallet.builder()
-                .id(currentUser.getId())
+                .user(user)
                 .balance(BigDecimal.ZERO)
                 .build();
     }
