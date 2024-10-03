@@ -8,7 +8,6 @@ import project.forwork.api.domain.cart.infrastructure.CartEntity;
 import project.forwork.api.domain.resume.infrastructure.ResumeEntity;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface CartResumeJpaRepository extends JpaRepository<CartResumeEntity, Long> {
     boolean existsByCartEntityAndResumeEntity(CartEntity cartEntity, ResumeEntity resumeEntity);

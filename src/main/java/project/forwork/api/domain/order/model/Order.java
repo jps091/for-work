@@ -51,7 +51,7 @@ public class Order {
                 .build();
     }
 
-    public Order markAsWaiting(OrderStatus status){
+    public Order changeOrderStatus(OrderStatus status){
         return Order.builder()
                 .id(id)
                 .user(user)
@@ -61,7 +61,7 @@ public class Order {
                 .build();
     }
 
-    public Order markAsConfirm(OrderStatus status, ClockHolder clockHolder){
+    public Order confirmTime(ClockHolder clockHolder){
         return Order.builder()
                 .id(id)
                 .user(user)

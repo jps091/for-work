@@ -16,7 +16,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "wallets")
+@Table(name = "transactions")
 @Getter
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)

@@ -43,7 +43,7 @@ public class TransactionService {
     public Transaction payment(CurrentUser currentUser, TransactionCreateRequest body){
 
         if(transactionRepository.existsByOrderTxId(body.getOrderTxId())){
-            throw new ApiException(TransactionErrorCode.TX_AlREADY_CHARGE);
+            throw new ApiException(TransactionErrorCode.TX_AlREADY_PAYMENT);
         }
 
         User user = userRepository.getByIdWithThrow(currentUser.getId());

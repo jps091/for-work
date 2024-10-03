@@ -7,6 +7,5 @@ import java.util.Optional;
 
 public interface TransactionRepository {
     Transaction save(Transaction tx);
-    Optional<Transaction> findByOrderId(Long orderId);
     boolean existsByOrderTxId(String orderTxId);
 }

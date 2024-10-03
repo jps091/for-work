@@ -8,6 +8,7 @@ import lombok.Getter;
 public enum TransactionErrorCode implements ErrorCodeIfs {
 
     TX_AlREADY_CHARGE(400, 9401, "이미 충전된 거래 입니다."),
+    TX_AlREADY_PAYMENT(400, 9401, "이미 결제된 거래 입니다."),
     ;
 
     private final Integer httpStatusCode;
