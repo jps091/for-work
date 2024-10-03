@@ -2,10 +2,7 @@ package project.forwork.api.domain.order.infrastructure;
 
 import org.springframework.data.domain.Limit;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import project.forwork.api.domain.order.infrastructure.enums.OrderStatus;
-import project.forwork.api.domain.orderresume.infrastructure.OrderResumeEntity;
 
 import java.util.List;
 import java.util.Optional;

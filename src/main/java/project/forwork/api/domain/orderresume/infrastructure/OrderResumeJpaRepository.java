@@ -5,7 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import project.forwork.api.domain.order.infrastructure.OrderEntity;
-import project.forwork.api.domain.order.infrastructure.enums.OrderStatus;
 import project.forwork.api.domain.orderresume.infrastructure.enums.OrderResumeStatus;
 
 import java.util.List;

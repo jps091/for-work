@@ -20,6 +20,18 @@ CREATE TABLE users (
                        UNIQUE (email)
 );
 
+CREATE TABLE wallets (
+                         wallet_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                         modified_at TIMESTAMP(6),
+                         registered_at TIMESTAMP(6),
+                         balance DECIMAL(7, 0) NOT NULL,
+                         charged_at TIMESTAMP(6),
+                         spent_at TIMESTAMP(6),
+                         user_id BIGINT NOT NULL,
+                         UNIQUE (user_id),
+                         FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+);
+
 CREATE TABLE resumes (
                          price decimal(6,0) NOT NULL,
                          modified_at datetime DEFAULT NULL,

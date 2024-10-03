@@ -3,7 +3,6 @@ package project.forwork.api.domain.order.service;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.forwork.api.common.domain.CurrentUser;
@@ -179,10 +178,21 @@ public class OrderService {
 
     public void updateOrdersByStatus(List<Order> orders, OrderStatus status) {
         List<Order> updatedOrders = orders.stream()
-                .map(order -> order.markAsWaiting(status))
+                .map(order -> order.changeOrderStatus(status))
                 .toList();
 
         orderRepository.saveAll(updatedOrders);
+    }
+
+    public void sendMailByOrderConfirm(OrderStatus updatedStatus, List<Order> orders) {
+        if(updatedStatus.equals(OrderStatus.PARTIAL_CONFIRM) || updatedStatus.equals(OrderStatus.CONFIRM)){
+            orderResumeService.sendMailForConfirmedOrders(orders);
+
+            List<Order> updatedOrders = orders.stream()
+                    .map(order -> order.confirmTime(clockHolder))
+                    .toList();
+            orderRepository.saveAll(updatedOrders);
+        }
     }
 
     private static boolean isOrdersEmpty(OrderStatus oldStatus, List<Order> orders) {
@@ -191,11 +201,5 @@ public class OrderService {
             return true;
         }
         return false;
-    }
-
-    private void sendMailByOrderConfirm(OrderStatus updatedStatus, List<Order> orders) {
-        if(updatedStatus.equals(OrderStatus.PARTIAL_CONFIRM) || updatedStatus.equals(OrderStatus.CONFIRM)){
-            orderResumeService.sendMailForConfirmedOrders(orders);
-        }
     }
 }

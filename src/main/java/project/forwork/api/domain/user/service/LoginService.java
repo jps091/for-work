@@ -12,12 +12,10 @@ import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.common.service.port.ClockHolder;
 import project.forwork.api.common.service.port.RedisUtils;
 import project.forwork.api.domain.token.model.TokenResponse;
-import project.forwork.api.domain.token.service.TokenCookieService;
 import project.forwork.api.domain.token.service.TokenHeaderService;
 import project.forwork.api.domain.user.controller.model.LoginResponse;
 import project.forwork.api.domain.user.controller.model.PasswordInitRequest;
 import project.forwork.api.domain.user.controller.model.UserLoginRequest;
-import project.forwork.api.domain.user.controller.model.UserResponse;
 import project.forwork.api.domain.user.model.User;
 import project.forwork.api.domain.user.service.port.UserRepository;
 
