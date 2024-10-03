@@ -51,7 +51,7 @@ public class Order {
                 .build();
     }
 
-    public Order changeOrderStatus(OrderStatus status){
+    public Order updateStatus(OrderStatus status){
         return Order.builder()
                 .id(id)
                 .user(user)
@@ -61,13 +61,12 @@ public class Order {
                 .build();
     }
 
-    public Order confirmTime(ClockHolder clockHolder){
+    public Order confirmAuto(ClockHolder clockHolder){
         return Order.builder()
                 .id(id)
                 .user(user)
                 .totalPrice(totalPrice)
                 .status(status)
-                .orderedAt(orderedAt)
                 .confirmedAt(clockHolder.now())
                 .build();
     }

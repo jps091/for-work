@@ -26,10 +26,25 @@ CREATE TABLE wallets (
                          registered_at TIMESTAMP(6),
                          balance DECIMAL(7, 0) NOT NULL,
                          charged_at TIMESTAMP(6),
-                         spent_at TIMESTAMP(6),
+                         payed_at TIMESTAMP(6),
                          user_id BIGINT NOT NULL,
                          UNIQUE (user_id),
                          FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+);
+
+CREATE TABLE transactions (
+                              transaction_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                              modified_at TIMESTAMP(6),
+                              registered_at TIMESTAMP(6),
+                              amount DECIMAL(7, 0) NOT NULL,
+                              charged_at TIMESTAMP(6),
+                              order_tx_id VARCHAR(255) NOT NULL,
+                              payed_at TIMESTAMP(6),
+                              type ENUM('CHARGE', 'PAYMENT') NOT NULL,
+                              user_id BIGINT NOT NULL,
+                              wallet_id BIGINT NOT NULL,
+                              FOREIGN KEY (user_id) REFERENCES users(user_id),
+                              FOREIGN KEY (wallet_id) REFERENCES wallets(wallet_id) ON DELETE CASCADE
 );
 
 CREATE TABLE resumes (

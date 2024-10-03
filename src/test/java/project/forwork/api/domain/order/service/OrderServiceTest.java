@@ -308,7 +308,6 @@ class OrderServiceTest {
         //then(검증)
         assertThat(order.getStatus()).isEqualTo(OrderStatus.CONFIRM);
     }
-
     @Test
     void 주문의_상태가_PARTIAL_WAIT_주문을_PARTIAL_CONFIRM_상태로_변경할_수_있다(){
         //given(상황환경 세팅)

@@ -3,6 +3,7 @@ package project.forwork.api.domain.order.service;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.forwork.api.common.domain.CurrentUser;
@@ -98,7 +99,7 @@ public class OrderService {
         updatedOrderStatus(OrderStatus.PARTIAL_CANCEL, OrderStatus.PARTIAL_WAIT);
     }
 
-    //@Scheduled(fixedRate = 10000, initialDelay = 10000)
+    @Scheduled(fixedRate = 10000)//, initialDelay = 10000)
     public void markAsConfirm(){
         updatedOrderStatus(OrderStatus.WAIT, OrderStatus.CONFIRM);
     }
@@ -159,47 +160,44 @@ public class OrderService {
     }
 
     public void updatedOrderStatus(OrderStatus oldStatus, OrderStatus updatedStatus) {
-        List<Order> orders;
         int limit = 2;
         log.info("updatedOrderStatus {} -> {}", oldStatus, updatedStatus);
-        do {
-            orders = orderRepository.findByStatus(oldStatus, limit);
+
+        while (true) {
+            List<Order> orders = orderRepository.findByStatus(oldStatus, limit);
 
             // 더 이상 처리할 주문이 없으면 반복 종료
-            if (isOrdersEmpty(oldStatus, orders)) break;
+            if (orders.isEmpty()) {
+                log.info("No more orders with status: {}", oldStatus);
+                break;
+            }
 
-            // 상태를 WAIT으로 업데이트 후 저장
-            updateOrdersByStatus(orders, updatedStatus);
+            // 상태를 업데이트 후 저장
+            orders = updateOrdersByStatus(orders, updatedStatus);
 
+            // 상태가 변경된 후에는 다시 조회하지 않음
             sendMailByOrderConfirm(updatedStatus, orders);
-
-        } while (!orders.isEmpty());
+        }
     }
 
-    public void updateOrdersByStatus(List<Order> orders, OrderStatus status) {
+    public List<Order> updateOrdersByStatus(List<Order> orders, OrderStatus status) {
         List<Order> updatedOrders = orders.stream()
-                .map(order -> order.changeOrderStatus(status))
+                .map(order -> order.updateStatus(status))
                 .toList();
 
         orderRepository.saveAll(updatedOrders);
+        return updatedOrders;
     }
 
     public void sendMailByOrderConfirm(OrderStatus updatedStatus, List<Order> orders) {
-        if(updatedStatus.equals(OrderStatus.PARTIAL_CONFIRM) || updatedStatus.equals(OrderStatus.CONFIRM)){
+        if (updatedStatus.equals(OrderStatus.PARTIAL_CONFIRM) || updatedStatus.equals(OrderStatus.CONFIRM)) {
+            // 메일 발송 후 상태 업데이트
             orderResumeService.sendMailForConfirmedOrders(orders);
 
             List<Order> updatedOrders = orders.stream()
-                    .map(order -> order.confirmTime(clockHolder))
+                    .map(order -> order.confirmAuto(clockHolder))  // 확정 시간
                     .toList();
             orderRepository.saveAll(updatedOrders);
         }
-    }
-
-    private static boolean isOrdersEmpty(OrderStatus oldStatus, List<Order> orders) {
-        if (orders.isEmpty()) {
-            log.info(oldStatus.toString() + " : status orders IsEmpty" );
-            return true;
-        }
-        return false;
     }
 }
