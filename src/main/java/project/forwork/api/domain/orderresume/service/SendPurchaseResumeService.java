@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.forwork.api.common.service.port.MailSender;
 import project.forwork.api.domain.order.model.Order;
+import project.forwork.api.domain.order.service.port.OrderRepository;
 import project.forwork.api.domain.orderresume.controller.model.PurchaseResponse;
 import project.forwork.api.domain.orderresume.service.port.OrderResumeRepositoryCustom;
 
@@ -23,7 +24,8 @@ public class SendPurchaseResumeService {
 
     public void sendAllPurchaseResume(){
         List<PurchaseResponse> purchaseResponses = orderResumeRepositoryCustom.findAllPurchaseResume();
-        purchaseResponses.forEach(this::sendEmail);
+        //purchaseResponses.forEach(this::sendEmail); TODO 주석해제
+
     }
 
     public void sendNowPurchaseResume(Order order){
