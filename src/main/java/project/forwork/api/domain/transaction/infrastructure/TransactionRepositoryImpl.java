@@ -18,7 +18,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
     }
 
     @Override
-    public boolean existsByOrderTxId(String orderTxId) {
-        return transactionJpaRepository.existsByOrderTxId(orderTxId);
+    public boolean existsByOrderId(String orderId) {
+        return transactionJpaRepository.existsByOrderId(orderId);
     }
 }
