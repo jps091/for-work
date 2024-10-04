@@ -29,15 +29,11 @@ public class TransactionEntity extends BaseTimeEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "wallet_id", nullable = false)
-    private WalletEntity walletEntity;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity userEntity;
 
-    @Column(name = "order_tx_id", nullable = false)
-    private String orderTxId;
+    @Column(name = "order_id", nullable = false)
+    private String orderId;
 
     @Column(precision = 7, nullable = false)
     private BigDecimal amount;
@@ -55,8 +51,7 @@ public class TransactionEntity extends BaseTimeEntity {
     public static TransactionEntity from(Transaction tx){
         TransactionEntity txEntity = new TransactionEntity();
         txEntity.id = tx.getId();
-        txEntity.orderTxId = tx.getOrderTxId();
-        txEntity.walletEntity = WalletEntity.from(tx.getWallet());
+        txEntity.orderId = tx.getOrderId();
         txEntity.userEntity = UserEntity.from(tx.getUser());
         txEntity.amount =tx.getAmount();
         txEntity.transactionType = tx.getTransactionType();
@@ -68,8 +63,7 @@ public class TransactionEntity extends BaseTimeEntity {
     public Transaction toModel(){
         return Transaction.builder()
                 .id(id)
-                .orderTxId(orderTxId)
-                .wallet(walletEntity.toModel())
+                .orderId(orderId)
                 .user(userEntity.toModel())
                 .amount(amount)
                 .transactionType(transactionType)

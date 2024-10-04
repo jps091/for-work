@@ -6,5 +6,5 @@ import java.util.Optional;
 
 public interface TransactionJpaRepository extends JpaRepository<TransactionEntity, Long> {
 
-    boolean existsByOrderTxId(String orderTxId);
+    boolean existsByOrderId(String orderId);
 }
