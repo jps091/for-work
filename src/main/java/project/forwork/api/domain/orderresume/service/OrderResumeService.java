@@ -36,7 +36,7 @@ public class OrderResumeService {
 
     // 즉시 주문확정에 대해
     public void sendMailForConfirmedOrder(Order order){
-        List<OrderResume> orderResumes = orderResumeRepository.findByStatusAndOrder(OrderResumeStatus.ORDER, order).stream()
+        List<OrderResume> orderResumes = orderResumeRepository.findByStatusAndOrder(OrderResumeStatus.ORDERED, order).stream()
                 .map(orderResume -> orderResume.changeStatus(OrderResumeStatus.CONFIRM))
                 .toList();
         orderResumeRepository.saveAll(orderResumes);
@@ -55,7 +55,7 @@ public class OrderResumeService {
 
     // 자동 주문 확정에 대해
     public void sendMailForConfirmedOrders(List<Order> orders){
-        List<OrderResume> orderResumes = orderResumeRepository.findByStatusAndOrders(OrderResumeStatus.ORDER, orders).stream()
+        List<OrderResume> orderResumes = orderResumeRepository.findByStatusAndOrders(OrderResumeStatus.ORDERED, orders).stream()
                 .map(orderResume -> orderResume.changeStatus(OrderResumeStatus.CONFIRM))
                 .toList();
         orderResumeRepository.saveAll(orderResumes);
@@ -73,7 +73,7 @@ public class OrderResumeService {
     }
 
     public void cancel(Order order){
-        List<OrderResume> orderResumes = orderResumeRepository.findByStatusAndOrder(OrderResumeStatus.ORDER, order).stream()
+        List<OrderResume> orderResumes = orderResumeRepository.findByStatusAndOrder(OrderResumeStatus.ORDERED, order).stream()
                 .map(orderResume -> orderResume.changeStatus(OrderResumeStatus.CANCEL))
                 .toList();
         orderResumeRepository.saveAll(orderResumes);
@@ -90,7 +90,7 @@ public class OrderResumeService {
     }
     @Transactional(readOnly = true)
     public List<OrderResumeResponse> getOrderResumeList(CurrentUser currentUser){
-        List<OrderResumeStatus> statuses = List.of(OrderResumeStatus.ORDER, OrderResumeStatus.CONFIRM, OrderResumeStatus.SENT);
+        List<OrderResumeStatus> statuses = List.of(OrderResumeStatus.ORDERED, OrderResumeStatus.CONFIRM, OrderResumeStatus.SENT);
         return orderResumeRepositoryCustom.findByUserIdAndStatus(currentUser.getId(), statuses);
     }
     @Transactional(readOnly = true)

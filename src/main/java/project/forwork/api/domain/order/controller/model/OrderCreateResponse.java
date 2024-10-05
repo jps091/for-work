@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 public class OrderCreateResponse {
 
     private Long orderId;
+    private String requestId;
     private String email;
     private LocalDateTime orderedAt;
     private BigDecimal totalPrice;
@@ -23,9 +24,10 @@ public class OrderCreateResponse {
     public static OrderCreateResponse from(Order order){
         return OrderCreateResponse.builder()
                 .orderId(order.getId())
+                .requestId(order.getRequestId())
                 .email(order.getBuyerEmail())
                 .orderedAt(order.getOrderedAt())
-                .totalPrice(order.getTotalPrice())
+                .totalPrice(order.getTotalAmount())
                 .build();
     }
 }

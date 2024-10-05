@@ -24,7 +24,7 @@ public class OrderResume {
         return OrderResume.builder()
                 .order(order)
                 .resume(resume)
-                .status(OrderResumeStatus.ORDER)
+                .status(OrderResumeStatus.ORDERED)
                 .build();
     }
 

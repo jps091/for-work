@@ -23,8 +23,8 @@ public class FakeOrderRepository implements OrderRepository {
             Order newOrder = Order.builder()
                     .id(id.incrementAndGet())
                     .user(order.getUser())
-                    .totalPrice(order.getTotalPrice())
-                    .status(OrderStatus.ORDER)
+                    .totalAmount(order.getTotalAmount())
+                    .status(OrderStatus.ORDERED)
                     .orderedAt(order.getOrderedAt())
                     .build();
             data.add(newOrder);

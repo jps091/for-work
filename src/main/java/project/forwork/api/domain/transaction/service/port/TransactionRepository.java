@@ -5,5 +5,7 @@ import project.forwork.api.domain.transaction.model.Transaction;
 
 public interface TransactionRepository {
     Transaction save(Transaction tx);
-    boolean existsByOrderId(String orderId);
+    Transaction getByOrderIdWithTrow(Long orderId);
+    Transaction getByOrderIdAndUserId(Long orderId, Long userId);
+    boolean existsByPaymentKey(String orderId);
 }

@@ -8,8 +8,8 @@ import lombok.Getter;
 @Getter
 public enum TransactionType {
 
-    CHARGE("충전"),
-    PAYMENT("결제")
+    PAYMENT("결제"),
+    REFUND("환불"),
     ;
 
     private final String description;
@@ -21,6 +21,6 @@ public enum TransactionType {
                 return type;
             }
         }
-        throw new IllegalArgumentException("Invalid Field: " + s);
+        throw new IllegalArgumentException("Invalid TransactionType: " + s);
     }
 }

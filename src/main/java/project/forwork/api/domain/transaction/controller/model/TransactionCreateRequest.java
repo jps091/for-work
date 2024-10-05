@@ -1,9 +1,8 @@
 package project.forwork.api.domain.transaction.controller.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import project.forwork.api.domain.order.model.Order;
+import project.forwork.api.domain.transaction.infrastructure.enums.TransactionType;
 
 import java.math.BigDecimal;
 
@@ -11,7 +10,11 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@Data
 public class TransactionCreateRequest {
-    private String orderTxId;
+    private Long userId;
+    private Long orderId;
+    private String paymentKey;
     private BigDecimal amount;
+    private TransactionType type;
 }

@@ -7,13 +7,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import project.forwork.api.common.infrastructure.BaseTimeEntity;
+import project.forwork.api.domain.order.infrastructure.OrderEntity;
 import project.forwork.api.domain.transaction.infrastructure.enums.TransactionType;
 import project.forwork.api.domain.transaction.model.Transaction;
 import project.forwork.api.domain.user.infrastructure.UserEntity;
-import project.forwork.api.domain.wallet.infrastructure.WalletEntity;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "transactions")
@@ -32,8 +31,12 @@ public class TransactionEntity extends BaseTimeEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity userEntity;
 
-    @Column(name = "order_id", nullable = false)
-    private String orderId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id", nullable = false)
+    private OrderEntity orderEntity;
+
+    @Column(name = "payment_key", nullable = false)
+    private String paymentKey;
 
     @Column(precision = 7, nullable = false)
     private BigDecimal amount;
@@ -42,33 +45,25 @@ public class TransactionEntity extends BaseTimeEntity {
     @Column(name = "type", nullable = false)
     private TransactionType transactionType;
 
-    @Column(name = "charged_at")
-    private LocalDateTime chargedAt;
-
-    @Column(name = "payed_at")
-    private LocalDateTime payedAt;
-
     public static TransactionEntity from(Transaction tx){
         TransactionEntity txEntity = new TransactionEntity();
         txEntity.id = tx.getId();
-        txEntity.orderId = tx.getOrderId();
+        txEntity.paymentKey = tx.getPaymentKey();
         txEntity.userEntity = UserEntity.from(tx.getUser());
+        txEntity.orderEntity = OrderEntity.from(tx.getOrder());
         txEntity.amount =tx.getAmount();
         txEntity.transactionType = tx.getTransactionType();
-        txEntity.chargedAt = tx.getChargedAt();
-        txEntity.payedAt = tx.getPayedAt();
         return txEntity;
     }
 
     public Transaction toModel(){
         return Transaction.builder()
                 .id(id)
-                .orderId(orderId)
+                .paymentKey(paymentKey)
                 .user(userEntity.toModel())
+                .order(orderEntity.toModel())
                 .amount(amount)
                 .transactionType(transactionType)
-                .chargedAt(chargedAt)
-                .payedAt(payedAt)
                 .build();
     }
 }

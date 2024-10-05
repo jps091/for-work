@@ -47,7 +47,7 @@ class OrderResumeQueryDslRepositoryTest {
     @Test
     void findByUserIdAndStatus_메서드는_USER_ID와_OrderOrderResumeStatus_들로_OrderResumeResponse_들을_반환_한다(){
         //given(상황환경 세팅)
-        List<OrderResumeStatus> statuses = List.of(OrderResumeStatus.ORDER, OrderResumeStatus.CONFIRM, OrderResumeStatus.SENT);
+        List<OrderResumeStatus> statuses = List.of(OrderResumeStatus.ORDERED, OrderResumeStatus.CONFIRM, OrderResumeStatus.SENT);
 
         //when(상황발생)
         List<OrderResumeResponse> orderResumeResponses = orderResumeRepositoryCustom.findByUserIdAndStatus(1L, statuses);

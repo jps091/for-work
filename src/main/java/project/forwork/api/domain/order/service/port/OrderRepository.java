@@ -11,6 +11,8 @@ public interface OrderRepository {
     void saveAll(List<Order> orders);
     Order getByIdWithThrow(Long orderId);
     Order getOrderWithThrow(Long userId, Long orderId);
+    Order getByRequestIdWithThrow(String requestId);
+    boolean existsByRequestId(String requestId);
     Optional<Order> findById(Long orderId);
     List<Order> findByStatus(OrderStatus status);
     List<Order> findByUserId(Long userId);
