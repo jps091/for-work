@@ -25,7 +25,7 @@ public class OrderResponse {
                 .orderId(order.getId())
                 .orderTitle(orderTitle)
                 .orderedAt(order.getOrderedAt())
-                .totalPrice(order.getTotalPrice())
+                .totalPrice(order.getTotalAmount())
                 .build();
     }
 }

@@ -23,31 +23,70 @@ import java.util.Objects;
 public class Order {
     private final Long id;
     private final User user;
-    private final BigDecimal totalPrice;
+    private final String requestId;
+    private final BigDecimal totalAmount;
     private final OrderStatus status;
     private final LocalDateTime orderedAt;
     private final LocalDateTime canceledAt;
     private final LocalDateTime confirmedAt;
+    private final LocalDateTime sentAt;
 
-    public static Order create(User user, Resume resume, ClockHolder clockHolder){
+    public static Order create(User user, Resume resume, String requestId, ClockHolder clockHolder){
         return Order.builder()
                 .user(user)
-                .totalPrice(resume.getPrice())
-                .status(OrderStatus.ORDER)
+                .requestId(requestId)
+                .totalAmount(resume.getPrice())
+                .status(OrderStatus.ORDERED)
                 .orderedAt(clockHolder.now())
                 .build();
     }
 
-    public static Order create(User user, List<CartResume> cartResumes, ClockHolder clockHolder){
+    public static Order create(User user, List<CartResume> cartResumes, String requestId, ClockHolder clockHolder){
         BigDecimal totalPrice = cartResumes.stream()
                 .map(CartResume::getPrice)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         return Order.builder()
                 .user(user)
-                .totalPrice(totalPrice)
-                .status(OrderStatus.ORDER)
+                .requestId(requestId)
+                .totalAmount(totalPrice)
+                .status(OrderStatus.ORDERED)
                 .orderedAt(clockHolder.now())
+                .build();
+    }
+
+    public Order updateConfirm(OrderStatus status, ClockHolder clockHolder){
+
+        if(OrderStatus.CONFIRM.equals(status)){
+            return Order.builder()
+                    .id(id)
+                    .user(user)
+                    .requestId(requestId)
+                    .totalAmount(totalAmount)
+                    .status(status)
+                    .orderedAt(orderedAt)
+                    .confirmedAt(clockHolder.now())
+                    .build();
+        }
+
+        if(OrderStatus.PAYMENT_FAILED.equals(status)){
+            return Order.builder()
+                    .id(id)
+                    .user(user)
+                    .requestId(requestId)
+                    .totalAmount(totalAmount)
+                    .status(status)
+                    .orderedAt(orderedAt)
+                    .build();
+        }
+
+        return Order.builder()
+                .id(id)
+                .user(user)
+                .requestId(requestId)
+                .totalAmount(totalAmount)
+                .status(status)
+                .orderedAt(orderedAt)
                 .build();
     }
 
@@ -55,38 +94,41 @@ public class Order {
         return Order.builder()
                 .id(id)
                 .user(user)
-                .totalPrice(totalPrice)
+                .requestId(requestId)
+                .totalAmount(totalAmount)
                 .status(status)
                 .orderedAt(orderedAt)
                 .build();
     }
 
-    public Order confirmAuto(ClockHolder clockHolder){
+    public Order sendAuto(ClockHolder clockHolder){
         return Order.builder()
                 .id(id)
                 .user(user)
-                .totalPrice(totalPrice)
+                .requestId(requestId)
+                .totalAmount(totalAmount)
                 .status(status)
-                .confirmedAt(clockHolder.now())
+                .sentAt(clockHolder.now())
                 .build();
     }
 
-    public Order confirmOrderNow(Long userId, ClockHolder clockHolder){
+    public Order orderConfirmNow(Long userId, ClockHolder clockHolder){
         if(!Objects.equals(user.getId(), userId)){
             throw new ApiException(OrderErrorCode.ORDER_NOT_PERMISSION, userId);
         }
 
-        if(status.equals(OrderStatus.CONFIRM)){
-            throw new ApiException(OrderErrorCode.ORDER_IS_CONFIRM);
+        if(status.equals(OrderStatus.SEND)){
+            throw new ApiException(OrderErrorCode.RESUME_ALREADY_SEND);
         }
 
         return Order.builder()
                 .id(id)
                 .user(user)
-                .totalPrice(totalPrice)
-                .status(OrderStatus.CONFIRM)
+                .requestId(requestId)
+                .totalAmount(totalAmount)
+                .status(OrderStatus.SEND)
                 .orderedAt(orderedAt)
-                .confirmedAt(clockHolder.now())
+                .sentAt(clockHolder.now())
                 .build();
     }
 
@@ -95,10 +137,15 @@ public class Order {
             throw new ApiException(OrderErrorCode.ORDER_NOT_PERMISSION, userId);
         }
 
+        if(status.equals(OrderStatus.SEND)){
+            throw new ApiException(OrderErrorCode.RESUME_ALREADY_SEND);
+        }
+
         return Order.builder()
                 .id(id)
                 .user(user)
-                .totalPrice(totalPrice)
+                .requestId(requestId)
+                .totalAmount(totalAmount)
                 .status(OrderStatus.CANCEL)
                 .orderedAt(orderedAt)
                 .canceledAt(clockHolder.now())
@@ -110,6 +157,10 @@ public class Order {
             throw new ApiException(OrderErrorCode.ORDER_NOT_PERMISSION, userId);
         }
 
+        if(status.equals(OrderStatus.SEND)){
+            throw new ApiException(OrderErrorCode.RESUME_ALREADY_SEND);
+        }
+
         BigDecimal canceledPrice = orderResumes.stream()
                 .map(OrderResume::getPrice)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -117,7 +168,8 @@ public class Order {
         return Order.builder()
                 .id(id)
                 .user(user)
-                .totalPrice(totalPrice.subtract(canceledPrice))
+                .requestId(requestId)
+                .totalAmount(totalAmount.subtract(canceledPrice))
                 .status(OrderStatus.PARTIAL_CANCEL)
                 .orderedAt(orderedAt)
                 .canceledAt(clockHolder.now())
@@ -126,5 +178,11 @@ public class Order {
 
     public String getBuyerEmail(){
         return user.getEmail();
+    }
+
+    public BigDecimal getPartialCancelAmount(List<OrderResume> orderResumes){
+        return orderResumes.stream()
+                .map(OrderResume::getPrice)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 }

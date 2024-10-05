@@ -9,7 +9,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @Getter
-public class OrderRequest {
+public class OrderInCartRequest {
 
     @NotNull
     private List<Long> cartResumeIds;

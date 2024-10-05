@@ -12,9 +12,9 @@ import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.domain.cart.infrastructure.enums.CartStatus;
 import project.forwork.api.domain.cart.model.Cart;
 import project.forwork.api.domain.cartresume.model.CartResume;
-import project.forwork.api.domain.order.controller.model.CancelRequest;
+import project.forwork.api.domain.order.controller.model.PartialCancelRequest;
 import project.forwork.api.domain.order.controller.model.OrderDetailResponse;
-import project.forwork.api.domain.order.controller.model.OrderRequest;
+import project.forwork.api.domain.order.controller.model.OrderInCartRequest;
 import project.forwork.api.domain.order.infrastructure.enums.OrderStatus;
 import project.forwork.api.domain.order.model.Order;
 import project.forwork.api.domain.orderresume.controller.model.OrderResumeResponse;
@@ -185,8 +185,8 @@ class OrderServiceTest {
         Order order1 = Order.builder()
                 .id(1L)
                 .user(user1)
-                .totalPrice(new BigDecimal("96000.00"))
-                .status(OrderStatus.ORDER)
+                .totalAmount(new BigDecimal("96000.00"))
+                .status(OrderStatus.ORDERED)
                 .orderedAt(testClockHolder.now())
                 .build();
 
@@ -195,7 +195,7 @@ class OrderServiceTest {
         Order order2 = Order.builder()
                 .id(2L)
                 .user(user1)
-                .totalPrice(new BigDecimal("40000.00"))
+                .totalAmount(new BigDecimal("40000.00"))
                 .status(OrderStatus.PARTIAL_WAIT)
                 .orderedAt(testClockHolder.now())
                 .build();
@@ -204,7 +204,7 @@ class OrderServiceTest {
         Order order3 = Order.builder()
                 .id(3L)
                 .user(user1)
-                .totalPrice(new BigDecimal("40000.00"))
+                .totalAmount(new BigDecimal("40000.00"))
                 .status(OrderStatus.WAIT)
                 .orderedAt(testClockHolder.now())
                 .build();
@@ -214,7 +214,7 @@ class OrderServiceTest {
         Order order4 = Order.builder()
                 .id(4L)
                 .user(user2)
-                .totalPrice(new BigDecimal("74000.00"))
+                .totalAmount(new BigDecimal("74000.00"))
                 .status(OrderStatus.PARTIAL_CANCEL)
                 .orderedAt(testClockHolder.now())
                 .build();
@@ -223,7 +223,7 @@ class OrderServiceTest {
         Order order5 = Order.builder()
                 .id(5L)
                 .user(user2)
-                .totalPrice(BigDecimal.ZERO)
+                .totalAmount(BigDecimal.ZERO)
                 .status(OrderStatus.CANCEL)
                 .orderedAt(testClockHolder.now())
                 .build();
@@ -247,9 +247,9 @@ class OrderServiceTest {
 
         //then(검증)
         assertThat(order.getId()).isNotNull();
-        assertThat(order.getStatus()).isEqualTo(OrderStatus.ORDER);
+        assertThat(order.getStatus()).isEqualTo(OrderStatus.ORDERED);
         assertThat(order.getOrderedAt()).isEqualTo(LocalDateTime.of(2024, 9, 16, 12, 0, 0));
-        assertThat(order.getTotalPrice()).isEqualTo(new BigDecimal("40000.00"));
+        assertThat(order.getTotalAmount()).isEqualTo(new BigDecimal("40000.00"));
     }
 
     @Test
@@ -259,18 +259,18 @@ class OrderServiceTest {
                 .id(1L)
                 .build();
 
-        OrderRequest orderRequest = OrderRequest.builder()
+        OrderInCartRequest orderInCartRequest = OrderInCartRequest.builder()
                 .cartResumeIds(List.of(1L, 2L)) // 선택한 이력서장바구니
                 .build();
 
         //when(상황발생)
-        Order order = orderService.orderInCart(currentUser, orderRequest);
+        Order order = orderService.orderInCart(currentUser, orderInCartRequest);
 
         //then(검증)
         assertThat(order.getId()).isNotNull();
-        assertThat(order.getStatus()).isEqualTo(OrderStatus.ORDER);
+        assertThat(order.getStatus()).isEqualTo(OrderStatus.ORDERED);
         assertThat(order.getOrderedAt()).isEqualTo(LocalDateTime.of(2024, 9, 16, 12, 0, 0));
-        assertThat(order.getTotalPrice()).isEqualTo(new BigDecimal("62000.00"));
+        assertThat(order.getTotalAmount()).isEqualTo(new BigDecimal("62000.00"));
     }
     
     @Test
@@ -306,7 +306,7 @@ class OrderServiceTest {
         Order order = fakeOrderRepository.getByIdWithThrow(3L);
 
         //then(검증)
-        assertThat(order.getStatus()).isEqualTo(OrderStatus.CONFIRM);
+        assertThat(order.getStatus()).isEqualTo(OrderStatus.SEND);
     }
     @Test
     void 주문의_상태가_PARTIAL_WAIT_주문을_PARTIAL_CONFIRM_상태로_변경할_수_있다(){
@@ -317,7 +317,7 @@ class OrderServiceTest {
         Order order = fakeOrderRepository.getByIdWithThrow(2L);
 
         //then(검증)
-        assertThat(order.getStatus()).isEqualTo(OrderStatus.PARTIAL_CONFIRM);
+        assertThat(order.getStatus()).isEqualTo(OrderStatus.PARTIAL_SEND);
     }
 
     @ParameterizedTest
@@ -329,11 +329,11 @@ class OrderServiceTest {
                 .build();
 
         //when(상황발생)
-        orderService.confirmOrderNow(currentUser, orderId);
+        orderService.orderConfirmNow(currentUser, orderId);
         Order order = fakeOrderRepository.getByIdWithThrow(orderId);
 
         //then(검증)
-        assertThat(order.getStatus()).isEqualTo(OrderStatus.CONFIRM);
+        assertThat(order.getStatus()).isEqualTo(OrderStatus.SEND);
     }
 
     @ParameterizedTest
@@ -346,7 +346,7 @@ class OrderServiceTest {
 
         //when(상황발생)
         //then(검증)
-        assertThatThrownBy(() -> orderService.confirmOrderNow(currentUser, orderId))
+        assertThatThrownBy(() -> orderService.orderConfirmNow(currentUser, orderId))
                 .isInstanceOf(ApiException.class);
     }
 
@@ -399,30 +399,30 @@ class OrderServiceTest {
                 OrderResume.builder()
                         .id(1L)
                         .resume(resume1)
-                        .status(OrderResumeStatus.ORDER)
+                        .status(OrderResumeStatus.ORDERED)
                         .build(),
                 OrderResume.builder()
                         .id(2L)
                         .resume(resume2)
-                        .status(OrderResumeStatus.ORDER)
+                        .status(OrderResumeStatus.ORDERED)
                         .build()
         );
 
-        CancelRequest cancelRequest = CancelRequest.builder()
+        PartialCancelRequest partialCancelRequest = PartialCancelRequest.builder()
                 .orderResumeIds(List.of(1L, 2L)) // 선택한 이력서장바구니
                 .build();
 
         // Mock 설정: cancelPartialOrderResumes 호출 시 fakeOrderResumes 반환
-        when(orderResumeService.cancelPartialOrderResumes(cancelRequest.getOrderResumeIds()))
+        when(orderResumeService.cancelPartialOrderResumes(partialCancelRequest.getOrderResumeIds()))
                 .thenReturn(fakeOrderResumes);
 
         // when
-        orderService.cancelPartialOrder(currentUser, 1L, cancelRequest);
+        orderService.cancelPartialOrder(currentUser, 1L, partialCancelRequest);
         Order order = fakeOrderRepository.getByIdWithThrow(1L);
 
         // then
         assertThat(order.getStatus()).isEqualTo(OrderStatus.PARTIAL_CANCEL);
-        assertThat(order.getTotalPrice()).isEqualTo(new BigDecimal("34000.00"));  // 예상 금액
+        assertThat(order.getTotalAmount()).isEqualTo(new BigDecimal("34000.00"));  // 예상 금액
     }
 
     @Test

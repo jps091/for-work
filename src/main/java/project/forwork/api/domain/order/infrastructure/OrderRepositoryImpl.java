@@ -37,6 +37,18 @@ public class OrderRepositoryImpl implements OrderRepository {
     }
 
     @Override
+    public boolean existsByRequestId(String requestId) {
+        return orderJpaRepository.existsByRequestId(requestId);
+    }
+
+    @Override
+    public Order getByRequestIdWithThrow(String requestId) {
+        return orderJpaRepository.getByRequestId(requestId)
+                .orElseThrow(() -> new ApiException(OrderErrorCode.ORDER_NOT_FOUND))
+                .toModel();
+    }
+
+    @Override
     public Order getOrderWithThrow(Long userId, Long orderId) {
         return orderJpaRepository.getByUserEntity_IdAndId(userId, orderId)
                 .orElseThrow(() -> new ApiException(OrderErrorCode.ORDER_NOT_FOUND, orderId))

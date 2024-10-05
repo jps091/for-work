@@ -8,8 +8,10 @@ import java.util.List;
 import java.util.Optional;
 
 public interface OrderJpaRepository extends JpaRepository<OrderEntity, Long> {
+    Optional<OrderEntity> getByRequestId(String requestId);
     Optional<OrderEntity> getByUserEntity_IdAndId(Long userId, Long orderId);
     List<OrderEntity> findAllByStatus(OrderStatus status);
     List<OrderEntity> findByUserEntity_Id(Long userId);
-    List<OrderEntity> findByStatus(OrderStatus orderStatus, Limit limit);
+    List<OrderEntity> findByStatus(OrderStatus status, Limit limit);
+    boolean existsByRequestId(String requestId);
 }

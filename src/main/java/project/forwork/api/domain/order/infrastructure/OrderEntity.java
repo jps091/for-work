@@ -27,8 +27,11 @@ public class OrderEntity extends BaseTimeEntity {
     @JoinColumn(name = "user_id")
     private UserEntity userEntity;
 
-    @Column(precision = 8, name = "total_price", nullable = false)
-    private BigDecimal totalPrice;
+    @Column(name = "request_id", nullable = false)
+    private String requestId;
+
+    @Column(precision = 8, name = "total_amount", nullable = false)
+    private BigDecimal totalAmount;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -43,11 +46,15 @@ public class OrderEntity extends BaseTimeEntity {
     @Column(name = "confirmed_at")
     private LocalDateTime confirmedAt;
 
+    @Column(name = "sent_at")
+    private LocalDateTime sentAt;
+
     public static OrderEntity from(Order order){
         OrderEntity orderEntity = new OrderEntity();
         orderEntity.id = order.getId();
         orderEntity.userEntity = UserEntity.from(order.getUser());
-        orderEntity.totalPrice = order.getTotalPrice();
+        orderEntity.requestId = order.getRequestId();
+        orderEntity.totalAmount = order.getTotalAmount();
         orderEntity.status = order.getStatus();
         orderEntity.orderedAt = order.getOrderedAt();
         orderEntity.canceledAt = order.getCanceledAt();
@@ -59,7 +66,8 @@ public class OrderEntity extends BaseTimeEntity {
         return Order.builder()
                 .id(id)
                 .user(userEntity.toModel())
-                .totalPrice(totalPrice)
+                .requestId(requestId)
+                .totalAmount(totalAmount)
                 .status(status)
                 .orderedAt(orderedAt)
                 .canceledAt(canceledAt)
