@@ -25,10 +25,9 @@ CREATE TABLE transactions (
                               modified_at TIMESTAMP(6),
                               registered_at TIMESTAMP(6),
                               amount DECIMAL(7, 0) NOT NULL,
-                              charged_at TIMESTAMP(6),
-                              order_id VARCHAR(255) NOT NULL,
+                              payment_key VARCHAR(255) NOT NULL,
                               payed_at TIMESTAMP(6),
-                              type ENUM('CHARGE', 'PAYMENT') NOT NULL,
+                              type ENUM('PG_PAYMENT') NOT NULL,
                               user_id BIGINT NOT NULL,
                               FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
