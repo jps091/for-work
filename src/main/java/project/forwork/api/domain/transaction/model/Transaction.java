@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import project.forwork.api.common.service.port.ClockHolder;
+import project.forwork.api.domain.order.model.Order;
 import project.forwork.api.domain.transaction.controller.model.TransactionCreateRequest;
 import project.forwork.api.domain.transaction.infrastructure.enums.TransactionType;
 import project.forwork.api.domain.user.model.User;
@@ -17,29 +18,18 @@ import java.time.LocalDateTime;
 public class Transaction {
     private final Long id;
     private final User user;
-    private final String orderId;
+    private final Order order;
+    private final String paymentKey;
     private final BigDecimal amount;
     private final TransactionType transactionType;
-    private final LocalDateTime chargedAt;
-    private final LocalDateTime payedAt;
 
-    public static Transaction createChargeTx(User user, TransactionCreateRequest body, ClockHolder clockHolder){
+    public static Transaction registerPgPayment(User user, Order order, TransactionCreateRequest body){
         return Transaction.builder()
                 .user(user)
-                .orderId(body.getOrderTxId())
+                .order(order)
+                .paymentKey(body.getPaymentKey())
                 .amount(body.getAmount())
-                .transactionType(TransactionType.CHARGE)
-                .chargedAt(clockHolder.now())
-                .build();
-    }
-
-    public static Transaction createPaymentTx(User user, TransactionCreateRequest body, ClockHolder clockHolder){
-        return Transaction.builder()
-                .user(user)
-                .orderId(body.getOrderTxId())
-                .amount(body.getAmount())
-                .transactionType(TransactionType.PAYMENT)
-                .payedAt(clockHolder.now())
+                .transactionType(body.getType())
                 .build();
     }
 }
