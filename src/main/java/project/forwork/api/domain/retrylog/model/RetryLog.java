@@ -1,13 +1,15 @@
-package project.forwork.api.domain.retryrequest.model;
+package project.forwork.api.domain.retrylog.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
-import project.forwork.api.domain.retryrequest.infrastructure.enums.RetryType;
+import project.forwork.api.domain.retrylog.infrastructure.enums.RetryType;
 
 @AllArgsConstructor
 @Builder
 @Getter
+@Data
 public class RetryLog {
     private final Long id;
     private final String requestId;

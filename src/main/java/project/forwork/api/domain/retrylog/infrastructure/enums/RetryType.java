@@ -1,4 +1,4 @@
-package project.forwork.api.domain.retryrequest.infrastructure.enums;
+package project.forwork.api.domain.retrylog.infrastructure.enums;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 

@@ -8,12 +8,15 @@ import org.springframework.boot.web.client.ClientHttpRequestFactorySettings;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 import project.forwork.api.domain.order.controller.model.ConfirmRequest;
 import project.forwork.api.domain.order.controller.model.PaymentFullCancelRequest;
 import project.forwork.api.domain.order.controller.model.PaymentPartialCancelRequest;
 
+import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Base64;
@@ -29,6 +32,11 @@ public class PaymentGatewayService {
     @Value("${pg.url}")
     public String URL;
 
+    @Retryable(
+            value = SocketTimeoutException.class,
+            maxAttempts = 2,
+            backoff =  @Backoff(delay = 2000)
+    )
     public void confirm(ConfirmRequest body){
         String authorizations = getAuthorizations();
         String confirmURL = URL +"confirm";

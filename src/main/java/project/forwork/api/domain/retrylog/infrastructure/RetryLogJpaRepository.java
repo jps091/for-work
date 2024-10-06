@@ -1,4 +1,4 @@
-package project.forwork.api.domain.retryrequest.infrastructure;
+package project.forwork.api.domain.retrylog.infrastructure;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

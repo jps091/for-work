@@ -20,16 +20,14 @@ CREATE TABLE users (
                        UNIQUE (email)
 );
 
-CREATE TABLE transactions (
-                              transaction_id BIGINT AUTO_INCREMENT PRIMARY KEY,
-                              modified_at TIMESTAMP(6),
-                              registered_at TIMESTAMP(6),
-                              amount DECIMAL(7, 0) NOT NULL,
-                              payment_key VARCHAR(255) NOT NULL,
-                              payed_at TIMESTAMP(6),
-                              type ENUM('PG_PAYMENT') NOT NULL,
-                              user_id BIGINT NOT NULL,
-                              FOREIGN KEY (user_id) REFERENCES users(user_id)
+CREATE TABLE retry_logs (
+                            retry_log_id bigint NOT NULL AUTO_INCREMENT,  -- H2에서는 AUTO_INCREMENT 사용
+                            modified_at timestamp DEFAULT NULL,
+                            registered_at timestamp DEFAULT NULL,
+                            error_response varchar(255) NOT NULL,
+                            request_id varchar(255) NOT NULL,
+                            type varchar(20) NOT NULL,  -- ENUM 대신 VARCHAR(20) 사용
+                            PRIMARY KEY (retry_log_id)
 );
 
 CREATE TABLE resumes (
@@ -100,17 +98,19 @@ CREATE TABLE cart_resumes (
 );
 
 CREATE TABLE orders (
-                        canceled_at datetime DEFAULT NULL,
-                        confirmed_at datetime DEFAULT NULL,
-                        modified_at datetime DEFAULT NULL,
-                        ordered_at datetime DEFAULT NULL,
-                        order_id bigint NOT NULL AUTO_INCREMENT,
-                        registered_at datetime DEFAULT NULL,
+                        canceled_at timestamp DEFAULT NULL,
+                        confirmed_at timestamp DEFAULT NULL,
+                        modified_at timestamp DEFAULT NULL,
+                        ordered_at timestamp DEFAULT NULL,
+                        order_id bigint NOT NULL AUTO_INCREMENT,  -- Use AUTO_INCREMENT for H2
+                        registered_at timestamp DEFAULT NULL,
                         user_id bigint DEFAULT NULL,
-                        status varchar(255) DEFAULT NULL,
-                        total_price decimal(8,0) NOT NULL,
+                        request_id varchar(255) NOT NULL,
+                        sent_at timestamp DEFAULT NULL,
+                        total_amount decimal(8, 0) NOT NULL,
+                        status varchar(20) NOT NULL,  -- Replacing ENUM with VARCHAR(20) for H2
                         PRIMARY KEY (order_id),
-                        FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE SET NULL
+                        FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE SET NULL -- Foreign key constraint
 );
 
 CREATE TABLE order_resumes (
@@ -123,6 +123,21 @@ CREATE TABLE order_resumes (
                                PRIMARY KEY (order_resume_id),
                                FOREIGN KEY (order_id) REFERENCES orders(order_id),
                                FOREIGN KEY (resume_id) REFERENCES resumes(resume_id)
+);
+
+CREATE TABLE transactions (
+                              transaction_id bigint NOT NULL AUTO_INCREMENT,  -- Use AUTO_INCREMENT for H2
+                              modified_at timestamp DEFAULT NULL,
+                              registered_at timestamp DEFAULT NULL,
+                              amount decimal(7,0) NOT NULL,
+                              charged_at timestamp DEFAULT NULL,
+                              order_id bigint NOT NULL,
+                              type varchar(20) NOT NULL,  -- Replace ENUM with VARCHAR(20)
+                              user_id bigint NOT NULL,
+                              payment_key varchar(255) NOT NULL,
+                              PRIMARY KEY (transaction_id),
+                              FOREIGN KEY (order_id) REFERENCES orders (order_id), -- Foreign key for order_id
+                              FOREIGN KEY (user_id) REFERENCES users (user_id)    -- Foreign key for user_id
 );
 
 CREATE TABLE payment_entity (
