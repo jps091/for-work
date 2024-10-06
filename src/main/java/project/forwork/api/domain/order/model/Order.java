@@ -55,38 +55,15 @@ public class Order {
                 .build();
     }
 
-    public Order updateConfirm(OrderStatus status, ClockHolder clockHolder){
-
-        if(OrderStatus.CONFIRM.equals(status)){
-            return Order.builder()
-                    .id(id)
-                    .user(user)
-                    .requestId(requestId)
-                    .totalAmount(totalAmount)
-                    .status(status)
-                    .orderedAt(orderedAt)
-                    .confirmedAt(clockHolder.now())
-                    .build();
-        }
-
-        if(OrderStatus.PAYMENT_FAILED.equals(status)){
-            return Order.builder()
-                    .id(id)
-                    .user(user)
-                    .requestId(requestId)
-                    .totalAmount(totalAmount)
-                    .status(status)
-                    .orderedAt(orderedAt)
-                    .build();
-        }
-
+    public Order updateConfirm(ClockHolder clockHolder){
         return Order.builder()
                 .id(id)
                 .user(user)
                 .requestId(requestId)
                 .totalAmount(totalAmount)
-                .status(status)
+                .status(OrderStatus.CONFIRM)
                 .orderedAt(orderedAt)
+                .confirmedAt(clockHolder.now())
                 .build();
     }
 

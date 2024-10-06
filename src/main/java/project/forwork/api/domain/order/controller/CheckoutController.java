@@ -16,7 +16,7 @@ import project.forwork.api.domain.order.service.OrderService;
 import project.forwork.api.domain.order.service.CheckoutService;
 
 @RestController
-@RequestMapping("/api/v1/orders")
+@RequestMapping("/api/v1/checkout")
 @RequiredArgsConstructor
 @Tag(name = "CheckoutController", description = "Checkout Api 서비스 컨트롤러")
 public class CheckoutController {

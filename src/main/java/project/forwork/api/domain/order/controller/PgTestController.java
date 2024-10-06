@@ -1,6 +1,8 @@
 package project.forwork.api.domain.order.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,8 +15,10 @@ import project.forwork.api.common.annotation.Current;
 import project.forwork.api.common.api.Api;
 import project.forwork.api.common.domain.CurrentUser;
 import project.forwork.api.domain.order.controller.model.ConfirmRequest;
+import project.forwork.api.domain.order.controller.model.PartialCancelRequest;
 import project.forwork.api.domain.order.model.Order;
 import project.forwork.api.domain.order.service.CheckoutService;
+import project.forwork.api.domain.order.service.OrderService;
 import project.forwork.api.domain.order.service.port.OrderRepository;
 import project.forwork.api.domain.user.infrastructure.enums.RoleType;
 
@@ -55,14 +59,12 @@ public class PgTestController {
 
     @RequestMapping(method = RequestMethod.POST, value = "/open-api/confirm")
     public Api<String> confirm(
-            //@Parameter(hidden = true) @Current CurrentUser currentUser,
             @RequestBody ConfirmRequest body
-            //@RequestBody String rawBody
     ){
         CurrentUser currentUser = CurrentUser.builder()
                         .id(4L)
-                .roleType(RoleType.USER)
-                                .build();
+                        .roleType(RoleType.USER)
+                        .build();
         log.info("controller ConfirmRequest={}",body);
         checkoutService.processOrderAndPayment(currentUser, body);
         return Api.OK("결제 승인 성공");

@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import project.forwork.api.common.domain.CurrentUser;
 import project.forwork.api.common.error.OrderErrorCode;
@@ -12,10 +13,8 @@ import project.forwork.api.common.service.port.ClockHolder;
 import project.forwork.api.common.service.port.UuidHolder;
 import project.forwork.api.domain.cartresume.model.CartResume;
 import project.forwork.api.domain.cartresume.service.port.CartResumeRepository;
-import project.forwork.api.domain.order.controller.model.PartialCancelRequest;
-import project.forwork.api.domain.order.controller.model.OrderDetailResponse;
-import project.forwork.api.domain.order.controller.model.OrderInCartRequest;
-import project.forwork.api.domain.order.controller.model.OrderResponse;
+import project.forwork.api.domain.order.controller.model.*;
+import project.forwork.api.domain.order.infrastructure.enums.OrderStatus;
 import project.forwork.api.domain.order.model.Order;
 import project.forwork.api.domain.order.service.port.OrderRepository;
 import project.forwork.api.domain.orderresume.controller.model.OrderResumeResponse;
@@ -134,6 +133,19 @@ public class OrderService {
         orderRepository.save(order);
     }
 
+    public Order updateOrderConfirm(ConfirmRequest body) {
+        Order order = orderRepository.getByRequestIdWithThrow(body.getOrderId());
+        order = order.updateConfirm(clockHolder);
+        return orderRepository.save(order);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void updateOrderConfirmFailure(ConfirmRequest body) {
+        Order order = orderRepository.getByRequestIdWithThrow(body.getOrderId());
+        order = order.updateStatus(OrderStatus.PAYMENT_FAILED);
+        orderRepository.save(order);
+    }
+
     @Transactional(readOnly = true)
     public List<OrderResponse> findAll(CurrentUser currentUser){
         return orderRepository.findByUserId(currentUser.getId()).stream()
@@ -157,6 +169,11 @@ public class OrderService {
                 .orderId(order.getId())
                 .orderResumeResponses(orderResumes)
                 .build();
+    }
+
+    @Transactional(readOnly = true)
+    public Order getById(Long orderId){
+        return orderRepository.getByIdWithThrow(orderId);
     }
 
     private String createRequestId(Long userId){

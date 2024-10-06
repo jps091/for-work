@@ -1,9 +1,9 @@
-package project.forwork.api.domain.retryrequest.infrastructure;
+package project.forwork.api.domain.retrylog.infrastructure;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import project.forwork.api.domain.retryrequest.model.RetryLog;
-import project.forwork.api.domain.retryrequest.service.port.RetryLogRepository;
+import project.forwork.api.domain.retrylog.model.RetryLog;
+import project.forwork.api.domain.retrylog.service.port.RetryLogRepository;
 
 @Repository
 @RequiredArgsConstructor

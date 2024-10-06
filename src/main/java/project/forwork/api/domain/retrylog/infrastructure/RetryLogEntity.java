@@ -1,4 +1,4 @@
-package project.forwork.api.domain.retryrequest.infrastructure;
+package project.forwork.api.domain.retrylog.infrastructure;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -7,8 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import project.forwork.api.common.infrastructure.BaseTimeEntity;
-import project.forwork.api.domain.retryrequest.infrastructure.enums.RetryType;
-import project.forwork.api.domain.retryrequest.model.RetryLog;
+import project.forwork.api.domain.retrylog.infrastructure.enums.RetryType;
+import project.forwork.api.domain.retrylog.model.RetryLog;
 
 @Entity
 @Table(name = "retry_logs")

@@ -77,4 +77,18 @@ public class FakeOrderRepository implements OrderRepository {
                 .limit(limit)
                 .toList();
     }
+
+    @Override
+    public Order getByRequestIdWithThrow(String requestId) {
+        return data.stream()
+                .filter(o -> Objects.equals(o.getRequestId(), requestId))
+                .findAny()
+                .orElseThrow(() -> new ApiException(OrderErrorCode.ORDER_NOT_FOUND));
+    }
+
+    @Override
+    public boolean existsByRequestId(String requestId) {
+        return data.stream()
+                .anyMatch(o -> Objects.equals(o.getRequestId(), requestId));
+    }
 }
