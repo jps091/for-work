@@ -40,14 +40,11 @@ public class OrderEntity extends BaseTimeEntity {
     @Column(name = "ordered_at")
     private LocalDateTime orderedAt;
 
-    @Column(name = "canceled_at")
-    private LocalDateTime canceledAt;
+    @Column(name = "paid_at")
+    private LocalDateTime paid_at;
 
     @Column(name = "confirmed_at")
     private LocalDateTime confirmedAt;
-
-    @Column(name = "sent_at")
-    private LocalDateTime sentAt;
 
     public static OrderEntity from(Order order){
         OrderEntity orderEntity = new OrderEntity();
@@ -57,8 +54,7 @@ public class OrderEntity extends BaseTimeEntity {
         orderEntity.totalAmount = order.getTotalAmount();
         orderEntity.status = order.getStatus();
         orderEntity.orderedAt = order.getOrderedAt();
-        orderEntity.canceledAt = order.getCanceledAt();
-        orderEntity.confirmedAt = order.getConfirmedAt();
+        orderEntity.paid_at = order.getPaidAt();
         return orderEntity;
     }
 
@@ -70,8 +66,7 @@ public class OrderEntity extends BaseTimeEntity {
                 .totalAmount(totalAmount)
                 .status(status)
                 .orderedAt(orderedAt)
-                .canceledAt(canceledAt)
-                .confirmedAt(confirmedAt)
+                .paidAt(paid_at)
                 .build();
     }
 }

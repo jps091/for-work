@@ -63,7 +63,6 @@ public class CheckoutController {
             @Parameter(hidden = true) @Current CurrentUser currentUser,
             @PathVariable Long orderId
     ){
-        orderService.cancelOrder(currentUser, orderId);
         checkoutService.cancelPayment(currentUser, orderId);
         return Api.OK("주문 전체 취소 되었습니다.");
     }
@@ -76,7 +75,6 @@ public class CheckoutController {
             @PathVariable Long orderId,
             @Valid @RequestBody PartialCancelRequest body
     ){
-        orderService.cancelPartialOrder(currentUser, orderId, body);
         checkoutService.cancelPartialPayment(currentUser, orderId, body);
         return Api.OK("선택한 이력서 부분 취소 되었습니다.");
     }

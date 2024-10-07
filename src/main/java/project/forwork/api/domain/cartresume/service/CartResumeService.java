@@ -33,7 +33,7 @@ public class CartResumeService {
     public CartResume register(CurrentUser currentUser, Long salesPostId){
         Cart cart = cartRepository.getByUserIdWithThrow(currentUser.getId());
         SalesPost salesPost = salesPostRepository.getByIdWithThrow(salesPostId);
-        Resume resume = salesPost.getResume();
+        Resume resume = salesPost.getResumeIfSalesPostSelling();
 
         if(cartResumeRepository.existsByCartAndResume(cart, resume)){
             throw new ApiException(CartResumeErrorCode.RESUME_EXISTS_CART);

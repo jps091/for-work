@@ -261,7 +261,7 @@ class OrderResumeServiceTest {
         //given(상황환경 세팅)
 
         //when(상황발생)
-        orderResumeService.cancelPartialOrderResumes(List.of(1L, 2L));
+        orderResumeService.cancelPartialOrderResumes(List.of(1L, 2L), 1L);
         OrderResume orderResume = orderResumeService.getByIdWithThrow(orderResumeId);
 
         //then(검증)

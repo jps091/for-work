@@ -22,4 +22,11 @@ public interface OrderResumeJpaRepository extends JpaRepository<OrderResumeEntit
             " where o IN :orderEntities" +
             " and ore.status = :status")
     List<OrderResumeEntity> findByStatusAndOrder(@Param("status") OrderResumeStatus status, @Param("orderEntities") List<OrderEntity> orderEntities);
+
+    @Query("select ore from OrderResumeEntity ore" +
+            " join fetch ore.orderEntity o" +
+            " where ore.id IN :ids" +
+            " and ore.status = :status" +
+            " and o.id = :orderId")
+    List<OrderResumeEntity> findByOrderIdAndStatus(@Param("ids") List<Long> ids, @Param("orderId") Long orderId, @Param("status") OrderResumeStatus status);
 }

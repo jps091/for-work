@@ -12,7 +12,7 @@ public interface OrderResumeRepository {
     List<OrderResume> saveAll(List<OrderResume> orderResumes);
     OrderResume getByIdWithThrow(long orderResumeId);
     Optional<OrderResume> findById(long orderResumeId);
-    List<OrderResume> findByIds(List<Long> orderResumeIds);
+    List<OrderResume> findByOrderIdAndStatus(List<Long> orderResumeIds, Long orderId, OrderResumeStatus status);
     List<OrderResume> findByStatusAndOrder(OrderResumeStatus status, Order order);
     List<OrderResume> findByStatusAndOrders(OrderResumeStatus status, List<Order> orders);
 }

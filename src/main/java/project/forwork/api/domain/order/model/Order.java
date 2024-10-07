@@ -3,6 +3,7 @@ package project.forwork.api.domain.order.model;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import project.forwork.api.common.error.OrderErrorCode;
 import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.common.service.port.ClockHolder;
@@ -20,6 +21,7 @@ import java.util.Objects;
 @Getter
 @AllArgsConstructor
 @Builder
+@Slf4j
 public class Order {
     private final Long id;
     private final User user;
@@ -27,9 +29,8 @@ public class Order {
     private final BigDecimal totalAmount;
     private final OrderStatus status;
     private final LocalDateTime orderedAt;
-    private final LocalDateTime canceledAt;
+    private final LocalDateTime paidAt;
     private final LocalDateTime confirmedAt;
-    private final LocalDateTime sentAt;
 
     public static Order create(User user, Resume resume, String requestId, ClockHolder clockHolder){
         return Order.builder()
@@ -55,15 +56,15 @@ public class Order {
                 .build();
     }
 
-    public Order updateConfirm(ClockHolder clockHolder){
+    public Order updatePaid(ClockHolder clockHolder){
         return Order.builder()
                 .id(id)
                 .user(user)
                 .requestId(requestId)
                 .totalAmount(totalAmount)
-                .status(OrderStatus.CONFIRM)
+                .status(OrderStatus.PAID)
                 .orderedAt(orderedAt)
-                .confirmedAt(clockHolder.now())
+                .paidAt(clockHolder.now())
                 .build();
     }
 
@@ -85,7 +86,7 @@ public class Order {
                 .requestId(requestId)
                 .totalAmount(totalAmount)
                 .status(status)
-                .sentAt(clockHolder.now())
+                .confirmedAt(clockHolder.now())
                 .build();
     }
 
@@ -94,7 +95,7 @@ public class Order {
             throw new ApiException(OrderErrorCode.ORDER_NOT_PERMISSION, userId);
         }
 
-        if(status.equals(OrderStatus.SEND)){
+        if(status.equals(OrderStatus.CONFIRM)){
             throw new ApiException(OrderErrorCode.RESUME_ALREADY_SEND);
         }
 
@@ -103,18 +104,17 @@ public class Order {
                 .user(user)
                 .requestId(requestId)
                 .totalAmount(totalAmount)
-                .status(OrderStatus.SEND)
+                .status(OrderStatus.CONFIRM)
                 .orderedAt(orderedAt)
-                .sentAt(clockHolder.now())
+                .confirmedAt(clockHolder.now())
                 .build();
     }
-
-    public Order cancelOrder(Long userId, ClockHolder clockHolder){
+    public Order cancelOrder(Long userId){
         if(!Objects.equals(user.getId(), userId)){
             throw new ApiException(OrderErrorCode.ORDER_NOT_PERMISSION, userId);
         }
 
-        if(status.equals(OrderStatus.SEND)){
+        if(status.equals(OrderStatus.CONFIRM)){
             throw new ApiException(OrderErrorCode.RESUME_ALREADY_SEND);
         }
 
@@ -125,16 +125,15 @@ public class Order {
                 .totalAmount(totalAmount)
                 .status(OrderStatus.CANCEL)
                 .orderedAt(orderedAt)
-                .canceledAt(clockHolder.now())
                 .build();
     }
 
-    public Order cancelPartialOrder(Long userId, List<OrderResume> orderResumes, ClockHolder clockHolder){
+    public Order cancelPartialOrder(Long userId, List<OrderResume> orderResumes){
         if(!Objects.equals(user.getId(), userId)){
             throw new ApiException(OrderErrorCode.ORDER_NOT_PERMISSION, userId);
         }
 
-        if(status.equals(OrderStatus.SEND)){
+        if(status.equals(OrderStatus.CONFIRM)){
             throw new ApiException(OrderErrorCode.RESUME_ALREADY_SEND);
         }
 
@@ -142,14 +141,19 @@ public class Order {
                 .map(OrderResume::getPrice)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
+        OrderStatus updateStatus = OrderStatus.PARTIAL_CANCEL;
+        BigDecimal resultAmount = totalAmount.subtract(canceledPrice);
+        if(resultAmount.compareTo(BigDecimal.ZERO) == 0){
+            updateStatus = OrderStatus.CANCEL;
+        }
+
         return Order.builder()
                 .id(id)
                 .user(user)
                 .requestId(requestId)
-                .totalAmount(totalAmount.subtract(canceledPrice))
-                .status(OrderStatus.PARTIAL_CANCEL)
+                .totalAmount(resultAmount)
+                .status(updateStatus)
                 .orderedAt(orderedAt)
-                .canceledAt(clockHolder.now())
                 .build();
     }
 

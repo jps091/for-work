@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import project.forwork.api.common.domain.CurrentUser;
+import project.forwork.api.common.error.CartResumeErrorCode;
 import project.forwork.api.common.error.OrderErrorCode;
 import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.common.service.port.ClockHolder;
@@ -71,13 +72,11 @@ public class OrderService {
 
     public Order orderNow(CurrentUser currentUser, Long salesPostId){
         User user = userRepository.getByIdWithThrow(currentUser.getId());
+
+        String requestId = validOrderRequest(user);
+
         SalesPost salesPost = salesPostRepository.getByIdWithThrow(salesPostId);
         Resume resume = salesPost.getResume();
-
-        String requestId = createRequestId(user.getId());
-        if (orderRepository.existsByRequestId(requestId)) {
-            throw new ApiException(OrderErrorCode.ORDER_ALREADY_REQUEST);
-        }
 
         Order order = Order.create(user, resume, requestId, clockHolder);
         order = orderRepository.save(order);
@@ -89,25 +88,36 @@ public class OrderService {
     }
 
     public Order orderInCart(CurrentUser currentUser, OrderInCartRequest body){
-        User user = userRepository.getByIdWithThrow(currentUser.getId());
+        List<Long> cartResumeIds = getCartResumeIds(body);
 
-        List<CartResume> cartResumes = body.getCartResumeIds().stream()
-                .map(cartResumeRepository::getByIdWithThrow)
+        User user = userRepository.getByIdWithThrow(currentUser.getId());
+        String requestId = validOrderRequest(user);
+
+        List<CartResume> cartResumes = cartResumeRepository.findByUserAndSelected(user.getId(), cartResumeIds)
+                .stream()
+                .filter(cartResume -> cartResumeIds.contains(cartResume.getId()))
                 .toList();
 
-        String requestId = createRequestId(user.getId());
-        if (orderRepository.existsByRequestId(requestId)) {
-            throw new ApiException(OrderErrorCode.ORDER_ALREADY_REQUEST);
+        if(cartResumes.size() != cartResumeIds.size()){
+            throw new ApiException(CartResumeErrorCode.RETRY_SELECT);
         }
 
         Order order = Order.create(user, cartResumes, requestId, clockHolder);
         order = orderRepository.save(order);
 
         orderResumeService.registerByCartResume(order, cartResumes);
-
         cartResumeRepository.delete(cartResumes);
 
         return order;
+    }
+
+    @Transactional(readOnly = true)
+    public String validOrderRequest(User user) {
+        String requestId = createRequestId(user.getId());
+        if (orderRepository.existsByRequestId(requestId)) { // 멱등키 활용
+            throw new ApiException(OrderErrorCode.ORDER_ALREADY_REQUEST);
+        }
+        return requestId;
     }
 
     public void orderConfirmNow(CurrentUser currentUser, Long orderId){
@@ -118,24 +128,23 @@ public class OrderService {
         orderResumeService.sendMailForConfirmedOrder(order);
     }
 
-    public void cancelOrder(CurrentUser currentUser, Long orderId){
+    public Order cancelOrder(CurrentUser currentUser, Long orderId){
         Order order = orderRepository.getByIdWithThrow(orderId);
-        order = order.cancelOrder(currentUser.getId(), clockHolder);
-        orderRepository.save(order);
+        order = order.cancelOrder(currentUser.getId());
         orderResumeService.cancel(order);
+        return orderRepository.save(order);
     }
 
-    public void cancelPartialOrder(CurrentUser currentUser, Long orderId, PartialCancelRequest body){
-        List<OrderResume> orderResumes = orderResumeService.cancelPartialOrderResumes(body.getOrderResumeIds());
-
+    public Order cancelPartialOrder(CurrentUser currentUser, Long orderId, List<OrderResume> orderResumes){
         Order order = orderRepository.getByIdWithThrow(orderId);
-        order = order.cancelPartialOrder(currentUser.getId(), orderResumes, clockHolder);
-        orderRepository.save(order);
+        order = order.cancelPartialOrder(currentUser.getId(), orderResumes);
+        orderResumeService.updateCanceledOrderResumes(orderResumes);
+        return orderRepository.save(order);
     }
 
     public Order updateOrderConfirm(ConfirmRequest body) {
         Order order = orderRepository.getByRequestIdWithThrow(body.getOrderId());
-        order = order.updateConfirm(clockHolder);
+        order = order.updatePaid(clockHolder);
         return orderRepository.save(order);
     }
 
@@ -171,9 +180,12 @@ public class OrderService {
                 .build();
     }
 
-    @Transactional(readOnly = true)
-    public Order getById(Long orderId){
-        return orderRepository.getByIdWithThrow(orderId);
+    private static List<Long> getCartResumeIds(OrderInCartRequest body) {
+        List<Long> cartResumeIds = body.getCartResumeIds();
+        if(cartResumeIds.isEmpty()){
+            throw new ApiException(CartResumeErrorCode.NOT_SELECTED);
+        }
+        return cartResumeIds;
     }
 
     private String createRequestId(Long userId){
