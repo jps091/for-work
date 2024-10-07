@@ -42,7 +42,7 @@ public class FakeOrderResumeRepository implements OrderResumeRepository {
 
     @Override
     public OrderResume getByIdWithThrow(long orderResumeId) {
-        return findById(orderResumeId).orElseThrow(() -> new ApiException(OrderResumeErrorCode.ORDER_NOT_FOUND, orderResumeId));
+        return findById(orderResumeId).orElseThrow(() -> new ApiException(OrderResumeErrorCode.NOT_FOUND, orderResumeId));
     }
 
     @Override

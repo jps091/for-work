@@ -6,6 +6,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.forwork.api.common.domain.CurrentUser;
+import project.forwork.api.common.error.OrderResumeErrorCode;
+import project.forwork.api.common.exception.ApiException;
+import project.forwork.api.common.service.port.ClockHolder;
 import project.forwork.api.domain.cartresume.model.CartResume;
 import project.forwork.api.domain.order.model.Order;
 import project.forwork.api.domain.orderresume.controller.model.OrderResumeResponse;
@@ -14,6 +17,7 @@ import project.forwork.api.domain.orderresume.model.OrderResume;
 import project.forwork.api.domain.orderresume.service.port.OrderResumeRepository;
 import project.forwork.api.domain.orderresume.service.port.OrderResumeRepositoryCustom;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -26,6 +30,7 @@ public class OrderResumeService {
     private final OrderResumeRepository orderResumeRepository;
     private final SendPurchaseResumeService sendPurchaseResumeService;
     private final OrderResumeRepositoryCustom orderResumeRepositoryCustom;
+    private final ClockHolder clockHolder;
 
     public void registerByCartResume(Order order, List<CartResume> cartResumes){
         List<OrderResume> orderResumes = cartResumes.stream()
@@ -37,7 +42,7 @@ public class OrderResumeService {
     // 즉시 주문확정에 대해
     public void sendMailForConfirmedOrder(Order order){
         List<OrderResume> orderResumes = orderResumeRepository.findByStatusAndOrder(OrderResumeStatus.ORDERED, order).stream()
-                .map(orderResume -> orderResume.changeStatus(OrderResumeStatus.CONFIRM))
+                .map(OrderResume::updateStatusConfirm)
                 .toList();
         orderResumeRepository.saveAll(orderResumes);
 
@@ -48,7 +53,7 @@ public class OrderResumeService {
         sendPurchaseResumeService.sendNowPurchaseResume(order);
 
         orderResumes = orderResumes.stream()
-                .map(orderResume -> orderResume.changeStatus(OrderResumeStatus.SENT)).toList();
+                .map(orderResume -> orderResume.updateStatusSend((clockHolder))).toList();
         log.info("confirmAndSendMails");
         orderResumeRepository.saveAll(orderResumes);
     }
@@ -56,7 +61,7 @@ public class OrderResumeService {
     // 자동 주문 확정에 대해
     public void sendMailForConfirmedOrders(List<Order> orders){
         List<OrderResume> orderResumes = orderResumeRepository.findByStatusAndOrders(OrderResumeStatus.ORDERED, orders).stream()
-                .map(orderResume -> orderResume.changeStatus(OrderResumeStatus.CONFIRM))
+                .map(OrderResume::updateStatusConfirm)
                 .toList();
         orderResumeRepository.saveAll(orderResumes);
         log.info("sendMailForConfirmedOrders");
@@ -67,27 +72,39 @@ public class OrderResumeService {
         sendPurchaseResumeService.sendAllPurchaseResume();
 
         orderResumes = orderResumes.stream()
-                .map(orderResume -> orderResume.changeStatus(OrderResumeStatus.SENT)).toList();
+                .map(orderResume -> orderResume.updateStatusSend((clockHolder))).toList();
         log.info("confirmAndSendMails");
         orderResumeRepository.saveAll(orderResumes);
     }
 
     public void cancel(Order order){
         List<OrderResume> orderResumes = orderResumeRepository.findByStatusAndOrder(OrderResumeStatus.ORDERED, order).stream()
-                .map(orderResume -> orderResume.changeStatus(OrderResumeStatus.CANCEL))
+                .map(orderResume -> orderResume.updateStatusCancel(clockHolder))
                 .toList();
         orderResumeRepository.saveAll(orderResumes);
     }
 
-    public List<OrderResume> cancelPartialOrderResumes(List<Long> orderResumeIds){
-
-        List<OrderResume> orderResumes = orderResumeRepository.findByIds(orderResumeIds).stream()
-                .map(orderResume -> orderResume.changeStatus(OrderResumeStatus.CANCEL))
-                .toList();
-        orderResumeRepository.saveAll(orderResumes);
+    public List<OrderResume> getCancelRequestOrderResumes(List<Long> orderResumeIds, Long orderId){
+        List<OrderResume> orderResumes = orderResumeRepository.findByOrderIdAndStatus(orderResumeIds, orderId, OrderResumeStatus.ORDERED);
+        validSelected(orderResumeIds, orderResumes);
 
         return orderResumes;
     }
+
+    public List<OrderResume> updateCanceledOrderResumes(List<OrderResume> orderResumes){
+
+        List<OrderResume> updateOrderResumes = orderResumes.stream()
+                .map(orderResume -> orderResume.updateStatusCancel(clockHolder))
+                .toList();
+
+        return orderResumeRepository.saveAll(updateOrderResumes);
+    }
+
+    @Transactional(readOnly = true)
+    public OrderResume getByIdWithThrow(Long orderResumeId){
+        return orderResumeRepository.getByIdWithThrow(orderResumeId);
+    }
+
     @Transactional(readOnly = true)
     public List<OrderResumeResponse> getOrderResumeList(CurrentUser currentUser){
         List<OrderResumeStatus> statuses = List.of(OrderResumeStatus.ORDERED, OrderResumeStatus.CONFIRM, OrderResumeStatus.SENT);
@@ -99,8 +116,9 @@ public class OrderResumeService {
         return orderResumeRepositoryCustom.findByUserIdAndStatus(currentUser.getId(), statuses);
     }
 
-    @Transactional(readOnly = true)
-    public OrderResume getByIdWithThrow(Long orderResumeId){
-        return orderResumeRepository.getByIdWithThrow(orderResumeId);
+    private void validSelected(List<Long> orderResumeIds, List<OrderResume> orderResumes) {
+        if(orderResumes.size() != orderResumeIds.size()){
+            throw new ApiException(OrderResumeErrorCode.NOT_SELECTED);
+        }
     }
 }

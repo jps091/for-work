@@ -10,6 +10,7 @@ import project.forwork.api.domain.orderresume.model.OrderResume;
 import project.forwork.api.domain.resume.infrastructure.ResumeEntity;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "order_resumes")
@@ -35,12 +36,20 @@ public class OrderResumeEntity extends BaseTimeEntity {
     @Column(nullable = false)
     private OrderResumeStatus status;
 
+    @Column(name = "sent_at")
+    private LocalDateTime sentAt;
+
+    @Column(name = "canceled_at")
+    private LocalDateTime canceledAt;
+
     public static OrderResumeEntity from(OrderResume orderResume){
         OrderResumeEntity orderResumeEntity = new OrderResumeEntity();
         orderResumeEntity.id = orderResume.getId();
         orderResumeEntity.orderEntity = OrderEntity.from(orderResume.getOrder());
         orderResumeEntity.resumeEntity = ResumeEntity.from(orderResume.getResume());
         orderResumeEntity.status = orderResume.getStatus();
+        orderResumeEntity.sentAt = orderResume.getSentAt();
+        orderResumeEntity.canceledAt = orderResume.getCanceledAt();
         return orderResumeEntity;
     }
 
@@ -50,6 +59,8 @@ public class OrderResumeEntity extends BaseTimeEntity {
                 .order(orderEntity.toModel())
                 .resume(resumeEntity.toModel())
                 .status(status)
+                .sentAt(sentAt)
+                .canceledAt(canceledAt)
                 .build();
     }
 }

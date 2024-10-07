@@ -98,7 +98,6 @@ CREATE TABLE cart_resumes (
 );
 
 CREATE TABLE orders (
-                        canceled_at timestamp DEFAULT NULL,
                         confirmed_at timestamp DEFAULT NULL,
                         modified_at timestamp DEFAULT NULL,
                         ordered_at timestamp DEFAULT NULL,
@@ -106,7 +105,7 @@ CREATE TABLE orders (
                         registered_at timestamp DEFAULT NULL,
                         user_id bigint DEFAULT NULL,
                         request_id varchar(255) NOT NULL,
-                        sent_at timestamp DEFAULT NULL,
+                        paid_at timestamp DEFAULT NULL,
                         total_amount decimal(8, 0) NOT NULL,
                         status varchar(20) NOT NULL,  -- Replacing ENUM with VARCHAR(20) for H2
                         PRIMARY KEY (order_id),
@@ -120,6 +119,8 @@ CREATE TABLE order_resumes (
                                registered_at datetime DEFAULT NULL,
                                resume_id bigint NOT NULL,
                                status varchar(255) NOT NULL,
+                               sent_at timestamp DEFAULT NULL,
+                               canceled_at timestamp DEFAULT NULL,
                                PRIMARY KEY (order_resume_id),
                                FOREIGN KEY (order_id) REFERENCES orders(order_id),
                                FOREIGN KEY (resume_id) REFERENCES resumes(resume_id)

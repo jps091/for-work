@@ -19,7 +19,7 @@ import org.springframework.core.annotation.Order;
 @OpenAPIDefinition(
         info = @Info(title = "For-work Service Api 명세서",
                 description = "Spring Boot 기반 RESTful Api",
-                version = "v1.0.0"),
+                version = "V1.0.0"),
         security = @SecurityRequirement(name = "bearerAuth")
 )
 @SecurityScheme(

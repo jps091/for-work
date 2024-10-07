@@ -22,7 +22,7 @@ public class ResumeSendMailService {
 
     //@Scheduled(fixedRate = 10000, initialDelay = 10000) // TODO 시간 변경
     public void markAsWaiting(){
-        updatedOrderStatus(OrderStatus.CONFIRM, OrderStatus.WAIT);
+        updatedOrderStatus(OrderStatus.PAID, OrderStatus.WAIT);
     }
 
     //@Scheduled(fixedRate = 10000, initialDelay = 10000)
@@ -32,12 +32,12 @@ public class ResumeSendMailService {
 
     //@Scheduled(fixedRate = 10000, initialDelay = 10000)
     public void markAsConfirm(){
-        updatedOrderStatus(OrderStatus.WAIT, OrderStatus.SEND);
+        updatedOrderStatus(OrderStatus.WAIT, OrderStatus.CONFIRM);
     }
 
     //@Scheduled(fixedRate = 30000, initialDelay = 30000)
     public void markPartialAsConfirm(){
-        updatedOrderStatus(OrderStatus.PARTIAL_WAIT, OrderStatus.PARTIAL_SEND);
+        updatedOrderStatus(OrderStatus.PARTIAL_WAIT, OrderStatus.PARTIAL_CONFIRM);
     }
 
     public void updatedOrderStatus(OrderStatus oldStatus, OrderStatus updatedStatus) {
@@ -71,7 +71,7 @@ public class ResumeSendMailService {
     }
 
     public void sendMailByOrderConfirm(OrderStatus updatedStatus, List<Order> orders) {
-        if (updatedStatus.equals(OrderStatus.PARTIAL_SEND) || updatedStatus.equals(OrderStatus.SEND)) {
+        if (updatedStatus.equals(OrderStatus.PARTIAL_CONFIRM) || updatedStatus.equals(OrderStatus.CONFIRM)) {
             // 메일 발송 후 상태 업데이트
             orderResumeService.sendMailForConfirmedOrders(orders);
 
