@@ -31,7 +31,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
         return transactionJpaRepository.findByOrderIdAndUserId(TransactionType.PAYMENT, orderId, userId)
                 .map(TransactionEntity::toModel)
                 .orElseThrow(() -> new ApiException(TransactionErrorCode.TX_NOT_FOUND));
-    } // TODO 결제 한뒤 부분취소를 하고 -> 또 부분 취소할시 주문,유저로 조회 했을경우 결과값이  결제, 환불이 나와서 추가 취소불가능
+    } // PAYMENT 조건을 추가 해서 무조건 단 1건의 거래 레코드만 가져 올 수 있다.
 
     @Override
     public boolean existsByPaymentKey(String paymentKey) {

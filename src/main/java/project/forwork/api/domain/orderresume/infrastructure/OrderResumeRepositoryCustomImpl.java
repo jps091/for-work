@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import project.forwork.api.domain.order.model.Order;
 import project.forwork.api.domain.orderresume.controller.model.OrderResumeResponse;
+import project.forwork.api.domain.orderresume.controller.model.OrderTitleResponse;
 import project.forwork.api.domain.orderresume.infrastructure.enums.OrderResumeStatus;
 import project.forwork.api.domain.orderresume.controller.model.PurchaseResponse;
 import project.forwork.api.domain.orderresume.service.port.OrderResumeRepositoryCustom;
@@ -70,9 +71,9 @@ public class OrderResumeRepositoryCustomImpl implements OrderResumeRepositoryCus
     public List<OrderResumeResponse> findByUserIdAndStatus(Long userId, List<OrderResumeStatus> statuses){
         return queryFactory
                 .select(Projections.fields(OrderResumeResponse.class,
-                        orderEntity.id.as("orderId"),
+                        orderResumeEntity.id.as("orderResumeId"),
                         resumeEntity.price.as("price"),
-                        orderEntity.orderedAt.as("orderedAt"),
+                        orderEntity.paidAt.as("paidAt"),
                         orderResumeEntity.status.as("status"),
                         Expressions.stringTemplate(
                                 "CONCAT({0}, ' ', {1}, ' 이력서 #', {2})",
@@ -87,17 +88,36 @@ public class OrderResumeRepositoryCustomImpl implements OrderResumeRepositoryCus
                 .join(orderEntity.userEntity, userEntity)
                 .where(orderResumeEntity.status.in(statuses))
                 .where(userEntity.id.eq(userId))
-                .orderBy(orderEntity.orderedAt.desc())
+                .orderBy(orderEntity.paidAt.desc())
+                .fetch();
+    }
+
+    @Override
+    public List<OrderTitleResponse> findOrderTitleByOrderId(Long orderId) {
+        return queryFactory
+                .select(Projections.fields(OrderTitleResponse.class,
+                        Expressions.stringTemplate(
+                                "CONCAT({0}, ' ', {1}, ' 이력서 #', {2})",
+                                resumeEntity.levelType.stringValue(),
+                                resumeEntity.fieldType.stringValue(),
+                                resumeEntity.id
+                        ).as("title")
+                ))
+                .from(orderResumeEntity)
+                .join(orderResumeEntity.orderEntity, orderEntity)
+                .join(orderResumeEntity.resumeEntity, resumeEntity)
+                .where(orderEntity.id.eq(orderId))
                 .fetch();
     }
 
     public List<OrderResumeResponse> findByOrderId(Long orderId){
         return queryFactory
                 .select(Projections.fields(OrderResumeResponse.class,
-                        orderEntity.id.as("orderId"),
+                        orderResumeEntity.id.as("orderResumeId"),
                         resumeEntity.price.as("price"),
-                        orderEntity.orderedAt.as("orderedAt"),
                         orderResumeEntity.status.as("status"),
+                        orderResumeEntity.sentAt.as("sentAt"),
+                        orderResumeEntity.canceledAt.as("canceledAt"),
                         Expressions.stringTemplate(
                                 "CONCAT({0}, ' ', {1}, ' 이력서 #', {2})",
                                 resumeEntity.levelType.stringValue(),

@@ -19,6 +19,7 @@ import project.forwork.api.domain.order.infrastructure.enums.OrderStatus;
 import project.forwork.api.domain.order.model.Order;
 import project.forwork.api.domain.order.service.port.OrderRepository;
 import project.forwork.api.domain.orderresume.controller.model.OrderResumeResponse;
+import project.forwork.api.domain.orderresume.controller.model.OrderTitleResponse;
 import project.forwork.api.domain.orderresume.model.OrderResume;
 import project.forwork.api.domain.orderresume.service.OrderResumeService;
 import project.forwork.api.domain.orderresume.service.port.OrderResumeRepository;
@@ -120,12 +121,10 @@ public class OrderService {
         return requestId;
     }
 
-    public void orderConfirmNow(CurrentUser currentUser, Long orderId){
+    public void orderConfirmNow(CurrentUser currentUser, Long orderId, ConfirmOrderRequest body){
         Order order = orderRepository.getByIdWithThrow(orderId);
-        order = order.orderConfirmNow(currentUser.getId(), clockHolder);
+        order = orderResumeService.sendMailForConfirmedOrder(currentUser.getId(), order, body.getOrderResumeIds());
         orderRepository.save(order);
-
-        orderResumeService.sendMailForConfirmedOrder(order);
     }
 
     public Order cancelOrder(CurrentUser currentUser, Long orderId){
@@ -142,14 +141,14 @@ public class OrderService {
         return orderRepository.save(order);
     }
 
-    public Order updateOrderConfirm(ConfirmRequest body) {
+    public Order updateOrderPaid(ConfirmPaymentRequest body) {
         Order order = orderRepository.getByRequestIdWithThrow(body.getOrderId());
         order = order.updatePaid(clockHolder);
         return orderRepository.save(order);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void updateOrderConfirmFailure(ConfirmRequest body) {
+    public void updateOrderConfirmFailure(ConfirmPaymentRequest body) {
         Order order = orderRepository.getByRequestIdWithThrow(body.getOrderId());
         order = order.updateStatus(OrderStatus.PAYMENT_FAILED);
         orderRepository.save(order);
@@ -159,9 +158,9 @@ public class OrderService {
     public List<OrderResponse> findAll(CurrentUser currentUser){
         return orderRepository.findByUserId(currentUser.getId()).stream()
                 .map(order -> {
-                    List<OrderResumeResponse> orderResumeResponses = orderResumeRepositoryCustom.findByOrderId(order.getId());
-                    String orderResumeTitle = orderResumeResponses.get(0).getTitle();
-                    String orderTitle = orderResumeResponses.size() == 1 ? orderResumeTitle : orderResumeTitle + "...";
+                    List<OrderTitleResponse> orderTitles = orderResumeRepositoryCustom.findOrderTitleByOrderId(order.getId());
+                    String orderResumeTitle = orderTitles.get(0).getTitle();
+                    String orderTitle = orderTitles.size() == 1 ? orderResumeTitle : orderResumeTitle + "...";
                     return OrderResponse.from(order, orderTitle);
                 }).toList();
     }
@@ -173,8 +172,8 @@ public class OrderService {
 
         return OrderDetailResponse.builder()
                 .email(order.getBuyerEmail())
-                .totalPrice(order.getTotalAmount())
-                .orderedAt(order.getOrderedAt())
+                .totalAmount(order.getTotalAmount())
+                .paidAt(order.getPaidAt())
                 .orderId(order.getId())
                 .orderResumeResponses(orderResumes)
                 .build();

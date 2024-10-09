@@ -6,7 +6,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClientException;
 import project.forwork.api.common.domain.CurrentUser;
-import project.forwork.api.domain.order.controller.model.ConfirmRequest;
+import project.forwork.api.common.error.TransactionErrorCode;
+import project.forwork.api.common.exception.ApiException;
+import project.forwork.api.domain.order.controller.model.ConfirmPaymentRequest;
 import project.forwork.api.domain.order.controller.model.PartialCancelRequest;
 import project.forwork.api.domain.order.controller.model.PaymentFullCancelRequest;
 import project.forwork.api.domain.order.controller.model.PaymentPartialCancelRequest;
@@ -40,7 +42,7 @@ public class CheckoutService {
     private final RetryLogService retryLogService;
 
 
-    public void processOrderAndPayment(CurrentUser currentUser, ConfirmRequest body){
+    public void processOrderAndPayment(CurrentUser currentUser, ConfirmPaymentRequest body){
         try{
             pgService.confirm(body);
 
@@ -49,6 +51,7 @@ public class CheckoutService {
 
             if (e instanceof RestClientException && e.getCause() instanceof SocketTimeoutException) {
                 retryLogService.register(body.getOrderId(), RetryType.CONFIRM, e);
+                throw new ApiException(TransactionErrorCode.SERVER_ERROR);
             }
 
             // 결제 실패 시 주문 상태 업데이트
@@ -56,7 +59,7 @@ public class CheckoutService {
             throw e;  // 예외를 다시 던져서 상위 로직에서 처리할 수 있게 함
         }
 
-        Order order = orderService.updateOrderConfirm(body);
+        Order order = orderService.updateOrderPaid(body);
         createPgTransaction(currentUser, order.getId(), body.getPaymentKey(), new BigDecimal(body.getAmount()), TransactionType.PAYMENT);
     }
 
@@ -71,6 +74,7 @@ public class CheckoutService {
 
             if (e instanceof RestClientException && e.getCause() instanceof SocketTimeoutException) {
                 retryLogService.register(transaction.getPaymentKey(), RetryType.CANCEL, e);
+                throw new ApiException(TransactionErrorCode.SERVER_ERROR);
             }
             throw e;
         }
@@ -93,6 +97,7 @@ public class CheckoutService {
 
             if (e instanceof RestClientException && e.getCause() instanceof SocketTimeoutException) {
                 retryLogService.register(transaction.getPaymentKey(), RetryType.PARTIAL_CANCEL, e);
+                throw new ApiException(TransactionErrorCode.SERVER_ERROR);
             }
             throw e;
         }

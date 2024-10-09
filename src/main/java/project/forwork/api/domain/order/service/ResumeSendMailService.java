@@ -2,8 +2,9 @@ package project.forwork.api.domain.order.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import project.forwork.api.common.service.port.ClockHolder;
+import org.springframework.transaction.annotation.Transactional;
 import project.forwork.api.domain.order.infrastructure.enums.OrderStatus;
 import project.forwork.api.domain.order.model.Order;
 import project.forwork.api.domain.order.service.port.OrderRepository;
@@ -13,29 +14,29 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 @Slf4j
 public class ResumeSendMailService {
 
     private final OrderRepository orderRepository;
     private final OrderResumeService orderResumeService;
-    private final ClockHolder clockHolder;
 
     //@Scheduled(fixedRate = 10000, initialDelay = 10000) // TODO 시간 변경
     public void markAsWaiting(){
         updatedOrderStatus(OrderStatus.PAID, OrderStatus.WAIT);
     }
 
-    //@Scheduled(fixedRate = 10000, initialDelay = 10000)
+    //@Scheduled(fixedRate = 15000, initialDelay = 15000)
     public void markPartialAsWaiting(){
         updatedOrderStatus(OrderStatus.PARTIAL_CANCEL, OrderStatus.PARTIAL_WAIT);
     }
 
-    //@Scheduled(fixedRate = 10000, initialDelay = 10000)
+    //@Scheduled(fixedRate = 20000, initialDelay = 20000)
     public void markAsConfirm(){
         updatedOrderStatus(OrderStatus.WAIT, OrderStatus.CONFIRM);
     }
 
-    //@Scheduled(fixedRate = 30000, initialDelay = 30000)
+    //@Scheduled(fixedRate = 25000, initialDelay = 25000)
     public void markPartialAsConfirm(){
         updatedOrderStatus(OrderStatus.PARTIAL_WAIT, OrderStatus.PARTIAL_CONFIRM);
     }
@@ -74,11 +75,6 @@ public class ResumeSendMailService {
         if (updatedStatus.equals(OrderStatus.PARTIAL_CONFIRM) || updatedStatus.equals(OrderStatus.CONFIRM)) {
             // 메일 발송 후 상태 업데이트
             orderResumeService.sendMailForConfirmedOrders(orders);
-
-            List<Order> updatedOrders = orders.stream()
-                    .map(order -> order.sendAuto(clockHolder))  // 확정 시간
-                    .toList();
-            orderRepository.saveAll(updatedOrders);
         }
     }
 }

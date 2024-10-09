@@ -98,9 +98,7 @@ CREATE TABLE cart_resumes (
 );
 
 CREATE TABLE orders (
-                        confirmed_at timestamp DEFAULT NULL,
                         modified_at timestamp DEFAULT NULL,
-                        ordered_at timestamp DEFAULT NULL,
                         order_id bigint NOT NULL AUTO_INCREMENT,  -- Use AUTO_INCREMENT for H2
                         registered_at timestamp DEFAULT NULL,
                         user_id bigint DEFAULT NULL,
@@ -119,6 +117,7 @@ CREATE TABLE order_resumes (
                                registered_at datetime DEFAULT NULL,
                                resume_id bigint NOT NULL,
                                status varchar(255) NOT NULL,
+                               confirmed_at timestamp DEFAULT NULL,
                                sent_at timestamp DEFAULT NULL,
                                canceled_at timestamp DEFAULT NULL,
                                PRIMARY KEY (order_resume_id),

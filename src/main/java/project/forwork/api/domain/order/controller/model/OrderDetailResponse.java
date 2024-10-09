@@ -14,8 +14,8 @@ import java.util.List;
 public class OrderDetailResponse {
 
     private Long orderId;
-    private LocalDateTime orderedAt;
+    private LocalDateTime paidAt;
     private String email;
     private List<OrderResumeResponse> orderResumeResponses;
-    private BigDecimal totalPrice;
+    private BigDecimal totalAmount;
 }

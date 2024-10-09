@@ -5,10 +5,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import project.forwork.api.common.domain.CurrentUser;
-import project.forwork.api.domain.order.controller.model.ConfirmRequest;
+import project.forwork.api.domain.order.controller.model.ConfirmPaymentRequest;
 import project.forwork.api.domain.order.service.CheckoutService;
 import project.forwork.api.domain.user.infrastructure.enums.RoleType;
 
@@ -26,7 +25,7 @@ class PgTestControllerTest {
                 .id(4L)
                 .roleType(RoleType.USER)
                 .build();
-        ConfirmRequest body = ConfirmRequest.builder()
+        ConfirmPaymentRequest body = ConfirmPaymentRequest.builder()
                 .paymentKey("test-key")
                 .orderId("345636546-a1d658e3-4")
                 .amount("99000")

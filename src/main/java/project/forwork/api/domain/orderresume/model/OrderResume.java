@@ -33,22 +33,12 @@ public class OrderResume {
                 .status(OrderResumeStatus.ORDERED)
                 .build();
     }
-
-    public OrderResume updateStatusConfirm(){
-        return OrderResume.builder()
-                .id(id)
-                .order(order)
-                .resume(resume)
-                .status(OrderResumeStatus.CONFIRM)
-                .build();
-    }
-
     public OrderResume updateStatusSend(ClockHolder clockHolder){
         return OrderResume.builder()
                 .id(id)
                 .order(order)
                 .resume(resume)
-                .status(OrderResumeStatus.CONFIRM)
+                .status(OrderResumeStatus.SENT)
                 .sentAt(clockHolder.now())
                 .build();
     }
