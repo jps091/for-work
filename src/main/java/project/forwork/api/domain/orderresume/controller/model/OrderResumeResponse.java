@@ -15,9 +15,10 @@ import java.time.LocalDateTime;
 @Builder
 public class OrderResumeResponse {
 
-    private Long orderId;
+    private Long orderResumeId;
     private String title;
     private OrderResumeStatus status;
     private BigDecimal price;
-    private LocalDateTime orderedAt;
+    private LocalDateTime sentAt;
+    private LocalDateTime canceledAt;
 }

@@ -50,7 +50,7 @@ public class CheckoutController {
     @PostMapping("/confirm")
     public Api<String> confirm(
             @Parameter(hidden = true) @Current CurrentUser currentUser,
-            @RequestBody ConfirmRequest body
+            @RequestBody ConfirmPaymentRequest body
     ){
         checkoutService.processOrderAndPayment(currentUser, body);
         return Api.OK("결제 승인 성공");

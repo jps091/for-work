@@ -10,6 +10,7 @@ import project.forwork.api.common.error.OrderResumeErrorCode;
 import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.common.service.port.ClockHolder;
 import project.forwork.api.domain.cartresume.model.CartResume;
+import project.forwork.api.domain.order.infrastructure.enums.OrderStatus;
 import project.forwork.api.domain.order.model.Order;
 import project.forwork.api.domain.orderresume.controller.model.OrderResumeResponse;
 import project.forwork.api.domain.orderresume.infrastructure.enums.OrderResumeStatus;
@@ -17,7 +18,6 @@ import project.forwork.api.domain.orderresume.model.OrderResume;
 import project.forwork.api.domain.orderresume.service.port.OrderResumeRepository;
 import project.forwork.api.domain.orderresume.service.port.OrderResumeRepositoryCustom;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -39,14 +39,20 @@ public class OrderResumeService {
         orderResumes.forEach(orderResumeRepository::save);
     }
 
-    // 즉시 주문확정에 대해
-    public void sendMailForConfirmedOrder(Order order){
-        List<OrderResume> orderResumes = orderResumeRepository.findByStatusAndOrder(OrderResumeStatus.ORDERED, order).stream()
-                .map(OrderResume::updateStatusConfirm)
-                .toList();
-        orderResumeRepository.saveAll(orderResumes);
+    public Order sendMailForConfirmedOrder(Long userId, Order order, List<Long> orderResumeIds){
+        // 주문에 존재하는 주문이력서
+        List<OrderResume> orderResumes = orderResumeRepository.findByStatusAndOrder(OrderResumeStatus.ORDERED, order);
 
-        confirmAndSendMail(order, orderResumes);
+        // 선택한 주문 이력서
+        List<OrderResume> filteredOrderResumes = orderResumes.stream()
+                .filter(orderResume -> orderResumeIds.contains(orderResume.getId()))
+                .toList();
+
+        List<OrderResume> confirmedOrderResumes = orderResumeRepository.saveAll(filteredOrderResumes);
+        confirmAndSendMail(order, confirmedOrderResumes);
+
+        OrderStatus updateOrderStatus = getOrderStatusCheckConfirm(orderResumes, confirmedOrderResumes);
+        return order.confirmOrderNow(userId, updateOrderStatus);
     }
 
     public void confirmAndSendMail(Order order, List<OrderResume> orderResumes){
@@ -60,9 +66,7 @@ public class OrderResumeService {
 
     // 자동 주문 확정에 대해
     public void sendMailForConfirmedOrders(List<Order> orders){
-        List<OrderResume> orderResumes = orderResumeRepository.findByStatusAndOrders(OrderResumeStatus.ORDERED, orders).stream()
-                .map(OrderResume::updateStatusConfirm)
-                .toList();
+        List<OrderResume> orderResumes = orderResumeRepository.findByStatusAndOrders(OrderResumeStatus.ORDERED, orders);
         orderResumeRepository.saveAll(orderResumes);
         log.info("sendMailForConfirmedOrders");
         confirmAndSendMails(orderResumes);
@@ -119,6 +123,14 @@ public class OrderResumeService {
     private void validSelected(List<Long> orderResumeIds, List<OrderResume> orderResumes) {
         if(orderResumes.size() != orderResumeIds.size()){
             throw new ApiException(OrderResumeErrorCode.NOT_SELECTED);
+        }
+    }
+
+    private OrderStatus getOrderStatusCheckConfirm(List<OrderResume> orderResumes, List<OrderResume> confirmedOrderResumes) {
+        if(orderResumes.size() != confirmedOrderResumes.size()){ // 같지 않으면 주문내 개별로 주문확정
+            return OrderStatus.PARTIAL_CONFIRM;
+        }else{
+            return OrderStatus.CONFIRM; // 요청 ids 갯수와 쿼리 결과 갯수가 일칠하면 전체 주무확정
         }
     }
 }

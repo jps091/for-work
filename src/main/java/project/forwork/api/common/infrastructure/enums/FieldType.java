@@ -14,7 +14,6 @@ public enum FieldType {
     IOS("IOS"),
     DEVOPS("인프라"),
     AI("인공지능"),
-    ETC("기타")
     ;
 
     private String description;

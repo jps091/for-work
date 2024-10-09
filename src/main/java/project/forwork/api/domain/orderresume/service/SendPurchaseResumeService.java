@@ -25,7 +25,6 @@ public class SendPurchaseResumeService {
     public void sendAllPurchaseResume(){
         List<PurchaseResponse> purchaseResponses = orderResumeRepositoryCustom.findAllPurchaseResume();
         //purchaseResponses.forEach(this::sendEmail); TODO 주석해제
-
     }
 
     public void sendNowPurchaseResume(Order order){

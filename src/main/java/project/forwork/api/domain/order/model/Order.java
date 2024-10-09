@@ -28,9 +28,7 @@ public class Order {
     private final String requestId;
     private final BigDecimal totalAmount;
     private final OrderStatus status;
-    private final LocalDateTime orderedAt;
     private final LocalDateTime paidAt;
-    private final LocalDateTime confirmedAt;
 
     public static Order create(User user, Resume resume, String requestId, ClockHolder clockHolder){
         return Order.builder()
@@ -38,7 +36,6 @@ public class Order {
                 .requestId(requestId)
                 .totalAmount(resume.getPrice())
                 .status(OrderStatus.ORDERED)
-                .orderedAt(clockHolder.now())
                 .build();
     }
 
@@ -52,7 +49,6 @@ public class Order {
                 .requestId(requestId)
                 .totalAmount(totalPrice)
                 .status(OrderStatus.ORDERED)
-                .orderedAt(clockHolder.now())
                 .build();
     }
 
@@ -63,7 +59,6 @@ public class Order {
                 .requestId(requestId)
                 .totalAmount(totalAmount)
                 .status(OrderStatus.PAID)
-                .orderedAt(orderedAt)
                 .paidAt(clockHolder.now())
                 .build();
     }
@@ -75,38 +70,22 @@ public class Order {
                 .requestId(requestId)
                 .totalAmount(totalAmount)
                 .status(status)
-                .orderedAt(orderedAt)
+                .paidAt(paidAt)
                 .build();
     }
 
-    public Order sendAuto(ClockHolder clockHolder){
+    public Order confirmOrderNow(Long userId, OrderStatus status){
+        if(!Objects.equals(user.getId(), userId)){
+            throw new ApiException(OrderErrorCode.ORDER_NOT_PERMISSION, userId);
+        }
+
         return Order.builder()
                 .id(id)
                 .user(user)
                 .requestId(requestId)
                 .totalAmount(totalAmount)
                 .status(status)
-                .confirmedAt(clockHolder.now())
-                .build();
-    }
-
-    public Order orderConfirmNow(Long userId, ClockHolder clockHolder){
-        if(!Objects.equals(user.getId(), userId)){
-            throw new ApiException(OrderErrorCode.ORDER_NOT_PERMISSION, userId);
-        }
-
-        if(status.equals(OrderStatus.CONFIRM)){
-            throw new ApiException(OrderErrorCode.RESUME_ALREADY_SEND);
-        }
-
-        return Order.builder()
-                .id(id)
-                .user(user)
-                .requestId(requestId)
-                .totalAmount(totalAmount)
-                .status(OrderStatus.CONFIRM)
-                .orderedAt(orderedAt)
-                .confirmedAt(clockHolder.now())
+                .paidAt(paidAt)
                 .build();
     }
     public Order cancelOrder(Long userId){
@@ -124,7 +103,7 @@ public class Order {
                 .requestId(requestId)
                 .totalAmount(totalAmount)
                 .status(OrderStatus.CANCEL)
-                .orderedAt(orderedAt)
+                .paidAt(paidAt)
                 .build();
     }
 
@@ -153,7 +132,7 @@ public class Order {
                 .requestId(requestId)
                 .totalAmount(resultAmount)
                 .status(updateStatus)
-                .orderedAt(orderedAt)
+                .paidAt(paidAt)
                 .build();
     }
 

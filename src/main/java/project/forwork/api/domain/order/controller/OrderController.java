@@ -48,9 +48,10 @@ public class OrderController {
     @PostMapping("/confirm/{orderId}")
     public Api<String> confirmOrderNow(
             @Parameter(hidden = true) @Current CurrentUser currentUser,
-            @PathVariable Long orderId
+            @PathVariable Long orderId,
+            @Valid @RequestBody ConfirmOrderRequest body
     ){
-        orderService.orderConfirmNow(currentUser, orderId);
+        orderService.orderConfirmNow(currentUser, orderId, body);
         return Api.OK("구매 확정이 완료 되었습니다. 이메일을 확인 해주세요");
     }
 }

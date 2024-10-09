@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import project.forwork.api.domain.order.model.Order;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 @Getter
 @Builder
@@ -18,7 +17,6 @@ public class OrderCreateResponse {
     private Long orderId;
     private String requestId;
     private String email;
-    private LocalDateTime orderedAt;
     private BigDecimal totalPrice;
 
     public static OrderCreateResponse from(Order order){
@@ -26,7 +24,6 @@ public class OrderCreateResponse {
                 .orderId(order.getId())
                 .requestId(order.getRequestId())
                 .email(order.getBuyerEmail())
-                .orderedAt(order.getOrderedAt())
                 .totalPrice(order.getTotalAmount())
                 .build();
     }
