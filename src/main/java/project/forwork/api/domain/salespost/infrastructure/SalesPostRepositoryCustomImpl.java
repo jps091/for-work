@@ -23,6 +23,7 @@ import project.forwork.api.domain.salespost.infrastructure.enums.LevelCond;
 import project.forwork.api.domain.salespost.infrastructure.enums.SalesPostSortType;
 import project.forwork.api.domain.salespost.infrastructure.enums.SalesStatus;
 import project.forwork.api.domain.salespost.service.port.SalesPostRepositoryCustom;
+import project.forwork.api.domain.thumbnailimage.infrastructure.QThumbnailImageEntity;
 
 import java.math.BigDecimal;
 import java.util.Collections;
@@ -31,6 +32,7 @@ import java.util.Objects;
 
 import static project.forwork.api.domain.resume.infrastructure.QResumeEntity.*;
 import static project.forwork.api.domain.salespost.infrastructure.QSalesPostEntity.*;
+import static project.forwork.api.domain.thumbnailimage.infrastructure.QThumbnailImageEntity.*;
 
 @Repository
 public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom {
@@ -55,7 +57,7 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
                         salesPostEntity.id.as("id"),
                         salesPostEntity.title.as("title"),
                         resumeEntity.price.as("price"),
-                        //thumbnailImageEntity.url, TODO 썸네일
+                        thumbnailImageEntity.url.as("thumbnailImageUrl"),
                         salesPostEntity.viewCount.as("viewCount"),
                         resumeEntity.descriptionImageUrl.as("descriptionImageUrl"),
                         resumeEntity.description.as("description"),
@@ -65,7 +67,7 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
                         salesPostEntity.registeredAt.as("registeredAt")))
                 .from(salesPostEntity)
                 .join(salesPostEntity.resumeEntity, resumeEntity)
-                //.join(salesPostEntity.thumbnailImageEntity, thumbnailImageEntity) // 썸네일
+                .join(salesPostEntity.thumbnailImageEntity, thumbnailImageEntity)
                 .where(
                         salesPostEntity.id.eq(salesPostId),
                         resumeEntity.resumeStatus.eq(ResumeStatus.ACTIVE),
@@ -99,7 +101,7 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
                         salesPostEntity.id.as("id"),
                         salesPostEntity.title.as("title"),
                         resumeEntity.price.as("price"),
-                        //thumbnailImageEntity.url, TODO 썸네일
+                        thumbnailImageEntity.url.as("thumbnailImageUrl"),
                         salesPostEntity.viewCount.as("viewCount"),
                         salesPostEntity.salesQuantity.as("salesQuantity"),
                         resumeEntity.fieldType.as("field"),
@@ -108,7 +110,7 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
                         salesPostEntity.registeredAt.as("registeredAt")))
                 .from(salesPostEntity)
                 .join(salesPostEntity.resumeEntity, resumeEntity)
-                //.join(salesPostEntity.thumbnailImageEntity, thumbnailImageEntity) // 썸네일
+                .join(salesPostEntity.thumbnailImageEntity, thumbnailImageEntity)
                 .where(
                         priceRangeCond(cond.getMinPrice(), cond.getMaxPrice()),
                         fieldEqual(cond.getField()),
@@ -127,7 +129,7 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
                         salesPostEntity.id.as("id"),
                         salesPostEntity.title.as("title"),
                         resumeEntity.price.as("price"),
-                        //thumbnailImageEntity.url, TODO 썸네일
+                        thumbnailImageEntity.url.as("thumbnailImageUrl"),
                         salesPostEntity.viewCount.as("viewCount"),
                         salesPostEntity.salesQuantity.as("salesQuantity"),
                         resumeEntity.fieldType.as("field"),
@@ -136,7 +138,7 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
                         salesPostEntity.registeredAt.as("registeredAt")))
                 .from(salesPostEntity)
                 .join(salesPostEntity.resumeEntity, resumeEntity)
-                //.join(salesPostEntity.thumbnailImageEntity, thumbnailImageEntity) // 썸네일
+                .join(salesPostEntity.thumbnailImageEntity, thumbnailImageEntity)
                 .where(
                         priceRangeCond(cond.getMinPrice(), cond.getMaxPrice()),
                         fieldEqual(cond.getField()),
@@ -158,7 +160,7 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
                         salesPostEntity.id.as("id"),
                         salesPostEntity.title.as("title"),
                         resumeEntity.price.as("price"),
-                        //thumbnailImageEntity.url, TODO 썸네일
+                        thumbnailImageEntity.url.as("thumbnailImageUrl"),
                         salesPostEntity.viewCount.as("viewCount"),
                         salesPostEntity.salesQuantity.as("salesQuantity"),
                         resumeEntity.fieldType.as("field"),
@@ -167,7 +169,7 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
                         salesPostEntity.registeredAt.as("registeredAt")))
                 .from(salesPostEntity)
                 .join(salesPostEntity.resumeEntity, resumeEntity)
-                //.join(salesPostEntity.thumbnailImageEntity, thumbnailImageEntity) // 썸네일
+                .join(salesPostEntity.thumbnailImageEntity, thumbnailImageEntity)
                 .where(salesPostEntity.id.lt(lastId).
                                 and(salesPostEntity.salesStatus.eq(SalesStatus.SELLING)),
                         priceRangeCond(cond.getMinPrice(), cond.getMaxPrice()),
@@ -186,7 +188,7 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
                         salesPostEntity.id.as("id"),
                         salesPostEntity.title.as("title"),
                         resumeEntity.price.as("price"),
-                        //thumbnailImageEntity.url, TODO 썸네일
+                        thumbnailImageEntity.url.as("thumbnailImageUrl"),
                         salesPostEntity.viewCount.as("viewCount"),
                         salesPostEntity.salesQuantity.as("salesQuantity"),
                         resumeEntity.fieldType.as("field"),
@@ -195,7 +197,7 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
                         salesPostEntity.registeredAt.as("registeredAt")))
                 .from(salesPostEntity)
                 .join(salesPostEntity.resumeEntity, resumeEntity)
-                //.join(salesPostEntity.thumbnailImageEntity, thumbnailImageEntity) // 썸네일
+                .join(salesPostEntity.thumbnailImageEntity, thumbnailImageEntity)
                 .where(salesPostEntity.id.gt(lastId).
                                 and(salesPostEntity.salesStatus.eq(SalesStatus.SELLING)),
                         priceRangeCond(cond.getMinPrice(), cond.getMaxPrice()),

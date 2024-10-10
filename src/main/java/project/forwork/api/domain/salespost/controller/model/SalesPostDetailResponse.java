@@ -19,7 +19,7 @@ public class SalesPostDetailResponse {
     private Long id;
     private String title;
     private BigDecimal price;
-    //private String thumbnailUrl; TODO 썸네일
+    private String thumbnailImageUrl;
     private String descriptionImageUrl;
     private String description;
     private Integer viewCount;

@@ -13,11 +13,10 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SalesPostResponse {
-
     private Long id;
     private String title;
     private BigDecimal price;
-    //private String thumbnailUrl; TODO 썸네일
+    private String thumbnailImageUrl;
     private Integer salesQuantity;
     private Integer viewCount;
     private FieldType field;

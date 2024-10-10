@@ -35,6 +35,11 @@ public class PgTestController {
         return "order";
     }
 
+    @GetMapping("/open-api/home")
+    public String home() {
+        return "home";
+    }
+
     @GetMapping("/open-api/order-requested")
     public String orderRequested() {
         return "order-requested";

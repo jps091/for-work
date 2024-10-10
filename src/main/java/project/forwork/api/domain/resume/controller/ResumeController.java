@@ -4,15 +4,15 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import project.forwork.api.common.annotation.Current;
 import project.forwork.api.common.api.Api;
-import project.forwork.api.domain.resume.controller.model.ResumeModifyRequest;
-import project.forwork.api.domain.resume.controller.model.ResumeRegisterRequest;
-import project.forwork.api.domain.resume.controller.model.ResumeDetailResponse;
-import project.forwork.api.domain.resume.controller.model.ResumeResponse;
+import project.forwork.api.domain.resume.controller.model.*;
 import project.forwork.api.domain.resume.model.Resume;
 import project.forwork.api.domain.resume.service.ResumeService;
 import project.forwork.api.common.domain.CurrentUser;
@@ -29,18 +29,19 @@ public class ResumeController {
 
     @Operation(summary = "Resume 생성", description = "Resume 생성")
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping("/register")
+    @PostMapping(value = "/register", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public Api<ResumeDetailResponse> register(
             @Parameter(hidden = true) @Current CurrentUser currentUser,
-            @Valid @RequestBody ResumeRegisterRequest resumeRegisterRequest
+            @RequestPart("resumeData") @Valid ResumeRegisterRequest resumeRegisterBody,
+            @RequestPart("descriptionImage") @Valid @NotNull MultipartFile file
     ){
-        Resume resume = resumeService.register(currentUser, resumeRegisterRequest);
+        Resume resume = resumeService.register(currentUser, resumeRegisterBody, file);
         return Api.CREATED(ResumeDetailResponse.from(resume));
     }
 
 
     @Operation(summary = "Resume 삭제 API", description = "ResumeId 입력")
-    @DeleteMapping("{resumeId}")
+    @DeleteMapping("/{resumeId}")
     public Api<String> delete(
             @Parameter(description = "삭제할 Resume ID", required = true, example = "1")
             @PathVariable Long resumeId,
@@ -52,19 +53,20 @@ public class ResumeController {
 
     @Operation(summary = "Resume 수정 API",
             description = "Resume 수정시 상태가 PENDING 으로 변경 / 만약 판매글도 존재 할시 판매글 상태 CANCEL 으로 변경")
-    @PutMapping("{resumeId}")
+    @PutMapping(value = "/{resumeId}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public Api<String> modifyIfPending(
             @Parameter(description = "수정할 Resume ID", required = true, example = "1")
             @PathVariable Long resumeId,
             @Parameter(hidden = true) @Current CurrentUser currentUser,
-            @Valid @RequestBody ResumeModifyRequest resumeModifyRequest
+            @RequestPart("resumeData") @Valid ResumeModifyRequest body,
+            @RequestPart("descriptionImage") @Valid @NotNull MultipartFile file
     ){
-        resumeService.modify(resumeId, currentUser, resumeModifyRequest);
+        resumeService.modify(resumeId, currentUser, body, file);
         return Api.OK("Resume 변경 완료 되었습니다.");
     }
 
     @Operation(summary = "자신의 Resume 단건 조회 API", description = "로그인한 회원의 전체 Resume 조회")
-    @GetMapping("{resumeId}")
+    @GetMapping("/{resumeId}")
     public Api<ResumeDetailResponse> retrieve(
             @Parameter(hidden = true) @Current CurrentUser currentUser,
             @PathVariable Long resumeId

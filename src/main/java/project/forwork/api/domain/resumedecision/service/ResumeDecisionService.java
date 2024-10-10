@@ -13,6 +13,8 @@ import project.forwork.api.common.domain.CurrentUser;
 import project.forwork.api.domain.salespost.infrastructure.enums.SalesStatus;
 import project.forwork.api.domain.salespost.model.SalesPost;
 import project.forwork.api.domain.salespost.service.port.SalesPostRepository;
+import project.forwork.api.domain.thumbnailimage.model.ThumbnailImage;
+import project.forwork.api.domain.thumbnailimage.service.port.ThumbnailImageRepository;
 import project.forwork.api.domain.user.model.User;
 import project.forwork.api.domain.user.service.port.UserRepository;
 
@@ -26,6 +28,7 @@ public class  ResumeDecisionService {
     private final SalesPostRepository salesPostRepository;
     private final ResumeRepository resumeRepository;
     private final UserRepository userRepository;
+    private final ThumbnailImageRepository thumbnailImageRepository;
 
     public void approve(CurrentUser currentUser, Long resumeId){
         User admin = userRepository.getByIdWithThrow(currentUser.getId());
@@ -33,6 +36,8 @@ public class  ResumeDecisionService {
         Resume resume = resumeRepository.getByIdWithThrow(resumeId);
         resume = resume.updateStatus(ResumeStatus.ACTIVE);
         Resume newResume = resumeRepository.save(resume);
+
+        ThumbnailImage thumbnailImage = thumbnailImageRepository.getByFieldType(newResume.getField());
 
         ResumeDecision resumeDecision = ResumeDecision.approve(admin, resume);
         resumeDecisionRepository.save(resumeDecision);
@@ -45,7 +50,7 @@ public class  ResumeDecisionService {
                 },
                 () -> {
                     // 새로운 SalesPost 생성 후 저장
-                    SalesPost newSalesPost = SalesPost.create(newResume);
+                    SalesPost newSalesPost = SalesPost.create(newResume, thumbnailImage);
                     salesPostRepository.save(newSalesPost);
                 }
         );

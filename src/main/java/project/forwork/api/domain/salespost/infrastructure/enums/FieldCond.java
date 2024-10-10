@@ -16,7 +16,6 @@ public enum FieldCond {
     IOS("IOS", FieldType.IOS),
     DEVOPS("인프라", FieldType.DEVOPS),
     AI("인공지능", FieldType.AI),
-    ETC("기타", FieldType.ETC),
     UNSELECTED("조건X", null)
     ;
 

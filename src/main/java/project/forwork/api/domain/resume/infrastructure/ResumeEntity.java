@@ -61,7 +61,7 @@ public class ResumeEntity extends BaseTimeEntity {
         resumeEntity.fieldType = resume.getField();
         resumeEntity.levelType = resume.getLevel();
         resumeEntity.resumeUrl = resume.getResumeUrl();
-        resumeEntity.descriptionImageUrl = resume.getResumeUrl();
+        resumeEntity.descriptionImageUrl = resume.getDescriptionImageUrl();
         resumeEntity.price = resume.getPrice();
         resumeEntity.description = resume.getDescription();
         resumeEntity.resumeStatus = resume.getStatus();
