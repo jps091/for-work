@@ -24,7 +24,7 @@ public class SalesPostController {
 
     private final SalesPostService salesPostService;
 
-    @Operation(summary = "자신의 판매글 조회 ", description = "판매량, 판매수량도 같이 볼수 있다.")
+    @Operation(summary = "자신의 판매글 목록 조회 ", description = "판매량, 판매수량도 같이 볼수 있다.")
     @GetMapping
     public Api<List<SalesPostSellerResponse>> find(
             @Parameter(hidden = true) @Current CurrentUser currentUser

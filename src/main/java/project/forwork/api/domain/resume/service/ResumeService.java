@@ -4,8 +4,11 @@ import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import project.forwork.api.common.error.ResumeErrorCode;
 import project.forwork.api.common.exception.ApiException;
+import project.forwork.api.common.service.S3Service;
 import project.forwork.api.domain.resume.controller.model.*;
 import project.forwork.api.domain.resume.infrastructure.enums.PageStep;
 import project.forwork.api.domain.resume.infrastructure.enums.PeriodCond;
@@ -27,6 +30,7 @@ import java.util.List;
 @Service
 @Builder
 @Slf4j
+@Transactional
 @RequiredArgsConstructor
 public class ResumeService {
 
@@ -35,25 +39,31 @@ public class ResumeService {
     private final ResumeRepositoryCustom resumeRepositoryCustom;
     private final UserRepository userRepository;
     private final SalesPostRepository salesPostRepository;
+    private final S3Service s3Service;
 
-    public Resume register(CurrentUser currentUser, ResumeRegisterRequest body){
+    public Resume register(CurrentUser currentUser, ResumeRegisterRequest body, MultipartFile file){
         User user = userRepository.getByIdWithThrow(currentUser.getId());
-        Resume resume = Resume.from(user, body);
+        //String descriptionUrl = s3Service.saveFile(file); //TODO 배포시 주석 해제
+        String descriptionUrl = "www.test123.com"; // 배포시 삭제 TEST용
+
+        Resume resume = Resume.from(user, body, descriptionUrl);
         resume =  resumeRepository.save(resume);
         return resume;
     }
 
     public void modify(
-            Long resumeId,
-            CurrentUser currentUser,
-            ResumeModifyRequest body
+            Long resumeId, CurrentUser currentUser,
+            ResumeModifyRequest body, MultipartFile file
     ){
         Resume resume = resumeRepository.getByIdWithThrow(resumeId);
         validateAuthor(currentUser, resume);
+        //String descriptionUrl = s3Service.saveFile(file); //TODO 배포시 주석 해제
+        String descriptionUrl = "www.test123.com"; // 배포시 삭제 TEST용
 
-        resume = resume.modify(body);
+        resume = resume.modify(body, descriptionUrl);
         resumeRepository.save(resume);
 
+        // 만약 이미 승인을 받아서 판매글이 있다면 판매글 상태 변경
         salesPostRepository.findByResume(resume).ifPresent(salesPost -> {
             salesPost = salesPost.changeStatus(SalesStatus.CANCELED);
             salesPostRepository.save(salesPost);
@@ -72,9 +82,11 @@ public class ResumeService {
         Resume resume = resumeRepository.getByIdWithThrow(resumeId);
         validateAuthor(currentUser, resume);
 
+        s3Service.deleteFile(resume.getResumeUrl());
         resumeRepository.delete(resume);
     }
 
+    @Transactional(readOnly = true)
     public Resume getByIdWithThrow(CurrentUser currentUser, Long resumeId){
         Resume resume = resumeRepository.getByIdWithThrow(resumeId);
 
@@ -95,6 +107,7 @@ public class ResumeService {
         };
     }
 
+    @Transactional(readOnly = true)
     public ResumePage findFirstPage(
             PeriodCond periodCond, ResumeStatus status, int limit
     ){
@@ -102,6 +115,7 @@ public class ResumeService {
         return createResumePage(results);
     }
 
+    @Transactional(readOnly = true)
     public ResumePage findLastPage(
             PeriodCond periodCond, ResumeStatus status, int limit
     ){
@@ -109,6 +123,7 @@ public class ResumeService {
         return createResumePage(results);
     }
 
+    @Transactional(readOnly = true)
     public ResumePage findNextPage(
             PeriodCond periodCond, ResumeStatus status,
             LocalDateTime lastModifiedAt, Long lastId, int limit
@@ -117,6 +132,7 @@ public class ResumeService {
         return createResumePage(results);
     }
 
+    @Transactional(readOnly = true)
     public ResumePage findPreviousPage(
             PeriodCond periodCond, ResumeStatus status,
             LocalDateTime lastModifiedAt, Long lastId, int limit

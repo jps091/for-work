@@ -35,33 +35,33 @@ public class Resume {
     private final LocalDateTime modifiedAt;
 
 
-    public static Resume from(User user, ResumeRegisterRequest body){
+    public static Resume from(User user, ResumeRegisterRequest body, String descriptionUrl){
         validPrice(body.getPrice());
         return Resume.builder()
                 .seller(user)
                 .field(body.getField())
                 .level(body.getLevel())
-                //.resumeUrl(resumeRegisterRequest.getResumeUrl()) TODO Test
-                //.descriptionImageUrl(resumeRegisterRequest.getdescriptionImageUrl())
-                .resumeUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
-                .descriptionImageUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
+                .resumeUrl(body.getResumeUrl())
+                .descriptionImageUrl(descriptionUrl)
+                //.resumeUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")TODO Test
+                //.descriptionImageUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
                 .price(body.getPrice())
                 .description(body.getDescription())
                 .status(ResumeStatus.PENDING)
                 .build();
     }
 
-    public Resume modify(ResumeModifyRequest body){
+    public Resume modify(ResumeModifyRequest body, String descriptionUrl){
         validPrice(body.getPrice());
         return Resume.builder()
                 .id(id)
                 .seller(seller)
                 .field(body.getField())
                 .level(body.getLevel())
-                //.resumeUrl(request.getResumeUrl()) TODO Test
-                //.descriptionImageUrl(request.getdescriptionImageUrl())
-                .resumeUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
-                .descriptionImageUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
+                .resumeUrl(body.getResumeUrl())
+                .descriptionImageUrl(descriptionUrl)
+                //.resumeUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")TODO Test
+                //.descriptionImageUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
                 .price(body.getPrice())
                 .description(body.getDescription())
                 .status(ResumeStatus.PENDING)
@@ -74,10 +74,8 @@ public class Resume {
                 .seller(seller)
                 .field(field)
                 .level(level)
-                //.resumeUrl(request.getResumeUrl()) TODO Test
-                //.descriptionImageUrl(request.getdescriptionImageUrl())
-                .resumeUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
-                .descriptionImageUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
+                .resumeUrl(resumeUrl)
+                .descriptionImageUrl(descriptionImageUrl)
                 .price(price)
                 .description(description)
                 .status(status)

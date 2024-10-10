@@ -167,7 +167,7 @@ class ResumeServiceTest {
                 .field(FieldType.AI)
                 .level(LevelType.NEW)
                 .resumeUrl("www.naver.com")
-                .descriptionImageUrl("www.google.com")
+                .descriptionImage("www.google.com")
                 .price(new BigDecimal("70000.00"))
                 .description("test resume")
                 .build();
@@ -191,7 +191,7 @@ class ResumeServiceTest {
                 .field(FieldType.AI)
                 .level(LevelType.NEW)
                 .resumeUrl("www.naver.com")
-                .descriptionImageUrl("www.google.com")
+                .descriptionImage("www.google.com")
                 .price(new BigDecimal("150000.00"))
                 .description("test resume")
                 .build();
@@ -212,7 +212,7 @@ class ResumeServiceTest {
                 .field(FieldType.DEVOPS)
                 .level(LevelType.SENIOR)
                 .resumeUrl("www.naver.com")
-                .descriptionImageUrl("www.google.com")
+                .descriptionImage("www.google.com")
                 .price(new BigDecimal("70000.00"))
                 .description("test resume")
                 .build();
@@ -236,7 +236,7 @@ class ResumeServiceTest {
                 .field(FieldType.DEVOPS)
                 .level(LevelType.SENIOR)
                 .resumeUrl("www.naver.com")
-                .descriptionImageUrl("www.google.com")
+                .descriptionImage("www.google.com")
                 .price(new BigDecimal("70000.00"))
                 .description("test resume")
                 .build();
@@ -260,7 +260,7 @@ class ResumeServiceTest {
                 .field(FieldType.DEVOPS)
                 .level(LevelType.SENIOR)
                 .resumeUrl("www.naver.com")
-                .descriptionImageUrl("www.google.com")
+                .descriptionImage("www.google.com")
                 .price(new BigDecimal("70000.00"))
                 .description("test resume")
                 .build();

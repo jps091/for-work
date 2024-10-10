@@ -47,7 +47,7 @@ public class SalesPostEntity extends BaseTimeEntity {
         salesPostEntity.id = salesPost.getId();
         salesPostEntity.resumeEntity = ResumeEntity.from(salesPost.getResume());
         salesPostEntity.title = salesPost.getTitle();
-        //salesPostEntity.thumbnailImageEntity = ThumbnailImageEntity.from(salesPost.getThumbnailImage()); TODO 썸네일 등록
+        salesPostEntity.thumbnailImageEntity = ThumbnailImageEntity.from(salesPost.getThumbnailImage());
         salesPostEntity.salesStatus = salesPost.getSalesStatus();
         salesPostEntity.salesQuantity = salesPost.getSalesQuantity();
         salesPostEntity.viewCount = salesPost.getViewCount();
@@ -59,7 +59,7 @@ public class SalesPostEntity extends BaseTimeEntity {
                 .id(id)
                 .resume(resumeEntity.toModel())
                 .title(title)
-                //.thumbnailImage(thumbnailImageEntity.toModel())
+                .thumbnailImage(thumbnailImageEntity.toModel())
                 .salesStatus(salesStatus)
                 .salesQuantity(salesQuantity)
                 .viewCount(viewCount)
