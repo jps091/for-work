@@ -51,13 +51,6 @@ public class FakeOrderResumeRepository implements OrderResumeRepository {
     }
 
     @Override
-    public List<OrderResume> findByIds(List<Long> orderResumeIds) {
-        return data.stream()
-                .filter(orderResume -> orderResumeIds.contains(orderResume.getId()))
-                .toList();
-    }
-
-    @Override
     public List<OrderResume> findByStatusAndOrder(OrderResumeStatus status, Order order) {
         return data.stream()
                 .filter(orderResume -> Objects.equals(orderResume.getOrder().getId(), order.getId()) &&
@@ -74,6 +67,15 @@ public class FakeOrderResumeRepository implements OrderResumeRepository {
         return data.stream()
                 .filter(orderResume -> orderIds.contains(orderResume.getOrder().getId()) &&
                         Objects.equals(orderResume.getStatus(), OrderResumeStatus.ORDERED))
+                .toList();
+    }
+
+    @Override
+    public List<OrderResume> findByOrderIdAndStatus(List<Long> orderResumeIds, Long orderId, OrderResumeStatus status) {
+        return data.stream()
+                .filter(orderResume -> orderResumeIds.contains(orderResume.getId()) &&
+                        Objects.equals(orderResume.getOrder().getId(), orderId) &&
+                        Objects.equals(orderResume.getStatus(), status))
                 .toList();
     }
 }

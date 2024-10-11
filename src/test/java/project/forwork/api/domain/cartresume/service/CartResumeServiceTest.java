@@ -28,11 +28,12 @@ import static org.assertj.core.api.Assertions.*;
 class CartResumeServiceTest {
 
     private CartResumeService cartResumeService;
+    private FakeCartResumeRepository fakeCartResumeRepository;
 
     @BeforeEach
     void init(){
         FakeSalesPostRepository fakeSalesPostRepository = new FakeSalesPostRepository();
-        FakeCartResumeRepository fakeCartResumeRepository = new FakeCartResumeRepository();
+        fakeCartResumeRepository = new FakeCartResumeRepository();
         FakeCartRepository fakeCartRepository = new FakeCartRepository();
         this.cartResumeService = CartResumeService.builder()
                 .cartResumeRepository(fakeCartResumeRepository)
@@ -52,14 +53,6 @@ class CartResumeServiceTest {
                 .id(2L)
                 .email("user2@naver.com")
                 .name("user2")
-                .password("123")
-                .roleType(RoleType.USER)
-                .build();
-
-        User user3 = User.builder()
-                .id(3L)
-                .email("user3@naver.com")
-                .name("user3")
                 .password("123")
                 .roleType(RoleType.USER)
                 .build();
@@ -88,6 +81,18 @@ class CartResumeServiceTest {
                 .status(ResumeStatus.ACTIVE)
                 .build();
 
+        Resume resume3 = Resume.builder()
+                .id(2L)
+                .seller(user2)
+                .field(FieldType.ANDROID)
+                .level(LevelType.JUNIOR)
+                .resumeUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
+                .descriptionImageUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
+                .price(new BigDecimal("59000.00"))
+                .description("test resume3")
+                .status(ResumeStatus.ACTIVE)
+                .build();
+
 
         SalesPost salesPost1 = SalesPost.builder()
                 .id(1L)
@@ -102,6 +107,15 @@ class CartResumeServiceTest {
                 .id(2L)
                 .resume(resume2)
                 .title(resume2.createSalesPostTitle())
+                .salesStatus(SalesStatus.SELLING)
+                .salesQuantity(30)
+                .viewCount(0)
+                .build();
+
+        SalesPost salesPost3 = SalesPost.builder()
+                .id(3L)
+                .resume(resume3)
+                .title(resume3.createSalesPostTitle())
                 .salesStatus(SalesStatus.CANCELED)
                 .salesQuantity(30)
                 .viewCount(0)
@@ -109,6 +123,7 @@ class CartResumeServiceTest {
 
         fakeSalesPostRepository.save(salesPost1);
         fakeSalesPostRepository.save(salesPost2);
+        fakeSalesPostRepository.save(salesPost3);
 
         Cart cart1 = Cart.builder()
                 .id(1L)
@@ -147,11 +162,23 @@ class CartResumeServiceTest {
                 .build();
 
         //when(상황발생)
-        CartResume cartResume = cartResumeService.register(currentUser, 2L);
+        CartResume cartResume = cartResumeService.register(currentUser, 1L);
 
         //then(검증)
         assertThat(cartResume.getId()).isNotNull();
-        assertThat(cartResume.getResume().getId()).isEqualTo(2L);
+        assertThat(cartResume.getResume().getId()).isEqualTo(1L);
+    }
+
+    @Test
+    void 판매중이_아닌_이력서는_장바구니에_이력서를_담을_수_없다(){
+        //given(상황환경 세팅)
+        CurrentUser currentUser = CurrentUser.builder()
+                .id(2L)
+                .build();
+
+        //when(상황발생)
+        assertThatThrownBy(() -> cartResumeService.register(currentUser, 3L))
+                .isInstanceOf(ApiException.class);
     }
 
     @Test
@@ -169,7 +196,7 @@ class CartResumeServiceTest {
 
     @ParameterizedTest
     @ValueSource(longs = {1L, 2L})
-    void 장바구니에서_선택한_이력서를_삭제_할_수_있다(long resumeId){
+    void 장바구니에서_선택한_이력서를_삭제_하고_다시_담을_수_있다(long resumeId){
         //given(상황환경 세팅)
         CurrentUser currentUser = CurrentUser.builder()
                 .id(1L)
@@ -179,6 +206,9 @@ class CartResumeServiceTest {
         cartResumeService.deleteBySelected(currentUser, List.of(1L, 2L));
 
         //then(검증)
+        List<CartResume> allInCart = fakeCartResumeRepository.findAllInCart(currentUser.getId());
+        assertThat(allInCart.size()).isZero();
+
         assertThatCode(() -> cartResumeService.register(currentUser, resumeId))
                 .doesNotThrowAnyException();
     }
