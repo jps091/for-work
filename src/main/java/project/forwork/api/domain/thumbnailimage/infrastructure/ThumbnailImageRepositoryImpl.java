@@ -17,7 +17,7 @@ public class ThumbnailImageRepositoryImpl implements ThumbnailImageRepository {
     private final ThumbnailImageJpaRepository thumbnailImageJpaRepository;
 
     @Override
-    public void save(List<ThumbnailImage> thumbnailImages) {
+    public void saveAll(List<ThumbnailImage> thumbnailImages) {
         List<ThumbnailImageEntity> thumbnailImageEntities = thumbnailImages.stream()
                 .map(ThumbnailImageEntity::from).toList();
         thumbnailImageJpaRepository.saveAll(thumbnailImageEntities);

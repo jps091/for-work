@@ -28,7 +28,6 @@ public interface CartResumeJpaRepository extends JpaRepository<CartResumeEntity,
             " where cr.id IN :cartResumeIds")
     List<CartResumeEntity> findBySelected(@Param("cartResumeIds") List<Long> cartResumeIds);
 
-
     @Query("select cr from CartResumeEntity cr" +
             " join fetch cr.cartEntity c" +
             " join fetch c.userEntity u" +

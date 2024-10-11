@@ -30,7 +30,7 @@ public class Order {
     private final OrderStatus status;
     private final LocalDateTime paidAt;
 
-    public static Order create(User user, Resume resume, String requestId, ClockHolder clockHolder){
+    public static Order create(User user, Resume resume, String requestId){
         return Order.builder()
                 .user(user)
                 .requestId(requestId)
@@ -39,7 +39,7 @@ public class Order {
                 .build();
     }
 
-    public static Order create(User user, List<CartResume> cartResumes, String requestId, ClockHolder clockHolder){
+    public static Order create(User user, List<CartResume> cartResumes, String requestId){
         BigDecimal totalPrice = cartResumes.stream()
                 .map(CartResume::getPrice)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -138,11 +138,5 @@ public class Order {
 
     public String getBuyerEmail(){
         return user.getEmail();
-    }
-
-    public BigDecimal getPartialCancelAmount(List<OrderResume> orderResumes){
-        return orderResumes.stream()
-                .map(OrderResume::getPrice)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 }

@@ -16,7 +16,7 @@ public class ThumbnailImageService {
     private final ThumbnailImageRepository thumbnailImageRepository;
     @Transactional
     public void register(){
-
+        // TODO 배포시 S3 url 최신화 필요
         ThumbnailImage aiV1 = createThumbnailImage(FieldType.AI, "https://for-work-730335533510.s3.ap-northeast-2.amazonaws.com/AI.png");
         ThumbnailImage androidV1 = createThumbnailImage(FieldType.ANDROID, "https://for-work-730335533510.s3.ap-northeast-2.amazonaws.com/ANDROID.png");
         ThumbnailImage backendV1 = createThumbnailImage(FieldType.BACKEND, "https://for-work-730335533510.s3.ap-northeast-2.amazonaws.com/BE.png");
@@ -26,7 +26,7 @@ public class ThumbnailImageService {
 
         List<ThumbnailImage> thumbnailImages = List.of(aiV1, androidV1, backendV1, devopsV1, frontendV1, iosV1);
 
-        thumbnailImageRepository.save(thumbnailImages);
+        thumbnailImageRepository.saveAll(thumbnailImages);
     }
 
     private ThumbnailImage createThumbnailImage(FieldType type, String s3Url){

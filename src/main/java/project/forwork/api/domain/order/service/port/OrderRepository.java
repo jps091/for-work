@@ -6,6 +6,9 @@ import project.forwork.api.domain.order.model.Order;
 import java.util.List;
 import java.util.Optional;
 
+/***
+ * index : 1. status 2. requestId
+ */
 public interface OrderRepository {
     Order save(Order order);
     void saveAll(List<Order> orders);

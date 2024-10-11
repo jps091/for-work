@@ -2,7 +2,6 @@ package project.forwork.api.domain.order.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.forwork.api.domain.order.infrastructure.enums.OrderStatus;
@@ -73,8 +72,7 @@ public class ResumeSendMailService {
 
     public void sendMailByOrderConfirm(OrderStatus updatedStatus, List<Order> orders) {
         if (updatedStatus.equals(OrderStatus.PARTIAL_CONFIRM) || updatedStatus.equals(OrderStatus.CONFIRM)) {
-            // 메일 발송 후 상태 업데이트
-            orderResumeService.sendMailForConfirmedOrders(orders);
+            orderResumeService.sendMailForAutoConfirmedOrder(orders);
         }
     }
 }
