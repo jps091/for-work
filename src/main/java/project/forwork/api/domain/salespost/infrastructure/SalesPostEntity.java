@@ -21,6 +21,9 @@ public class SalesPostEntity extends BaseTimeEntity {
     @Column(name = "sales_post_id")
     private Long id;
 
+    @Version
+    private Long version;
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "resume_id", nullable = false)
     private ResumeEntity resumeEntity;
@@ -51,6 +54,7 @@ public class SalesPostEntity extends BaseTimeEntity {
         salesPostEntity.salesStatus = salesPost.getSalesStatus();
         salesPostEntity.salesQuantity = salesPost.getSalesQuantity();
         salesPostEntity.viewCount = salesPost.getViewCount();
+        salesPostEntity.version = salesPost.getVersion();
         return salesPostEntity;
     }
 
@@ -64,6 +68,7 @@ public class SalesPostEntity extends BaseTimeEntity {
                 .salesQuantity(salesQuantity)
                 .viewCount(viewCount)
                 .registeredAt(getModifiedAt())
+                .version(version)
                 .build();
     }
 }

@@ -24,6 +24,7 @@ public class SalesPost {
     private final Integer salesQuantity;
     private final Integer viewCount;
     private final LocalDateTime registeredAt;
+    private final Long version;
 
     public static SalesPost create(Resume resume, ThumbnailImage thumbnailImage){
 
@@ -47,10 +48,27 @@ public class SalesPost {
                 .salesQuantity(salesQuantity)
                 .viewCount(viewCount)
                 .registeredAt(registeredAt)
+                .version(version)
+                .build();
+    }
+
+    public SalesPost increaseSalesQuantity(){
+        return SalesPost.builder()
+                .id(id)
+                .resume(resume)
+                .title(title)
+                .thumbnailImage(thumbnailImage)
+                .salesStatus(salesStatus)
+                .salesQuantity(salesQuantity + 1)
+                .viewCount(viewCount)
+                .registeredAt(registeredAt)
+                .version(version)
                 .build();
     }
 
     public SalesPost addViewCount(){
+        validStatusSelling(salesStatus);
+
         return SalesPost.builder()
                 .id(id)
                 .resume(resume)
@@ -60,13 +78,18 @@ public class SalesPost {
                 .salesQuantity(salesQuantity)
                 .viewCount(viewCount + 1)
                 .registeredAt(registeredAt)
+                .version(version)
                 .build();
     }
 
     public Resume getResumeIfSalesPostSelling(){
-        if(SalesStatus.CANCELED.equals(salesStatus)){
+        validStatusSelling(salesStatus);
+        return resume;
+    }
+
+    private void validStatusSelling(SalesStatus status) {
+        if (SalesStatus.CANCELED.equals(status)) {
             throw new ApiException(SalesPostErrorCode.NOT_SELLING);
         }
-        return resume;
     }
 }
