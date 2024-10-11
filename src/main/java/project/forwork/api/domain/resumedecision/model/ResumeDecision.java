@@ -2,6 +2,8 @@ package project.forwork.api.domain.resumedecision.model;
 
 import lombok.Builder;
 import lombok.Getter;
+import project.forwork.api.common.error.ResumeErrorCode;
+import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.domain.resume.model.Resume;
 import project.forwork.api.domain.resumedecision.infrastructure.enums.DecisionStatus;
 import project.forwork.api.domain.user.model.User;
@@ -25,6 +27,9 @@ public class ResumeDecision {
     }
 
     public static ResumeDecision approve(User admin, Resume resume){
+        if(admin.isAdminMismatch()){
+            throw new ApiException(ResumeErrorCode.ACCESS_NOT_PERMISSION);
+        }
         return ResumeDecision.builder()
                 .admin(admin)
                 .resume(resume)
@@ -33,6 +38,9 @@ public class ResumeDecision {
     }
 
     public static ResumeDecision deny(User admin, Resume resume){
+        if(admin.isAdminMismatch()){
+            throw new ApiException(ResumeErrorCode.ACCESS_NOT_PERMISSION);
+        }
         return ResumeDecision.builder()
                 .admin(admin)
                 .resume(resume)

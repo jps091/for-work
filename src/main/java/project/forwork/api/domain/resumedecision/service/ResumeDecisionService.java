@@ -1,5 +1,6 @@
 package project.forwork.api.domain.resumedecision.service;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -42,6 +43,10 @@ public class  ResumeDecisionService {
         ResumeDecision resumeDecision = ResumeDecision.approve(admin, resume);
         resumeDecisionRepository.save(resumeDecision);
 
+        registerSalesPost(newResume, thumbnailImage);
+    }
+
+    public void registerSalesPost(Resume newResume, ThumbnailImage thumbnailImage) {
         salesPostRepository.findByResume(newResume).ifPresentOrElse(
                 salesPost -> {
                     // 판매 상태를 SELLING으로 변경 후 저장

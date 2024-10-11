@@ -3,20 +3,20 @@ package project.forwork.api.domain.resumedecision.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import project.forwork.api.common.domain.CurrentUser;
+import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.common.infrastructure.enums.FieldType;
 import project.forwork.api.common.infrastructure.enums.LevelType;
 import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
 import project.forwork.api.domain.resume.model.Resume;
 import project.forwork.api.domain.salespost.infrastructure.enums.SalesStatus;
 import project.forwork.api.domain.salespost.model.SalesPost;
+import project.forwork.api.domain.thumbnailimage.model.ThumbnailImage;
 import project.forwork.api.domain.user.infrastructure.enums.RoleType;
 import project.forwork.api.domain.user.model.User;
-import project.forwork.api.mock.FakeResumeDecisionRepository;
-import project.forwork.api.mock.FakeResumeRepository;
-import project.forwork.api.mock.FakeSalesPostRepository;
-import project.forwork.api.mock.FakeUserRepository;
+import project.forwork.api.mock.*;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -26,6 +26,7 @@ class ResumeDecisionServiceTest {
     private FakeSalesPostRepository fakeSalesPostRepository;
     private FakeResumeDecisionRepository fakeResumeDecisionRepository;
     private  FakeResumeRepository fakeResumeRepository;
+    private FakeThumbnailImageRepository fakeThumbnailImageRepository;
 
     @BeforeEach
     void init(){
@@ -33,11 +34,13 @@ class ResumeDecisionServiceTest {
         fakeResumeRepository = new FakeResumeRepository();
         fakeResumeDecisionRepository = new FakeResumeDecisionRepository();
         fakeSalesPostRepository = new FakeSalesPostRepository();
-        this.resumeDecisionService = ResumeDecisionService.builder()
+        fakeThumbnailImageRepository = new FakeThumbnailImageRepository();
+        resumeDecisionService = ResumeDecisionService.builder()
                 .resumeRepository(fakeResumeRepository)
                 .userRepository(fakeUserRepository)
                 .resumeDecisionRepository(fakeResumeDecisionRepository)
                 .salesPostRepository(fakeSalesPostRepository)
+                .thumbnailImageRepository(fakeThumbnailImageRepository)
                 .build();
 
         User user1 = User.builder()
@@ -86,13 +89,26 @@ class ResumeDecisionServiceTest {
         fakeResumeRepository.save(resume1);
         fakeResumeRepository.save(resume2);
 
+        ThumbnailImage thumbnailImage1 = ThumbnailImage.builder()
+                .id(1L)
+                .url("www.test1.com")
+                .fieldType(FieldType.AI)
+                .build();
+        ThumbnailImage thumbnailImage2 = ThumbnailImage.builder()
+                .id(2L)
+                .url("www.test2.com")
+                .fieldType(FieldType.BACKEND)
+                .build();
+        fakeThumbnailImageRepository.saveAll(List.of(thumbnailImage1, thumbnailImage2));
+
 
         SalesPost salesPost = SalesPost.builder()
-                .id(2L)
-                .resume(resume2)
-                .title(resume2.createSalesPostTitle())
+                .id(1L)
+                .resume(resume1)
+                .title(resume1.createSalesPostTitle())
                 .salesStatus(SalesStatus.CANCELED)
                 .salesQuantity(30)
+                .thumbnailImage(thumbnailImage1)
                 .viewCount(0)
                 .build();
 
@@ -100,47 +116,45 @@ class ResumeDecisionServiceTest {
     }
 
     @Test
-    void 승인을_할_수_있다(){
+    void 일반_유저는_approve_를_할_수_없다(){
         //given(상황환경 세팅)
-        CurrentUser currentUser = CurrentUser.builder()
+        CurrentUser user = CurrentUser.builder()
                 .id(1L)
                 .build();
 
+        //when(상황발생)
+        //then(검증)
+        assertThatThrownBy(() -> resumeDecisionService.approve(user, 2L))
+                .isInstanceOf(ApiException.class);
+    }
+
+    @Test
+    void 어드민이_approve_를_하면_이력서_상태가_ACTIVE_로_변경_된다(){
+        //given(상황환경 세팅)
+        CurrentUser admin = CurrentUser.builder()
+                .id(3L)
+                .build();
+
+        //when(상황발생)
+        resumeDecisionService.approve(admin, 2L);
+
+        //then(검증)
+        Resume resume = fakeResumeRepository.getByIdWithThrow(2L);
+        assertThat(resume.getStatus()).isEqualTo(ResumeStatus.ACTIVE);
+    }
+
+    @Test
+    void CANCELED_상태인_판매글을_다시_APPROVE_하면_SELLING_으로_상태가_변경_된다(){
+        //given(상황환경 세팅)
         Resume resume = fakeResumeRepository.getByIdWithThrow(1L);
-
-        //when(상황발생)
-        //then(검증)
-        assertThatCode(() -> resumeDecisionService.approve(currentUser, resume.getId()))
-                .doesNotThrowAnyException();
-    }
-
-    @Test
-    void 승인을_했는데_판매글이_존재하지_않다면_판매글이_자동_생성_된다(){
-        //given(상황환경 세팅)
-        CurrentUser currentUser = CurrentUser.builder()
+        ThumbnailImage thumbnailImage1 = ThumbnailImage.builder()
                 .id(1L)
+                .url("www.test1.com")
+                .fieldType(FieldType.AI)
                 .build();
 
-        Resume resume = fakeResumeRepository.getByIdWithThrow(2L);
-
         //when(상황발생)
-        resumeDecisionService.approve(currentUser, resume.getId());
-
-        //then(검증)
-        assertThat(fakeSalesPostRepository.getByResumeWithThrow(resume).getId()).isNotNull();
-    }
-
-    @Test
-    void 승인을_했는데_이미_판매글이_존재한다면_판매글의_상태가_SELLING_으로_변경_된다(){
-        //given(상황환경 세팅)
-        CurrentUser currentUser = CurrentUser.builder()
-                .id(1L)
-                .build();
-
-        Resume resume = fakeResumeRepository.getByIdWithThrow(2L);
-
-        //when(상황발생)
-        resumeDecisionService.approve(currentUser, resume.getId());
+        resumeDecisionService.registerSalesPost(resume, thumbnailImage1);
         SalesPost salesPost = fakeSalesPostRepository.getByResumeWithThrow(resume);
 
         //then(검증)
@@ -148,15 +162,49 @@ class ResumeDecisionServiceTest {
     }
 
     @Test
-    void 거절을_할_수_있다(){
+    void 이력서를_APPROVE_했는데_판매글이_존재_하지_않는다면_SELLING_상태인_판매글이_자동_생성_된다(){
         //given(상황환경 세팅)
-        CurrentUser currentUser = CurrentUser.builder()
+        Resume resume = fakeResumeRepository.getByIdWithThrow(2L);
+        ThumbnailImage thumbnailImage2 = ThumbnailImage.builder()
+                .id(1L)
+                .url("www.test1.com")
+                .fieldType(FieldType.BACKEND)
+                .build();
+
+        //when(상황발생)
+        resumeDecisionService.registerSalesPost(resume, thumbnailImage2);
+        SalesPost salesPost = fakeSalesPostRepository.getByResumeWithThrow(resume);
+
+        //then(검증)
+        assertThat(salesPost.getSalesStatus()).isEqualTo(SalesStatus.SELLING);
+        assertThat(salesPost.getThumbnailImage()).isEqualTo(thumbnailImage2);
+    }
+
+    @Test
+    void 일반_유저는_deny_를_할_수_없다(){
+        //given(상황환경 세팅)
+        CurrentUser user = CurrentUser.builder()
                 .id(1L)
                 .build();
 
         //when(상황발생)
         //then(검증)
-        assertThatCode(() -> resumeDecisionService.deny(currentUser, 1L))
-                .doesNotThrowAnyException();
+        assertThatThrownBy(() -> resumeDecisionService.deny(user, 1L))
+                .isInstanceOf(ApiException.class);
+    }
+
+    @Test
+    void 어드민이_deny_를_하면_이력서_상태가_REJECTED_로_변경_된다(){
+        //given(상황환경 세팅)
+        CurrentUser admin = CurrentUser.builder()
+                .id(3L)
+                .build();
+
+        //when(상황발생)
+        resumeDecisionService.deny(admin, 1L);
+
+        //then(검증)
+        Resume resume = fakeResumeRepository.getByIdWithThrow(1L);
+        assertThat(resume.getStatus()).isEqualTo(ResumeStatus.REJECTED);
     }
 }
