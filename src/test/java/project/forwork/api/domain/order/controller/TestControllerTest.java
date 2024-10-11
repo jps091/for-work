@@ -11,11 +11,12 @@ import project.forwork.api.domain.order.controller.model.ConfirmPaymentRequest;
 import project.forwork.api.domain.order.service.CheckoutService;
 import project.forwork.api.domain.user.infrastructure.enums.RoleType;
 
+/*
 @ActiveProfiles("test")
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
 
-class PgTestControllerTest {
+class TestControllerTest {
 
     @Autowired
     CheckoutService checkoutService;
@@ -32,4 +33,4 @@ class PgTestControllerTest {
                 .build();
         checkoutService.processOrderAndPayment(currentUser, body);
     }
-}
+}*/

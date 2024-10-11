@@ -53,6 +53,15 @@ public class OrderResume {
                 .build();
     }
 
+    public OrderResume updateStatusConfirm(){
+        return OrderResume.builder()
+                .id(id)
+                .order(order)
+                .resume(resume)
+                .status(OrderResumeStatus.CONFIRM)
+                .build();
+    }
+
     public BigDecimal getPrice(){
         return resume.getPrice();
     }

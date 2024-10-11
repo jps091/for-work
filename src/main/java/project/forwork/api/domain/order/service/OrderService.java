@@ -79,7 +79,7 @@ public class OrderService {
         SalesPost salesPost = salesPostRepository.getByIdWithThrow(salesPostId);
         Resume resume = salesPost.getResume();
 
-        Order order = Order.create(user, resume, requestId, clockHolder);
+        Order order = Order.create(user, resume, requestId);
         order = orderRepository.save(order);
 
         OrderResume orderResume = OrderResume.create(order, resume);
@@ -103,7 +103,7 @@ public class OrderService {
             throw new ApiException(CartResumeErrorCode.RETRY_SELECT);
         }
 
-        Order order = Order.create(user, cartResumes, requestId, clockHolder);
+        Order order = Order.create(user, cartResumes, requestId);
         order = orderRepository.save(order);
 
         orderResumeService.registerByCartResume(order, cartResumes);

@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface ThumbnailImageRepository {
     ThumbnailImage getByFieldType(FieldType type);
-    void save(List<ThumbnailImage> thumbnailImages);
+    void saveAll(List<ThumbnailImage> thumbnailImages);
 }

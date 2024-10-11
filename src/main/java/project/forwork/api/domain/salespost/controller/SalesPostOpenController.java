@@ -28,7 +28,7 @@ public class SalesPostOpenController {
     public Api<SalesPostDetailResponse> retrieve(
             @PathVariable Long salesPostId
     ){
-        SalesPostDetailResponse salesPostResponse = salesPostService.getSellingPostWithThrow(salesPostId);
+        SalesPostDetailResponse salesPostResponse = salesPostService.getSellingPostWithPessimistic(salesPostId);
         return Api.OK(salesPostResponse);
     }
 

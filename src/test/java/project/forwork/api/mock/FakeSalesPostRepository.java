@@ -2,9 +2,7 @@ package project.forwork.api.mock;
 
 import project.forwork.api.common.error.SalesPostErrorCode;
 import project.forwork.api.common.exception.ApiException;
-import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
 import project.forwork.api.domain.resume.model.Resume;
-import project.forwork.api.domain.salespost.infrastructure.enums.SalesStatus;
 import project.forwork.api.domain.salespost.model.SalesPost;
 import project.forwork.api.domain.salespost.service.port.SalesPostRepository;
 
@@ -65,5 +63,30 @@ public class FakeSalesPostRepository implements SalesPostRepository {
         return data.stream()
                 .filter(s -> Objects.equals(s.getResume().getId(), resume.getId()))
                 .findAny();
+    }
+
+    @Override
+    public SalesPost getByIdWithPessimisticLock(Long salesPostId) {
+        return findById(salesPostId).orElseThrow(() -> new ApiException(SalesPostErrorCode.SALES_POST_NOT_FOUND));
+    }
+
+    @Override
+    public SalesPost getByIdWithOptimisticLock(Long salesPostId) {
+        return findById(salesPostId).orElseThrow(() -> new ApiException(SalesPostErrorCode.SALES_POST_NOT_FOUND));
+    }
+
+    @Override
+    public SalesPost getByResumeWithPessimisticLock(Long resumeId) {
+        return findById(resumeId).orElseThrow(() -> new ApiException(SalesPostErrorCode.SALES_POST_NOT_FOUND));
+    }
+
+    @Override
+    public SalesPost getByResumeWithOptimisticLock(Long resumeId) {
+        return findById(resumeId).orElseThrow(() -> new ApiException(SalesPostErrorCode.SALES_POST_NOT_FOUND));
+    }
+
+    @Override
+    public List<SalesPost> saveAll(List<SalesPost> salesPosts) {
+        return salesPosts.stream().map(this::save).toList();
     }
 }

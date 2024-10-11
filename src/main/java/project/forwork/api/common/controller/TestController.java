@@ -1,25 +1,32 @@
-package project.forwork.api.domain.order.controller;
+package project.forwork.api.common.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import project.forwork.api.common.annotation.Current;
 import project.forwork.api.common.api.Api;
 import project.forwork.api.common.domain.CurrentUser;
 import project.forwork.api.domain.order.controller.model.ConfirmPaymentRequest;
 import project.forwork.api.domain.order.model.Order;
 import project.forwork.api.domain.order.service.CheckoutService;
 import project.forwork.api.domain.order.service.port.OrderRepository;
+import project.forwork.api.domain.salespost.controller.model.SalesPostDetailResponse;
+import project.forwork.api.domain.salespost.service.SalesPostService;
 import project.forwork.api.domain.user.infrastructure.enums.RoleType;
 
 @Slf4j
 @Controller
 @RequiredArgsConstructor
-public class PgTestController {
+public class TestController {
     private final OrderRepository orderRepository;
     private final CheckoutService checkoutService;
+    private final SalesPostService salesPostService;
 
     @GetMapping("/open-api/order")
     @Transactional
@@ -50,8 +57,8 @@ public class PgTestController {
         return "fail";
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/open-api/confirm")
-    public Api<String> confirm(
+    @RequestMapping(method = RequestMethod.POST, value = "/test/confirm")
+    public ResponseEntity<String> confirm(
             @RequestBody ConfirmPaymentRequest body
     ){
         CurrentUser currentUser = CurrentUser.builder()
@@ -60,6 +67,22 @@ public class PgTestController {
                         .build();
         log.info("controller ConfirmRequest={}",body);
         checkoutService.processOrderAndPayment(currentUser, body);
-        return Api.OK("결제 승인 성공");
+        return new ResponseEntity<>("confirm", HttpStatus.OK);
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/test/pes")
+    public ResponseEntity<String> getSellingPostWithPessimistic(
+            @RequestParam("id") Long id
+    ){
+        SalesPostDetailResponse salesPostResponse = salesPostService.getSellingPostWithPessimistic(id);
+        return new ResponseEntity<>("getSellingPostWithPessimistic", HttpStatus.OK);
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/test/opt")
+    public ResponseEntity<String> getSellingPostWithOptimistic(
+            @RequestParam("id") Long id
+    ){
+        SalesPostDetailResponse salesPostResponse = salesPostService.getSellingPostWithOptimistic(id);
+        return new ResponseEntity<>("getSellingPostWithOptimistic", HttpStatus.OK);
     }
 }

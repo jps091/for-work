@@ -40,39 +40,41 @@ public class OrderResumeService {
     }
 
     public Order sendMailForConfirmedOrder(Long userId, Order order, List<Long> orderResumeIds){
-        // 주문에 존재하는 주문이력서
         List<OrderResume> orderResumes = orderResumeRepository.findByStatusAndOrder(OrderResumeStatus.ORDERED, order);
-
-        // 선택한 주문 이력서
-        List<OrderResume> filteredOrderResumes = orderResumes.stream()
-                .filter(orderResume -> orderResumeIds.contains(orderResume.getId()))
-                .toList();
-
-        List<OrderResume> confirmedOrderResumes = orderResumeRepository.saveAll(filteredOrderResumes);
-        confirmAndSendMail(order, confirmedOrderResumes);
-
+        List<OrderResume> confirmedOrderResumes = updateSelectedOrderResumes(orderResumes, orderResumeIds);
+        confirmNowSendMail(order, confirmedOrderResumes);
         OrderStatus updateOrderStatus = getOrderStatusCheckConfirm(orderResumes, confirmedOrderResumes);
         return order.confirmOrderNow(userId, updateOrderStatus);
     }
 
-    public void confirmAndSendMail(Order order, List<OrderResume> orderResumes){
+    public List<OrderResume> updateSelectedOrderResumes(List<OrderResume> orderResumes, List<Long> orderResumeIds){
+        List<OrderResume> filteredOrderResumes = orderResumes.stream()
+                .filter(orderResume -> orderResumeIds.contains(orderResume.getId()))
+                .map(OrderResume::updateStatusConfirm)
+                .toList();
+        return orderResumeRepository.saveAll(filteredOrderResumes);
+    }
+
+    public void confirmNowSendMail(Order order, List<OrderResume> orderResumes){ //
         sendPurchaseResumeService.sendNowPurchaseResume(order);
 
         orderResumes = orderResumes.stream()
                 .map(orderResume -> orderResume.updateStatusSend((clockHolder))).toList();
-        log.info("confirmAndSendMails");
         orderResumeRepository.saveAll(orderResumes);
     }
 
     // 자동 주문 확정에 대해
-    public void sendMailForConfirmedOrders(List<Order> orders){
+    public void sendMailForAutoConfirmedOrder(List<Order> orders){
         List<OrderResume> orderResumes = orderResumeRepository.findByStatusAndOrders(OrderResumeStatus.ORDERED, orders);
-        orderResumeRepository.saveAll(orderResumes);
+        List<OrderResume> filteredOrderResumes = orderResumes.stream()
+                .map(OrderResume::updateStatusConfirm)
+                .toList();
+        List<OrderResume> confirmedOrderResumes = orderResumeRepository.saveAll(filteredOrderResumes); // TODO 검증필요
+        confirmAutoSendMail(confirmedOrderResumes);
         log.info("sendMailForConfirmedOrders");
-        confirmAndSendMails(orderResumes);
     }
 
-    public void confirmAndSendMails(List<OrderResume> orderResumes){
+    public void confirmAutoSendMail(List<OrderResume> orderResumes){ //
         sendPurchaseResumeService.sendAllPurchaseResume();
 
         orderResumes = orderResumes.stream()
@@ -88,25 +90,21 @@ public class OrderResumeService {
         orderResumeRepository.saveAll(orderResumes);
     }
 
-    public List<OrderResume> getCancelRequestOrderResumes(List<Long> orderResumeIds, Long orderId){
-        List<OrderResume> orderResumes = orderResumeRepository.findByOrderIdAndStatus(orderResumeIds, orderId, OrderResumeStatus.ORDERED);
-        validSelected(orderResumeIds, orderResumes);
-
-        return orderResumes;
-    }
-
-    public List<OrderResume> updateCanceledOrderResumes(List<OrderResume> orderResumes){
+    public void updateCanceledOrderResumes(List<OrderResume> orderResumes){
 
         List<OrderResume> updateOrderResumes = orderResumes.stream()
                 .map(orderResume -> orderResume.updateStatusCancel(clockHolder))
                 .toList();
 
-        return orderResumeRepository.saveAll(updateOrderResumes);
+        orderResumeRepository.saveAll(updateOrderResumes);
     }
 
     @Transactional(readOnly = true)
-    public OrderResume getByIdWithThrow(Long orderResumeId){
-        return orderResumeRepository.getByIdWithThrow(orderResumeId);
+    public List<OrderResume> getCancelRequestOrderResumes(List<Long> orderResumeIds, Long orderId){
+        List<OrderResume> orderResumes = orderResumeRepository.findByOrderIdAndStatus(orderResumeIds, orderId, OrderResumeStatus.ORDERED);
+        validSelected(orderResumeIds, orderResumes);
+
+        return orderResumes;
     }
 
     @Transactional(readOnly = true)

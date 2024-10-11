@@ -25,7 +25,7 @@ public class FakeOrderRepository implements OrderRepository {
                     .user(order.getUser())
                     .totalAmount(order.getTotalAmount())
                     .status(OrderStatus.ORDERED)
-                    .orderedAt(order.getOrderedAt())
+                    .paidAt(order.getPaidAt())
                     .build();
             data.add(newOrder);
             return newOrder;

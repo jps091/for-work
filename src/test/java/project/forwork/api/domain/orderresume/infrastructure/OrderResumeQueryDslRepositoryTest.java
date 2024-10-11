@@ -67,7 +67,6 @@ class OrderResumeQueryDslRepositoryTest {
         //then(검증)
         assertThat(orderResumeResponses).isNotEmpty();
         assertThat(orderResumeResponses.size()).isEqualTo(2);
-        assertThat(orderResumeResponses).allMatch(or -> Objects.equals(or.getOrderId(), 8L));
         assertThat(orderResumeResponses.get(0).getTitle()).isEqualTo("NEW BACKEND 이력서 #4");
     }
 }

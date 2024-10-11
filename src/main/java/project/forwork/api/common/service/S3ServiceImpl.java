@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import project.forwork.api.common.controller.port.S3Service;
 import project.forwork.api.common.error.S3ErrorCode;
 import project.forwork.api.common.exception.ApiException;
 
@@ -18,36 +19,12 @@ import java.util.*;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class S3Service{
+public class S3ServiceImpl implements S3Service {
 
     private final AmazonS3 amazonS3;
-    private final Set<String> uploadFileNames = new HashSet<>();
-    private final Set<Long> uploadedFilesSizes = new HashSet<>();
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
-
-    @Value("${spring.servlet.multipart.max-file-size}")
-    private String maxSizeString;
-
-    //여러장의 파일 저장
-    public List<String> saveFiles(List<MultipartFile> multipartFiles){
-        List<String> uploadUrls = new ArrayList<>();
-
-        for (MultipartFile multipartFile : multipartFiles) {
-
-            if(isDuplicate(multipartFile)){
-                throw new ApiException(S3ErrorCode.ALREADY_REQUEST_IMAGE);
-            }
-
-            String uploadedUrl = saveFile(multipartFile);
-            uploadUrls.add(uploadedUrl);
-        }
-
-
-        clear();
-        return uploadUrls;
-    }
 
     public String saveFile(MultipartFile file){
         String randomFileName = generateRandomFileName(file);
@@ -105,25 +82,10 @@ public class S3Service{
         log.info("File delete complete: " + objectKey);
     }
 
-    private boolean isDuplicate(MultipartFile multipartFile){
-        String fileName = multipartFile.getOriginalFilename();
-        Long fileSize = multipartFile.getSize();
-
-        if(uploadFileNames.contains(fileName) && uploadedFilesSizes.contains(fileSize)){
-            return true;
-        }
-
-        uploadFileNames.add(fileName);
-        uploadedFilesSizes.add(fileSize);
-
-        return false;
-    }
-
     private String generateRandomFileName(MultipartFile multipartFile){
         String originalFilename = multipartFile.getOriginalFilename();
         String fileExtension = validateFileExtension(originalFilename);
-        String randomFileName = UUID.randomUUID() + "." + fileExtension;
-        return randomFileName;
+        return UUID.randomUUID() + "." + fileExtension;
     }
 
     private String validateFileExtension(String originFileName){
@@ -135,10 +97,5 @@ public class S3Service{
         }
 
         return fileExtension;
-    }
-
-    private void clear(){
-        uploadedFilesSizes.clear();
-        uploadFileNames.clear();
     }
 }

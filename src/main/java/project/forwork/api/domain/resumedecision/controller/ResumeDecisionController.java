@@ -8,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import project.forwork.api.common.annotation.Current;
 import project.forwork.api.common.api.Api;
-import project.forwork.api.domain.resumedecision.controller.model.ResumeDecisionResponse;
 import project.forwork.api.domain.resumedecision.service.ResumeDecisionService;
 import project.forwork.api.common.domain.CurrentUser;
 

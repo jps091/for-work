@@ -11,6 +11,7 @@ import project.forwork.api.domain.salespost.infrastructure.enums.SalesStatus;
 import project.forwork.api.domain.salespost.model.SalesPost;
 import project.forwork.api.domain.salespost.service.port.SalesPostRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -30,6 +31,34 @@ public class SalesPostRepositoryImpl implements SalesPostRepository {
     }
 
     @Override
+    public SalesPost getByIdWithPessimisticLock(Long salesPostId) {
+        return salesPostJpaRepository.findByIdWithPessimisticLock(salesPostId)
+                .orElseThrow(() -> new ApiException(SalesPostErrorCode.SALES_POST_NOT_FOUND))
+                .toModel();
+    }
+
+    @Override
+    public SalesPost getByIdWithOptimisticLock(Long salesPostId) {
+        return salesPostJpaRepository.findByIdWithOptimisticLock(salesPostId)
+                .orElseThrow(() -> new ApiException(SalesPostErrorCode.SALES_POST_NOT_FOUND))
+                .toModel();
+    }
+
+    @Override
+    public SalesPost getByResumeWithPessimisticLock(Long resumeId) {
+        return salesPostJpaRepository.findByResumeWithPessimisticLock(resumeId)
+                .orElseThrow(() -> new ApiException(SalesPostErrorCode.SALES_POST_NOT_FOUND))
+                .toModel();
+    }
+
+    @Override
+    public SalesPost getByResumeWithOptimisticLock(Long resumeId) {
+        return salesPostJpaRepository.findByResumeWithOptimisticLock(resumeId)
+                .orElseThrow(() -> new ApiException(SalesPostErrorCode.SALES_POST_NOT_FOUND))
+                .toModel();
+    }
+
+    @Override
     public Optional<SalesPost> findById(Long salesPostId) {
         return salesPostJpaRepository.findById(salesPostId).map(SalesPostEntity::toModel);
     }
@@ -44,5 +73,14 @@ public class SalesPostRepositoryImpl implements SalesPostRepository {
     @Override
     public Optional<SalesPost> findByResume(Resume resume) {
         return salesPostJpaRepository.findByResumeEntity(ResumeEntity.from(resume)).map(SalesPostEntity::toModel);
+    }
+
+    @Override
+    public List<SalesPost> saveAll(List<SalesPost> salesPosts) {
+        List<SalesPostEntity> salesPostEntities = salesPosts.stream()
+                .map(SalesPostEntity::from).toList();
+
+        return salesPostJpaRepository.saveAll(salesPostEntities).stream()
+                .map(SalesPostEntity::toModel).toList();
     }
 }

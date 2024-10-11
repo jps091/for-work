@@ -6,9 +6,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import project.forwork.api.common.controller.port.S3Service;
 import project.forwork.api.common.error.ResumeErrorCode;
 import project.forwork.api.common.exception.ApiException;
-import project.forwork.api.common.service.S3Service;
 import project.forwork.api.domain.resume.controller.model.*;
 import project.forwork.api.domain.resume.infrastructure.enums.PageStep;
 import project.forwork.api.domain.resume.infrastructure.enums.PeriodCond;
@@ -19,7 +19,6 @@ import project.forwork.api.common.domain.CurrentUser;
 import project.forwork.api.domain.resume.service.port.ResumeRepositoryCustom;
 import project.forwork.api.domain.resumedecision.service.port.ResumeDecisionRepository;
 import project.forwork.api.domain.salespost.infrastructure.enums.SalesStatus;
-import project.forwork.api.domain.salespost.model.SalesPost;
 import project.forwork.api.domain.salespost.service.port.SalesPostRepository;
 import project.forwork.api.domain.user.model.User;
 import project.forwork.api.domain.user.service.port.UserRepository;
@@ -43,8 +42,8 @@ public class ResumeService {
 
     public Resume register(CurrentUser currentUser, ResumeRegisterRequest body, MultipartFile file){
         User user = userRepository.getByIdWithThrow(currentUser.getId());
-        //String descriptionUrl = s3Service.saveFile(file); //TODO 배포시 주석 해제
-        String descriptionUrl = "www.test123.com"; // 배포시 삭제 TEST용
+        String descriptionUrl = s3Service.saveFile(file); //TODO 배포시 주석 해제
+        //String descriptionUrl = "www.test123.com"; // 배포시 삭제 TEST용
 
         Resume resume = Resume.from(user, body, descriptionUrl);
         resume =  resumeRepository.save(resume);
@@ -57,8 +56,8 @@ public class ResumeService {
     ){
         Resume resume = resumeRepository.getByIdWithThrow(resumeId);
         validateAuthor(currentUser, resume);
-        //String descriptionUrl = s3Service.saveFile(file); //TODO 배포시 주석 해제
-        String descriptionUrl = "www.test123.com"; // 배포시 삭제 TEST용
+        //String descriptionUrl = "www.test123.com"; // 배포시 삭제 TEST용
+        String descriptionUrl = s3Service.saveFile(file); //TODO 배포시 주석 해제
 
         resume = resume.modify(body, descriptionUrl);
         resumeRepository.save(resume);
@@ -82,7 +81,7 @@ public class ResumeService {
         Resume resume = resumeRepository.getByIdWithThrow(resumeId);
         validateAuthor(currentUser, resume);
 
-        s3Service.deleteFile(resume.getResumeUrl());
+        s3Service.deleteFile(resume.getResumeUrl()); //TODO 배포시 주석 해제
         resumeRepository.delete(resume);
     }
 

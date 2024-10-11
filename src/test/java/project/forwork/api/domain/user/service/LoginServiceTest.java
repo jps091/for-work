@@ -8,26 +8,20 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import project.forwork.api.common.domain.CurrentUser;
 import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.common.service.port.RedisUtils;
 import project.forwork.api.domain.token.model.TokenResponse;
-import project.forwork.api.domain.token.service.TokenCookieService;
 import project.forwork.api.domain.token.service.TokenHeaderService;
 import project.forwork.api.domain.user.controller.model.LoginResponse;
-import project.forwork.api.domain.user.controller.model.PasswordInitRequest;
 import project.forwork.api.domain.user.controller.model.UserLoginRequest;
-import project.forwork.api.domain.user.controller.model.UserResponse;
 import project.forwork.api.domain.user.infrastructure.enums.RoleType;
 import project.forwork.api.domain.user.model.User;
 import project.forwork.api.mock.FakeUserRepository;
 import project.forwork.api.mock.TestClockHolder;
 
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
