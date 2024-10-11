@@ -2,6 +2,7 @@ package project.forwork.api.domain.resume.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.web.multipart.MultipartFile;
 import project.forwork.api.common.domain.CurrentUser;
 import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.domain.resume.controller.model.ResumeModifyRequest;
@@ -16,10 +17,7 @@ import project.forwork.api.domain.salespost.infrastructure.enums.SalesStatus;
 import project.forwork.api.domain.salespost.model.SalesPost;
 import project.forwork.api.domain.user.infrastructure.enums.RoleType;
 import project.forwork.api.domain.user.model.User;
-import project.forwork.api.mock.FakeResumeDecisionRepository;
-import project.forwork.api.mock.FakeResumeRepository;
-import project.forwork.api.mock.FakeSalesPostRepository;
-import project.forwork.api.mock.FakeUserRepository;
+import project.forwork.api.mock.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -32,18 +30,21 @@ class ResumeServiceTest {
     private ResumeService resumeService;
     private FakeResumeRepository fakeResumeRepository;
     private FakeSalesPostRepository fakeSalesPostRepository;
+    private FakeS3Service fakeS3Service;
 
     @BeforeEach
     void init(){
         FakeUserRepository fakeUserRepository = new FakeUserRepository();
         fakeResumeRepository = new FakeResumeRepository();
         fakeSalesPostRepository = new FakeSalesPostRepository();
+        fakeS3Service = new FakeS3Service();
         FakeResumeDecisionRepository fakeResumeDecisionRepository = new FakeResumeDecisionRepository();
         this.resumeService = ResumeService.builder()
                 .resumeRepository(fakeResumeRepository)
                 .userRepository(fakeUserRepository)
                 .resumeDecisionRepository(fakeResumeDecisionRepository)
                 .salesPostRepository(fakeSalesPostRepository)
+                .s3Service(fakeS3Service)
                 .build();
 
         User user1 = User.builder()
@@ -158,27 +159,29 @@ class ResumeServiceTest {
     }
 
     @Test
-    void currentUser_ResumeRegisterRequest를_가지고_Resume을_등록할_수_있다(){
+    void currentUser_ResumeRegisterRequest_MultipartFile_을_가지고_Resume을_등록할_수_있다(){
         //given(상황환경 세팅)
         CurrentUser currentUser = CurrentUser.builder()
                 .id(1L)
                 .build();
-        ResumeRegisterRequest request = ResumeRegisterRequest.builder()
+        ResumeRegisterRequest body = ResumeRegisterRequest.builder()
                 .field(FieldType.AI)
                 .level(LevelType.NEW)
                 .resumeUrl("www.naver.com")
-                .descriptionImage("www.google.com")
                 .price(new BigDecimal("70000.00"))
                 .description("test resume")
                 .build();
 
+        MultipartFile descriptionImage = new TestMultipartFile("image", "test.jpg", "image/jpeg", "Dummy Image Content".getBytes());
+
         //when(상황발생)
-        Resume resume = resumeService.register(currentUser, request);
+        Resume resume = resumeService.register(currentUser, body, descriptionImage);
 
         //then(검증)
         assertThat(resume.getId()).isNotNull();
         assertThat(resume.getField()).isEqualTo(FieldType.AI);
         assertThat(resume.getDescription()).isEqualTo("test resume");
+        assertThat(resume.getDescriptionImageUrl()).isEqualTo("http://localhost/fake-bucket/1a2a3a4a5.jpg");
     }
 
     @Test
@@ -191,14 +194,14 @@ class ResumeServiceTest {
                 .field(FieldType.AI)
                 .level(LevelType.NEW)
                 .resumeUrl("www.naver.com")
-                .descriptionImage("www.google.com")
                 .price(new BigDecimal("150000.00"))
                 .description("test resume")
                 .build();
+        MultipartFile descriptionImage = new TestMultipartFile("image", "test.jpg", "image/jpeg", "Dummy Image Content".getBytes());
 
         //when(상황발생)
         //then(검증)
-        assertThatThrownBy(() -> resumeService.register(currentUser, request))
+        assertThatThrownBy(() -> resumeService.register(currentUser, request, descriptionImage))
                 .isInstanceOf(ApiException.class);
     }
 
@@ -212,13 +215,13 @@ class ResumeServiceTest {
                 .field(FieldType.DEVOPS)
                 .level(LevelType.SENIOR)
                 .resumeUrl("www.naver.com")
-                .descriptionImage("www.google.com")
                 .price(new BigDecimal("70000.00"))
                 .description("test resume")
                 .build();
+        MultipartFile descriptionImage = new TestMultipartFile("image", "test.jpg", "image/jpeg", "Dummy Image Content".getBytes());
 
         // when
-        resumeService.modify(1L, currentUser, request);
+        resumeService.modify(1L, currentUser, request, descriptionImage);
         Resume resume = fakeResumeRepository.getByIdWithThrow(1L);
 
         // then
@@ -236,13 +239,13 @@ class ResumeServiceTest {
                 .field(FieldType.DEVOPS)
                 .level(LevelType.SENIOR)
                 .resumeUrl("www.naver.com")
-                .descriptionImage("www.google.com")
                 .price(new BigDecimal("70000.00"))
                 .description("test resume")
                 .build();
+        MultipartFile descriptionImage = new TestMultipartFile("image", "test.jpg", "image/jpeg", "Dummy Image Content".getBytes());
 
         //when
-        resumeService.modify(1L, currentUser, request);
+        resumeService.modify(1L, currentUser, request, descriptionImage);
         Resume resume = fakeResumeRepository.getByIdWithThrow(1L);
 
         // then
@@ -260,13 +263,13 @@ class ResumeServiceTest {
                 .field(FieldType.DEVOPS)
                 .level(LevelType.SENIOR)
                 .resumeUrl("www.naver.com")
-                .descriptionImage("www.google.com")
                 .price(new BigDecimal("70000.00"))
                 .description("test resume")
                 .build();
+        MultipartFile descriptionImage = new TestMultipartFile("image", "test.jpg", "image/jpeg", "Dummy Image Content".getBytes());
 
         // then
-        assertThatThrownBy(() -> resumeService.modify(2L, currentUser, request))
+        assertThatThrownBy(() -> resumeService.modify(2L, currentUser, request, descriptionImage))
                 .isInstanceOf(ApiException.class);
     }
 
