@@ -32,7 +32,7 @@ public class ThumbnailImageService {
     private ThumbnailImage createThumbnailImage(FieldType type, String s3Url){
         return ThumbnailImage.builder()
                 .fieldType(type)
-                .url(s3Url)
+                .url("test")
                 .build();
     }
 }

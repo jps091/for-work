@@ -101,12 +101,11 @@ public class ResumeRepositoryCustomImpl implements ResumeRepositoryCustom {
                         userEntity.email.as("email")))
                 .from(resumeEntity)
                 .join(resumeEntity.sellerEntity, userEntity)
-                // TODO 필터링 조건 순서에 따른 성능 테스트 필요
                 .where(dateRangeCond(periodCond),
                         resumeStatusEqual(status),
                         resumeEntity.modifiedAt.eq(lastModifiedAt)
                                 .and(resumeEntity.id.gt(lastId))
-                                .or(resumeEntity.modifiedAt.gt(lastModifiedAt))
+                                 .or(resumeEntity.modifiedAt.gt(lastModifiedAt))
                 )
                 .orderBy(resumeEntity.modifiedAt.asc(), resumeEntity.id.asc())
                 .limit(limit)
@@ -159,7 +158,6 @@ public class ResumeRepositoryCustomImpl implements ResumeRepositoryCustom {
             case WEEK -> resumeEntity.modifiedAt.goe(startOfToday.minusWeeks(1)).and(resumeEntity.modifiedAt.lt(now));
             case MONTH -> resumeEntity.modifiedAt.goe(startOfToday.minusMonths(1)).and(resumeEntity.modifiedAt.lt(now));
         };
-        //yield resumeEntity.modifiedAt.between(start, now); // 성능 측정 필요 TODO
     }
 
     private BooleanExpression resumeStatusEqual(ResumeStatus status) {

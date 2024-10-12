@@ -236,8 +236,30 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
             case NEW, DEFAULT -> new OrderSpecifier<>(Order.DESC, salesPostEntity.id);
             case HIGHEST_PRICE -> new OrderSpecifier<>(Order.DESC, resumeEntity.price);
             case LOWEST_PRICE -> new OrderSpecifier<>(Order.ASC, resumeEntity.price);
-            case VIEW_COUNT -> new OrderSpecifier<>(Order.DESC, salesPostEntity.viewCount);
             case BEST_SELLING -> new OrderSpecifier<>(Order.DESC, salesPostEntity.salesQuantity);
+        };
+    }
+
+    private OrderSpecifier<?>[] createOrderSpecifier2(SalesPostSortType sortType) {
+        return switch (sortType) {
+            case OLD -> new OrderSpecifier[] {
+                    new OrderSpecifier<>(Order.ASC, salesPostEntity.id)
+            };
+            case NEW, DEFAULT -> new OrderSpecifier[] {
+                    new OrderSpecifier<>(Order.DESC, salesPostEntity.id)
+            };
+            case HIGHEST_PRICE -> new OrderSpecifier[] {
+                    new OrderSpecifier<>(Order.DESC, resumeEntity.price),
+                    new OrderSpecifier<>(Order.DESC, resumeEntity.id)
+            };
+            case LOWEST_PRICE -> new OrderSpecifier[] {
+                    new OrderSpecifier<>(Order.ASC, resumeEntity.price),
+                    new OrderSpecifier<>(Order.DESC, resumeEntity.id)
+            };
+            case BEST_SELLING -> new OrderSpecifier[] {
+                    new OrderSpecifier<>(Order.DESC, salesPostEntity.salesQuantity),
+                    new OrderSpecifier<>(Order.DESC, salesPostEntity.id)
+            };
         };
     }
 
@@ -248,7 +270,6 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
             case NEW, DEFAULT -> new OrderSpecifier<>(Order.ASC, salesPostEntity.id);
             case HIGHEST_PRICE -> new OrderSpecifier<>(Order.ASC, resumeEntity.price);
             case LOWEST_PRICE -> new OrderSpecifier<>(Order.DESC, resumeEntity.price);
-            case VIEW_COUNT -> new OrderSpecifier<>(Order.ASC, salesPostEntity.viewCount);
             case BEST_SELLING -> new OrderSpecifier<>(Order.ASC, salesPostEntity.salesQuantity);
         };
     }
