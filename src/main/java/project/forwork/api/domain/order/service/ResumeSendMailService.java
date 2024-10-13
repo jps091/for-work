@@ -41,7 +41,7 @@ public class ResumeSendMailService {
     }
 
     public void updatedOrderStatus(OrderStatus oldStatus, OrderStatus updatedStatus) {
-        int limit = 2;
+        int limit = 10; //TODO 수치 변경 가능
         log.info("updatedOrderStatus {} -> {}", oldStatus, updatedStatus);
 
         while (true) {

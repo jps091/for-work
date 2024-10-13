@@ -7,12 +7,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
-import project.forwork.api.common.infrastructure.enums.FieldType;
-import project.forwork.api.common.infrastructure.enums.LevelType;
 import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
 import project.forwork.api.domain.salespost.controller.model.SalesPostDetailResponse;
 import project.forwork.api.domain.salespost.controller.model.SalesPostFilterCond;
@@ -23,12 +18,10 @@ import project.forwork.api.domain.salespost.infrastructure.enums.LevelCond;
 import project.forwork.api.domain.salespost.infrastructure.enums.SalesPostSortType;
 import project.forwork.api.domain.salespost.infrastructure.enums.SalesStatus;
 import project.forwork.api.domain.salespost.service.port.SalesPostRepositoryCustom;
-import project.forwork.api.domain.thumbnailimage.infrastructure.QThumbnailImageEntity;
 
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 import static project.forwork.api.domain.resume.infrastructure.QResumeEntity.*;
 import static project.forwork.api.domain.salespost.infrastructure.QSalesPostEntity.*;
@@ -94,7 +87,7 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
 
 
     public List<SalesPostResponse> findFirstPage(SalesPostFilterCond cond, int limit){
-        OrderSpecifier<?> orderSpecifier = createOrderSpecifier(cond.getSortType());
+        OrderSpecifier<?>[] orderSpecifier = createOrderSpecifier(cond.getSortType());
 
         return queryFactory
                 .select(Projections.fields(SalesPostResponse.class,
@@ -122,7 +115,7 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
     }
 
     public List<SalesPostResponse> findLastPage(SalesPostFilterCond cond, int limit){
-        OrderSpecifier<?> orderSpecifier = createReversedOrderSpecifier(cond.getSortType());
+        OrderSpecifier<?>[] orderSpecifier = createReversedOrderSpecifier(cond.getSortType());
 
         List<SalesPostResponse> results = queryFactory
                 .select(Projections.fields(SalesPostResponse.class,
@@ -153,7 +146,7 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
     }
 
     public List<SalesPostResponse> findNextPage(SalesPostFilterCond cond, Long lastId, int limit){
-        OrderSpecifier<?> orderSpecifier = createOrderSpecifier(cond.getSortType());
+        OrderSpecifier<?>[] orderSpecifier = createOrderSpecifier(cond.getSortType());
 
         return queryFactory
                 .select(Projections.fields(SalesPostResponse.class,
@@ -181,7 +174,7 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
     }
 
     public List<SalesPostResponse> findPreviousPage(SalesPostFilterCond cond, Long lastId, int limit){
-        OrderSpecifier<?> orderSpecifier = createReversedOrderSpecifier(cond.getSortType());
+        OrderSpecifier<?>[] orderSpecifier = createReversedOrderSpecifier(cond.getSortType());
 
         List<SalesPostResponse> results = queryFactory
                 .select(Projections.fields(SalesPostResponse.class,
@@ -229,18 +222,7 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
         return resumeEntity.price.goe(minPrice).and(resumeEntity.price.loe(maxPrice));
     }
 
-    private OrderSpecifier<?> createOrderSpecifier(SalesPostSortType sortType){
-
-        return switch(sortType){
-            case OLD -> new OrderSpecifier<>(Order.ASC, salesPostEntity.id);
-            case NEW, DEFAULT -> new OrderSpecifier<>(Order.DESC, salesPostEntity.id);
-            case HIGHEST_PRICE -> new OrderSpecifier<>(Order.DESC, resumeEntity.price);
-            case LOWEST_PRICE -> new OrderSpecifier<>(Order.ASC, resumeEntity.price);
-            case BEST_SELLING -> new OrderSpecifier<>(Order.DESC, salesPostEntity.salesQuantity);
-        };
-    }
-
-    private OrderSpecifier<?>[] createOrderSpecifier2(SalesPostSortType sortType) {
+    private OrderSpecifier<?>[] createOrderSpecifier(SalesPostSortType sortType) {
         return switch (sortType) {
             case OLD -> new OrderSpecifier[] {
                     new OrderSpecifier<>(Order.ASC, salesPostEntity.id)
@@ -254,7 +236,7 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
             };
             case LOWEST_PRICE -> new OrderSpecifier[] {
                     new OrderSpecifier<>(Order.ASC, resumeEntity.price),
-                    new OrderSpecifier<>(Order.DESC, resumeEntity.id)
+                    new OrderSpecifier<>(Order.ASC, resumeEntity.id)
             };
             case BEST_SELLING -> new OrderSpecifier[] {
                     new OrderSpecifier<>(Order.DESC, salesPostEntity.salesQuantity),
@@ -263,7 +245,30 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
         };
     }
 
-    private OrderSpecifier<?> createReversedOrderSpecifier(SalesPostSortType sortType) {
+    private OrderSpecifier<?>[] createReversedOrderSpecifier(SalesPostSortType sortType) {
+        return switch (sortType) {
+            case OLD -> new OrderSpecifier[] {
+                    new OrderSpecifier<>(Order.DESC, salesPostEntity.id)
+            };
+            case NEW, DEFAULT -> new OrderSpecifier[] {
+                    new OrderSpecifier<>(Order.ASC, salesPostEntity.id)
+            };
+            case HIGHEST_PRICE -> new OrderSpecifier[] {
+                    new OrderSpecifier<>(Order.ASC, resumeEntity.price),
+                    new OrderSpecifier<>(Order.ASC, resumeEntity.id)
+            };
+            case LOWEST_PRICE -> new OrderSpecifier[] {
+                    new OrderSpecifier<>(Order.DESC, resumeEntity.price),
+                    new OrderSpecifier<>(Order.DESC, resumeEntity.id)
+            };
+            case BEST_SELLING -> new OrderSpecifier[] {
+                    new OrderSpecifier<>(Order.ASC, salesPostEntity.salesQuantity),
+                    new OrderSpecifier<>(Order.ASC, salesPostEntity.id)
+            };
+        };
+    }
+
+    private OrderSpecifier<?> createReversedOrderSpecifier3(SalesPostSortType sortType) {
 
         return switch (sortType) {
             case OLD -> new OrderSpecifier<>(Order.DESC, salesPostEntity.id);
@@ -271,6 +276,17 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
             case HIGHEST_PRICE -> new OrderSpecifier<>(Order.ASC, resumeEntity.price);
             case LOWEST_PRICE -> new OrderSpecifier<>(Order.DESC, resumeEntity.price);
             case BEST_SELLING -> new OrderSpecifier<>(Order.ASC, salesPostEntity.salesQuantity);
+        };
+    }
+
+    private OrderSpecifier<?> createOrderSpecifier3(SalesPostSortType sortType){
+
+        return switch(sortType){
+            case OLD -> new OrderSpecifier<>(Order.ASC, salesPostEntity.id);
+            case NEW, DEFAULT -> new OrderSpecifier<>(Order.DESC, salesPostEntity.id);
+            case HIGHEST_PRICE -> new OrderSpecifier<>(Order.DESC, resumeEntity.price);
+            case LOWEST_PRICE -> new OrderSpecifier<>(Order.ASC, resumeEntity.price);
+            case BEST_SELLING -> new OrderSpecifier<>(Order.DESC, salesPostEntity.salesQuantity);
         };
     }
 }

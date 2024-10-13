@@ -286,7 +286,7 @@ class OrderResumeServiceTest {
         List<Long> orderResumeIds = List.of(1L, 2L); // order1 에속한 order-resume-id
 
         //when(상황발생)
-        Order newOrder = orderResumeService.sendMailForConfirmedOrder(1L, order1, orderResumeIds);
+        Order newOrder = orderResumeService.sendMailForNowConfirmedOrder(1L, order1, orderResumeIds);
 
         //then(검증)
         assertThat(newOrder.getStatus()).isEqualTo(OrderStatus.CONFIRM);
@@ -307,7 +307,7 @@ class OrderResumeServiceTest {
         List<Long> orderResumeIds = List.of(1L); // order1 에속한 order-resume-id
 
         //when(상황발생)
-        Order newOrder = orderResumeService.sendMailForConfirmedOrder(1L, order1, orderResumeIds);
+        Order newOrder = orderResumeService.sendMailForNowConfirmedOrder(1L, order1, orderResumeIds);
 
         //then(검증)
         assertThat(newOrder.getStatus()).isEqualTo(OrderStatus.PARTIAL_CONFIRM);

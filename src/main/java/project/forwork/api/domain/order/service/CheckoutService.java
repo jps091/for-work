@@ -41,7 +41,6 @@ public class CheckoutService {
     private final OrderResumeService orderResumeService;
     private final RetryLogService retryLogService;
 
-
     public void processOrderAndPayment(CurrentUser currentUser, ConfirmPaymentRequest body){
         try{
             pgService.confirm(body);

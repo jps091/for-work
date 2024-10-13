@@ -39,7 +39,8 @@ public class OrderResumeService {
         orderResumes.forEach(orderResumeRepository::save);
     }
 
-    public Order sendMailForConfirmedOrder(Long userId, Order order, List<Long> orderResumeIds){
+    // 즉시 구매 확정
+    public Order sendMailForNowConfirmedOrder(Long userId, Order order, List<Long> orderResumeIds){
         List<OrderResume> orderResumes = orderResumeRepository.findByStatusAndOrder(OrderResumeStatus.ORDERED, order);
         List<OrderResume> confirmedOrderResumes = updateSelectedOrderResumes(orderResumes, orderResumeIds);
         confirmNowSendMail(order, confirmedOrderResumes);
@@ -63,7 +64,7 @@ public class OrderResumeService {
         orderResumeRepository.saveAll(orderResumes);
     }
 
-    // 자동 주문 확정에 대해
+    // 자동 주문 확정
     public void sendMailForAutoConfirmedOrder(List<Order> orders){
         List<OrderResume> orderResumes = orderResumeRepository.findByStatusAndOrders(OrderResumeStatus.ORDERED, orders);
         List<OrderResume> filteredOrderResumes = orderResumes.stream()
@@ -105,17 +106,6 @@ public class OrderResumeService {
         validSelected(orderResumeIds, orderResumes);
 
         return orderResumes;
-    }
-
-    @Transactional(readOnly = true)
-    public List<OrderResumeResponse> getOrderResumeList(CurrentUser currentUser){
-        List<OrderResumeStatus> statuses = List.of(OrderResumeStatus.ORDERED, OrderResumeStatus.CONFIRM, OrderResumeStatus.SENT);
-        return orderResumeRepositoryCustom.findByUserIdAndStatus(currentUser.getId(), statuses);
-    }
-    @Transactional(readOnly = true)
-    public List<OrderResumeResponse> getCanceledOrderResumeList(CurrentUser currentUser){
-        List<OrderResumeStatus> statuses = List.of(OrderResumeStatus.CANCEL);
-        return orderResumeRepositoryCustom.findByUserIdAndStatus(currentUser.getId(), statuses);
     }
 
     private void validSelected(List<Long> orderResumeIds, List<OrderResume> orderResumes) {

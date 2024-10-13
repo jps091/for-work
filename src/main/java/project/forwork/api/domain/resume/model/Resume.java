@@ -87,7 +87,6 @@ public class Resume {
     }
 
     public boolean isAuthorMismatch(Long sellerId){
-        log.info("sellerId={}, sellerId={}",seller.getId(), sellerId);
         return !Objects.equals(seller.getId(), sellerId);
     }
 

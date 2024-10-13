@@ -123,7 +123,7 @@ public class OrderService {
 
     public void orderConfirmNow(CurrentUser currentUser, Long orderId, ConfirmOrderRequest body){
         Order order = orderRepository.getByIdWithThrow(orderId);
-        order = orderResumeService.sendMailForConfirmedOrder(currentUser.getId(), order, body.getOrderResumeIds());
+        order = orderResumeService.sendMailForNowConfirmedOrder(currentUser.getId(), order, body.getOrderResumeIds());
         orderRepository.save(order);
     }
 

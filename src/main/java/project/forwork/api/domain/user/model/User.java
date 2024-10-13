@@ -74,4 +74,7 @@ public class User {
     public boolean isAdminMismatch(){
         return roleType != RoleType.ADMIN;
     }
+    public boolean isNameMismatch(String name){
+        return !Objects.equals(this.name, name);
+    }
 }
