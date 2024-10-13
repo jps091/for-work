@@ -43,22 +43,6 @@ class OrderResumeQueryDslRepositoryTest {
     }
 
     @Test
-    void findByUserIdAndStatus_메서드는_USER_ID와_OrderOrderResumeStatus_들로_OrderResumeResponse_들을_반환_한다(){
-        //given(상황환경 세팅)
-        List<OrderResumeStatus> statuses = List.of(OrderResumeStatus.ORDERED, OrderResumeStatus.CONFIRM, OrderResumeStatus.SENT);
-
-        //when(상황발생)
-        List<OrderResumeResponse> orderResumeResponses = orderResumeRepositoryCustom.findByUserIdAndStatus(1L, statuses);
-
-        //then(검증)
-        assertThat(orderResumeResponses).isNotEmpty();
-
-        for (OrderResumeResponse response : orderResumeResponses) {
-            assertThat(statuses).contains(response.getStatus());
-        }
-    }
-
-    @Test
     void findByOrderId_메서드는_ORDER_ID_로_ORDER_에_속한_모든_OrderResumeResponse_을_반환_한다(){
         //given(상황환경 세팅)
         //when(상황발생)

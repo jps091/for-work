@@ -43,24 +43,17 @@ public class FakeUserRepository implements UserRepository {
     }
 
     @Override
-    public User getByIdWithThrow(long id) {
+    public User getByIdWithThrow(Long id) {
         return findById(id).orElseThrow(() -> new ApiException(UserErrorCode.USER_NOT_FOUND));
     }
 
     @Override
-    public Optional<User> findById(long id) {
+    public Optional<User> findById(Long id) {
         return data.stream().filter(u -> u.getId().equals(id)).findAny();
     }
 
     @Override
     public Optional<User> findByEmail(String email) {
         return data.stream().filter(u -> u.getEmail().equals(email)).findAny();
-    }
-
-    @Override
-    public Optional<User> findByEmailAndName(String email, String name) {
-        return data.stream()
-                .filter(u -> u.getEmail().equals(email) && u.getName().equals(name))
-                .findAny();
     }
 }

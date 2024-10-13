@@ -46,6 +46,10 @@ public class CheckoutController {
         return Api.CREATED(OrderCreateResponse.from(order));
     }
 
+    /***
+     * 즉 클라이언트에서 총가격, 멱등키를 만들어서 결제키와 함께 줘야한다.
+     * 나는 그럼 즉시구매 / 장바구니결제승인 api를 나눠서 각각 처리한다.
+     */
     @Operation(summary = "결제 요청 api", description = "주문에 대한 결제 요청")
     @PostMapping("/confirm")
     public Api<String> confirm(

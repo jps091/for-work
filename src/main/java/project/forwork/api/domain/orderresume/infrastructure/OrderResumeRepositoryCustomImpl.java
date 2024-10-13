@@ -68,30 +68,6 @@ public class OrderResumeRepositoryCustomImpl implements OrderResumeRepositoryCus
                 .fetch();
     }
 
-    public List<OrderResumeResponse> findByUserIdAndStatus(Long userId, List<OrderResumeStatus> statuses){
-        return queryFactory
-                .select(Projections.fields(OrderResumeResponse.class,
-                        orderResumeEntity.id.as("orderResumeId"),
-                        resumeEntity.price.as("price"),
-                        orderEntity.paidAt.as("paidAt"),
-                        orderResumeEntity.status.as("status"),
-                        Expressions.stringTemplate(
-                                "CONCAT({0}, ' ', {1}, ' 이력서 #', {2})",
-                                resumeEntity.levelType.stringValue(),
-                                resumeEntity.fieldType.stringValue(),
-                                resumeEntity.id
-                        ).as("title")
-                ))
-                .from(orderResumeEntity)
-                .join(orderResumeEntity.orderEntity, orderEntity)
-                .join(orderResumeEntity.resumeEntity, resumeEntity)
-                .join(orderEntity.userEntity, userEntity)
-                .where(orderResumeEntity.status.in(statuses))
-                .where(userEntity.id.eq(userId))
-                .orderBy(orderEntity.paidAt.desc())
-                .fetch();
-    }
-
     @Override
     public List<OrderTitleResponse> findOrderTitleByOrderId(Long orderId) {
         return queryFactory

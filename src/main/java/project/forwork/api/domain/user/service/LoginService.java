@@ -27,7 +27,6 @@ public class LoginService {
     private static final String LOGIN_ATTEMPT_KEY_PREFIX = "loginAttempt:userId:";
     private static final int MAX_LOGIN_ATTEMPTS = 5;
     private final UserRepository userRepository;
-    //private final TokenCookieService tokenCookieService;
     private final TokenHeaderService tokenHeaderService;
     private final ClockHolder clockHolder;
     private final RedisUtils redisUtils;
@@ -59,11 +58,14 @@ public class LoginService {
 
     @Transactional
     public void initTemporaryPassword(PasswordInitRequest body){
-        User user = userRepository.findByEmailAndName(body.getEmail(), body.getName())
+        User user = userRepository.findByEmail(body.getEmail())
                 .orElseThrow(() -> new ApiException(UserErrorCode.USER_NOT_FOUND));
 
-        passwordInitializationService.issueTemporaryPassword(user);
+        if(user.isNameMismatch(body.getName())){
+            throw new ApiException(UserErrorCode.USER_NOT_FOUND);
+        }
 
+        passwordInitializationService.issueTemporaryPassword(user);
     }
 
     private void loginAttempt(User user){

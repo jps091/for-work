@@ -10,6 +10,6 @@ import lombok.*;
 @Data
 public class ConfirmPaymentRequest {
     private String paymentKey;
-    private String orderId;
+    private String orderId; // 멱등키
     private String amount;
 }
