@@ -7,6 +7,9 @@ import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/***
+ * index : modifiedat_status_id, modifiedat_id, status_modifiedat_id
+ */
 public interface ResumeRepositoryCustom {
     List<ResumeResponse> findFirstPage(PeriodCond periodCond, ResumeStatus status, int limit);
     List<ResumeResponse> findLastPage(PeriodCond periodCond, ResumeStatus status, int limit);

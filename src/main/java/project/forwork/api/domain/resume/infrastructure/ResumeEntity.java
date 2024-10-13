@@ -46,7 +46,6 @@ public class ResumeEntity extends BaseTimeEntity {
     @Column(precision = 6, scale = 0, nullable = false)
     private BigDecimal price;
 
-    @Lob
     @Column(nullable = false, columnDefinition = "TEXT")
     private String description;
 

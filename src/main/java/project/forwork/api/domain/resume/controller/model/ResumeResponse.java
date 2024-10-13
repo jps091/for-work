@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 public class ResumeResponse {
 
     private Long id;
-    private String email;
+    private String summary;
     private FieldType field;
     private LevelType level;
     private ResumeStatus status;
@@ -24,7 +24,7 @@ public class ResumeResponse {
     public static ResumeResponse from(Resume resume){
         return ResumeResponse.builder()
                 .id(resume.getId())
-                .email(resume.getSeller().getEmail())
+                .summary(resume.getDescription().substring(0, 15) + "...")
                 .field(resume.getField())
                 .level(resume.getLevel())
                 .status(resume.getStatus())
