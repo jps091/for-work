@@ -21,8 +21,8 @@ public class SalesPostEntity extends BaseTimeEntity {
     @Column(name = "sales_post_id")
     private Long id;
 
-    @Version
-    private Long version;
+    /*@Version
+    private Long version;*/
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "resume_id", nullable = false)
@@ -43,7 +43,7 @@ public class SalesPostEntity extends BaseTimeEntity {
     private Integer salesQuantity;
 
     @Column(name = "view_count", nullable = false)
-    private Integer viewCount;
+    private Integer viewCount; // TODO 제거
 
     public static SalesPostEntity from(SalesPost salesPost){
         SalesPostEntity salesPostEntity = new SalesPostEntity();
@@ -54,7 +54,7 @@ public class SalesPostEntity extends BaseTimeEntity {
         salesPostEntity.salesStatus = salesPost.getSalesStatus();
         salesPostEntity.salesQuantity = salesPost.getSalesQuantity();
         salesPostEntity.viewCount = salesPost.getViewCount();
-        salesPostEntity.version = salesPost.getVersion();
+        //salesPostEntity.version = salesPost.getVersion();
         return salesPostEntity;
     }
 
@@ -68,7 +68,7 @@ public class SalesPostEntity extends BaseTimeEntity {
                 .salesQuantity(salesQuantity)
                 .viewCount(viewCount)
                 .registeredAt(getModifiedAt())
-                .version(version)
+                //.version(version)
                 .build();
     }
 }

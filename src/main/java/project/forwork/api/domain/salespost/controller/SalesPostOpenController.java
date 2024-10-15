@@ -24,11 +24,11 @@ public class SalesPostOpenController {
     private final SalesPostService salesPostService;
 
     @Operation(summary = "단건 sale-post 조회 API", description = "sale-post 상세")
-    @GetMapping("{salesPostId}")
+    @GetMapping("/{salesPostId}")
     public Api<SalesPostDetailResponse> retrieve(
             @PathVariable Long salesPostId
     ){
-        SalesPostDetailResponse salesPostResponse = salesPostService.getSellingPostWithPessimistic(salesPostId);
+        SalesPostDetailResponse salesPostResponse = salesPostService.getSellingPost(salesPostId);
         return Api.OK(salesPostResponse);
     }
 

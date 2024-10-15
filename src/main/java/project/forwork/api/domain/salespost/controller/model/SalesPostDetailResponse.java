@@ -1,9 +1,6 @@
 package project.forwork.api.domain.salespost.controller.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import project.forwork.api.common.infrastructure.enums.FieldType;
 import project.forwork.api.common.infrastructure.enums.LevelType;
 import project.forwork.api.domain.salespost.infrastructure.enums.SalesStatus;
@@ -15,6 +12,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Data
 public class SalesPostDetailResponse {
     private Long id;
     private String title;
@@ -22,7 +20,7 @@ public class SalesPostDetailResponse {
     private String thumbnailImageUrl;
     private String descriptionImageUrl;
     private String description;
-    private Integer viewCount;
+    private Integer salesQuantity;
     private FieldType field;
     private LevelType level;
     private SalesStatus status;

@@ -2,6 +2,7 @@ package project.forwork.api.domain.salespost.service;
 
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
@@ -31,6 +32,7 @@ import java.util.List;
 
 @Service
 @Builder
+@Slf4j
 @Transactional
 @RequiredArgsConstructor
 public class SalesPostService {
@@ -96,7 +98,6 @@ public class SalesPostService {
         salesPostRepository.saveAll(salesPosts);
     }
 
-    // 판매 상태인 판매글 반환시 조회수 1증가
     public SalesPostDetailResponse getSellingPostWithPessimistic(Long salesPostId){
         SalesPost salesPost = salesPostRepository.getByIdWithPessimisticLock(salesPostId);
         salesPost = salesPost.addViewCount();
@@ -135,12 +136,12 @@ public class SalesPostService {
             PageStep pageStep, Long lastId, int limit
     ){
         SalesPostFilterCond cond = SalesPostFilterCond.from(sortType, minPrice, maxPrice, field, level);
-
+        log.info("getFilteredAndPagedResults={}", cond);
         return switch(pageStep){
             case FIRST -> findFirstPage(cond, limit);
             case LAST -> findLastPage(cond, limit);
             case NEXT -> findNextPage(cond, lastId, limit);
-            case PREVIOUS -> findPreviousPage(cond, lastId, limit);
+            case PREVIOUS -> findPreviousPage2(cond, lastId, limit);
         };
     }
 
@@ -153,7 +154,7 @@ public class SalesPostService {
     @Transactional(readOnly = true)
     public SalesPostPage findLastPage(SalesPostFilterCond cond, int limit){
         List<SalesPostResponse> results = salesPostRepositoryCustom.findLastPage(cond, limit);
-        return createSalesPostPage(results);
+        return createSalesPostPage2(results);
     }
 
     @Transactional(readOnly = true)
@@ -165,10 +166,26 @@ public class SalesPostService {
     @Transactional(readOnly = true)
     public SalesPostPage findPreviousPage(SalesPostFilterCond cond, Long lastId, int limit){
         List<SalesPostResponse> results = salesPostRepositoryCustom.findPreviousPage(cond, lastId, limit);
-        return createSalesPostPage(results);
+        return createSalesPostPage2(results);
     }
 
-    private static SalesPostPage createSalesPostPage(List<SalesPostResponse> results) {
+    @Transactional(readOnly = true)
+    public SalesPostPage findPreviousPage2(SalesPostFilterCond cond, Long lastId, int limit){
+        List<SalesPostResponse> results = salesPostRepositoryCustom.findPreviousPage(cond, lastId, limit);
+        return createSalesPostPage2(results);
+    }
+
+    @Transactional(readOnly = true)
+    public SalesPostDetailResponse getSellingPost(Long salesPostId){
+
+        SalesPostDetailResponse salesPostDetailResponse = salesPostRepositoryCustom.getDetailSalesPost(salesPostId);
+        if(SalesStatus.CANCELED.equals(salesPostDetailResponse.getStatus())){
+            throw new ApiException(SalesPostErrorCode.NOT_SELLING);
+        }
+        return salesPostDetailResponse;
+    }
+
+    private SalesPostPage createSalesPostPage(List<SalesPostResponse> results) {
 
         if(results.isEmpty()){
             throw new ApiException(SalesPostErrorCode.SALES_POST_NO_CONTENT);
@@ -179,6 +196,20 @@ public class SalesPostService {
         return SalesPostPage.builder()
                 .results(results)
                 .lastId(lastRecord.getId())
+                .build();
+    }
+
+    private SalesPostPage createSalesPostPage2(List<SalesPostResponse> results) {
+
+        if(results.isEmpty()){
+            throw new ApiException(SalesPostErrorCode.SALES_POST_NO_CONTENT);
+        }
+
+        SalesPostResponse first = results.get(0);
+
+        return SalesPostPage.builder()
+                .results(results)
+                .lastId(first.getId())
                 .build();
     }
 }

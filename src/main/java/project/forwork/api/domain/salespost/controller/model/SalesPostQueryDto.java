@@ -9,17 +9,13 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Getter
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class SalesPostResponse {
-    private Long id;
-    private String title;
+@Builder
+@Data
+public class SalesPostQueryDto {
+    private Long salesPostId;
+    private Long resumeId;
     private BigDecimal price;
-    private String thumbnailImageUrl;
     private Integer salesQuantity;
-    private FieldType field;
-    private LevelType level;
-    private SalesStatus status;
-    private LocalDateTime registeredAt;
 }
