@@ -22,9 +22,9 @@ public class SalesPost {
     private final ThumbnailImage thumbnailImage;
     private final SalesStatus salesStatus;
     private final Integer salesQuantity;
-    private final Integer viewCount;
+    private final Integer viewCount; // TODO 제거
     private final LocalDateTime registeredAt;
-    private final Long version;
+    //private final Long version;
 
     public static SalesPost create(Resume resume, ThumbnailImage thumbnailImage){
 
@@ -48,7 +48,7 @@ public class SalesPost {
                 .salesQuantity(salesQuantity)
                 .viewCount(viewCount)
                 .registeredAt(registeredAt)
-                .version(version)
+                //.version(version)
                 .build();
     }
 
@@ -62,12 +62,12 @@ public class SalesPost {
                 .salesQuantity(salesQuantity + 1)
                 .viewCount(viewCount)
                 .registeredAt(registeredAt)
-                .version(version)
+                //.version(version)
                 .build();
     }
 
     public SalesPost addViewCount(){
-        validStatusSelling(salesStatus);
+        validStatusSelling();
 
         return SalesPost.builder()
                 .id(id)
@@ -78,18 +78,18 @@ public class SalesPost {
                 .salesQuantity(salesQuantity)
                 .viewCount(viewCount + 1)
                 .registeredAt(registeredAt)
-                .version(version)
+                //.version(version)
                 .build();
     }
 
-    public Resume getResumeIfSalesPostSelling(){
-        validStatusSelling(salesStatus);
-        return resume;
-    }
-
-    private void validStatusSelling(SalesStatus status) {
-        if (SalesStatus.CANCELED.equals(status)) {
+    public void validStatusSelling() {
+        if (!SalesStatus.SELLING.equals(salesStatus)) {
             throw new ApiException(SalesPostErrorCode.NOT_SELLING);
         }
+    }
+
+    public Resume getResumeIfSalesPostSelling(){
+        validStatusSelling();
+        return resume;
     }
 }

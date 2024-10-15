@@ -15,7 +15,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional
 @Slf4j
-public class ResumeSendMailService {
+public class ResumeAutoConfirmService {
 
     private final OrderRepository orderRepository;
     private final OrderResumeService orderResumeService;

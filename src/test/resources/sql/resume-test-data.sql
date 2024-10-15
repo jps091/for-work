@@ -13,12 +13,6 @@ VALUES
 INSERT INTO `resumes`
 (`price`, `registered_at`, `modified_at`, `resume_id`, `seller_id`, `description_image_url`, `resume_url`, `description`, `field`, `level`, `status`)
 VALUES
-    ('70000', '2024-09-04 00:18:39', '2024-09-04 00:18:39', '3', '2', 'http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit',
-     'http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit', 'test3', 'BACKEND', 'JUNIOR', 'PENDING');
-
-INSERT INTO `resumes`
-(`price`, `registered_at`, `modified_at`, `resume_id`, `seller_id`, `description_image_url`, `resume_url`, `description`, `field`, `level`, `status`)
-VALUES
     ('70000', '2024-09-05 00:18:39', '2024-09-05 00:18:39', '4', '1', 'http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit',
      'http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit', 'test4', 'BACKEND', 'NEW', 'ACTIVE');
 
@@ -45,3 +39,9 @@ INSERT INTO `resumes`
 VALUES
     ('99000', '2024-09-07 00:18:39', '2024-09-08 00:18:39', '8', '1', 'http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit',
      'http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit', 'test8', 'AI', 'NEW', 'ACTIVE');
+
+INSERT INTO `resumes`
+(`price`, `registered_at`, `modified_at`, `resume_id`, `seller_id`, `description_image_url`, `resume_url`, `description`, `field`, `level`, `status`)
+VALUES
+    ('70000', '2024-09-04 00:18:39', '2024-09-04 00:18:39', '3', '2', 'http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit',
+     'http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit', 'test3', 'BACKEND', 'JUNIOR', 'PENDING');
