@@ -151,8 +151,6 @@ class ResumeServiceTest {
                 .resume(resume1)
                 .title(resume1.createSalesPostTitle())
                 .salesStatus(SalesStatus.SELLING)
-                .salesQuantity(30)
-                .viewCount(0)
                 .build();
 
         fakeSalesPostRepository.save(salesPost1);
@@ -270,24 +268,6 @@ class ResumeServiceTest {
 
         // then
         assertThatThrownBy(() -> resumeService.modify(2L, currentUser, request, descriptionImage))
-                .isInstanceOf(ApiException.class);
-    }
-
-    @Test
-    void 자신이_작성한_이력서상태를_대기상태로_변경할_수있다() {
-        //given(상황환경 세팅)
-        CurrentUser currentUser = CurrentUser.builder()
-                .id(1L)
-                .build();
-        //when
-        resumeService.updatePending(1L, currentUser);
-
-        //then 자신이 작성한 경우
-        Resume resume = fakeResumeRepository.getByIdWithThrow(1L);
-        assertThat(resume.getStatus()).isEqualTo(ResumeStatus.PENDING);
-
-        //자신이 작성하지 않은 경우
-        assertThatThrownBy(() -> resumeService.updatePending(2L, currentUser))
                 .isInstanceOf(ApiException.class);
     }
 }

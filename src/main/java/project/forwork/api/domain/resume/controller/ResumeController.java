@@ -30,13 +30,13 @@ public class ResumeController {
     @Operation(summary = "Resume 생성", description = "Resume 생성")
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(value = "/register", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public Api<ResumeDetailResponse> register(
+    public Api<ResumeSellerDetailResponse> register(
             @Parameter(hidden = true) @Current CurrentUser currentUser,
             @RequestPart("resumeData") @Valid ResumeRegisterRequest resumeRegisterBody,
             @RequestPart("descriptionImage") @Valid @NotNull MultipartFile file
     ){
         Resume resume = resumeService.register(currentUser, resumeRegisterBody, file);
-        return Api.CREATED(ResumeDetailResponse.from(resume));
+        return Api.CREATED(ResumeSellerDetailResponse.from(resume));
     }
 
 
@@ -65,22 +65,23 @@ public class ResumeController {
         return Api.OK("Resume 변경 완료 되었습니다.");
     }
 
-    @Operation(summary = "자신의 Resume 단건 조회 API", description = "로그인한 회원의 전체 Resume 조회")
+    @Operation(summary = "자신의 Resume 단건 조회 API", description = "단건 Resume 조회")
     @GetMapping("/{resumeId}")
-    public Api<ResumeDetailResponse> retrieve(
+    public Api<ResumeSellerDetailResponse> retrieve(
             @Parameter(hidden = true) @Current CurrentUser currentUser,
             @PathVariable Long resumeId
     ){
         Resume resume = resumeService.getByIdWithThrow(currentUser, resumeId);
-        return Api.OK(ResumeDetailResponse.from(resume));
+        return Api.OK(ResumeSellerDetailResponse.from(resume));
     }
 
     @Operation(summary = "자신의 Resume 전체조회 API", description = "로그인한 회원의 전체 Resume 조회")
     @GetMapping
-    public Api<List<ResumeResponse>> retrieveAll(
+    public Api<List<ResumeSellerResponse>> retrieveAll(
             @Parameter(hidden = true) @Current CurrentUser currentUser
     ){
-        List<ResumeResponse> resumes = resumeService.findResumesBySeller(currentUser);
+        List<ResumeSellerResponse> resumes = resumeService.findResumesBySeller(currentUser);
         return Api.OK(resumes);
     }
 }
+//TODO API 명세서 수정

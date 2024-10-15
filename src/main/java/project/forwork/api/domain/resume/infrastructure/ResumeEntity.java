@@ -46,6 +46,9 @@ public class ResumeEntity extends BaseTimeEntity {
     @Column(precision = 6, scale = 0, nullable = false)
     private BigDecimal price;
 
+    @Column(name = "sales_quantity", nullable = false)
+    private Integer salesQuantity;
+
     @Column(nullable = false, columnDefinition = "TEXT")
     private String description;
 
@@ -62,6 +65,7 @@ public class ResumeEntity extends BaseTimeEntity {
         resumeEntity.resumeUrl = resume.getResumeUrl();
         resumeEntity.descriptionImageUrl = resume.getDescriptionImageUrl();
         resumeEntity.price = resume.getPrice();
+        resumeEntity.salesQuantity = resume.getSalesQuantity();
         resumeEntity.description = resume.getDescription();
         resumeEntity.resumeStatus = resume.getStatus();
         return resumeEntity;
@@ -78,6 +82,7 @@ public class ResumeEntity extends BaseTimeEntity {
                 .price(price)
                 .description(description)
                 .status(resumeStatus)
+                .salesQuantity(salesQuantity)
                 .modifiedAt(getModifiedAt())
                 .build();
     }

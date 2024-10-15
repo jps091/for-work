@@ -3,12 +3,16 @@ package project.forwork.api.domain.resume.service;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import project.forwork.api.common.controller.port.S3Service;
 import project.forwork.api.common.error.ResumeErrorCode;
 import project.forwork.api.common.exception.ApiException;
+import project.forwork.api.domain.orderresume.model.OrderResume;
 import project.forwork.api.domain.resume.controller.model.*;
 import project.forwork.api.domain.resume.infrastructure.enums.PageStep;
 import project.forwork.api.domain.resume.infrastructure.enums.PeriodCond;
@@ -69,20 +73,43 @@ public class ResumeService {
         });
     }
 
-    public void updatePending(Long resumeId, CurrentUser currentUser){
-        Resume resume = resumeRepository.getByIdWithThrow(resumeId);
-        validateAuthor(currentUser, resume);
-
-        resume = resume.updateStatus(ResumeStatus.PENDING);
-        resumeRepository.save(resume);
-    }
-
     public void delete(Long resumeId, CurrentUser currentUser) {
         Resume resume = resumeRepository.getByIdWithThrow(resumeId);
         validateAuthor(currentUser, resume);
 
         s3Service.deleteFile(resume.getResumeUrl()); //TODO 배포시 주석 해제
         resumeRepository.delete(resume);
+    }
+
+    public void addSalesQuantityWithPessimistic(List<OrderResume> orderResumes){
+
+        List<Resume> resumes = orderResumes.stream()
+                .map(OrderResume::getResume)
+                .map(Resume::increaseSalesQuantity)
+                .toList();
+
+        resumeRepository.saveAll(resumes);
+    }
+
+    /*** TODO 배포시 주석 삭제 필요
+     * Hibernate -> ObjectOptimisticLockingFailureException, StaleObjectStateException 발생
+     * Spring은 ObjectOptimisticLockingFailureException 예외로 감싸서 반환
+     * 주의 : 긍적적 락은 mysql에는 없는 개념 (그냥 update 하기전에 확인)
+     *        처음 요청 순이 아니라 롤백하고 다시 재요청 순으로 결정됨 (선착순 적용X)
+     */
+    @Retryable(
+            value = ObjectOptimisticLockingFailureException.class,
+            maxAttempts = 1000,
+            backoff =  @Backoff(delay = 100)
+    )
+    public void addSalesQuantityWithOptimistic(List<OrderResume> orderResumes){
+
+        List<Resume> resumes = orderResumes.stream()
+                .map(OrderResume::getResume)
+                .map(Resume::increaseSalesQuantity)
+                .toList();
+
+        resumeRepository.saveAll(resumes);
     }
 
     @Transactional(readOnly = true)
@@ -110,7 +137,7 @@ public class ResumeService {
     public ResumePage findFirstPage(
             PeriodCond periodCond, ResumeStatus status, int limit
     ){
-        List<ResumeResponse> results = resumeRepositoryCustom.findFirstPage(periodCond, status, limit);
+        List<ResumeAdminResponse> results = resumeRepositoryCustom.findFirstPage(periodCond, status, limit);
         return createResumePage(results);
     }
 
@@ -118,8 +145,8 @@ public class ResumeService {
     public ResumePage findLastPage(
             PeriodCond periodCond, ResumeStatus status, int limit
     ){
-        List<ResumeResponse> results = resumeRepositoryCustom.findLastPage(periodCond, status, limit);
-        return createResumePage(results);
+        List<ResumeAdminResponse> results = resumeRepositoryCustom.findLastPage(periodCond, status, limit);
+        return createReverseResumePage(results);
     }
 
     @Transactional(readOnly = true)
@@ -127,7 +154,7 @@ public class ResumeService {
             PeriodCond periodCond, ResumeStatus status,
             LocalDateTime lastModifiedAt, Long lastId, int limit
     ){
-        List<ResumeResponse> results = resumeRepositoryCustom.findNextPage(periodCond, status, lastModifiedAt, lastId, limit);
+        List<ResumeAdminResponse> results = resumeRepositoryCustom.findNextPage(periodCond, status, lastModifiedAt, lastId, limit);
         return createResumePage(results);
     }
 
@@ -136,23 +163,23 @@ public class ResumeService {
             PeriodCond periodCond, ResumeStatus status,
             LocalDateTime lastModifiedAt, Long lastId, int limit
     ){
-        List<ResumeResponse> results = resumeRepositoryCustom.findPreviousPage(periodCond, status, lastModifiedAt, lastId, limit);
-        return createResumePage(results);
+        List<ResumeAdminResponse> results = resumeRepositoryCustom.findPreviousPage(periodCond, status, lastModifiedAt, lastId, limit);
+        return createReverseResumePage(results);
     }
 
-    public List<ResumeResponse> findResumesBySeller(CurrentUser currentUser){
+    public List<ResumeSellerResponse> findResumesBySeller(CurrentUser currentUser){
         User user = userRepository.getByIdWithThrow(currentUser.getId());
 
-        List<ResumeResponse> resumeResponses = resumeRepository.findAllBySeller(user)
+        List<ResumeSellerResponse> resumeAdminResponses = resumeRepository.findAllBySeller(user)
                 .stream()
-                .map(ResumeResponse::from)
+                .map(ResumeSellerResponse::from)
                 .toList();
 
-        if(resumeResponses.isEmpty()){
+        if(resumeAdminResponses.isEmpty()){
             throw new ApiException(ResumeErrorCode.RESUME_NO_CONTENT);
         }
 
-        return resumeResponses;
+        return resumeAdminResponses;
     }
 
     private static void validateAuthor(CurrentUser currentUser, Resume resume) {
@@ -167,17 +194,32 @@ public class ResumeService {
         }
     }
 
-    private static ResumePage createResumePage(List<ResumeResponse> results) {
+    private ResumePage createResumePage(List<ResumeAdminResponse> results) {
         if(results.isEmpty()){
             throw new ApiException(ResumeErrorCode.RESUME_NO_CONTENT);
         }
 
-        ResumeResponse lastRecord = results.get(results.size() - 1);
+        ResumeAdminResponse lastRecord = results.get(results.size() - 1);
 
         return ResumePage.builder()
                 .lastId(lastRecord.getId())
                 .lastModifiedAt(lastRecord.getModifiedAt())
                 .results(results)
+                .build();
+    }
+
+    private ResumePage createReverseResumePage(List<ResumeAdminResponse> results) {
+
+        if(results.isEmpty()){
+            throw new ApiException(ResumeErrorCode.RESUME_NO_CONTENT);
+        }
+
+        ResumeAdminResponse firstRecord = results.get(0);
+
+        return ResumePage.builder()
+                .results(results)
+                .lastModifiedAt(firstRecord.getModifiedAt())
+                .lastId(firstRecord.getId())
                 .build();
     }
 }

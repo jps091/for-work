@@ -22,12 +22,4 @@ public interface SalesPostJpaRepository extends JpaRepository<SalesPostEntity, L
     @Lock(value = LockModeType.OPTIMISTIC)
     @Query("select s from SalesPostEntity s where s.id = :id")
     Optional<SalesPostEntity> findByIdWithOptimisticLock(@Param("id") Long id);
-
-    @Lock(value = LockModeType.PESSIMISTIC_WRITE)
-    @Query("select s from SalesPostEntity s join fetch s.resumeEntity r where r.id = :resumeId")
-    Optional<SalesPostEntity> findByResumeWithPessimisticLock(@Param("resumeId") Long resumeId);
-
-    @Lock(value = LockModeType.OPTIMISTIC)
-    @Query("select s from SalesPostEntity s join fetch s.resumeEntity r where r.id = :resumeId")
-    Optional<SalesPostEntity> findByResumeWithOptimisticLock(@Param("resumeId") Long resumeId);
 }

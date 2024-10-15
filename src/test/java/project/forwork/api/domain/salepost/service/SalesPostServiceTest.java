@@ -97,8 +97,6 @@ class SalesPostServiceTest {
                 .resume(resume1)
                 .title(resume1.createSalesPostTitle())
                 .salesStatus(SalesStatus.SELLING)
-                .salesQuantity(30)
-                .viewCount(0)
                 .build();
 
         SalesPost salesPost2 = SalesPost.builder()
@@ -106,8 +104,6 @@ class SalesPostServiceTest {
                 .resume(resume2)
                 .title(resume2.createSalesPostTitle())
                 .salesStatus(SalesStatus.CANCELED)
-                .salesQuantity(30)
-                .viewCount(0)
                 .build();
 
         SalesPost salesPost3 = SalesPost.builder()
@@ -115,8 +111,6 @@ class SalesPostServiceTest {
                 .resume(resume3)
                 .title(resume3.createSalesPostTitle())
                 .salesStatus(SalesStatus.CANCELED)
-                .salesQuantity(30)
-                .viewCount(0)
                 .build();
 
         fakeSalesPostRepository.save(salesPost1);

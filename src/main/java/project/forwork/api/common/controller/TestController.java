@@ -16,6 +16,8 @@ import project.forwork.api.domain.order.controller.model.ConfirmPaymentRequest;
 import project.forwork.api.domain.order.model.Order;
 import project.forwork.api.domain.order.service.CheckoutService;
 import project.forwork.api.domain.order.service.port.OrderRepository;
+import project.forwork.api.domain.orderresume.service.port.OrderResumeRepository;
+import project.forwork.api.domain.resume.service.ResumeService;
 import project.forwork.api.domain.salespost.controller.model.SalesPostDetailResponse;
 import project.forwork.api.domain.salespost.service.SalesPostService;
 import project.forwork.api.domain.user.infrastructure.enums.RoleType;
@@ -26,7 +28,6 @@ import project.forwork.api.domain.user.infrastructure.enums.RoleType;
 public class TestController {
     private final OrderRepository orderRepository;
     private final CheckoutService checkoutService;
-    private final SalesPostService salesPostService;
 
     @GetMapping("/open-api/order")
     @Transactional
@@ -68,21 +69,5 @@ public class TestController {
         log.info("controller ConfirmRequest={}",body);
         checkoutService.processOrderAndPayment(currentUser, body);
         return new ResponseEntity<>("confirm", HttpStatus.OK);
-    }
-
-    @RequestMapping(method = RequestMethod.GET, value = "/test/pes")
-    public ResponseEntity<String> getSellingPostWithPessimistic(
-            @RequestParam("id") Long id
-    ){
-        SalesPostDetailResponse salesPostResponse = salesPostService.getSellingPostWithPessimistic(id);
-        return new ResponseEntity<>("getSellingPostWithPessimistic", HttpStatus.OK);
-    }
-
-    @RequestMapping(method = RequestMethod.GET, value = "/test/opt")
-    public ResponseEntity<String> getSellingPostWithOptimistic(
-            @RequestParam("id") Long id
-    ){
-        SalesPostDetailResponse salesPostResponse = salesPostService.getSellingPostWithOptimistic(id);
-        return new ResponseEntity<>("getSellingPostWithOptimistic", HttpStatus.OK);
     }
 }

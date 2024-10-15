@@ -8,7 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import project.forwork.api.common.annotation.Current;
 import project.forwork.api.common.api.Api;
-import project.forwork.api.domain.resume.controller.model.ResumeDetailResponse;
+import project.forwork.api.domain.resume.controller.model.ResumeAdminDetailResponse;
 import project.forwork.api.domain.resume.controller.model.ResumePage;
 import project.forwork.api.domain.resume.infrastructure.enums.PageStep;
 import project.forwork.api.domain.resume.infrastructure.enums.PeriodCond;
@@ -30,12 +30,12 @@ public class ResumeAdminController {
 
     @Operation(summary = "요청 Resume 상세 조회 API", description = "요청 Resume 상세 조회 API")
     @GetMapping("{resumeId}")
-    public Api<ResumeDetailResponse> retrieve(
+    public Api<ResumeAdminDetailResponse> retrieve(
             @Parameter(hidden = true) @Current CurrentUser currentUser,
             @PathVariable Long resumeId
     ){
         Resume resume = resumeService.getByIdWithThrow(currentUser, resumeId);
-        return Api.OK(ResumeDetailResponse.from(resume));
+        return Api.OK(ResumeAdminDetailResponse.from(resume));
     }
 
     @Operation(summary = "전체 요청 Resume 조회 API",

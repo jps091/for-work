@@ -20,6 +20,7 @@ public class SalesPostRepositoryImpl implements SalesPostRepository {
 
     private final SalesPostJpaRepository salesPostJpaRepository;
 
+
     @Override
     public SalesPost save(SalesPost salesPost) {
         return salesPostJpaRepository.save(SalesPostEntity.from(salesPost)).toModel();
@@ -45,20 +46,6 @@ public class SalesPostRepositoryImpl implements SalesPostRepository {
     }
 
     @Override
-    public SalesPost getByResumeWithPessimisticLock(Long resumeId) {
-        return salesPostJpaRepository.findByResumeWithPessimisticLock(resumeId)
-                .orElseThrow(() -> new ApiException(SalesPostErrorCode.SALES_POST_NOT_FOUND))
-                .toModel();
-    }
-
-    @Override
-    public SalesPost getByResumeWithOptimisticLock(Long resumeId) {
-        return salesPostJpaRepository.findByResumeWithOptimisticLock(resumeId)
-                .orElseThrow(() -> new ApiException(SalesPostErrorCode.SALES_POST_NOT_FOUND))
-                .toModel();
-    }
-
-    @Override
     public Optional<SalesPost> findById(Long salesPostId) {
         return salesPostJpaRepository.findById(salesPostId).map(SalesPostEntity::toModel);
     }
@@ -75,12 +62,5 @@ public class SalesPostRepositoryImpl implements SalesPostRepository {
         return salesPostJpaRepository.findByResumeEntity(ResumeEntity.from(resume)).map(SalesPostEntity::toModel);
     }
 
-    @Override
-    public List<SalesPost> saveAll(List<SalesPost> salesPosts) {
-        List<SalesPostEntity> salesPostEntities = salesPosts.stream()
-                .map(SalesPostEntity::from).toList();
 
-        return salesPostJpaRepository.saveAll(salesPostEntities).stream()
-                .map(SalesPostEntity::toModel).toList();
-    }
 }

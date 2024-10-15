@@ -1,13 +1,9 @@
 package project.forwork.api.domain.resume.infrastructure;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 import project.forwork.api.common.error.ResumeErrorCode;
 import project.forwork.api.common.exception.ApiException;
-import project.forwork.api.domain.resume.controller.model.ResumeResponse;
-import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
 import project.forwork.api.domain.resume.model.Resume;
 import project.forwork.api.domain.resume.service.port.ResumeRepository;
 import project.forwork.api.domain.user.infrastructure.UserEntity;
@@ -38,26 +34,22 @@ public class ResumeRepositoryImpl implements ResumeRepository {
     }
 
     @Override
+    public Resume getByIdWithPessimisticLock(Long resumeId) {
+        return resumeJpaRepository.findByIdWithPessimisticLock(resumeId)
+                .map(ResumeEntity::toModel)
+                .orElseThrow(() -> new ApiException(ResumeErrorCode.RESUME_NOT_FOUND, resumeId));
+    }
+
+    @Override
+    public Resume getByIdWithOptimisticLock(Long resumeId) {
+        return resumeJpaRepository.findByIdWithOptimisticLock(resumeId)
+                .map(ResumeEntity::toModel)
+                .orElseThrow(() -> new ApiException(ResumeErrorCode.RESUME_NOT_FOUND, resumeId));
+    }
+
+    @Override
     public Optional<Resume> findById(Long id) {
         return resumeJpaRepository.findById(id).map(ResumeEntity::toModel);
-    }
-
-    @Override
-    public List<Resume> findAll() {
-        return resumeJpaRepository
-                .findAll()
-                .stream()
-                .map(ResumeEntity::toModel)
-                .toList();
-    }
-
-    @Override
-    public List<Resume> findAllByStatus(ResumeStatus status) {
-        return resumeJpaRepository
-                .findByResumeStatus(status)
-                .stream()
-                .map(ResumeEntity::toModel)
-                .toList();
     }
 
     @Override
@@ -66,5 +58,14 @@ public class ResumeRepositoryImpl implements ResumeRepository {
                 .stream()
                 .map(ResumeEntity::toModel)
                 .toList();
+    }
+
+    @Override
+    public List<Resume> saveAll(List<Resume> resumes) {
+        List<ResumeEntity> resumeEntities = resumes.stream()
+                .map(ResumeEntity::from).toList();
+
+        return resumeJpaRepository.saveAll(resumeEntities).stream()
+                .map(ResumeEntity::toModel).toList();
     }
 }
