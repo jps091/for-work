@@ -7,15 +7,14 @@ import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import project.forwork.api.common.domain.CurrentUser;
 import project.forwork.api.common.error.OrderResumeErrorCode;
 import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.common.service.port.ClockHolder;
 import project.forwork.api.domain.cartresume.model.CartResume;
 import project.forwork.api.domain.order.infrastructure.enums.OrderStatus;
 import project.forwork.api.domain.order.model.Order;
-import project.forwork.api.domain.orderresume.controller.model.OrderResumeResponse;
 import project.forwork.api.domain.orderresume.infrastructure.enums.OrderResumeStatus;
 import project.forwork.api.domain.orderresume.model.OrderResume;
 import project.forwork.api.domain.orderresume.service.port.OrderResumeRepository;
@@ -70,7 +69,7 @@ public class OrderResumeService {
                 .map(orderResume -> orderResume.updateStatusSend((clockHolder))).toList();
         List<OrderResume> confirmedOrderResumes = orderResumeRepository.saveAll(orderResumes);
 
-        //addSalesQuantityWithPessimistic(confirmedOrderResumes);
+        addSalesQuantityWithOnePessimistic(confirmedOrderResumes);
     }
 
     // 자동 주문 확정
@@ -90,18 +89,50 @@ public class OrderResumeService {
                 .map(orderResume -> orderResume.updateStatusSend((clockHolder))).toList();
         List<OrderResume> confirmedOrderResumes = orderResumeRepository.saveAll(orderResumes);
 
-        //addSalesQuantityWithPessimistic(confirmedOrderResumes);
+        addSalesQuantityWithOnePessimistic(confirmedOrderResumes);
         log.info("confirmAndSendMails");
     }
-
-    public void addSalesQuantityWithPessimistic(List<OrderResume> orderResumes){
-
-        List<Resume> resumes = orderResumes.stream()
+    public void addSalesQuantityWithAllPessimistic(List<OrderResume> orderResumes){
+        List<Long> resumeIds = orderResumes.stream()
                 .map(OrderResume::getResume)
-                .map(Resume::increaseSalesQuantity)
+                .map(Resume::getId)
                 .toList();
 
+        List<Resume> resumes = resumeRepository.getByIdsWithPessimisticLock(resumeIds).stream()
+                .map(Resume::increaseSalesQuantity)
+                .toList();
+        for (Resume resume : resumes) {
+            log.info("ALL={}   Quantity={}",resume.getId() , resume.getSalesQuantity());
+        }
         resumeRepository.saveAll(resumes);
+    }
+
+    public void addSalesQuantityWithAllPessimistic2(List<Long> orderResumeIds){
+        List<Resume> resumes = resumeRepository.getByIdsWithPessimisticLock(orderResumeIds).stream()
+                .map(Resume::increaseSalesQuantity)
+                .toList();
+        for (Resume resume : resumes) {
+            log.info("ALL={}   Quantity={}",resume.getId() , resume.getSalesQuantity());
+        }
+        resumeRepository.saveAll(resumes); // 2948
+    }
+
+    public void addSalesQuantityWithOnePessimistic(List<OrderResume> orderResumes){
+        for (OrderResume orderResume : orderResumes) {
+            Resume resume = resumeRepository.getByIdWithPessimisticLock(orderResume.getResumeId());
+            resume = resume.increaseSalesQuantity();
+            Resume save = resumeRepository.save(resume);
+            log.info("ONCE={}   Quantity={}",save.getId() , save.getSalesQuantity());
+        }
+    }
+
+    public void addSalesQuantityWithOnePessimistic2(List<Long> orderResumeIds){
+        for (Long orderResumeId : orderResumeIds) {
+            Resume resume = resumeRepository.getByIdWithPessimisticLock(orderResumeId);
+            resume = resume.increaseSalesQuantity();
+            Resume save = resumeRepository.save(resume);
+            log.info("ONCE={}   Quantity={}",save.getId() , save.getSalesQuantity());
+        }
     }
 
     /*** TODO 배포시 주석 삭제 필요

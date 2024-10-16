@@ -14,6 +14,10 @@ public interface ResumeJpaRepository extends JpaRepository<ResumeEntity, Long>{
     List<ResumeEntity> findAllBySellerEntity(UserEntity seller);
 
     @Lock(value = LockModeType.PESSIMISTIC_WRITE)
+    @Query("select r from ResumeEntity r where r.id IN :resumeIds")
+    List<ResumeEntity> findByIdsWithPessimisticLock(@Param("resumeIds") List<Long> resumeIds);
+
+    @Lock(value = LockModeType.PESSIMISTIC_WRITE)
     @Query("select r from ResumeEntity r where r.id = :resumeId")
     Optional<ResumeEntity> findByIdWithPessimisticLock(@Param("resumeId") Long resumeId);
 

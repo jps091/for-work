@@ -34,6 +34,13 @@ public class ResumeRepositoryImpl implements ResumeRepository {
     }
 
     @Override
+    public List<Resume> getByIdsWithPessimisticLock(List<Long> resumeIds) {
+        return resumeJpaRepository.findByIdsWithPessimisticLock(resumeIds).stream()
+                .map(ResumeEntity::toModel)
+                .toList();
+    }
+
+    @Override
     public Resume getByIdWithPessimisticLock(Long resumeId) {
         return resumeJpaRepository.findByIdWithPessimisticLock(resumeId)
                 .map(ResumeEntity::toModel)

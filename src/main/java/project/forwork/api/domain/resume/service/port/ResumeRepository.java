@@ -18,6 +18,8 @@ public interface ResumeRepository {
 
     List<Resume> findAllBySeller(User seller);
 
+    List<Resume> getByIdsWithPessimisticLock(List<Long> resumeIds);
+
     Resume getByIdWithPessimisticLock(Long resumeId);
 
     Resume getByIdWithOptimisticLock(Long resumeId);

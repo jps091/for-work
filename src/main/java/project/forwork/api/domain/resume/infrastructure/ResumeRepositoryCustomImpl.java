@@ -199,8 +199,8 @@ public class ResumeRepositoryCustomImpl implements ResumeRepositoryCustom {
                 .from(resumeEntity)
                 .where(dateRangeCond(periodCond),
                         resumeStatusEqual(status),
-                        resumeEntity.modifiedAt.eq(lastModifiedAt)
-                                .and(resumeEntity.id.gt(lastId))
+                        (resumeEntity.modifiedAt.eq(lastModifiedAt)
+                                .and(resumeEntity.id.gt(lastId)))
                                  .or(resumeEntity.modifiedAt.gt(lastModifiedAt))
                 )
                 .orderBy(resumeEntity.modifiedAt.asc(), resumeEntity.id.asc())
@@ -224,10 +224,8 @@ public class ResumeRepositoryCustomImpl implements ResumeRepositoryCustom {
                 .from(resumeEntity)
                 .where(dateRangeCond(periodCond),
                         resumeStatusEqual(status),
-                        (
-                                resumeEntity.modifiedAt.eq(lastModifiedAt)
-                                        .and(resumeEntity.id.lt(lastId))
-                        )
+                        (resumeEntity.modifiedAt.eq(lastModifiedAt)
+                                .and(resumeEntity.id.lt(lastId)))
                                 .or(resumeEntity.modifiedAt.lt(lastModifiedAt))
                 )
                 .orderBy(resumeEntity.modifiedAt.desc(), resumeEntity.id.desc())
