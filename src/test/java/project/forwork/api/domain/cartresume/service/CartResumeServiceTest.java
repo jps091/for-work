@@ -32,13 +32,13 @@ class CartResumeServiceTest {
 
     @BeforeEach
     void init(){
-        FakeSalesPostRepository fakeSalesPostRepository = new FakeSalesPostRepository();
         fakeCartResumeRepository = new FakeCartResumeRepository();
+        FakeResumeRepository fakeResumeRepository = new FakeResumeRepository();
         FakeCartRepository fakeCartRepository = new FakeCartRepository();
         this.cartResumeService = CartResumeService.builder()
                 .cartResumeRepository(fakeCartResumeRepository)
-                .salesPostRepository(fakeSalesPostRepository)
                 .cartRepository(fakeCartRepository)
+                .resumeRepository(fakeResumeRepository)
                 .build();
 
         User user1 = User.builder()
@@ -93,31 +93,9 @@ class CartResumeServiceTest {
                 .status(ResumeStatus.ACTIVE)
                 .build();
 
-
-        SalesPost salesPost1 = SalesPost.builder()
-                .id(1L)
-                .resume(resume1)
-                .title(resume1.createSalesPostTitle())
-                .salesStatus(SalesStatus.SELLING)
-                .build();
-
-        SalesPost salesPost2 = SalesPost.builder()
-                .id(2L)
-                .resume(resume2)
-                .title(resume2.createSalesPostTitle())
-                .salesStatus(SalesStatus.SELLING)
-                .build();
-
-        SalesPost salesPost3 = SalesPost.builder()
-                .id(3L)
-                .resume(resume3)
-                .title(resume3.createSalesPostTitle())
-                .salesStatus(SalesStatus.CANCELED)
-                .build();
-
-        fakeSalesPostRepository.save(salesPost1);
-        fakeSalesPostRepository.save(salesPost2);
-        fakeSalesPostRepository.save(salesPost3);
+        fakeResumeRepository.save(resume1);
+        fakeResumeRepository.save(resume2);
+        fakeResumeRepository.save(resume3);
 
         Cart cart1 = Cart.builder()
                 .id(1L)

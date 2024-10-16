@@ -67,6 +67,12 @@ public class FakeResumeRepository implements ResumeRepository {
     }
 
     @Override
+    public List<Resume> findByIdsWithPessimisticLock(List<Long> resumeIds) {
+        return data.stream()
+                .filter(resume -> resumeIds.contains(resume.getId())).toList();
+    }
+
+    @Override
     public Resume getByIdWithPessimisticLock(Long resumeId) {
         return findById(resumeId).orElseThrow(() -> new ApiException(SalesPostErrorCode.SALES_POST_NOT_FOUND));
     }
@@ -79,5 +85,19 @@ public class FakeResumeRepository implements ResumeRepository {
     @Override
     public List<Resume> saveAll(List<Resume> resumes) {
         return resumes.stream().map(this::save).toList();
+    }
+
+
+    @Override
+    public List<Resume> findByIds(List<Long> resumeIds) {
+        return data.stream()
+                .filter(resume -> resumeIds.contains(resume.getId())).toList();
+    }
+
+    @Override
+    public void increaseQuantity(Long resumeId) {
+        Resume resume = getByIdWithThrow(resumeId);
+        Resume newResume = resume.increaseSalesQuantity();
+        save(newResume);
     }
 }

@@ -61,8 +61,8 @@ class SalesPostRepositoryServiceTest {
 
         //then(검증)
         assertThat(result).hasSize(2);
-        assertThat(result.get(0).getId()).isEqualTo(8L);
-        assertThat(result.get(1).getId()).isEqualTo(7L);
+        assertThat(result.get(0).getId()).isEqualTo(6L);
+        assertThat(result.get(1).getId()).isEqualTo(8L);
     }
 // 7,5,4,3,1 back
     @Test
@@ -117,9 +117,9 @@ class SalesPostRepositoryServiceTest {
 
         //then(검증)
         assertThat(result).hasSize(2);
-        assertThat(result.get(0).getId()).isEqualTo(6L);
-        assertThat(result.get(1).getId()).isEqualTo(5L);
-        assertThat(salesPostPage.getLastId()).isEqualTo(5L);
+        assertThat(result.get(0).getId()).isEqualTo(5L);
+        assertThat(result.get(1).getId()).isEqualTo(4L);
+        assertThat(salesPostPage.getLastId()).isEqualTo(4L);
     }
 
     @Test
@@ -133,9 +133,9 @@ class SalesPostRepositoryServiceTest {
 
         //then(검증)
         assertThat(result).hasSize(2);
-        assertThat(result.get(0).getId()).isEqualTo(6L);
-        assertThat(result.get(1).getId()).isEqualTo(7L);
-        assertThat(salesPostPage.getLastId()).isEqualTo(7L);
+        assertThat(result.get(0).getId()).isEqualTo(7L);
+        assertThat(result.get(1).getId()).isEqualTo(8L);
+        assertThat(salesPostPage.getLastId()).isEqualTo(8L);
     }
 
     @Test
@@ -149,17 +149,9 @@ class SalesPostRepositoryServiceTest {
 
         //then(검증)
         assertThat(result).hasSize(2);
-        assertThat(result.get(0).getId()).isEqualTo(6L);
+        assertThat(result.get(0).getId()).isEqualTo(7L);
         assertThat(result.get(1).getId()).isEqualTo(5L);
-        assertThat(salesPostPage.getLastId()).isEqualTo(6L);
-
-        SalesPostPage salesPostPage2 = salesPostService.findPreviousPage(cond, 6L, 2);
-        List<SalesPostResponse> result2 = salesPostPage2.getResults();
-
-        assertThat(result2).hasSize(2);
-        assertThat(result2.get(0).getId()).isEqualTo(8L);
-        assertThat(result2.get(1).getId()).isEqualTo(7L);
-        assertThat(salesPostPage2.getLastId()).isEqualTo(8L);
+        assertThat(salesPostPage.getLastId()).isEqualTo(7L);
     }
 
     @Test

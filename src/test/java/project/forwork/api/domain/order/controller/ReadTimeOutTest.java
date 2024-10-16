@@ -1,3 +1,4 @@
+
 package project.forwork.api.domain.order.controller;
 
 import org.junit.jupiter.api.Test;
@@ -7,30 +8,40 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import project.forwork.api.common.domain.CurrentUser;
+import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.domain.order.controller.model.ConfirmPaymentRequest;
 import project.forwork.api.domain.order.service.CheckoutService;
 import project.forwork.api.domain.user.infrastructure.enums.RoleType;
 
-/*
+import java.math.BigDecimal;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+
 @ActiveProfiles("test")
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
-
-class TestControllerTest {
+class ReadTimeOutTest {
 
     @Autowired
     CheckoutService checkoutService;
     @Test
-    void confirm() {
+    void read_time_out이_발생해서_SocketTimeoutException_가_발생하면_결제_승인은_실패하고_ApiException_이_발생_한다() {
         CurrentUser currentUser = CurrentUser.builder()
                 .id(4L)
                 .roleType(RoleType.USER)
                 .build();
         ConfirmPaymentRequest body = ConfirmPaymentRequest.builder()
+                .resumeIds(List.of(1L))
                 .paymentKey("test-key")
-                .orderId("345636546-a1d658e3-4")
-                .amount("99000")
+                .requestId("345636546-a1d658e3-4")
+                .amount(new BigDecimal("99000"))
                 .build();
-        checkoutService.processOrderAndPayment(currentUser, body);
+
+        assertThrows(ApiException.class, () -> {
+            checkoutService.processOrderAndPayment(currentUser, body);
+        });
     }
-}*/
+}
+

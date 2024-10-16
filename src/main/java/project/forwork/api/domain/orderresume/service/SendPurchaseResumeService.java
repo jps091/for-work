@@ -32,6 +32,6 @@ public class SendPurchaseResumeService {
         String title = "for-work 구매 이력서 : " + purchaseResponse.getSalesPostTitle();
         String content = "주문 번호 #" + purchaseResponse.getOrderId() +" <URL> : "+ purchaseResponse.getResumeUrl();
         //mailSender.send(purchaseResponse.getEmail(), title, content); //TODO 주석해제
-        log.info("sendEmail={}",purchaseResponse.getEmail());
+        //log.info("sendEmail={}",purchaseResponse.getEmail());
     }
 }
