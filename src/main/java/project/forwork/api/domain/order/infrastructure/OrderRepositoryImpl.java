@@ -26,9 +26,11 @@ public class OrderRepositoryImpl implements OrderRepository {
     }
 
     @Override
-    public void saveAll(List<Order> orders) {
+    public List<Order> saveAll(List<Order> orders) {
         List<OrderEntity> orderEntities = orders.stream().map(OrderEntity::from).toList();
-        orderJpaRepository.saveAll(orderEntities);
+        return orderJpaRepository.saveAll(orderEntities).stream()
+                .map(OrderEntity::toModel)
+                .toList();
     }
 
     @Override

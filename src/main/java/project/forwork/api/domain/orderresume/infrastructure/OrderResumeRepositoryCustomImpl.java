@@ -11,6 +11,7 @@ import project.forwork.api.domain.orderresume.controller.model.OrderResumeRespon
 import project.forwork.api.domain.orderresume.controller.model.OrderTitleResponse;
 import project.forwork.api.domain.orderresume.infrastructure.enums.OrderResumeStatus;
 import project.forwork.api.domain.orderresume.controller.model.PurchaseResponse;
+import project.forwork.api.domain.orderresume.model.OrderResume;
 import project.forwork.api.domain.orderresume.service.port.OrderResumeRepositoryCustom;
 
 import java.util.List;
@@ -49,7 +50,9 @@ public class OrderResumeRepositoryCustomImpl implements OrderResumeRepositoryCus
                 .fetch();
     }
 
-    public List<PurchaseResponse> findAllPurchaseResume() {
+    public List<PurchaseResponse> findAllPurchaseResume(List<OrderResume> orderResumes) {
+
+        List<Long> orderResumeIds = orderResumes.stream().map(OrderResume::getId).toList();
 
         return queryFactory
                 .select(Projections.fields(PurchaseResponse.class,
@@ -64,7 +67,7 @@ public class OrderResumeRepositoryCustomImpl implements OrderResumeRepositoryCus
                 .join(orderResumeEntity.orderEntity, orderEntity)
                 .join(orderResumeEntity.resumeEntity, resumeEntity)
                 .join(orderEntity.userEntity, userEntity)
-                .where(orderResumeEntity.status.eq(OrderResumeStatus.CONFIRM))
+                .where(orderResumeEntity.id.in(orderResumeIds))
                 .fetch();
     }
 

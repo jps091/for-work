@@ -263,7 +263,7 @@ class OrderResumeServiceTest {
         OrderResume orderResume7 = fakeOrderResumeRepository.getByIdWithThrow(7);
         List<OrderResume> orderResumes = List.of(orderResume5, orderResume6, orderResume7);
         //when(상황발생)
-        orderResumeService.confirmNowSendMail(order3, orderResumes);
+        orderResumeService.confirmNowSendMail(orderResumes);
 
         //then(검증)
         OrderResume newOrderResume = fakeOrderResumeRepository.getByIdWithThrow(orderResumeId);

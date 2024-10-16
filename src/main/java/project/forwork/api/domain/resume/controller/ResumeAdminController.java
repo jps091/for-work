@@ -10,7 +10,7 @@ import project.forwork.api.common.annotation.Current;
 import project.forwork.api.common.api.Api;
 import project.forwork.api.domain.resume.controller.model.ResumeAdminDetailResponse;
 import project.forwork.api.domain.resume.controller.model.ResumePage;
-import project.forwork.api.domain.resume.infrastructure.enums.PageStep;
+import project.forwork.api.common.infrastructure.enums.PageStep;
 import project.forwork.api.domain.resume.infrastructure.enums.PeriodCond;
 import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
 import project.forwork.api.domain.resume.model.Resume;

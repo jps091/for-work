@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import project.forwork.api.common.domain.CurrentUser;
 import project.forwork.api.common.error.SalesPostErrorCode;
 import project.forwork.api.common.exception.ApiException;
-import project.forwork.api.domain.resume.infrastructure.enums.PageStep;
+import project.forwork.api.common.infrastructure.enums.PageStep;
 import project.forwork.api.domain.resume.model.Resume;
 import project.forwork.api.domain.salespost.controller.model.SalesPostDetailResponse;
 import project.forwork.api.domain.salespost.controller.model.SalesPostPage;
