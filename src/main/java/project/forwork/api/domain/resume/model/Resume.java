@@ -11,7 +11,6 @@ import project.forwork.api.domain.resume.controller.model.ResumeRegisterRequest;
 import project.forwork.api.common.infrastructure.enums.FieldType;
 import project.forwork.api.common.infrastructure.enums.LevelType;
 import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
-import project.forwork.api.domain.salespost.model.SalesPost;
 import project.forwork.api.domain.user.model.User;
 
 import java.math.BigDecimal;
@@ -57,7 +56,6 @@ public class Resume {
     }
 
     public Resume modify(ResumeModifyRequest body, String descriptionUrl){
-        validPrice(body.getPrice());
         return Resume.builder()
                 .id(id)
                 .seller(seller)
@@ -115,7 +113,10 @@ public class Resume {
         return status != ResumeStatus.ACTIVE;
     }
 
-    public void validPrice(BigDecimal price) {
-
+    public String getDescriptionSummary() {
+        if(description.length() < 15){
+            return description;
+        }
+        return description.substring(0, 15) + "...";
     }
 }

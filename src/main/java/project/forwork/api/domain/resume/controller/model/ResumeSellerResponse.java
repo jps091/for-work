@@ -26,7 +26,7 @@ public class ResumeSellerResponse {
 
     public static ResumeSellerResponse from(Resume resume){
         return ResumeSellerResponse.builder()
-                .summary(resume.getDescription().substring(0, 15) + "...")
+                .summary(resume.getDescriptionSummary())
                 .salesQuantity(resume.getSalesQuantity())
                 .field(resume.getField())
                 .level(resume.getLevel())
