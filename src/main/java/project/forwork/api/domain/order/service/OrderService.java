@@ -12,7 +12,6 @@ import project.forwork.api.common.error.OrderErrorCode;
 import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.common.service.port.ClockHolder;
 import project.forwork.api.common.service.port.UuidHolder;
-import project.forwork.api.domain.cartresume.model.CartResume;
 import project.forwork.api.domain.cartresume.service.port.CartResumeRepository;
 import project.forwork.api.domain.order.controller.model.*;
 import project.forwork.api.domain.order.infrastructure.enums.OrderStatus;
@@ -25,11 +24,12 @@ import project.forwork.api.domain.orderresume.service.OrderResumeService;
 import project.forwork.api.domain.orderresume.service.port.OrderResumeRepository;
 import project.forwork.api.domain.orderresume.service.port.OrderResumeRepositoryCustom;
 import project.forwork.api.domain.resume.model.Resume;
-import project.forwork.api.domain.salespost.model.SalesPost;
+import project.forwork.api.domain.resume.service.port.ResumeRepository;
 import project.forwork.api.domain.salespost.service.port.SalesPostRepository;
 import project.forwork.api.domain.user.model.User;
 import project.forwork.api.domain.user.service.port.UserRepository;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -70,55 +70,25 @@ public class OrderService {
     private final UuidHolder uuidHolder;
     private final OrderResumeService orderResumeService;
     private final SalesPostRepository salesPostRepository;
+    private final ResumeRepository resumeRepository;
 
-    public Order orderNow(CurrentUser currentUser, Long salesPostId){
+    public Order create(CurrentUser currentUser, ConfirmPaymentRequest body){
         User user = userRepository.getByIdWithThrow(currentUser.getId());
 
-        String requestId = validOrderRequest(user);
+        List<Resume> resumes = resumeRepository.findByIds(body.getResumeIds());
 
-        SalesPost salesPost = salesPostRepository.getByIdWithThrow(salesPostId);
-        Resume resume = salesPost.getResume();
-
-        Order order = Order.create(user, resume, requestId);
+        Order order = Order.create(user, body.getRequestId(), body.getAmount());
         order = orderRepository.save(order);
 
-        OrderResume orderResume = OrderResume.create(order, resume);
-        orderResumeRepository.save(orderResume);
-
-        return order;
-    }
-
-    public Order orderInCart(CurrentUser currentUser, OrderInCartRequest body){
-        List<Long> cartResumeIds = getCartResumeIds(body);
-
-        User user = userRepository.getByIdWithThrow(currentUser.getId());
-        String requestId = validOrderRequest(user);
-
-        List<CartResume> cartResumes = cartResumeRepository.findByUserAndSelected(user.getId(), cartResumeIds)
-                .stream()
-                .filter(cartResume -> cartResumeIds.contains(cartResume.getId()))
-                .toList();
-
-        if(cartResumes.size() != cartResumeIds.size()){
-            throw new ApiException(CartResumeErrorCode.RETRY_SELECT);
-        }
-
-        Order order = Order.create(user, cartResumes, requestId);
-        order = orderRepository.save(order);
-
-        orderResumeService.registerByCartResume(order, cartResumes);
-        cartResumeRepository.delete(cartResumes);
-
+        orderResumeService.createByResumes(order, resumes);
         return order;
     }
 
     @Transactional(readOnly = true)
-    public String validOrderRequest(User user) {
-        String requestId = createRequestId(user.getId());
+    public void validRequestId(String requestId) {
         if (orderRepository.existsByRequestId(requestId)) { // 멱등키 활용
             throw new ApiException(OrderErrorCode.ORDER_ALREADY_REQUEST);
         }
-        return requestId;
     }
 
     public void orderConfirmNow(CurrentUser currentUser, Long orderId, ConfirmOrderRequest body){
@@ -130,28 +100,26 @@ public class OrderService {
     public Order cancelOrder(CurrentUser currentUser, Long orderId){
         Order order = orderRepository.getByIdWithThrow(orderId);
         order = order.cancelOrder(currentUser.getId());
-        orderResumeService.cancel(order);
+        orderResumeService.cancelByOrder(order);
         return orderRepository.save(order);
     }
 
     public Order cancelPartialOrder(CurrentUser currentUser, Long orderId, List<OrderResume> orderResumes){
         Order order = orderRepository.getByIdWithThrow(orderId);
         order = order.cancelPartialOrder(currentUser.getId(), orderResumes);
-        orderResumeService.updateCanceledOrderResumes(orderResumes);
+        orderResumeService.cancelByOrderResumes(orderResumes);
         return orderRepository.save(order);
     }
 
-    public Order updateOrderPaid(ConfirmPaymentRequest body) {
-        Order order = orderRepository.getByRequestIdWithThrow(body.getOrderId());
-        order = order.updatePaid(clockHolder);
-        return orderRepository.save(order);
+    public Order updateOrderPaid(Order order) {
+        Order paidOrder = order.updatePaid(clockHolder);
+        return orderRepository.save(paidOrder);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void updateOrderConfirmFailure(ConfirmPaymentRequest body) {
-        Order order = orderRepository.getByRequestIdWithThrow(body.getOrderId());
-        order = order.updateStatus(OrderStatus.PAYMENT_FAILED);
-        orderRepository.save(order);
+    public void updateOrderConfirmFailure(Order order) {
+        Order failedOrder = order.updateStatus(OrderStatus.PAYMENT_FAILED);
+        orderRepository.save(failedOrder);
     }
 
     @Transactional(readOnly = true)
@@ -177,17 +145,5 @@ public class OrderService {
                 .orderId(order.getId())
                 .orderResumeResponses(orderResumes)
                 .build();
-    }
-
-    private static List<Long> getCartResumeIds(OrderInCartRequest body) {
-        List<Long> cartResumeIds = body.getCartResumeIds();
-        if(cartResumeIds.isEmpty()){
-            throw new ApiException(CartResumeErrorCode.NOT_SELECTED);
-        }
-        return cartResumeIds;
-    }
-
-    private String createRequestId(Long userId){
-        return clockHolder.millis() / 5000 + "-" + uuidHolder.random() + "-" + userId;
     }
 }
