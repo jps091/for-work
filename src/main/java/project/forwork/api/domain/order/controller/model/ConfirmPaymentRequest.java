@@ -1,6 +1,10 @@
 package project.forwork.api.domain.order.controller.model;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
+
+import java.math.BigDecimal;
+import java.util.List;
 
 
 @Builder
@@ -9,7 +13,12 @@ import lombok.*;
 @Getter
 @Data
 public class ConfirmPaymentRequest {
+    @NotNull
+    private List<Long> resumeIds;
+    @NotNull
     private String paymentKey;
-    private String orderId; // 멱등키
-    private String amount;
+    @NotNull
+    private String requestId;
+    @NotNull
+    private BigDecimal amount;
 }

@@ -12,7 +12,7 @@ import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
-import project.forwork.api.domain.order.controller.model.ConfirmPaymentRequest;
+import project.forwork.api.domain.order.controller.model.ConfirmPaymentDto;
 import project.forwork.api.domain.order.controller.model.PaymentFullCancelRequest;
 import project.forwork.api.domain.order.controller.model.PaymentPartialCancelRequest;
 
@@ -37,7 +37,7 @@ public class PaymentGatewayService {
             maxAttempts = 1,
             backoff =  @Backoff(delay = 50)
     )
-    public void confirm(ConfirmPaymentRequest body){
+    public void confirm(ConfirmPaymentDto body){
         String authorizations = getAuthorizations();
         String confirmURL = URL +"confirm";
 

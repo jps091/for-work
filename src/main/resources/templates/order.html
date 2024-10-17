@@ -10,18 +10,20 @@
 <div id="agreement"></div>
 
 <!-- 결제 관련 정보 출력 -->
+<p th:text="${resumeId}"></p>
 <p th:text="${amount}"></p>
-<p th:text="${requestId}"></p>
 <p th:text="${customerKey}"></p>
+<p th:text="${orderId}"></p>
 
 <!-- 결제하기 버튼 -->
 <button id="payment-button">결제하기</button>
 
 <script>
     const button = document.getElementById("payment-button");
+    const resumeId = '[[${resumeId}]]';
     const amount = /*[[${amount}]]*/ [[${amount}]]; // Thymeleaf에서 값 바인딩
-    const orderId = '[[${requestId}]]';
     const customerKey = '[[${customerKey}]]';
+    const orderId = '[[${orderId}]]';
 
     // 고객의 고유 아이디를 customerKey로 설정
     const widgetClientKey = "test_gck_docs_Ovk5rk1EwkEbP0W43n07xlzm";
@@ -32,14 +34,17 @@
     paymentWidget.renderAgreement("#agreement", { variantKey: "AGREEMENT" });
 
     button.addEventListener("click", function () {
+
+        const successUrl = window.location.origin + "/open-api/order-requested?resumeId=" + encodeURIComponent(resumeId);
+
         paymentWidget.requestPayment({
             orderId: orderId,
             orderName: "TEST ORDER",
-            successUrl: window.location.origin + "/open-api/order-requested",
+            successUrl: successUrl,
             failUrl: window.location.origin + "/open-api/fail",
             customerEmail: "customer123@gmail.com",
             customerName: "김토스",
-            customerMobilePhone: "01012341234",
+            //customerMobilePhone: "01012341234",
         });
     });
 </script>
