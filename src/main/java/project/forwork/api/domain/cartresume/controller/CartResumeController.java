@@ -26,14 +26,14 @@ public class CartResumeController {
 
     @Operation(summary = "장바구니에 이력서 담기", description = "resumeId 이력서 담기")
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping("/{salesPostId}/register")
+    @PostMapping("/register")
     public Api<String> register(
             @Parameter(hidden = true) @Current CurrentUser currentUser,
-            @PathVariable Long salesPostId
+            @RequestParam Long resumeId
     ){
-        cartResumeService.register(currentUser, salesPostId);
+        cartResumeService.register(currentUser, resumeId);
         return Api.CREATED("이력서 장바구니 추가 성공");
-    }
+    } // TODO API명세서
 
     @Operation(summary = "선택한 이력서 장바구니에서 제거", description = "cartResumeIds에 속한 이력서를 장바구니에서 삭제")
     @DeleteMapping("/select")
@@ -52,15 +52,6 @@ public class CartResumeController {
     ){
         cartResumeService.deleteAllInCart(currentUser);
         return Api.OK("장바구니 비우기 성공");
-    }
-
-    @Operation(summary = "장바구니서 선택한 이력서 총가격, 총개수 조회하기", description = "장바구니서 선택한 이력서 총가격, 총개수 조회 하기")
-    @GetMapping("/select")
-    public Api<CartResumeDetailResponse> getCartSummary(
-            @RequestParam List<Long> cartResumeIds
-    ){
-        CartResumeDetailResponse selectedCartResumes = cartResumeService.selectCartResumes(cartResumeIds);
-        return Api.OK(selectedCartResumes);
     }
 
     @Operation(summary = "장바구니에 있는 이력서 전체 조회", description = "로그인한 회원의 장바구니 이력서 전체 조회")

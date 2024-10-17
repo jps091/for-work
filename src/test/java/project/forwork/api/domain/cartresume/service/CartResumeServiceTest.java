@@ -186,20 +186,6 @@ class CartResumeServiceTest {
     }
 
     @Test
-    void 장바구니에서_선택한_이력서의_총가격과_갯수를_파악_할_수_있다(){
-        //given(상황환경 세팅)
-        //when(상황발생)
-        CartResumeDetailResponse response1 = cartResumeService.selectCartResumes(List.of(1L, 2L));
-        CartResumeDetailResponse response2 = cartResumeService.selectCartResumes(List.of(2L));
-
-        //then(검증)
-        assertThat(response1.getTotalPrice()).isEqualTo(new BigDecimal("99000.00"));
-        assertThat(response1.getTotalQuantity()).isEqualTo(2);
-        assertThat(response2.getTotalPrice()).isEqualTo(new BigDecimal("78000.00"));
-        assertThat(response2.getTotalQuantity()).isEqualTo(1);
-    }
-
-    @Test
     void 로그인한_회원은_장바구니에_담긴_이력서를_전체_조회_할_수_있다(){
         //given(상황환경 세팅)
         CurrentUser currentUser = CurrentUser.builder()
