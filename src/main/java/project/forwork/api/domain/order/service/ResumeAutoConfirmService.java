@@ -57,7 +57,7 @@ public class ResumeAutoConfirmService {
             orders = updateOrdersByStatus(orders, updatedStatus);
 
             // 상태가 변경된 후에는 다시 조회하지 않음
-            sendMailByOrderConfirm(updatedStatus, orders);
+            sendMailByOrderConfirm(orders, updatedStatus);
         }
     }
 
@@ -66,12 +66,11 @@ public class ResumeAutoConfirmService {
                 .map(order -> order.updateStatus(status))
                 .toList();
 
-        orderRepository.saveAll(updatedOrders);
-        return updatedOrders;
+        return orderRepository.saveAll(updatedOrders);
     }
 
-    public void sendMailByOrderConfirm(OrderStatus updatedStatus, List<Order> orders) {
-        if (updatedStatus.equals(OrderStatus.PARTIAL_CONFIRM) || updatedStatus.equals(OrderStatus.CONFIRM)) {
+    public void sendMailByOrderConfirm(List<Order> orders, OrderStatus updatedStatus) {
+        if (OrderStatus.PARTIAL_CONFIRM.equals(updatedStatus) || OrderStatus.CONFIRM.equals(updatedStatus)) {
             orderResumeService.sendMailForAutoConfirmedOrder(orders);
         }
     }

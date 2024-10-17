@@ -11,10 +11,7 @@ public interface SalesPostRepository {
     SalesPost getByIdWithThrow(Long salesPostId);
     SalesPost getByIdWithPessimisticLock(Long salesPostId);
     SalesPost getByIdWithOptimisticLock(Long salesPostId);
-    SalesPost getByResumeWithPessimisticLock(Long resumeId);
-    SalesPost getByResumeWithOptimisticLock(Long resumeId);
     Optional<SalesPost> findById(Long salesPostId);
     SalesPost getByResumeWithThrow(Resume resume);
     Optional<SalesPost> findByResume(Resume resume);
-    List<SalesPost> saveAll(List<SalesPost> salesPosts);
 }

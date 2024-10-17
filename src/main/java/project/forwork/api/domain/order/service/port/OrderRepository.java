@@ -11,7 +11,7 @@ import java.util.Optional;
  */
 public interface OrderRepository {
     Order save(Order order);
-    void saveAll(List<Order> orders);
+    List<Order> saveAll(List<Order> orders);
     Order getByIdWithThrow(Long orderId);
     Order getOrderWithThrow(Long userId, Long orderId);
     Order getByRequestIdWithThrow(String requestId);

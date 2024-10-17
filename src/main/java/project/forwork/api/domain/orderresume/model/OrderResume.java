@@ -65,4 +65,8 @@ public class OrderResume {
     public BigDecimal getPrice(){
         return resume.getPrice();
     }
+
+    public Long getResumeId(){
+        return resume.getId();
+    }
 }

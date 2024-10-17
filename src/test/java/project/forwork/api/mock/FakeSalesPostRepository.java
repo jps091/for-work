@@ -27,8 +27,6 @@ public class FakeSalesPostRepository implements SalesPostRepository {
                     .title(salesPost.getTitle())
                     .thumbnailImage(salesPost.getThumbnailImage())
                     .salesStatus(salesPost.getSalesStatus())
-                    .salesQuantity(salesPost.getSalesQuantity())
-                    .viewCount(salesPost.getViewCount())
                     .registeredAt(salesPost.getRegisteredAt())
                     .build();
             data.add(newSalesPost);
@@ -75,18 +73,4 @@ public class FakeSalesPostRepository implements SalesPostRepository {
         return findById(salesPostId).orElseThrow(() -> new ApiException(SalesPostErrorCode.SALES_POST_NOT_FOUND));
     }
 
-    @Override
-    public SalesPost getByResumeWithPessimisticLock(Long resumeId) {
-        return findById(resumeId).orElseThrow(() -> new ApiException(SalesPostErrorCode.SALES_POST_NOT_FOUND));
-    }
-
-    @Override
-    public SalesPost getByResumeWithOptimisticLock(Long resumeId) {
-        return findById(resumeId).orElseThrow(() -> new ApiException(SalesPostErrorCode.SALES_POST_NOT_FOUND));
-    }
-
-    @Override
-    public List<SalesPost> saveAll(List<SalesPost> salesPosts) {
-        return salesPosts.stream().map(this::save).toList();
-    }
 }

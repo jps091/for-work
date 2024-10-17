@@ -9,7 +9,7 @@ import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import project.forwork.api.common.service.port.ClockHolder;
-import project.forwork.api.domain.resume.controller.model.ResumeResponse;
+import project.forwork.api.domain.resume.controller.model.ResumeAdminResponse;
 import project.forwork.api.domain.resume.infrastructure.enums.PeriodCond;
 import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
 import project.forwork.api.domain.resume.service.port.ResumeRepositoryCustom;
@@ -32,11 +32,11 @@ public class ResumeRepositoryCustomImpl implements ResumeRepositoryCustom {
         this.clockHolder = clockHolder;
     }
 
-    public List<ResumeResponse> findFirstPage2(
+    public List<ResumeAdminResponse> findFirstPage2(
             PeriodCond periodCond, ResumeStatus status, int limit
     ){
         return  queryFactory
-                .select(Projections.fields(ResumeResponse.class,
+                .select(Projections.fields(ResumeAdminResponse.class,
                         resumeEntity.id.as("id"),
                         resumeEntity.fieldType.as("field"),
                         resumeEntity.levelType.as("level"),
@@ -53,11 +53,11 @@ public class ResumeRepositoryCustomImpl implements ResumeRepositoryCustom {
                 .fetch();
     }
 
-    public List<ResumeResponse> findLastPage2(
+    public List<ResumeAdminResponse> findLastPage2(
             PeriodCond periodCond, ResumeStatus status, int limit
     ){
-        List<ResumeResponse> results = queryFactory
-                .select(Projections.fields(ResumeResponse.class,
+        List<ResumeAdminResponse> results = queryFactory
+                .select(Projections.fields(ResumeAdminResponse.class,
                         resumeEntity.id.as("id"),
                         resumeEntity.fieldType.as("field"),
                         resumeEntity.levelType.as("level"),
@@ -79,12 +79,12 @@ public class ResumeRepositoryCustomImpl implements ResumeRepositoryCustom {
         return results;
     }
 
-    public List<ResumeResponse> findNextPage2(
+    public List<ResumeAdminResponse> findNextPage2(
             PeriodCond periodCond, ResumeStatus status,
             LocalDateTime lastModifiedAt, Long lastId, int limit
     ){
         return  queryFactory
-                .select(Projections.fields(ResumeResponse.class,
+                .select(Projections.fields(ResumeAdminResponse.class,
                         resumeEntity.id.as("id"),
                         resumeEntity.fieldType.as("field"),
                         resumeEntity.levelType.as("level"),
@@ -104,12 +104,12 @@ public class ResumeRepositoryCustomImpl implements ResumeRepositoryCustom {
                 .fetch();
     }
 
-    public List<ResumeResponse> findPreviousPage2(
+    public List<ResumeAdminResponse> findPreviousPage2(
             PeriodCond periodCond, ResumeStatus status,
             LocalDateTime lastModifiedAt, Long lastId, int limit
     ){
-        List<ResumeResponse> results = queryFactory
-                .select(Projections.fields(ResumeResponse.class,
+        List<ResumeAdminResponse> results = queryFactory
+                .select(Projections.fields(ResumeAdminResponse.class,
                         resumeEntity.id.as("id"),
                         resumeEntity.fieldType.as("field"),
                         resumeEntity.levelType.as("level"),
@@ -136,11 +136,11 @@ public class ResumeRepositoryCustomImpl implements ResumeRepositoryCustom {
         return results;
     }
 
-    public List<ResumeResponse> findFirstPage(
+    public List<ResumeAdminResponse> findFirstPage(
             PeriodCond periodCond, ResumeStatus status, int limit
     ){
         return  queryFactory
-                .select(Projections.fields(ResumeResponse.class,
+                .select(Projections.fields(ResumeAdminResponse.class,
                         resumeEntity.id.as("id"),
                         resumeEntity.fieldType.as("field"),
                         resumeEntity.levelType.as("level"),
@@ -157,11 +157,11 @@ public class ResumeRepositoryCustomImpl implements ResumeRepositoryCustom {
                 .fetch();
     }
 
-    public List<ResumeResponse> findLastPage(
+    public List<ResumeAdminResponse> findLastPage(
             PeriodCond periodCond, ResumeStatus status, int limit
     ){
-        List<ResumeResponse> results = queryFactory
-                .select(Projections.fields(ResumeResponse.class,
+        List<ResumeAdminResponse> results = queryFactory
+                .select(Projections.fields(ResumeAdminResponse.class,
                         resumeEntity.id.as("id"),
                         resumeEntity.fieldType.as("field"),
                         resumeEntity.levelType.as("level"),
@@ -183,12 +183,12 @@ public class ResumeRepositoryCustomImpl implements ResumeRepositoryCustom {
         return results;
     }
 
-    public List<ResumeResponse> findNextPage(
+    public List<ResumeAdminResponse> findNextPage(
             PeriodCond periodCond, ResumeStatus status,
             LocalDateTime lastModifiedAt, Long lastId, int limit
     ){
         return  queryFactory
-                .select(Projections.fields(ResumeResponse.class,
+                .select(Projections.fields(ResumeAdminResponse.class,
                         resumeEntity.id.as("id"),
                         resumeEntity.fieldType.as("field"),
                         resumeEntity.levelType.as("level"),
@@ -199,8 +199,8 @@ public class ResumeRepositoryCustomImpl implements ResumeRepositoryCustom {
                 .from(resumeEntity)
                 .where(dateRangeCond(periodCond),
                         resumeStatusEqual(status),
-                        resumeEntity.modifiedAt.eq(lastModifiedAt)
-                                .and(resumeEntity.id.gt(lastId))
+                        (resumeEntity.modifiedAt.eq(lastModifiedAt)
+                                .and(resumeEntity.id.gt(lastId)))
                                  .or(resumeEntity.modifiedAt.gt(lastModifiedAt))
                 )
                 .orderBy(resumeEntity.modifiedAt.asc(), resumeEntity.id.asc())
@@ -208,12 +208,12 @@ public class ResumeRepositoryCustomImpl implements ResumeRepositoryCustom {
                 .fetch();
     }
 
-    public List<ResumeResponse> findPreviousPage(
+    public List<ResumeAdminResponse> findPreviousPage(
             PeriodCond periodCond, ResumeStatus status,
             LocalDateTime lastModifiedAt, Long lastId, int limit
     ){
-        List<ResumeResponse> results = queryFactory
-                .select(Projections.fields(ResumeResponse.class,
+        List<ResumeAdminResponse> results = queryFactory
+                .select(Projections.fields(ResumeAdminResponse.class,
                         resumeEntity.id.as("id"),
                         resumeEntity.fieldType.as("field"),
                         resumeEntity.levelType.as("level"),
@@ -224,10 +224,8 @@ public class ResumeRepositoryCustomImpl implements ResumeRepositoryCustom {
                 .from(resumeEntity)
                 .where(dateRangeCond(periodCond),
                         resumeStatusEqual(status),
-                        (
-                                resumeEntity.modifiedAt.eq(lastModifiedAt)
-                                        .and(resumeEntity.id.lt(lastId))
-                        )
+                        (resumeEntity.modifiedAt.eq(lastModifiedAt)
+                                .and(resumeEntity.id.lt(lastId)))
                                 .or(resumeEntity.modifiedAt.lt(lastModifiedAt))
                 )
                 .orderBy(resumeEntity.modifiedAt.desc(), resumeEntity.id.desc())

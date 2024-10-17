@@ -1,10 +1,12 @@
 package project.forwork.api.mock;
 
 import project.forwork.api.common.error.ResumeErrorCode;
+import project.forwork.api.common.error.SalesPostErrorCode;
 import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
 import project.forwork.api.domain.resume.model.Resume;
 import project.forwork.api.domain.resume.service.port.ResumeRepository;
+import project.forwork.api.domain.salespost.model.SalesPost;
 import project.forwork.api.domain.user.model.User;
 
 import java.util.ArrayList;
@@ -27,6 +29,8 @@ public class FakeResumeRepository implements ResumeRepository {
                     .seller(resume.getSeller())
                     .field(resume.getField())
                     .level(resume.getLevel())
+                    .modifiedAt(resume.getModifiedAt())
+                    .salesQuantity(resume.getSalesQuantity())
                     .resumeUrl(resume.getResumeUrl())
                     .descriptionImageUrl(resume.getDescriptionImageUrl())
                     .price(resume.getPrice())
@@ -58,17 +62,42 @@ public class FakeResumeRepository implements ResumeRepository {
     }
 
     @Override
-    public List<Resume> findAll() {
-        return data;
-    }
-
-    @Override
-    public List<Resume> findAllByStatus(ResumeStatus status) {
-        return null; //
-    }
-
-    @Override
     public List<Resume> findAllBySeller(User seller) {
         return data.stream().filter(r -> Objects.equals(r.getSeller().getId(), seller.getId())).toList();
+    }
+
+    @Override
+    public List<Resume> findByIdsWithPessimisticLock(List<Long> resumeIds) {
+        return data.stream()
+                .filter(resume -> resumeIds.contains(resume.getId())).toList();
+    }
+
+    @Override
+    public Resume getByIdWithPessimisticLock(Long resumeId) {
+        return findById(resumeId).orElseThrow(() -> new ApiException(SalesPostErrorCode.SALES_POST_NOT_FOUND));
+    }
+
+    @Override
+    public Resume getByIdWithOptimisticLock(Long resumeId) {
+        return findById(resumeId).orElseThrow(() -> new ApiException(SalesPostErrorCode.SALES_POST_NOT_FOUND));
+    }
+
+    @Override
+    public List<Resume> saveAll(List<Resume> resumes) {
+        return resumes.stream().map(this::save).toList();
+    }
+
+
+    @Override
+    public List<Resume> findByIds(List<Long> resumeIds) {
+        return data.stream()
+                .filter(resume -> resumeIds.contains(resume.getId())).toList();
+    }
+
+    @Override
+    public void increaseQuantity(Long resumeId) {
+        Resume resume = getByIdWithThrow(resumeId);
+        Resume newResume = resume.increaseSalesQuantity();
+        save(newResume);
     }
 }

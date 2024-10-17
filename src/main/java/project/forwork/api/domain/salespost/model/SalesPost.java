@@ -21,8 +21,6 @@ public class SalesPost {
     private final String title;
     private final ThumbnailImage thumbnailImage;
     private final SalesStatus salesStatus;
-    private final Integer salesQuantity;
-    private final Integer viewCount; // TODO 제거
     private final LocalDateTime registeredAt;
     //private final Long version;
 
@@ -33,8 +31,6 @@ public class SalesPost {
                 .title(resume.createSalesPostTitle())
                 .thumbnailImage(thumbnailImage)
                 .salesStatus(SalesStatus.SELLING)
-                .salesQuantity(0)
-                .viewCount(0)
                 .build();
     }
 
@@ -45,38 +41,6 @@ public class SalesPost {
                 .title(title)
                 .thumbnailImage(thumbnailImage)
                 .salesStatus(status)
-                .salesQuantity(salesQuantity)
-                .viewCount(viewCount)
-                .registeredAt(registeredAt)
-                //.version(version)
-                .build();
-    }
-
-    public SalesPost increaseSalesQuantity(){
-        return SalesPost.builder()
-                .id(id)
-                .resume(resume)
-                .title(title)
-                .thumbnailImage(thumbnailImage)
-                .salesStatus(salesStatus)
-                .salesQuantity(salesQuantity + 1)
-                .viewCount(viewCount)
-                .registeredAt(registeredAt)
-                //.version(version)
-                .build();
-    }
-
-    public SalesPost addViewCount(){
-        validStatusSelling();
-
-        return SalesPost.builder()
-                .id(id)
-                .resume(resume)
-                .title(title)
-                .thumbnailImage(thumbnailImage)
-                .salesStatus(salesStatus)
-                .salesQuantity(salesQuantity)
-                .viewCount(viewCount + 1)
                 .registeredAt(registeredAt)
                 //.version(version)
                 .build();

@@ -30,24 +30,11 @@ public class Order {
     private final OrderStatus status;
     private final LocalDateTime paidAt;
 
-    public static Order create(User user, Resume resume, String requestId){
+    public static Order create(User user, String requestId, BigDecimal totalAmount){
         return Order.builder()
                 .user(user)
                 .requestId(requestId)
-                .totalAmount(resume.getPrice())
-                .status(OrderStatus.ORDERED)
-                .build();
-    }
-
-    public static Order create(User user, List<CartResume> cartResumes, String requestId){
-        BigDecimal totalPrice = cartResumes.stream()
-                .map(CartResume::getPrice)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-        return Order.builder()
-                .user(user)
-                .requestId(requestId)
-                .totalAmount(totalPrice)
+                .totalAmount(totalAmount)
                 .status(OrderStatus.ORDERED)
                 .build();
     }

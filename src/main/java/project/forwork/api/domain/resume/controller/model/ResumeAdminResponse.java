@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ResumeResponse {
+public class ResumeAdminResponse {
 
     private Long id;
     private String summary;
@@ -21,8 +21,8 @@ public class ResumeResponse {
     private ResumeStatus status;
     private LocalDateTime modifiedAt;
 
-    public static ResumeResponse from(Resume resume){
-        return ResumeResponse.builder()
+    public static ResumeAdminResponse from(Resume resume){
+        return ResumeAdminResponse.builder()
                 .id(resume.getId())
                 .summary(resume.getDescription().substring(0, 15) + "...")
                 .field(resume.getField())

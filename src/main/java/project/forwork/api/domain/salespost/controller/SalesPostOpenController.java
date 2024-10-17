@@ -9,7 +9,7 @@ import project.forwork.api.domain.salespost.controller.model.SalesPostDetailResp
 import project.forwork.api.domain.salespost.controller.model.SalesPostPage;
 import project.forwork.api.domain.salespost.infrastructure.enums.FieldCond;
 import project.forwork.api.domain.salespost.infrastructure.enums.LevelCond;
-import project.forwork.api.domain.resume.infrastructure.enums.PageStep;
+import project.forwork.api.common.infrastructure.enums.PageStep;
 import project.forwork.api.domain.salespost.infrastructure.enums.SalesPostSortType;
 import project.forwork.api.domain.salespost.service.SalesPostService;
 

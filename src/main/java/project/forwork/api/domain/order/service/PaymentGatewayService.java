@@ -12,7 +12,7 @@ import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
-import project.forwork.api.domain.order.controller.model.ConfirmPaymentRequest;
+import project.forwork.api.domain.order.controller.model.ConfirmPaymentDto;
 import project.forwork.api.domain.order.controller.model.PaymentFullCancelRequest;
 import project.forwork.api.domain.order.controller.model.PaymentPartialCancelRequest;
 
@@ -32,12 +32,12 @@ public class PaymentGatewayService {
     @Value("${pg.url}")
     public String URL;
 
-    @Retryable(
+    @Retryable( //TODO 배포시 시간 변경
             value = SocketTimeoutException.class,
-            maxAttempts = 2,
-            backoff =  @Backoff(delay = 2000)
+            maxAttempts = 1,
+            backoff =  @Backoff(delay = 50)
     )
-    public void confirm(ConfirmPaymentRequest body){
+    public void confirm(ConfirmPaymentDto body){
         String authorizations = getAuthorizations();
         String confirmURL = URL +"confirm";
 

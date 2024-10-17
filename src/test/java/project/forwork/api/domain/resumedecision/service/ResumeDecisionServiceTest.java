@@ -107,9 +107,7 @@ class ResumeDecisionServiceTest {
                 .resume(resume1)
                 .title(resume1.createSalesPostTitle())
                 .salesStatus(SalesStatus.CANCELED)
-                .salesQuantity(30)
                 .thumbnailImage(thumbnailImage1)
-                .viewCount(0)
                 .build();
 
         fakeSalesPostRepository.save(salesPost);

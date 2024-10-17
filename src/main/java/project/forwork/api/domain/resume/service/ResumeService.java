@@ -3,14 +3,18 @@ package project.forwork.api.domain.resume.service;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import project.forwork.api.common.controller.port.S3Service;
 import project.forwork.api.common.error.ResumeErrorCode;
 import project.forwork.api.common.exception.ApiException;
+import project.forwork.api.domain.orderresume.model.OrderResume;
 import project.forwork.api.domain.resume.controller.model.*;
-import project.forwork.api.domain.resume.infrastructure.enums.PageStep;
+import project.forwork.api.common.infrastructure.enums.PageStep;
 import project.forwork.api.domain.resume.infrastructure.enums.PeriodCond;
 import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
 import project.forwork.api.domain.resume.model.Resume;
@@ -69,14 +73,6 @@ public class ResumeService {
         });
     }
 
-    public void updatePending(Long resumeId, CurrentUser currentUser){
-        Resume resume = resumeRepository.getByIdWithThrow(resumeId);
-        validateAuthor(currentUser, resume);
-
-        resume = resume.updateStatus(ResumeStatus.PENDING);
-        resumeRepository.save(resume);
-    }
-
     public void delete(Long resumeId, CurrentUser currentUser) {
         Resume resume = resumeRepository.getByIdWithThrow(resumeId);
         validateAuthor(currentUser, resume);
@@ -110,7 +106,7 @@ public class ResumeService {
     public ResumePage findFirstPage(
             PeriodCond periodCond, ResumeStatus status, int limit
     ){
-        List<ResumeResponse> results = resumeRepositoryCustom.findFirstPage(periodCond, status, limit);
+        List<ResumeAdminResponse> results = resumeRepositoryCustom.findFirstPage(periodCond, status, limit);
         return createResumePage(results);
     }
 
@@ -118,8 +114,8 @@ public class ResumeService {
     public ResumePage findLastPage(
             PeriodCond periodCond, ResumeStatus status, int limit
     ){
-        List<ResumeResponse> results = resumeRepositoryCustom.findLastPage(periodCond, status, limit);
-        return createResumePage(results);
+        List<ResumeAdminResponse> results = resumeRepositoryCustom.findLastPage(periodCond, status, limit);
+        return createReverseResumePage(results);
     }
 
     @Transactional(readOnly = true)
@@ -127,7 +123,7 @@ public class ResumeService {
             PeriodCond periodCond, ResumeStatus status,
             LocalDateTime lastModifiedAt, Long lastId, int limit
     ){
-        List<ResumeResponse> results = resumeRepositoryCustom.findNextPage(periodCond, status, lastModifiedAt, lastId, limit);
+        List<ResumeAdminResponse> results = resumeRepositoryCustom.findNextPage(periodCond, status, lastModifiedAt, lastId, limit);
         return createResumePage(results);
     }
 
@@ -136,23 +132,23 @@ public class ResumeService {
             PeriodCond periodCond, ResumeStatus status,
             LocalDateTime lastModifiedAt, Long lastId, int limit
     ){
-        List<ResumeResponse> results = resumeRepositoryCustom.findPreviousPage(periodCond, status, lastModifiedAt, lastId, limit);
-        return createResumePage(results);
+        List<ResumeAdminResponse> results = resumeRepositoryCustom.findPreviousPage(periodCond, status, lastModifiedAt, lastId, limit);
+        return createReverseResumePage(results);
     }
 
-    public List<ResumeResponse> findResumesBySeller(CurrentUser currentUser){
+    public List<ResumeSellerResponse> findResumesBySeller(CurrentUser currentUser){
         User user = userRepository.getByIdWithThrow(currentUser.getId());
 
-        List<ResumeResponse> resumeResponses = resumeRepository.findAllBySeller(user)
+        List<ResumeSellerResponse> resumeAdminResponses = resumeRepository.findAllBySeller(user)
                 .stream()
-                .map(ResumeResponse::from)
+                .map(ResumeSellerResponse::from)
                 .toList();
 
-        if(resumeResponses.isEmpty()){
+        if(resumeAdminResponses.isEmpty()){
             throw new ApiException(ResumeErrorCode.RESUME_NO_CONTENT);
         }
 
-        return resumeResponses;
+        return resumeAdminResponses;
     }
 
     private static void validateAuthor(CurrentUser currentUser, Resume resume) {
@@ -167,17 +163,32 @@ public class ResumeService {
         }
     }
 
-    private static ResumePage createResumePage(List<ResumeResponse> results) {
+    private ResumePage createResumePage(List<ResumeAdminResponse> results) {
         if(results.isEmpty()){
             throw new ApiException(ResumeErrorCode.RESUME_NO_CONTENT);
         }
 
-        ResumeResponse lastRecord = results.get(results.size() - 1);
+        ResumeAdminResponse lastRecord = results.get(results.size() - 1);
 
         return ResumePage.builder()
                 .lastId(lastRecord.getId())
                 .lastModifiedAt(lastRecord.getModifiedAt())
                 .results(results)
+                .build();
+    }
+
+    private ResumePage createReverseResumePage(List<ResumeAdminResponse> results) {
+
+        if(results.isEmpty()){
+            throw new ApiException(ResumeErrorCode.RESUME_NO_CONTENT);
+        }
+
+        ResumeAdminResponse firstRecord = results.get(0);
+
+        return ResumePage.builder()
+                .results(results)
+                .lastModifiedAt(firstRecord.getModifiedAt())
+                .lastId(firstRecord.getId())
                 .build();
     }
 }

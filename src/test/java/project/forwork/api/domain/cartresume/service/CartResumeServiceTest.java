@@ -32,13 +32,13 @@ class CartResumeServiceTest {
 
     @BeforeEach
     void init(){
-        FakeSalesPostRepository fakeSalesPostRepository = new FakeSalesPostRepository();
         fakeCartResumeRepository = new FakeCartResumeRepository();
+        FakeResumeRepository fakeResumeRepository = new FakeResumeRepository();
         FakeCartRepository fakeCartRepository = new FakeCartRepository();
         this.cartResumeService = CartResumeService.builder()
                 .cartResumeRepository(fakeCartResumeRepository)
-                .salesPostRepository(fakeSalesPostRepository)
                 .cartRepository(fakeCartRepository)
+                .resumeRepository(fakeResumeRepository)
                 .build();
 
         User user1 = User.builder()
@@ -93,37 +93,9 @@ class CartResumeServiceTest {
                 .status(ResumeStatus.ACTIVE)
                 .build();
 
-
-        SalesPost salesPost1 = SalesPost.builder()
-                .id(1L)
-                .resume(resume1)
-                .title(resume1.createSalesPostTitle())
-                .salesStatus(SalesStatus.SELLING)
-                .salesQuantity(30)
-                .viewCount(0)
-                .build();
-
-        SalesPost salesPost2 = SalesPost.builder()
-                .id(2L)
-                .resume(resume2)
-                .title(resume2.createSalesPostTitle())
-                .salesStatus(SalesStatus.SELLING)
-                .salesQuantity(30)
-                .viewCount(0)
-                .build();
-
-        SalesPost salesPost3 = SalesPost.builder()
-                .id(3L)
-                .resume(resume3)
-                .title(resume3.createSalesPostTitle())
-                .salesStatus(SalesStatus.CANCELED)
-                .salesQuantity(30)
-                .viewCount(0)
-                .build();
-
-        fakeSalesPostRepository.save(salesPost1);
-        fakeSalesPostRepository.save(salesPost2);
-        fakeSalesPostRepository.save(salesPost3);
+        fakeResumeRepository.save(resume1);
+        fakeResumeRepository.save(resume2);
+        fakeResumeRepository.save(resume3);
 
         Cart cart1 = Cart.builder()
                 .id(1L)
@@ -211,20 +183,6 @@ class CartResumeServiceTest {
 
         assertThatCode(() -> cartResumeService.register(currentUser, resumeId))
                 .doesNotThrowAnyException();
-    }
-
-    @Test
-    void 장바구니에서_선택한_이력서의_총가격과_갯수를_파악_할_수_있다(){
-        //given(상황환경 세팅)
-        //when(상황발생)
-        CartResumeDetailResponse response1 = cartResumeService.selectCartResumes(List.of(1L, 2L));
-        CartResumeDetailResponse response2 = cartResumeService.selectCartResumes(List.of(2L));
-
-        //then(검증)
-        assertThat(response1.getTotalPrice()).isEqualTo(new BigDecimal("99000.00"));
-        assertThat(response1.getTotalQuantity()).isEqualTo(2);
-        assertThat(response2.getTotalPrice()).isEqualTo(new BigDecimal("78000.00"));
-        assertThat(response2.getTotalQuantity()).isEqualTo(1);
     }
 
     @Test

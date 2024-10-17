@@ -38,13 +38,6 @@ class SalesPostRepositoryCustomImplTest {
     @Autowired
     private SalesPostRepositoryCustomImpl repository;
 
-    /***
-     * ('test1', 'FRONTEND', 'NEW', 'PENDING')
-     * ('test2', 'AI', 'SENIOR', 'REJECTED')
-     * ('test3', 'BACKEND', 'JUNIOR', 'PENDING')
-     * ('test4', 'FRONTEND', 'NEW', 'ACTIVE') // cancel
-     */
-
     @Test
     void 조건_없이_첫_페이지_검색(){
         //given(상황환경 세팅)
@@ -55,8 +48,8 @@ class SalesPostRepositoryCustomImplTest {
 
         //then(검증)
         assertThat(result).hasSize(2);
-        assertThat(result.get(0).getId()).isEqualTo(8L);
-        assertThat(result.get(1).getId()).isEqualTo(7L);
+        assertThat(result.get(0).getId()).isEqualTo(6L);
+        assertThat(result.get(1).getId()).isEqualTo(8L);
     }
 // 7,5,4,3,1 back
     @Test
@@ -109,40 +102,40 @@ class SalesPostRepositoryCustomImplTest {
         List<SalesPostResponse> result = repository.findFirstPage(cond, 10);
         //then(검증)
     }
-
-/*    @Test
+    //3 6 7 2 8 1 5 /1 3 5 7
+    @Test
     void 조건_BACKEND_조회순_첫_페이지_검색(){
         //given(상황환경 세팅)
         SalesPostFilterCond cond = SalesPostFilterCond.from
-                (SalesPostSortType., null, null, FieldCond.BACKEND, null);
+                (SalesPostSortType.BEST_SELLING, null, null, FieldCond.BACKEND, null);
 
         //when(상황발생) 기본 정렬 최신 등록순
         List<SalesPostResponse> result = repository.findFirstPage(cond, 3);
 
         //then(검증)
         assertThat(result).hasSize(3);
-        assertThat(result.get(0).getId()).isEqualTo(5L);
+        assertThat(result.get(0).getId()).isEqualTo(4L);
         assertThat(result.get(1).getId()).isEqualTo(7L);
         assertThat(result.get(2).getId()).isEqualTo(1L);
         assertThat(result).allMatch(salesPostResponse -> salesPostResponse.getField().equals(FieldType.BACKEND));
-    }*/
+    }
 
-/*    @Test
+    @Test
     void 조건_BACKEND_가격_범위_조회순_첫_페이지_검색(){
         //given(상황환경 세팅)
         SalesPostFilterCond cond = SalesPostFilterCond.from
-                (SalesPostSortType.VIEW_COUNT, new BigDecimal("60000.00"), new BigDecimal("90000.00"), FieldCond.BACKEND, null);
+                (SalesPostSortType.BEST_SELLING, new BigDecimal("60000.00"), new BigDecimal("90000.00"), FieldCond.BACKEND, null);
 
         //when(상황발생) 기본 정렬 최신 등록순
         List<SalesPostResponse> result = repository.findFirstPage(cond, 3);
 
         //then(검증)
         assertThat(result).hasSize(3);
-        assertThat(result.get(0).getId()).isEqualTo(5L);
+        assertThat(result.get(0).getId()).isEqualTo(4L);
         assertThat(result.get(1).getId()).isEqualTo(1L);
-        assertThat(result.get(2).getId()).isEqualTo(4L);
+        assertThat(result.get(2).getId()).isEqualTo(5L);
         assertThat(result).allMatch(salesPostResponse -> salesPostResponse.getField().equals(FieldType.BACKEND));
-    }*/
+    }
 
     @Test
     void 조건_없이_다음_페이지_검색(){
@@ -154,8 +147,8 @@ class SalesPostRepositoryCustomImplTest {
 
         //then(검증)
         assertThat(result).hasSize(2);
-        assertThat(result.get(0).getId()).isEqualTo(6L);
-        assertThat(result.get(1).getId()).isEqualTo(5L);
+        assertThat(result.get(0).getId()).isEqualTo(5L);
+        assertThat(result.get(1).getId()).isEqualTo(4L);
     }
 
     @Test
@@ -168,8 +161,8 @@ class SalesPostRepositoryCustomImplTest {
 
         //then(검증)
         assertThat(result).hasSize(2);
-        assertThat(result.get(0).getId()).isEqualTo(6L);
-        assertThat(result.get(1).getId()).isEqualTo(7L);
+        assertThat(result.get(0).getId()).isEqualTo(7L);
+        assertThat(result.get(1).getId()).isEqualTo(8L);
     }
 
     @Test
@@ -217,7 +210,7 @@ class SalesPostRepositoryCustomImplTest {
         assertThat(result.get(2).getId()).isEqualTo(5L);
     }
 
-    //6 7 2 4 8 1 5
+    //3 6 7 2 8 1 5
     @Test
     void 정렬조건_BEST_SELLING_다음_페이지_검색(){
         //given(상황환경 세팅)
@@ -228,9 +221,9 @@ class SalesPostRepositoryCustomImplTest {
 
         //then(검증)
         assertThat(result).hasSize(3);
-        assertThat(result.get(0).getId()).isEqualTo(4L);
-        assertThat(result.get(1).getId()).isEqualTo(8L);
-        assertThat(result.get(2).getId()).isEqualTo(1L);
+        assertThat(result.get(0).getId()).isEqualTo(8L);
+        assertThat(result.get(1).getId()).isEqualTo(1L);
+        assertThat(result.get(2).getId()).isEqualTo(5L);
     }
 
     @Test
@@ -272,7 +265,7 @@ class SalesPostRepositoryCustomImplTest {
 
         //then(검증)
         assertThat(result).hasSize(2);
-        assertThat(result.get(0).getId()).isEqualTo(6L);
+        assertThat(result.get(0).getId()).isEqualTo(7L);
         assertThat(result.get(1).getId()).isEqualTo(5L);
     }
 
@@ -286,8 +279,8 @@ class SalesPostRepositoryCustomImplTest {
 
         //then(검증)
         assertThat(result).hasSize(2);
-        assertThat(result.get(0).getId()).isEqualTo(7L);
-        assertThat(result.get(1).getId()).isEqualTo(6L);
+        assertThat(result.get(0).getId()).isEqualTo(8L);
+        assertThat(result.get(1).getId()).isEqualTo(7L);
     }
 
     @Test
@@ -335,7 +328,7 @@ class SalesPostRepositoryCustomImplTest {
         assertThat(result.get(2).getId()).isEqualTo(4L);
     }
 
-    //6 7 2 4 8 1 5
+    ///3 6 7 2 8 1 5
     @Test
     void 정렬조건_BEST_SELLING_이전_페이지_검색(){
         //given(상황환경 세팅)
@@ -346,7 +339,7 @@ class SalesPostRepositoryCustomImplTest {
 
         //then(검증)
         assertThat(result).hasSize(3);
-        assertThat(result.get(0).getId()).isEqualTo(4L);
+        assertThat(result.get(0).getId()).isEqualTo(2L);
         assertThat(result.get(1).getId()).isEqualTo(8L);
         assertThat(result.get(2).getId()).isEqualTo(1L);
     }

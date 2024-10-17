@@ -12,5 +12,5 @@ import java.util.List;
 public class ResumePage {
     private Long lastId;
     private LocalDateTime lastModifiedAt;
-    private List<ResumeResponse> results;
+    private List<ResumeAdminResponse> results;
 }

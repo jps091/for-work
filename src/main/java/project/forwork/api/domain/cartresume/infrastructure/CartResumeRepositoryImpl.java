@@ -26,7 +26,7 @@ public class CartResumeRepositoryImpl implements CartResumeRepository {
     }
 
     @Override
-    public void delete(List<CartResume> cartResumes) {
+    public void deleteAll(List<CartResume> cartResumes) {
         List<CartResumeEntity> cartResumeEntities = cartResumes.stream().map(CartResumeEntity::from).toList();
         cartResumeJpaRepository.deleteAll(cartResumeEntities);
     }
@@ -53,8 +53,8 @@ public class CartResumeRepositoryImpl implements CartResumeRepository {
     }
 
     @Override
-    public List<CartResume> findBySelected(List<Long> cartResumeIds) {
-        return cartResumeJpaRepository.findBySelected(cartResumeIds).stream()
+    public List<CartResume> findByConfirmedResumes(Long userId, List<Long> resumeIds) {
+        return cartResumeJpaRepository.findByConfirmedResumes(userId, resumeIds).stream()
                 .map(CartResumeEntity::toModel)
                 .toList();
     }

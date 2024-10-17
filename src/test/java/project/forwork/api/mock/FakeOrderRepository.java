@@ -37,8 +37,8 @@ public class FakeOrderRepository implements OrderRepository {
     }
 
     @Override
-    public void saveAll(List<Order> orders) {
-        orders.forEach(this::save);
+    public List<Order> saveAll(List<Order> orders) {
+        return orders.stream().map(this::save).toList();
     }
 
     @Override

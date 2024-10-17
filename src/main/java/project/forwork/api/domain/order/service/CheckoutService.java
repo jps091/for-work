@@ -8,10 +8,8 @@ import org.springframework.web.client.RestClientException;
 import project.forwork.api.common.domain.CurrentUser;
 import project.forwork.api.common.error.TransactionErrorCode;
 import project.forwork.api.common.exception.ApiException;
-import project.forwork.api.domain.order.controller.model.ConfirmPaymentRequest;
-import project.forwork.api.domain.order.controller.model.PartialCancelRequest;
-import project.forwork.api.domain.order.controller.model.PaymentFullCancelRequest;
-import project.forwork.api.domain.order.controller.model.PaymentPartialCancelRequest;
+import project.forwork.api.domain.cartresume.service.CartResumeService;
+import project.forwork.api.domain.order.controller.model.*;
 import project.forwork.api.domain.order.model.Order;
 import project.forwork.api.domain.orderresume.model.OrderResume;
 import project.forwork.api.domain.orderresume.service.OrderResumeService;
@@ -40,26 +38,32 @@ public class CheckoutService {
     private final OrderService orderService;
     private final OrderResumeService orderResumeService;
     private final RetryLogService retryLogService;
+    private final CartResumeService cartResumeService;
 
     public void processOrderAndPayment(CurrentUser currentUser, ConfirmPaymentRequest body){
+        validRequestId(body);
+        Order order = orderService.create(currentUser, body);
+        ConfirmPaymentDto confirmPaymentDto = ConfirmPaymentDto.from(body);
+
         try{
-            pgService.confirm(body);
+            pgService.confirm(confirmPaymentDto);
 
         }catch (Exception e){
             log.error("caught process order-payment", e);
 
             if (e instanceof RestClientException && e.getCause() instanceof SocketTimeoutException) {
-                retryLogService.register(body.getOrderId(), RetryType.CONFIRM, e);
+                retryLogService.register(body.getRequestId(), RetryType.CONFIRM, e);
                 throw new ApiException(TransactionErrorCode.SERVER_ERROR);
             }
 
             // 결제 실패 시 주문 상태 업데이트
-            orderService.updateOrderConfirmFailure(body);
+            orderService.updateOrderConfirmFailure(order);
             throw e;  // 예외를 다시 던져서 상위 로직에서 처리할 수 있게 함
         }
 
-        Order order = orderService.updateOrderPaid(body);
-        createPgTransaction(currentUser, order.getId(), body.getPaymentKey(), new BigDecimal(body.getAmount()), TransactionType.PAYMENT);
+        Order paidOrder = orderService.updateOrderPaid(order);
+        cartResumeService.deleteByConfirmed(currentUser, body.getResumeIds());
+        createPgTransaction(currentUser, paidOrder.getId(), body.getPaymentKey(), body.getAmount(), TransactionType.PAYMENT);
     }
 
     public void cancelPayment(CurrentUser currentUser, Long orderId){
@@ -118,6 +122,10 @@ public class CheckoutService {
                 .build();
 
         transactionService.createTransaction(txBody);
+    }
+
+    private void validRequestId(ConfirmPaymentRequest body){
+        orderService.validRequestId(body.getRequestId());
     }
 
     private static PaymentFullCancelRequest createCancelBody() {

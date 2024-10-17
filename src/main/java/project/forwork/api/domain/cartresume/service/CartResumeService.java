@@ -14,8 +14,7 @@ import project.forwork.api.domain.cartresume.controller.model.CartResumeResponse
 import project.forwork.api.domain.cartresume.model.CartResume;
 import project.forwork.api.domain.cartresume.service.port.CartResumeRepository;
 import project.forwork.api.domain.resume.model.Resume;
-import project.forwork.api.domain.salespost.model.SalesPost;
-import project.forwork.api.domain.salespost.service.port.SalesPostRepository;
+import project.forwork.api.domain.resume.service.port.ResumeRepository;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -28,12 +27,11 @@ public class CartResumeService {
 
     private final CartResumeRepository cartResumeRepository;
     private final CartRepository cartRepository;
-    private final SalesPostRepository salesPostRepository;
+    private final ResumeRepository resumeRepository;
 
-    public CartResume register(CurrentUser currentUser, Long salesPostId){
+    public CartResume register(CurrentUser currentUser, Long resumeId){
         Cart cart = cartRepository.getByUserIdWithThrow(currentUser.getId());
-        SalesPost salesPost = salesPostRepository.getByIdWithThrow(salesPostId);
-        Resume resume = salesPost.getResumeIfSalesPostSelling();
+        Resume resume = resumeRepository.getByIdWithThrow(resumeId);
 
         if(cartResumeRepository.existsByCartAndResume(cart, resume)){
             throw new ApiException(CartResumeErrorCode.RESUME_EXISTS_CART);
@@ -47,20 +45,16 @@ public class CartResumeService {
 
     public void deleteBySelected(CurrentUser currentUser, List<Long> cartResumeIds){
         List<CartResume> cartResumes = cartResumeRepository.findByUserAndSelected(currentUser.getId(), cartResumeIds);
-        cartResumeRepository.delete(cartResumes);
+        cartResumeRepository.deleteAll(cartResumes);
+    }
+
+    public void deleteByConfirmed(CurrentUser currentUser, List<Long> resumeIds){
+        List<CartResume> cartResumes = cartResumeRepository.findByConfirmedResumes(currentUser.getId(), resumeIds);
+        cartResumeRepository.deleteAll(cartResumes);
     }
 
     public void deleteAllInCart(CurrentUser currentUser){
         cartResumeRepository.deleteAllInCart(currentUser.getId());
-    }
-
-    @Transactional(readOnly = true)
-    public CartResumeDetailResponse selectCartResumes(List<Long> cartResumeIds){
-        List<CartResumeResponse> cartResumeResponses = cartResumeRepository.findBySelected(cartResumeIds).stream()
-                .map(CartResumeResponse::from)
-                .toList();
-
-        return createCartResumeDetailResponse(cartResumeResponses);
     }
 
     @Transactional(readOnly = true)

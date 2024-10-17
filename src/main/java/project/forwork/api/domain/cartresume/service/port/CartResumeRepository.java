@@ -10,20 +10,12 @@ import java.util.Optional;
 public interface CartResumeRepository {
 
     CartResume save(CartResume cartResume);
-
-    void delete(List<CartResume> cartResumeList);
-
+    void deleteAll(List<CartResume> cartResumeList);
     void deleteAllInCart(Long userId);
-
     Optional<CartResume> findById(Long cartResumeId);
-
     boolean existsByCartAndResume(Cart cart, Resume resume);
-
     CartResume getByIdWithThrow(Long cartResumeId);
-
-    List<CartResume> findBySelected(List<Long> cartResumeIds);
-
     List<CartResume> findByUserAndSelected(Long userId, List<Long> cartResumeIds);
-
+    List<CartResume> findByConfirmedResumes(Long userId, List<Long> resumeIds);
     List<CartResume> findAllInCart(Long userId);
 }
