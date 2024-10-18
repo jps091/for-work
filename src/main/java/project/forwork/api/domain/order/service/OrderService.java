@@ -25,12 +25,15 @@ import project.forwork.api.domain.orderresume.service.port.OrderResumeRepository
 import project.forwork.api.domain.orderresume.service.port.OrderResumeRepositoryCustom;
 import project.forwork.api.domain.resume.model.Resume;
 import project.forwork.api.domain.resume.service.port.ResumeRepository;
+import project.forwork.api.domain.salespost.infrastructure.enums.SalesStatus;
+import project.forwork.api.domain.salespost.model.SalesPost;
 import project.forwork.api.domain.salespost.service.port.SalesPostRepository;
 import project.forwork.api.domain.user.model.User;
 import project.forwork.api.domain.user.service.port.UserRepository;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @Builder
@@ -84,13 +87,6 @@ public class OrderService {
         return order;
     }
 
-    @Transactional(readOnly = true)
-    public void validRequestId(String requestId) {
-        if (orderRepository.existsByRequestId(requestId)) { // 멱등키 활용
-            throw new ApiException(OrderErrorCode.ORDER_ALREADY_REQUEST);
-        }
-    }
-
     public void orderConfirmNow(CurrentUser currentUser, Long orderId, ConfirmOrderRequest body){
         Order order = orderRepository.getByIdWithThrow(orderId);
         order = orderResumeService.sendMailForNowConfirmedOrder(currentUser.getId(), order, body.getOrderResumeIds());
@@ -122,6 +118,24 @@ public class OrderService {
         orderRepository.save(failedOrder);
     }
 
+
+    // requestId = 현재 시간 (millis) / 5000 + "#" + userId + "-" + uuid 5자리
+    // 동일 유저가 5초 이내에 재 요청을 할 경우 예외 발생
+    @Transactional(readOnly = true)
+    public void validRequestId(String requestId) {
+        orderRepository.findByRequestId(requestId).ifPresent(order -> {
+            if (isRequestIdEqual(order.getRequestId(), requestId)) {
+                throw new ApiException(OrderErrorCode.ORDER_ALREADY_REQUEST);
+            }
+        });
+    }
+
+    @Transactional(readOnly = true)
+    public String getRequestIdByOrderId(Long orderId){
+        Order order = orderRepository.getByIdWithThrow(orderId);
+        return order.getRequestId();
+    }
+
     @Transactional(readOnly = true)
     public List<OrderResponse> findAll(CurrentUser currentUser){
         return orderRepository.findByUserId(currentUser.getId()).stream()
@@ -145,5 +159,9 @@ public class OrderService {
                 .orderId(order.getId())
                 .orderResumeResponses(orderResumes)
                 .build();
+    }
+
+    private boolean isRequestIdEqual(String source, String target){
+        return source.split("-")[0].equals(target.split("-")[0]);
     }
 }

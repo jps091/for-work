@@ -21,20 +21,9 @@ public class TransactionRepositoryImpl implements TransactionRepository {
     }
 
     @Override
-    public Transaction getByOrderIdWithTrow(Long orderId) {
-        return transactionJpaRepository.findByOrderEntity_Id(orderId).map(TransactionEntity::toModel)
-                .orElseThrow(() -> new ApiException(TransactionErrorCode.TX_NOT_FOUND));
-    }
-
-    @Override
-    public Transaction getByOrderIdAndUserId(Long orderId, Long userId) {
-        return transactionJpaRepository.findByOrderIdAndUserId(TransactionType.PAYMENT, orderId, userId)
-                .map(TransactionEntity::toModel)
-                .orElseThrow(() -> new ApiException(TransactionErrorCode.TX_NOT_FOUND));
-    } // PAYMENT 조건을 추가 해서 무조건 단 1건의 거래 레코드만 가져 올 수 있다.
-
-    @Override
-    public boolean existsByPaymentKey(String paymentKey) {
-        return transactionJpaRepository.existsByPaymentKey(paymentKey);
+    public Transaction getByRequestIdAndEmail(String requestId, String email) {
+        return transactionJpaRepository.findByRequestIdAndUserEmail(requestId, email)
+                .orElseThrow(() -> new ApiException(TransactionErrorCode.TX_NOT_FOUND))
+                .toModel();
     }
 }

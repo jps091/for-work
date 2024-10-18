@@ -27,13 +27,11 @@ public class TransactionEntity extends BaseTimeEntity {
     @Column(name = "transaction_id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private UserEntity userEntity;
+    @Column(name = "user_email", nullable = false)
+    private String userEmail;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id", nullable = false)
-    private OrderEntity orderEntity;
+    @Column(name = "request_id", nullable = false)
+    private String requestId;
 
     @Column(name = "payment_key", nullable = false)
     private String paymentKey;
@@ -49,8 +47,8 @@ public class TransactionEntity extends BaseTimeEntity {
         TransactionEntity txEntity = new TransactionEntity();
         txEntity.id = tx.getId();
         txEntity.paymentKey = tx.getPaymentKey();
-        txEntity.userEntity = UserEntity.from(tx.getUser());
-        txEntity.orderEntity = OrderEntity.from(tx.getOrder());
+        txEntity.userEmail = tx.getUserEmail();
+        txEntity.requestId = tx.getRequestId();
         txEntity.amount =tx.getAmount();
         txEntity.transactionType = tx.getTransactionType();
         return txEntity;
@@ -60,8 +58,8 @@ public class TransactionEntity extends BaseTimeEntity {
         return Transaction.builder()
                 .id(id)
                 .paymentKey(paymentKey)
-                .user(userEntity.toModel())
-                .order(orderEntity.toModel())
+                .userEmail(userEmail)
+                .requestId(requestId)
                 .amount(amount)
                 .transactionType(transactionType)
                 .build();

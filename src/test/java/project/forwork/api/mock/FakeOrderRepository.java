@@ -65,10 +65,6 @@ public class FakeOrderRepository implements OrderRepository {
         return data.stream().filter(order -> Objects.equals(order.getUser().getId(), userId)).toList();
     }
 
-    @Override
-    public List<Order> findByStatus(OrderStatus status) {
-        return data.stream().filter(order -> Objects.equals(order.getStatus(), status)).toList();
-    }
 
     @Override
     public List<Order> findByStatus(OrderStatus status, int limit) {
@@ -79,16 +75,9 @@ public class FakeOrderRepository implements OrderRepository {
     }
 
     @Override
-    public Order getByRequestIdWithThrow(String requestId) {
+    public Optional<Order> findByRequestId(String requestId) {
         return data.stream()
                 .filter(o -> Objects.equals(o.getRequestId(), requestId))
-                .findAny()
-                .orElseThrow(() -> new ApiException(OrderErrorCode.ORDER_NOT_FOUND));
-    }
-
-    @Override
-    public boolean existsByRequestId(String requestId) {
-        return data.stream()
-                .anyMatch(o -> Objects.equals(o.getRequestId(), requestId));
+                .findAny();
     }
 }

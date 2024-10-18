@@ -39,20 +39,14 @@ public class OrderRepositoryImpl implements OrderRepository {
     }
 
     @Override
-    public boolean existsByRequestId(String requestId) {
-        return orderJpaRepository.existsByRequestId(requestId);
-    }
+    public Optional<Order> findByRequestId(String requestId) {
+        return orderJpaRepository.findByRequestId(requestId).map(OrderEntity::toModel);
 
-    @Override
-    public Order getByRequestIdWithThrow(String requestId) {
-        return orderJpaRepository.getByRequestId(requestId)
-                .orElseThrow(() -> new ApiException(OrderErrorCode.ORDER_NOT_FOUND))
-                .toModel();
     }
 
     @Override
     public Order getOrderWithThrow(Long userId, Long orderId) {
-        return orderJpaRepository.getByUserEntity_IdAndId(userId, orderId)
+        return orderJpaRepository.findByUserEntity_IdAndId(userId, orderId)
                 .orElseThrow(() -> new ApiException(OrderErrorCode.ORDER_NOT_FOUND, orderId))
                 .toModel();
     }
@@ -60,13 +54,6 @@ public class OrderRepositoryImpl implements OrderRepository {
     @Override
     public Optional<Order> findById(Long orderId) {
         return orderJpaRepository.findById(orderId).map(OrderEntity::toModel);
-    }
-
-    @Override
-    public List<Order> findByStatus(OrderStatus status) {
-        return orderJpaRepository.findAllByStatus(status).stream()
-                .map(OrderEntity::toModel)
-                .toList();
     }
 
     @Override
