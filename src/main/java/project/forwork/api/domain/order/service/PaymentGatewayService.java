@@ -32,10 +32,10 @@ public class PaymentGatewayService {
     @Value("${pg.url}")
     public String URL;
 
-    @Retryable( //TODO 배포시 시간 변경
+    @Retryable(
             value = SocketTimeoutException.class,
-            maxAttempts = 1,
-            backoff =  @Backoff(delay = 50)
+            maxAttempts = 2,
+            backoff =  @Backoff(delay = 2000)
     )
     public void confirm(ConfirmPaymentDto body){
         String authorizations = getAuthorizations();

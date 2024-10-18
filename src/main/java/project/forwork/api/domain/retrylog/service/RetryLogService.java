@@ -24,7 +24,6 @@ public class RetryLogService {
                 .errorResponse(e.getMessage())
                 .type(type)
                 .build();
-        log.info("Retry Log={}",retryLog);
         retryLogRepository.save(retryLog);
     }
 }

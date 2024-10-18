@@ -14,11 +14,10 @@ import project.forwork.api.domain.order.model.Order;
 import project.forwork.api.domain.orderresume.model.OrderResume;
 import project.forwork.api.domain.orderresume.service.OrderResumeService;
 import project.forwork.api.domain.retrylog.service.RetryLogService;
-import project.forwork.api.domain.transaction.controller.model.TransactionCreateRequest;
 import project.forwork.api.domain.transaction.infrastructure.enums.TransactionType;
 import project.forwork.api.domain.transaction.model.Transaction;
-import project.forwork.api.domain.transaction.service.TransactionService;
 import project.forwork.api.domain.retrylog.infrastructure.enums.*;
+import project.forwork.api.domain.transaction.service.port.TransactionRepository;
 
 import java.math.BigDecimal;
 import java.net.SocketTimeoutException;
@@ -34,7 +33,7 @@ import java.util.List;
 public class CheckoutService {
 
     private final PaymentGatewayService pgService;
-    private final TransactionService transactionService;
+    private final TransactionRepository transactionRepository;
     private final OrderService orderService;
     private final OrderResumeService orderResumeService;
     private final RetryLogService retryLogService;
@@ -43,10 +42,16 @@ public class CheckoutService {
     public void processOrderAndPayment(CurrentUser currentUser, ConfirmPaymentRequest body){
         validRequestId(body);
         Order order = orderService.create(currentUser, body);
-        ConfirmPaymentDto confirmPaymentDto = ConfirmPaymentDto.from(body);
 
         try{
+            ConfirmPaymentDto confirmPaymentDto = ConfirmPaymentDto.from(body);
             pgService.confirm(confirmPaymentDto);
+
+            orderService.updateOrderPaid(order);
+            cartResumeService.deleteByConfirmed(currentUser, body.getResumeIds());
+
+            Transaction tx = Transaction.create(currentUser, body.getRequestId(), body.getPaymentKey(), body.getAmount(), TransactionType.PAYMENT);
+            transactionRepository.save(tx);
 
         }catch (Exception e){
             log.error("caught process order-payment", e);
@@ -60,17 +65,19 @@ public class CheckoutService {
             orderService.updateOrderConfirmFailure(order);
             throw e;  // 예외를 다시 던져서 상위 로직에서 처리할 수 있게 함
         }
-
-        Order paidOrder = orderService.updateOrderPaid(order);
-        cartResumeService.deleteByConfirmed(currentUser, body.getResumeIds());
-        createPgTransaction(currentUser, paidOrder.getId(), body.getPaymentKey(), body.getAmount(), TransactionType.PAYMENT);
     }
 
     public void cancelPayment(CurrentUser currentUser, Long orderId){
-        Transaction transaction = transactionService.getByOrderIdAndUserId(orderId, currentUser.getId());
-        PaymentFullCancelRequest body = createCancelBody();
+        String requestId = orderService.getRequestIdByOrderId(orderId);
+        Transaction transaction = transactionRepository.getByRequestIdAndEmail(requestId, currentUser.getEmail());
+
         try{
+            PaymentFullCancelRequest body = createCancelBody();
             pgService.cancelFullPayment(transaction.getPaymentKey(), body);
+            Order order = orderService.cancelOrder(currentUser, orderId);
+
+            Transaction tx = Transaction.create(currentUser, requestId, transaction.getPaymentKey(), order.getTotalAmount(), TransactionType.REFUND);
+            transactionRepository.save(tx);
 
         }catch (Exception e){
             log.error("caught process cancel-payment", e);
@@ -81,19 +88,21 @@ public class CheckoutService {
             }
             throw e;
         }
-
-        Order order = orderService.cancelOrder(currentUser, orderId);
-        createPgTransaction(currentUser, orderId, transaction.getPaymentKey(), order.getTotalAmount(), TransactionType.REFUND);
     }
 
     public void cancelPartialPayment(CurrentUser currentUser, Long orderId, PartialCancelRequest body){
-
-        List<OrderResume> orderResumes = orderResumeService.getCancelRequestOrderResumes(body.getOrderResumeIds(), orderId);
-        PaymentPartialCancelRequest paymentBody = createPartialCancelBody(orderResumes);
-        Transaction transaction = transactionService.getByOrderIdAndUserId(orderId, currentUser.getId());
+        String requestId = orderService.getRequestIdByOrderId(orderId);
+        Transaction transaction = transactionRepository.getByRequestIdAndEmail(requestId, currentUser.getEmail());
 
         try{
+            List<OrderResume> orderResumes = orderResumeService.getCancelRequestOrderResumes(body.getOrderResumeIds(), orderId);
+            PaymentPartialCancelRequest paymentBody = createPartialCancelBody(orderResumes);
+
             pgService.cancelPartialPayment(transaction.getPaymentKey(), paymentBody);
+            orderService.cancelPartialOrder(currentUser, orderId, orderResumes);
+
+            Transaction tx = Transaction.create(currentUser, requestId, transaction.getPaymentKey(), paymentBody.getCancelAmount(), TransactionType.PARTIAL_REFUND);
+            transactionRepository.save(tx);
 
         }catch (Exception e){
             log.error("caught process partial-cancel-payment", e);
@@ -104,24 +113,6 @@ public class CheckoutService {
             }
             throw e;
         }
-
-        orderService.cancelPartialOrder(currentUser, orderId, orderResumes);
-        createPgTransaction(currentUser, orderId, transaction.getPaymentKey(), paymentBody.getCancelAmount(), TransactionType.REFUND);
-    }
-
-    public void createPgTransaction(
-            CurrentUser currentUser, Long orderId, String paymentKey,
-            BigDecimal amount, TransactionType type
-    ){
-        TransactionCreateRequest txBody = TransactionCreateRequest.builder()
-                .userId(currentUser.getId())
-                .orderId(orderId)
-                .paymentKey(paymentKey)
-                .amount(amount)
-                .type(type)
-                .build();
-
-        transactionService.createTransaction(txBody);
     }
 
     private void validRequestId(ConfirmPaymentRequest body){

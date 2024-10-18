@@ -9,7 +9,8 @@ import lombok.Getter;
 public enum TransactionType {
 
     PAYMENT("결제"),
-    REFUND("환불"),
+    REFUND("전체 환불"),
+    PARTIAL_REFUND("부분 환불"),
     ;
 
     private final String description;
