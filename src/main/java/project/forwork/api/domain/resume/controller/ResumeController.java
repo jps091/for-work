@@ -84,4 +84,3 @@ public class ResumeController {
         return Api.OK(resumes);
     }
 }
-//TODO API 명세서 수정

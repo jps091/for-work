@@ -33,7 +33,7 @@ public class CartResumeController {
     ){
         cartResumeService.register(currentUser, resumeId);
         return Api.CREATED("이력서 장바구니 추가 성공");
-    } // TODO API명세서
+    }
 
     @Operation(summary = "선택한 이력서 장바구니에서 제거", description = "cartResumeIds에 속한 이력서를 장바구니에서 삭제")
     @DeleteMapping("/select")

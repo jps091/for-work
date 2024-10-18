@@ -2,6 +2,7 @@ package project.forwork.api.domain.order.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.forwork.api.domain.order.infrastructure.enums.OrderStatus;
@@ -20,22 +21,22 @@ public class ResumeAutoConfirmService {
     private final OrderRepository orderRepository;
     private final OrderResumeService orderResumeService;
 
-    //@Scheduled(fixedRate = 10000, initialDelay = 10000) // TODO 시간 변경
+    @Scheduled(fixedRate = 1800000, initialDelay = 600000) // TODO 시간 변경, 30분,10분
     public void markAsWaiting(){
         updatedOrderStatus(OrderStatus.PAID, OrderStatus.WAIT);
     }
 
-    //@Scheduled(fixedRate = 15000, initialDelay = 15000)
+    @Scheduled(fixedRate = 1800000, initialDelay = 600000)
     public void markPartialAsWaiting(){
         updatedOrderStatus(OrderStatus.PARTIAL_CANCEL, OrderStatus.PARTIAL_WAIT);
     }
 
-    //@Scheduled(fixedRate = 20000, initialDelay = 20000)
+    @Scheduled(fixedRate = 1800000, initialDelay = 1800000) // 30분
     public void markAsConfirm(){
         updatedOrderStatus(OrderStatus.WAIT, OrderStatus.CONFIRM);
     }
 
-    //@Scheduled(fixedRate = 25000, initialDelay = 25000)
+    @Scheduled(fixedRate = 1800000, initialDelay = 1800000)
     public void markPartialAsConfirm(){
         updatedOrderStatus(OrderStatus.PARTIAL_WAIT, OrderStatus.PARTIAL_CONFIRM);
     }

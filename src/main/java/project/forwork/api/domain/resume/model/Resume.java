@@ -47,8 +47,6 @@ public class Resume {
                 .resumeUrl(body.getResumeUrl())
                 .descriptionImageUrl(descriptionUrl)
                 .salesQuantity(0)
-                //.resumeUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")TODO Test
-                //.descriptionImageUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
                 .price(body.getPrice())
                 .description(body.getDescription())
                 .status(ResumeStatus.PENDING)
@@ -63,8 +61,6 @@ public class Resume {
                 .level(body.getLevel())
                 .resumeUrl(body.getResumeUrl())
                 .descriptionImageUrl(descriptionUrl)
-                //.resumeUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")TODO Test
-                //.descriptionImageUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
                 .price(body.getPrice())
                 .description(body.getDescription())
                 .status(ResumeStatus.PENDING)

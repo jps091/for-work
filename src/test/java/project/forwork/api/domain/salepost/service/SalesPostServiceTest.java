@@ -186,9 +186,4 @@ class SalesPostServiceTest {
         assertThatThrownBy(() -> salesPostService.validateSellerAndResumeStatus(currentUser, 3L))
                 .isInstanceOf(ApiException.class);
     }
-
-    @Test
-    void getSellingPostWithThrow() { // TODO 동시성공부후
-    }
-
 }

@@ -46,8 +46,7 @@ public class ResumeService {
 
     public Resume register(CurrentUser currentUser, ResumeRegisterRequest body, MultipartFile file){
         User user = userRepository.getByIdWithThrow(currentUser.getId());
-        String descriptionUrl = s3Service.saveFile(file); //TODO 배포시 주석 해제
-        //String descriptionUrl = "www.test123.com"; // 배포시 삭제 TEST용
+        String descriptionUrl = s3Service.saveFile(file);
 
         Resume resume = Resume.from(user, body, descriptionUrl);
         resume =  resumeRepository.save(resume);
@@ -60,8 +59,7 @@ public class ResumeService {
     ){
         Resume resume = resumeRepository.getByIdWithThrow(resumeId);
         validateAuthor(currentUser, resume);
-        //String descriptionUrl = "www.test123.com"; // 배포시 삭제 TEST용
-        String descriptionUrl = s3Service.saveFile(file); //TODO 배포시 주석 해제
+        String descriptionUrl = s3Service.saveFile(file);
 
         resume = resume.modify(body, descriptionUrl);
         resumeRepository.save(resume);
@@ -77,7 +75,7 @@ public class ResumeService {
         Resume resume = resumeRepository.getByIdWithThrow(resumeId);
         validateAuthor(currentUser, resume);
 
-        s3Service.deleteFile(resume.getResumeUrl()); //TODO 배포시 주석 해제
+        s3Service.deleteFile(resume.getResumeUrl());
         resumeRepository.delete(resume);
     }
 
