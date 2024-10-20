@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import project.forwork.api.domain.maillog.service.MailLogService;
 import project.forwork.api.domain.order.model.Order;
 import project.forwork.api.domain.orderresume.controller.model.PurchaseResponse;
 import project.forwork.api.domain.orderresume.infrastructure.enums.OrderResumeStatus;
@@ -18,6 +19,7 @@ import project.forwork.api.mock.FakeMailSender;
 import project.forwork.api.mock.FakeOrderResumeRepository;
 import project.forwork.api.mock.TestClockHolder;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -25,22 +27,21 @@ import java.time.LocalDateTime;
 import java.util.List;
 @ExtendWith(MockitoExtension.class)
 public class OrderResumeMailServiceTest {
-
     @Mock
     private OrderResumeRepositoryCustom orderResumeRepositoryCustom;
-
     @Mock
     private ResumeQuantityService resumeQuantityService;
-
+    @Mock
+    private MailLogService mailLogService;
     private FakeMailSender fakeMailSender;
     private TestClockHolder clockHolder;
-
     private OrderResumeMailService orderResumeMailService;
+    private FakeOrderResumeRepository fakeOrderResumeRepository;
 
     @BeforeEach
     public void init() {
         fakeMailSender = new FakeMailSender();
-        FakeOrderResumeRepository fakeOrderResumeRepository = new FakeOrderResumeRepository();
+        fakeOrderResumeRepository = new FakeOrderResumeRepository();
         clockHolder = new TestClockHolder(LocalDateTime.of(2024, 9, 10, 23, 58));
         orderResumeMailService = OrderResumeMailService.builder()
                 .orderResumeRepositoryCustom(orderResumeRepositoryCustom)
@@ -48,25 +49,42 @@ public class OrderResumeMailServiceTest {
                 .resumeQuantityService(resumeQuantityService)
                 .mailSender(fakeMailSender)
                 .clockHolder(clockHolder)
+                .mailLogService(mailLogService)
                 .build();
     }
 
     @Test
-    public void testSendPurchaseResume() {
-
-        Order order = Order.builder()
+    void setupConfirmedResumesAndSendEmail를_통해_OrderResume_의_상태가_SENT_로_변경_되고_SENT_AT_도_업데이트_된다(){
+        //given(상황환경 세팅)
+        Resume resume1 = Resume.builder()
                 .id(1L)
                 .build();
-        Resume resume = Resume.builder()
-                .id(1L)
+        Resume resume2 = Resume.builder()
+                .id(2L)
                 .build();
-        OrderResume orderResume = OrderResume.builder()
+        OrderResume orderResume1 = OrderResume.builder()
                 .id(1L)
-                .order(order)
-                .resume(resume)
+                .resume(resume1)
                 .status(OrderResumeStatus.ORDERED)
                 .build();
-        List<OrderResume> orderResumes = List.of(orderResume);
+        OrderResume orderResume2 = OrderResume.builder()
+                .id(2L)
+                .resume(resume2)
+                .status(OrderResumeStatus.ORDERED)
+                .build();
+        List<OrderResume> orderResumes = List.of(orderResume1, orderResume2);
+
+        //when(상황발생)
+        orderResumeMailService.setupConfirmedResumesAndSendEmail(orderResumes);
+        List<OrderResume> newOrderResumes = List.of(fakeOrderResumeRepository.getByIdWithThrow(1L), fakeOrderResumeRepository.getByIdWithThrow(2L));
+
+        //then(검증)
+        assertThat(newOrderResumes).allMatch(orderResume -> orderResume.getStatus().equals(OrderResumeStatus.SENT));
+        assertThat(newOrderResumes).allMatch(orderResume -> orderResume.getSentAt().equals(LocalDateTime.of(2024, 9, 10, 23, 58)));
+    }
+
+    @Test
+    public void sendEmail() {
 
         PurchaseResponse purchaseResponse = PurchaseResponse.builder()
                 .orderId(1L)
@@ -77,14 +95,12 @@ public class OrderResumeMailServiceTest {
                 .resumeUrl("www.test.com")
                 .build();
 
-        List<PurchaseResponse> purchaseResponses = List.of(purchaseResponse);
-
-        when(orderResumeRepositoryCustom.findAllPurchaseResume(orderResumes)).thenReturn(purchaseResponses);
-
-        orderResumeMailService.sendResumeMail(orderResumes);
+        orderResumeMailService.sendEmail(purchaseResponse);
 
         assertEquals("user@naver.com", fakeMailSender.email);
         assertEquals("for-work 구매 이력서 : 신입 백엔드 이력서 #1", fakeMailSender.title);
         assertEquals("주문 번호 #1 <URL> : www.test.com", fakeMailSender.content);
+
+        verify(mailLogService).registerSuccessLog(purchaseResponse);
     }
 }

@@ -1,5 +1,6 @@
 package project.forwork.api.domain.thumbnailimage.infrastructure;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import project.forwork.api.common.infrastructure.BaseTimeEntity;
@@ -22,11 +23,11 @@ public class ThumbnailImageEntity extends BaseTimeEntity{
     @Column(name = "thumbnail_image_id")
     private Long id;
 
-    @Column(nullable = false)
+    @Column(length = 255) @NotNull
     private String url;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, name = "field")
+    @Column(name = "field") @NotNull
     private FieldType fieldType;
 
     public static ThumbnailImageEntity from(ThumbnailImage thumbnailImage){

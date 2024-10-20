@@ -69,11 +69,6 @@ public class FakeCartResumeRepository implements CartResumeRepository {
         return findById(cartResumeId).orElseThrow(() -> new ApiException(CartResumeErrorCode.CART_RESUME_NOT_FOUND, cartResumeId));
     }
 
-    @Override
-    public List<CartResume> findBySelected(List<Long> cartResumeIds) {
-        return data.stream().filter(cartResume -> cartResumeIds.contains(cartResume.getId()))
-                .toList();
-    }
 
     @Override
     public List<CartResume> findByUserAndSelected(Long userId, List<Long> cartResumeIds) {

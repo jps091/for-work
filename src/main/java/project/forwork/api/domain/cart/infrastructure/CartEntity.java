@@ -1,6 +1,7 @@
 package project.forwork.api.domain.cart.infrastructure;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import project.forwork.api.common.infrastructure.BaseTimeEntity;
@@ -28,7 +29,7 @@ public class CartEntity extends BaseTimeEntity {
     private UserEntity userEntity;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, name = "status")
+    @Column(name = "status") @NotNull
     private CartStatus status;
 
     public static CartEntity from(Cart cart){

@@ -1,6 +1,7 @@
 package project.forwork.api.domain.retrylog.infrastructure;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -23,14 +24,15 @@ public class RetryLogEntity extends BaseTimeEntity {
     @Column(name = "retry_log_id")
     private Long id;
 
-    @Column(name = "request_id", nullable = false)
+    @Column(name = "request_id") @NotNull
     private String requestId;
 
-    @Column(name = "error_response", nullable = false)
+    @NotNull
+    @Column(length = 255, name = "error_response")
     private String errorResponse;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @NotNull
     private RetryType type;
 
     public static RetryLogEntity from(RetryLog retryLog){

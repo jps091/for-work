@@ -1,6 +1,7 @@
 package project.forwork.api.domain.resume.infrastructure;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import project.forwork.api.common.infrastructure.BaseTimeEntity;
@@ -26,34 +27,37 @@ public class ResumeEntity extends BaseTimeEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "seller_id", nullable = false)
+    @JoinColumn(name = "seller_id") @NotNull
     private UserEntity sellerEntity;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, name = "field")
+    @Column(name = "field") @NotNull
     private FieldType fieldType;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, name = "level")
+    @Column(name = "level") @NotNull
     private LevelType levelType;
 
-    @Column(name = "resume_url", nullable = false)
+    @NotNull
+    @Column(length = 300, name = "resume_url")
     private String resumeUrl;
 
-    @Column(name = "description_image_url", nullable = false)
+    @NotNull
+    @Column(length = 300, name = "description_image_url")
     private String descriptionImageUrl;
 
-    @Column(precision = 6, scale = 0, nullable = false)
+    @NotNull
+    @Column(precision = 6, scale = 0)
     private BigDecimal price;
 
-    @Column(name = "sales_quantity", nullable = false)
+    @Column(name = "sales_quantity") @NotNull
     private Integer salesQuantity;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @Column(length = 5000) @NotNull
     private String description;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
+    @Column(name = "status") @NotNull
     private ResumeStatus resumeStatus;
 
     public static ResumeEntity from(Resume resume){
