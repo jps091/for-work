@@ -53,7 +53,3 @@ public class CheckoutController {
         return Api.OK("선택한 이력서 부분 취소 되었습니다.");
     }
 }
-/*
-    private String createRequestId(Long userId) {
-        return clockHolder.millis() / 5000 + "-" + uuidHolder.random() + "-" + userId;
-    }*/

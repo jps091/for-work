@@ -14,7 +14,7 @@ import project.forwork.api.common.domain.CurrentUser;
 @RestController
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping("/admin-api/v1")
+@RequestMapping("/admin-api/v1/resumes")
 @Tag(name = "ResumeDecisionController for Admin", description = "어드민 전용 판매 이력서 관리 컨트롤러")
 
 public class ResumeDecisionController {
@@ -22,7 +22,7 @@ public class ResumeDecisionController {
     private final ResumeDecisionService resumeDecisionService;
 
     @Operation(summary = "이력서 판매 요청 승인 API", description = "이력서 판매 요청 승인 API")
-    @PostMapping("/resume/{resumeId}/approve")
+    @PostMapping("/{resumeId}/approve")
     public Api<String> approve(
             @Parameter(hidden = true) @Current CurrentUser currentUser,
             @PathVariable Long resumeId
@@ -32,7 +32,7 @@ public class ResumeDecisionController {
     }
 
     @Operation(summary = "이력서 판매 요청 거부 API", description = "이력서 판매 요청 거부 API")
-    @PostMapping("/resume/{resumeId}/deny")
+    @PostMapping("/{resumeId}/deny")
     public Api<String> deny(
             @Parameter(hidden = true) @Current CurrentUser currentUser,
             @PathVariable Long resumeId

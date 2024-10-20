@@ -10,14 +10,12 @@ import project.forwork.api.common.annotation.Current;
 import project.forwork.api.common.api.Api;
 import project.forwork.api.common.domain.CurrentUser;
 import project.forwork.api.domain.cartresume.controller.model.CartResumeDetailResponse;
-import project.forwork.api.domain.cartresume.controller.model.CartResumeResponse;
-import project.forwork.api.domain.cartresume.controller.model.CartSummary;
+import project.forwork.api.domain.cartresume.controller.model.SelectCartResumeRequest;
 import project.forwork.api.domain.cartresume.service.CartResumeService;
 
-import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/cart")
+@RequestMapping("/api/v1/cart-resumes")
 @RequiredArgsConstructor
 @Tag(name = "CartResumeApiController", description = "CartResume Api 서비스 컨트롤러")
 public class CartResumeController {
@@ -26,7 +24,7 @@ public class CartResumeController {
 
     @Operation(summary = "장바구니에 이력서 담기", description = "resumeId 이력서 담기")
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping("/register")
+    @PostMapping
     public Api<String> register(
             @Parameter(hidden = true) @Current CurrentUser currentUser,
             @RequestParam Long resumeId
@@ -39,9 +37,9 @@ public class CartResumeController {
     @DeleteMapping("/select")
     public Api<String> deleteBySelected(
             @Parameter(hidden = true) @Current CurrentUser currentUser,
-            @RequestParam List<Long> cartResumeIds
+            @RequestBody SelectCartResumeRequest body
     ){
-        cartResumeService.deleteBySelected(currentUser, cartResumeIds);
+        cartResumeService.deleteBySelected(currentUser, body);
         return Api.OK("선택한 이력서 장바구니에서 삭제 성공");
     }
 

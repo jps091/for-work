@@ -11,6 +11,7 @@ import project.forwork.api.domain.cart.model.Cart;
 import project.forwork.api.domain.cart.service.port.CartRepository;
 import project.forwork.api.domain.cartresume.controller.model.CartResumeDetailResponse;
 import project.forwork.api.domain.cartresume.controller.model.CartResumeResponse;
+import project.forwork.api.domain.cartresume.controller.model.SelectCartResumeRequest;
 import project.forwork.api.domain.cartresume.model.CartResume;
 import project.forwork.api.domain.cartresume.service.port.CartResumeRepository;
 import project.forwork.api.domain.resume.model.Resume;
@@ -43,8 +44,8 @@ public class CartResumeService {
         return cartResume;
     }
 
-    public void deleteBySelected(CurrentUser currentUser, List<Long> cartResumeIds){
-        List<CartResume> cartResumes = cartResumeRepository.findByUserAndSelected(currentUser.getId(), cartResumeIds);
+    public void deleteBySelected(CurrentUser currentUser, SelectCartResumeRequest body){
+        List<CartResume> cartResumes = cartResumeRepository.findByUserAndSelected(currentUser.getId(), body.getCartResumeIds());
         cartResumeRepository.deleteAll(cartResumes);
     }
 
