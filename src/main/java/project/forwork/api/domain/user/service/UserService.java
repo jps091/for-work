@@ -15,6 +15,7 @@ import project.forwork.api.common.service.port.RedisUtils;
 import project.forwork.api.common.service.port.UuidHolder;
 import project.forwork.api.domain.cart.model.Cart;
 import project.forwork.api.domain.cart.service.port.CartRepository;
+import project.forwork.api.domain.token.service.TokenAuthService;
 import project.forwork.api.domain.token.service.TokenCookieService;
 import project.forwork.api.domain.token.service.TokenHeaderService;
 import project.forwork.api.domain.user.controller.model.*;
@@ -31,7 +32,7 @@ public class UserService {
     public static final String EMAIL_PREFIX = "email:";
 
     private final UserRepository userRepository;
-    private final TokenHeaderService tokenHeaderService;
+    private final TokenAuthService tokenAuthService;
     private final CartRepository cartRepository;
     private final MailSender mailSender;
     private final UuidHolder uuidHolder;
@@ -68,7 +69,7 @@ public class UserService {
             HttpServletResponse response
     ){
         User user = userRepository.getByIdWithThrow(currentUser.getId());
-        tokenHeaderService.expiredRefreshTokenAndHeaders(user.getId(), request, response);
+        tokenAuthService.deleteTokensWithUserDelete(user.getId(), request, response);
         userRepository.delete(user);
     }
 
