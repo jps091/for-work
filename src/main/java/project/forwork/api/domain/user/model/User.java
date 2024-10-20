@@ -9,6 +9,7 @@ import project.forwork.api.common.service.port.ClockHolder;
 import project.forwork.api.domain.user.controller.model.UserCreateRequest;
 import project.forwork.api.domain.user.infrastructure.enums.RoleType;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Getter
@@ -21,7 +22,7 @@ public class User {
     private final String email;
     private final String password;
     private final RoleType roleType;
-    private final Long lastLoginAt;
+    private final LocalDateTime lastLoginAt;
 
     public static User from(UserCreateRequest body){
         return User.builder()
@@ -42,7 +43,7 @@ public class User {
                 .email(email)
                 .password(password)
                 .roleType(roleType)
-                .lastLoginAt(clockHolder.millis())
+                .lastLoginAt(clockHolder.now())
                 .build();
     }
 

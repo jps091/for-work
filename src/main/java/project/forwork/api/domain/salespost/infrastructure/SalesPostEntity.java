@@ -1,6 +1,7 @@
 package project.forwork.api.domain.salespost.infrastructure;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import project.forwork.api.common.infrastructure.BaseTimeEntity;
@@ -25,18 +26,18 @@ public class SalesPostEntity extends BaseTimeEntity {
     private Long version;*/
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "resume_id", nullable = false)
+    @JoinColumn(name = "resume_id") @NotNull
     private ResumeEntity resumeEntity;
 
-    @Column(nullable = false)
+    @Column(length = 25) @NotNull
     private String title;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "thumbnail_image_id")
+    @JoinColumn(name = "thumbnail_image_id") @NotNull
     private ThumbnailImageEntity thumbnailImageEntity;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
+    @Column(name = "status") @NotNull
     private SalesStatus salesStatus;
 
     public static SalesPostEntity from(SalesPost salesPost){

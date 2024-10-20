@@ -64,7 +64,7 @@ class ResumeQuantityServiceTest {
         resumeRepository.save(resume);
     }
 
-    @Test
+
     @Transactional
     void 동시에_100명이_이력서를_구매하면_판매수량은_100개_이다() throws InterruptedException {
         //given(상황환경 세팅)

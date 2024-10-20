@@ -1,6 +1,6 @@
 CREATE TABLE thumbnail_images (
-                                  modified_at datetime DEFAULT NULL,
-                                  registered_at datetime DEFAULT NULL,
+                                  modified_at timestamp DEFAULT NULL,
+                                  registered_at timestamp DEFAULT NULL,
                                   thumbnail_image_id bigint NOT NULL AUTO_INCREMENT,
                                   url varchar(255) NOT NULL,
                                   field varchar(255) NOT NULL,
@@ -8,9 +8,9 @@ CREATE TABLE thumbnail_images (
 );
 
 CREATE TABLE users (
-                       last_login_at bigint DEFAULT NULL,
-                       modified_at datetime DEFAULT NULL,
-                       registered_at datetime DEFAULT NULL,
+                       last_login_at timestamp DEFAULT NULL,
+                       modified_at timestamp DEFAULT NULL,
+                       registered_at timestamp DEFAULT NULL,
                        user_id bigint NOT NULL AUTO_INCREMENT,
                        name varchar(10) NOT NULL,
                        email varchar(50) NOT NULL,
@@ -32,14 +32,14 @@ CREATE TABLE retry_logs (
 
 CREATE TABLE resumes (
                          price decimal(6,0) NOT NULL,
-                         modified_at datetime DEFAULT NULL,
-                         registered_at datetime DEFAULT NULL,
+                         modified_at timestamp DEFAULT NULL,
+                         registered_at timestamp DEFAULT NULL,
                          resume_id bigint NOT NULL AUTO_INCREMENT,
                          seller_id bigint NOT NULL,
                          sales_quantity int NOT NULL,
-                         description_image_url varchar(255) NOT NULL,
-                         resume_url varchar(255) NOT NULL,
-                         description CLOB NOT NULL,
+                         description_image_url varchar(300) NOT NULL,
+                         resume_url varchar(300) NOT NULL,
+                         description varchar(5000) NOT NULL,
                          field varchar(255) NOT NULL,
                          level varchar(255) NOT NULL,
                          status varchar(255) NOT NULL,
@@ -49,8 +49,8 @@ CREATE TABLE resumes (
 
 CREATE TABLE resume_decisions (
                                   resume_decision_id bigint NOT NULL AUTO_INCREMENT,
-                                  modified_at datetime DEFAULT NULL,
-                                  registered_at datetime DEFAULT NULL,
+                                  modified_at timestamp DEFAULT NULL,
+                                  registered_at timestamp DEFAULT NULL,
                                   status varchar(255) DEFAULT NULL,
                                   admin_id bigint DEFAULT NULL,
                                   resume_id bigint NOT NULL,
@@ -61,10 +61,10 @@ CREATE TABLE resume_decisions (
 
 CREATE TABLE sales_posts (
                              sales_post_id bigint NOT NULL AUTO_INCREMENT,
-                             modified_at datetime DEFAULT NULL,
-                             registered_at datetime DEFAULT NULL,
+                             modified_at timestamp DEFAULT NULL,
+                             registered_at timestamp DEFAULT NULL,
                              status varchar(255) NOT NULL,
-                             title varchar(255) NOT NULL,
+                             title varchar(25) NOT NULL,
                              resume_id bigint NOT NULL,
                              thumbnail_image_id bigint DEFAULT NULL,
                              PRIMARY KEY (sales_post_id),
@@ -75,8 +75,8 @@ CREATE TABLE sales_posts (
 
 CREATE TABLE carts (
                        cart_id bigint NOT NULL AUTO_INCREMENT,
-                       modified_at datetime DEFAULT NULL,
-                       registered_at datetime DEFAULT NULL,
+                       modified_at timestamp DEFAULT NULL,
+                       registered_at timestamp DEFAULT NULL,
                        user_id bigint DEFAULT NULL,
                        status varchar(255) NOT NULL,
                        total_price decimal(8,0) NOT NULL,
@@ -88,8 +88,8 @@ CREATE TABLE carts (
 CREATE TABLE cart_resumes (
                               cart_id bigint NOT NULL,
                               cart_resume_id bigint NOT NULL AUTO_INCREMENT,
-                              modified_at datetime DEFAULT NULL,
-                              registered_at datetime DEFAULT NULL,
+                              modified_at timestamp DEFAULT NULL,
+                              registered_at timestamp DEFAULT NULL,
                               resume_id bigint NOT NULL,
                               PRIMARY KEY (cart_resume_id),
                               FOREIGN KEY (cart_id) REFERENCES carts(cart_id) ON DELETE CASCADE,
@@ -101,7 +101,7 @@ CREATE TABLE orders (
                         order_id bigint NOT NULL AUTO_INCREMENT,  -- Use AUTO_INCREMENT for H2
                         registered_at timestamp DEFAULT NULL,
                         user_id bigint DEFAULT NULL,
-                        request_id varchar(255) NOT NULL,
+                        request_id varchar(25) NOT NULL,
                         paid_at timestamp DEFAULT NULL,
                         total_amount decimal(8, 0) NOT NULL,
                         status varchar(20) NOT NULL,  -- Replacing ENUM with VARCHAR(20) for H2
@@ -110,10 +110,10 @@ CREATE TABLE orders (
 );
 
 CREATE TABLE order_resumes (
-                               modified_at datetime DEFAULT NULL,
+                               modified_at timestamp DEFAULT NULL,
                                order_id bigint NOT NULL,
                                order_resume_id bigint NOT NULL AUTO_INCREMENT,
-                               registered_at datetime DEFAULT NULL,
+                               registered_at timestamp DEFAULT NULL,
                                resume_id bigint NOT NULL,
                                status varchar(255) NOT NULL,
                                confirmed_at timestamp DEFAULT NULL,
@@ -125,29 +125,23 @@ CREATE TABLE order_resumes (
 );
 
 CREATE TABLE transactions (
-                              transaction_id bigint NOT NULL AUTO_INCREMENT,  -- Use AUTO_INCREMENT for H2
+                              amount decimal(7, 0) NOT NULL,
                               modified_at timestamp DEFAULT NULL,
                               registered_at timestamp DEFAULT NULL,
-                              amount decimal(7,0) NOT NULL,
-                              charged_at timestamp DEFAULT NULL,
-                              order_id bigint NOT NULL,
-                              type varchar(20) NOT NULL,  -- Replace ENUM with VARCHAR(20)
-                              user_id bigint NOT NULL,
-                              payment_key varchar(255) NOT NULL,
-                              PRIMARY KEY (transaction_id),
-                              FOREIGN KEY (order_id) REFERENCES orders (order_id), -- Foreign key for order_id
-                              FOREIGN KEY (user_id) REFERENCES users (user_id)    -- Foreign key for user_id
+                              transaction_id bigint NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                              payment_key varchar(25) NOT NULL,
+                              request_id varchar(25) NOT NULL,
+                              user_email varchar(50) NOT NULL,
+                              type varchar(255) NOT NULL
 );
 
-CREATE TABLE payment_entity (
-                                amount decimal(38,2) NOT NULL,
-                                modified_at datetime DEFAULT NULL,
-                                order_id bigint NOT NULL,
-                                payment_id bigint NOT NULL AUTO_INCREMENT,
-                                registered_at datetime DEFAULT NULL,
-                                payment_method varchar(31) NOT NULL,
-                                status varchar(255) NOT NULL,
-                                PRIMARY KEY (payment_id),
-                                UNIQUE (order_id),
-                                FOREIGN KEY (order_id) REFERENCES orders(order_id)
+CREATE TABLE mail_logs (
+                           mail_log_id bigint NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                           modified_at timestamp DEFAULT NULL,
+                           registered_at timestamp DEFAULT NULL,
+                           resume_id bigint NOT NULL,
+                           request_id varchar(25) NOT NULL,
+                           email varchar(50) NOT NULL,
+                           error_response varchar(255) DEFAULT NULL,
+                           result varchar(255) NOT NULL
 );

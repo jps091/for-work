@@ -45,15 +45,4 @@ public class SalesPost {
                 //.version(version)
                 .build();
     }
-
-    public void validStatusSelling() {
-        if (!SalesStatus.SELLING.equals(salesStatus)) {
-            throw new ApiException(SalesPostErrorCode.NOT_SELLING);
-        }
-    }
-
-    public Resume getResumeIfSalesPostSelling(){
-        validStatusSelling();
-        return resume;
-    }
 }

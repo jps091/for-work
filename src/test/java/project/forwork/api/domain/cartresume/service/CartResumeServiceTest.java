@@ -9,6 +9,7 @@ import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.domain.cart.infrastructure.enums.CartStatus;
 import project.forwork.api.domain.cart.model.Cart;
 import project.forwork.api.domain.cartresume.controller.model.CartResumeDetailResponse;
+import project.forwork.api.domain.cartresume.controller.model.SelectCartResumeRequest;
 import project.forwork.api.domain.cartresume.model.CartResume;
 import project.forwork.api.common.infrastructure.enums.FieldType;
 import project.forwork.api.common.infrastructure.enums.LevelType;
@@ -174,8 +175,12 @@ class CartResumeServiceTest {
                 .id(1L)
                 .build();
 
+        SelectCartResumeRequest body = SelectCartResumeRequest.builder()
+                .cartResumeIds(List.of(1L, 2L))
+                .build();
+
         //when(상황발생)
-        cartResumeService.deleteBySelected(currentUser, List.of(1L, 2L));
+        cartResumeService.deleteBySelected(currentUser, body);
 
         //then(검증)
         List<CartResume> allInCart = fakeCartResumeRepository.findAllInCart(currentUser.getId());

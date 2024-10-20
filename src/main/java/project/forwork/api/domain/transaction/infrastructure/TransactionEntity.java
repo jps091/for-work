@@ -1,16 +1,15 @@
 package project.forwork.api.domain.transaction.infrastructure;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import project.forwork.api.common.infrastructure.BaseTimeEntity;
-import project.forwork.api.domain.order.infrastructure.OrderEntity;
 import project.forwork.api.domain.transaction.infrastructure.enums.TransactionType;
 import project.forwork.api.domain.transaction.model.Transaction;
-import project.forwork.api.domain.user.infrastructure.UserEntity;
 
 import java.math.BigDecimal;
 
@@ -27,20 +26,23 @@ public class TransactionEntity extends BaseTimeEntity {
     @Column(name = "transaction_id")
     private Long id;
 
-    @Column(name = "user_email", nullable = false)
+    @NotNull
+    @Column(length = 50, name = "user_email")
     private String userEmail;
 
-    @Column(name = "request_id", nullable = false)
+    @NotNull
+    @Column(length = 25, name = "request_id")
     private String requestId;
 
-    @Column(name = "payment_key", nullable = false)
+    @NotNull
+    @Column(length = 25, name = "payment_key")
     private String paymentKey;
 
-    @Column(precision = 7, nullable = false)
+    @Column(precision = 7) @NotNull
     private BigDecimal amount;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "type", nullable = false)
+    @Column(name = "type") @NotNull
     private TransactionType transactionType;
 
     public static TransactionEntity from(Transaction tx){
