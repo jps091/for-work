@@ -1,6 +1,7 @@
 package project.forwork.api.domain.orderresume.infrastructure;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import project.forwork.api.common.infrastructure.BaseTimeEntity;
@@ -25,21 +26,21 @@ public class OrderResumeEntity extends BaseTimeEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id", nullable = false)
+    @JoinColumn(name = "order_id") @NotNull
     private OrderEntity orderEntity;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "resume_id", nullable = false)
+    @JoinColumn(name = "resume_id") @NotNull
     private ResumeEntity resumeEntity;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @NotNull
     private OrderResumeStatus status;
 
-    @Column(name = "sent_at")
+    @Column(name = "sent_at", columnDefinition = "TIMESTAMP")
     private LocalDateTime sentAt;
 
-    @Column(name = "canceled_at")
+    @Column(name = "canceled_at", columnDefinition = "TIMESTAMP")
     private LocalDateTime canceledAt;
 
     public static OrderResumeEntity from(OrderResume orderResume){

@@ -13,10 +13,10 @@ import java.time.LocalDateTime;
 @Getter @Setter
 public class BaseTimeEntity {
 
-    @Column(updatable = false, name = "registered_at")
+    @Column(updatable = false, name = "registered_at", columnDefinition = "TIMESTAMP")
     private LocalDateTime registeredAt;
 
-    @Column(name = "modified_at")
+    @Column(name = "modified_at", columnDefinition = "TIMESTAMP")
     private LocalDateTime modifiedAt;
 
     @PrePersist

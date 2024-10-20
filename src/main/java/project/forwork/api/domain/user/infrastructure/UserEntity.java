@@ -1,11 +1,14 @@
 package project.forwork.api.domain.user.infrastructure;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import project.forwork.api.common.infrastructure.BaseTimeEntity;
 import project.forwork.api.domain.user.infrastructure.enums.RoleType;
 import project.forwork.api.domain.user.model.User;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "users")
@@ -20,21 +23,22 @@ public class UserEntity extends BaseTimeEntity {
     @Column(name = "user_id")
     private Long id;
 
-    @Column(length = 50, nullable = false, unique = true)
+    @NotNull
+    @Column(length = 50, unique = true)
     private String email;
 
-    @Column(length = 20, nullable = false)
+    @Column(length = 20) @NotNull
     private String password;
 
-    @Column(length = 10, nullable = false)
+    @Column(length = 10) @NotNull
     private String name;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "role", nullable = false)
+    @Column(name = "role") @NotNull
     private RoleType roleType;
 
-    @Column(name = "last_login_at")
-    private Long lastLoginAt;
+    @Column(name = "last_login_at", columnDefinition = "TIMESTAMP")
+    private LocalDateTime lastLoginAt;
 
     public static UserEntity from(User user) {
         UserEntity userEntity = new UserEntity();

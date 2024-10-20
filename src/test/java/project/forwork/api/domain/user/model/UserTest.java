@@ -6,6 +6,8 @@ import project.forwork.api.domain.user.controller.model.UserCreateRequest;
 import project.forwork.api.domain.user.infrastructure.enums.RoleType;
 import project.forwork.api.mock.TestClockHolder;
 
+import java.time.LocalDateTime;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -40,10 +42,10 @@ class UserTest {
                 .build();
 
         //when(상황발생)
-        user = user.login(new TestClockHolder(1678530673958L), "123");
+        user = user.login(new TestClockHolder(LocalDateTime.of(2024, 9, 10, 23, 58)), "123");
 
         //then(검증)
-        assertThat(user.getLastLoginAt()).isEqualTo(1678530673958L);
+        assertThat(user.getLastLoginAt()).isEqualTo(LocalDateTime.of(2024, 9, 10, 23, 58));
     }
 
     @Test

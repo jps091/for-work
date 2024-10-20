@@ -1,6 +1,7 @@
 package project.forwork.api.domain.maillog.infrastructure;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -24,20 +25,20 @@ public class MailLogEntity extends BaseTimeEntity {
     @Column(name = "mail_log_id")
     private Long id;
 
-    @Column(name = "email", nullable = false)
+    @Column(length = 50, name = "email") @NotNull
     private String email;
 
-    @Column(name = "request_id", nullable = false)
+    @Column(length = 25, name = "request_id") @NotNull
     private String requestId;
 
-    @Column(name = "resume_id", nullable = false)
+    @Column(name = "resume_id") @NotNull
     private Long resumeId;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @NotNull
     private Result result;
 
-    @Column(name = "error_response")
+    @Column(length = 255, name = "error_response") // char
     private String errorResponse;
 
     public static MailLogEntity from(MailLog mailLog){
