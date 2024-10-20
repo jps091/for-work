@@ -33,7 +33,7 @@ public class ResumeController {
     public Api<ResumeSellerDetailResponse> register(
             @Parameter(hidden = true) @Current CurrentUser currentUser,
             @RequestPart("resumeData") @Valid ResumeRegisterRequest resumeRegisterBody,
-            @RequestPart("descriptionImage") @Valid @NotNull MultipartFile file
+            @RequestPart("descriptionImage") @NotNull MultipartFile file
     ){
         Resume resume = resumeService.register(currentUser, resumeRegisterBody, file);
         return Api.CREATED(ResumeSellerDetailResponse.from(resume));

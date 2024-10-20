@@ -17,7 +17,7 @@ import java.math.BigDecimal;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/open-api/v1/sales-resumes")
+@RequestMapping("/open-api/v1/sales-posts")
 @Tag(name = "SalesPostOpenController", description = "모든 사용자를 위한 이력서 판매글 컨트롤러")
 public class SalesPostOpenController {
 
@@ -42,7 +42,7 @@ public class SalesPostOpenController {
                      limit 가져올 개수 기본 6개
                      lastId : 이전, 다음 페이지 호출시 반드시 필요
                     """)
-    @GetMapping("/page")
+    @GetMapping
     public Api<SalesPostPage> getFilteredPage(
             @RequestParam(required = false) SalesPostSortType sortType,
             @RequestParam(required = false) BigDecimal minPrice,

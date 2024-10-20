@@ -18,7 +18,7 @@ import java.util.List;
 @RestController
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/sales-resumes")
+@RequestMapping("/api/v1/sales-posts")
 @Tag(name = "SalesPostController", description = "이력서 판매글 관리 컨트롤러")
 public class SalesPostController {
 
@@ -36,7 +36,7 @@ public class SalesPostController {
     @Operation(summary = "sale-resume 상태 변경",
             description = "자신의 resume이 상태가 active일때만 가능\n" +
                     " SELLING, CANCEL 변경 가능")
-    @PutMapping("/{salesPostId}/status")
+    @PutMapping("/{salesPostId}")
     public Api<String> changeSalesStatus(
             @Parameter(hidden = true) @Current CurrentUser currentUser,
             @PathVariable Long salesPostId,
