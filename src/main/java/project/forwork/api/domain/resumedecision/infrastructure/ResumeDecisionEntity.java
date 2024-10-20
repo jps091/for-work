@@ -1,5 +1,6 @@
 package project.forwork.api.domain.resumedecision.infrastructure;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import project.forwork.api.common.infrastructure.BaseTimeEntity;
@@ -24,18 +25,19 @@ public class ResumeDecisionEntity extends BaseTimeEntity{
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "admin_id")
+    @JoinColumn(name = "admin_id") @NotNull
     private UserEntity adminEntity;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "resume_id", nullable = false)
+    @JoinColumn(name = "resume_id") @NotNull
     private ResumeEntity resumeEntity;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status")
+    @Column(name = "status") @NotNull
     private DecisionStatus decisionStatus;
 
-    @Column(name = "decided_at")
+    @NotNull
+    @Column(name = "decided_at", columnDefinition = "TIMESTAMP")
     private LocalDateTime registeredAt;
 
     public static ResumeDecisionEntity from(ResumeDecision resumeDecision){

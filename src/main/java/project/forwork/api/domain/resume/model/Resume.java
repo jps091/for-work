@@ -37,7 +37,8 @@ public class Resume {
 
 
     public static Resume from(User user, ResumeRegisterRequest body, String descriptionUrl){
-        if(body.getPrice().compareTo(new BigDecimal("100000")) > 0){
+        if(body.getPrice().compareTo(new BigDecimal("100000")) > 0 ||
+                body.getPrice().compareTo(new BigDecimal("10000")) < 0){
             throw new ApiException(ResumeErrorCode.PRICE_NOT_VALID);
         }
         return Resume.builder()
@@ -54,6 +55,11 @@ public class Resume {
     }
 
     public Resume modify(ResumeModifyRequest body, String descriptionUrl){
+        if(body.getPrice().compareTo(new BigDecimal("100000")) > 0 ||
+                body.getPrice().compareTo(new BigDecimal("10000")) < 0){
+            throw new ApiException(ResumeErrorCode.PRICE_NOT_VALID);
+        }
+
         return Resume.builder()
                 .id(id)
                 .seller(seller)

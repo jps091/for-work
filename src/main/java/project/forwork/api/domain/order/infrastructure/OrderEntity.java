@@ -1,6 +1,7 @@
 package project.forwork.api.domain.order.infrastructure;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import project.forwork.api.common.infrastructure.BaseTimeEntity;
@@ -24,20 +25,20 @@ public class OrderEntity extends BaseTimeEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id") @NotNull
     private UserEntity userEntity;
 
-    @Column(name = "request_id", nullable = false)
+    @Column(length = 25, name = "request_id") @NotNull
     private String requestId;
 
-    @Column(precision = 8, name = "total_amount", nullable = false)
+    @Column(precision = 8, name = "total_amount") @NotNull
     private BigDecimal totalAmount;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @NotNull
     private OrderStatus status;
 
-    @Column(name = "paid_at")
+    @Column(name = "paid_at", columnDefinition = "TIMESTAMP")
     private LocalDateTime paidAt;
 
     public static OrderEntity from(Order order){
