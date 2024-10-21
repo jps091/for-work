@@ -8,7 +8,7 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import project.forwork.api.interceptor.AdminInterceptor;
 import project.forwork.api.interceptor.AuthorizationInterceptor;
-import project.forwork.api.resolver.UserCookieResolver;
+import project.forwork.api.resolver.CurrentUserResolver;
 
 import java.util.List;
 
@@ -18,7 +18,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     private final AuthorizationInterceptor authorizationInterceptor;
     private final AdminInterceptor adminInterceptor;
-    private final UserCookieResolver userCookieResolver;
+    private final CurrentUserResolver currentUserResolver;
 
     private List<String> API = List.of(
             "/api/**"
@@ -67,7 +67,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(userCookieResolver);
+        resolvers.add(currentUserResolver);
     }
 
     @Override

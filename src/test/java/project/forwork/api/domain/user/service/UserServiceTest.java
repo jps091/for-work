@@ -176,12 +176,11 @@ class UserServiceTest {
 
         //when(상황발생)
         HttpServletResponse response = mock(HttpServletResponse.class);
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        userService.delete(currentUser, request, response);
+        userService.delete(currentUser, response);
 
         //then(검증)
         assertThat(fakeUserRepository.findById(currentUser.getId())).isEmpty();
-        verify(tokenHeaderService).expiredRefreshTokenAndHeaders(eq(currentUser.getId()), eq(request), eq(response));
+        verify(tokenHeaderService).expiredRefreshTokenAndHeaders(eq(currentUser.getId()), eq(response));
     }
 
     @Test

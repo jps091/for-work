@@ -24,18 +24,17 @@ public class TokenHeaderService {
         return tokenResponse;
     }
 
-    public void expireTokensInHeaders(HttpServletRequest request, HttpServletResponse response) {
+    public void expireTokensInHeaders(HttpServletResponse response) {
         response.setHeader(ACCESS_TOKEN_HEADER, "");
         response.setHeader(REFRESH_TOKEN_HEADER, "");
     }
 
     public void expiredRefreshTokenAndHeaders(
             Long userId,
-            HttpServletRequest request,
             HttpServletResponse response
-    ) {
+    ){
         tokenService.deleteRefreshToken(userId);
-        expireTokensInHeaders(request, response);
+        expireTokensInHeaders(response);
     }
 
     public void reissueRefreshTokenAndHeaders(HttpServletRequest request, HttpServletResponse response) {

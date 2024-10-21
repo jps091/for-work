@@ -13,13 +13,11 @@ import project.forwork.api.domain.token.model.TokenResponse;
 public class LoginResponse {
     private Long userId;
     private String accessToken;
-    private String refreshToken;
 
-    public static LoginResponse from(Long userId, TokenResponse tokenResponse){
+    public static LoginResponse from(Long userId, String refreshToken){
         return LoginResponse.builder()
                 .userId(userId)
-                .accessToken(tokenResponse.getAccessToken())
-                .refreshToken(tokenResponse.getRefreshToken())
+                .accessToken(refreshToken)
                 .build();
     }
 }

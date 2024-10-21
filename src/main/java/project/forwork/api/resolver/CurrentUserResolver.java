@@ -20,7 +20,7 @@ import static project.forwork.api.interceptor.AuthorizationInterceptor.USER_ID;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class UserCookieResolver implements HandlerMethodArgumentResolver {
+public class CurrentUserResolver implements HandlerMethodArgumentResolver {
 
     private final UserRepository userRepository;
 

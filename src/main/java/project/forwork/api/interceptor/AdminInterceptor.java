@@ -3,10 +3,12 @@ package project.forwork.api.interceptor;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
 import project.forwork.api.common.error.ErrorCode;
 import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.domain.user.model.User;
@@ -23,6 +25,11 @@ public class AdminInterceptor implements HandlerInterceptor {
     private final UserRepository userRepository;
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+
+        // 웹 리소스 및 옵션 요청은 통과
+        if (HttpMethod.OPTIONS.matches(request.getMethod()) || handler instanceof ResourceHttpRequestHandler) {
+            return true;
+        }
 
         RequestAttributes requestContext = RequestContextHolder.getRequestAttributes();
         Object userId = requestContext.getAttribute(USER_ID, RequestAttributes.SCOPE_REQUEST);
