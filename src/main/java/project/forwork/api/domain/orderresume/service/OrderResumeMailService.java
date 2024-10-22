@@ -34,18 +34,18 @@ public class OrderResumeMailService {
     private final MailLogService mailLogService;
 
     @Transactional
-    public void sendResumeMail(List<OrderResume> orderResumes){
-        List<PurchaseResponse> purchaseResponses = orderResumeRepositoryCustom.findAllPurchaseResume(orderResumes);
-        purchaseResponses.forEach(this::sendEmail);
-
+    public void setupConfirmedResumesAndSendEmail(List<OrderResume> orderResumes){
         List<OrderResume> sentResumes = orderResumes.stream()
-                .map(orderResume -> orderResume.updateStatusSend((clockHolder))).toList();
+                .map(orderResume -> orderResume.updateStatusSent((clockHolder))).toList();
 
         List<Long> resumeIds = orderResumeRepository.saveAll(sentResumes).stream()
                 .map(OrderResume::getResumeId)
                 .toList();
 
-        resumeQuantityService.addSalesQuantityWithOnePessimistic(resumeIds);
+        resumeQuantityService.addSalesQuantityWithOnePessimistic(resumeIds); // 판매량 1증가
+
+        List<PurchaseResponse> purchaseResponses = orderResumeRepositoryCustom.findAllPurchaseResume(orderResumes);
+        purchaseResponses.forEach(this::sendEmail);
     }
 
     @Retryable(
@@ -56,6 +56,7 @@ public class OrderResumeMailService {
     public void sendEmail(PurchaseResponse purchaseResponse){
         String title = "for-work 구매 이력서 : " + purchaseResponse.getSalesPostTitle();
         String content = "주문 번호 #" + purchaseResponse.getOrderId() +" <URL> : "+ purchaseResponse.getResumeUrl();
+
         try{
             mailSender.send(purchaseResponse.getEmail(), title, content);
             mailLogService.registerSuccessLog(purchaseResponse);
