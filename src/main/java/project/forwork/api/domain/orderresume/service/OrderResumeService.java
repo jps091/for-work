@@ -47,7 +47,7 @@ public class OrderResumeService {
                 .toList();
 
         List<OrderResume> confirmedResumes = orderResumeRepository.saveAll(orderedResumes);
-        orderResumeMailService.sendResumeMail(confirmedResumes);
+        orderResumeMailService.setupConfirmedResumesAndSendEmail(confirmedResumes);
 
         int confirmOrderSize = confirmedResumes.size();
         OrderStatus updateOrderStatus = getOrderStatusCheckConfirm(totalOrderSize, confirmOrderSize);
@@ -62,7 +62,7 @@ public class OrderResumeService {
                 .map(OrderResume::updateStatusConfirm)
                 .toList();
         List<OrderResume> confirmedResumes = orderResumeRepository.saveAll(orderedResumes);
-        orderResumeMailService.sendResumeMail(confirmedResumes);
+        orderResumeMailService.setupConfirmedResumesAndSendEmail(confirmedResumes);
     }
 
     public void cancelByOrder(Order order){

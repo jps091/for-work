@@ -43,14 +43,14 @@ public class ResumeAutoConfirmService {
 
     public void updatedOrderStatus(OrderStatus oldStatus, OrderStatus updatedStatus) {
         int limit = 10; //TODO 수치 변경 가능
-        log.info("updatedOrderStatus {} -> {}", oldStatus, updatedStatus);
+        //log.info("updatedOrderStatus {} -> {}", oldStatus, updatedStatus);
 
         while (true) {
             List<Order> orders = orderRepository.findByStatus(oldStatus, limit);
 
             // 더 이상 처리할 주문이 없으면 반복 종료
             if (orders.isEmpty()) {
-                log.info("No more orders with status: {}", oldStatus);
+            //    log.info("No more orders with status: {}", oldStatus);
                 break;
             }
 
