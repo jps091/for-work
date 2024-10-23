@@ -1,6 +1,5 @@
 package project.forwork.api.domain.resumedecision.service;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -38,7 +37,7 @@ public class  ResumeDecisionService {
         resume = resume.updateStatus(ResumeStatus.ACTIVE);
         Resume newResume = resumeRepository.save(resume);
 
-        ThumbnailImage thumbnailImage = thumbnailImageRepository.getByFieldType(newResume.getField());
+        ThumbnailImage thumbnailImage = thumbnailImageRepository.getByFieldWithThrow(newResume.getField());
 
         ResumeDecision resumeDecision = ResumeDecision.approve(admin, resume);
         resumeDecisionRepository.save(resumeDecision);

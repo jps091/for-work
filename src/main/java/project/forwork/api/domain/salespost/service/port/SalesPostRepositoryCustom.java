@@ -3,23 +3,25 @@ package project.forwork.api.domain.salespost.service.port;
 
 import project.forwork.api.domain.salespost.controller.model.SalesPostDetailResponse;
 import project.forwork.api.domain.salespost.controller.model.SalesPostFilterCond;
-import project.forwork.api.domain.salespost.controller.model.SalesPostResponse;
+import project.forwork.api.domain.salespost.infrastructure.model.SalesPostSearchDto;
 import project.forwork.api.domain.salespost.controller.model.SalesPostSellerResponse;
-
+import project.forwork.api.domain.salespost.infrastructure.model.SalesPostThumbnailUrlDto;
 
 
 import java.util.List;
 
 public interface SalesPostRepositoryCustom {
-    SalesPostDetailResponse getDetailSalesPost(Long salesPostId);
+    SalesPostDetailResponse getDetailSalesPost(Long resumeId);
 
     List<SalesPostSellerResponse> findBySeller(Long sellerId);
 
-    List<SalesPostResponse> findFirstPage(SalesPostFilterCond cond, int limit);
+    List<SalesPostSearchDto> searchFirstPage(SalesPostFilterCond cond, int limit);
 
-    List<SalesPostResponse> findLastPage(SalesPostFilterCond cond, int limit);
+    List<SalesPostSearchDto> searchLastPage(SalesPostFilterCond cond, int limit);
 
-    List<SalesPostResponse> findNextPage(SalesPostFilterCond cond, Long lastId, int limit);
+    List<SalesPostSearchDto> searchNextPage(SalesPostFilterCond cond, Long lastId, int limit);
 
-    List<SalesPostResponse> findPreviousPage(SalesPostFilterCond cond, Long lastId, int limit);
+    List<SalesPostSearchDto> searchPreviousPage(SalesPostFilterCond cond, Long lastId, int limit);
+
+    List<SalesPostThumbnailUrlDto> getThumbnailUrl(List<Long> resumeIds);
 }

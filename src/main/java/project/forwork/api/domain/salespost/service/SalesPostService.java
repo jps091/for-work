@@ -9,13 +9,11 @@ import project.forwork.api.common.error.SalesPostErrorCode;
 import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.common.infrastructure.enums.PageStep;
 import project.forwork.api.domain.resume.model.Resume;
-import project.forwork.api.domain.salespost.controller.model.SalesPostDetailResponse;
-import project.forwork.api.domain.salespost.controller.model.SalesPostPage;
-import project.forwork.api.domain.salespost.controller.model.SalesPostResponse;
-import project.forwork.api.domain.salespost.controller.model.SalesPostSellerResponse;
+import project.forwork.api.domain.salespost.controller.model.*;
 import project.forwork.api.domain.salespost.infrastructure.enums.*;
+import project.forwork.api.domain.salespost.infrastructure.model.SalesPostSearchDto;
+import project.forwork.api.domain.salespost.infrastructure.model.SalesPostThumbnailUrlDto;
 import project.forwork.api.domain.salespost.model.SalesPost;
-import project.forwork.api.domain.salespost.controller.model.SalesPostFilterCond;
 import project.forwork.api.domain.salespost.service.port.SalesPostRepository;
 import project.forwork.api.domain.salespost.service.port.SalesPostRepositoryCustom;
 import project.forwork.api.domain.user.model.User;
@@ -23,6 +21,8 @@ import project.forwork.api.domain.user.service.port.UserRepository;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Builder
@@ -34,6 +34,7 @@ public class SalesPostService {
     private final SalesPostRepositoryCustom salesPostRepositoryCustom;
     private final UserRepository userRepository;
 
+    @Transactional
     public void changeSalesStatus(CurrentUser currentUser, Long salesPostId, SalesStatus status){
         Resume resume = validateSellerAndResumeStatus(currentUser, salesPostId);
 
@@ -42,6 +43,7 @@ public class SalesPostService {
         salesPostRepository.save(salesPost);
     }
 
+    @Transactional
     public Resume validateSellerAndResumeStatus(CurrentUser currentUser, Long salesPostId){
         User user = userRepository.getByIdWithThrow(currentUser.getId());
         SalesPost salesPost = salesPostRepository.getByIdWithThrow(salesPostId);
@@ -69,7 +71,17 @@ public class SalesPostService {
         return salesResponse;
     }
 
-    public SalesPostPage getFilteredAndPagedResults(
+    @Transactional(readOnly = true)
+    public SalesPostDetailResponse getSellingPost(Long resumeId){
+
+        SalesPostDetailResponse salesPostDetailResponse = salesPostRepositoryCustom.getDetailSalesPost(resumeId);
+        if(SalesStatus.CANCELED.equals(salesPostDetailResponse.getStatus())){
+            throw new ApiException(SalesPostErrorCode.NOT_SELLING);
+        }
+        return salesPostDetailResponse;
+    }
+
+    public SalesPostPage searchFilteredResults(
             SalesPostSortType sortType, BigDecimal minPrice, BigDecimal maxPrice,
             FieldCond field, LevelCond level,
             PageStep pageStep, Long lastId, int limit
@@ -85,63 +97,68 @@ public class SalesPostService {
 
     @Transactional(readOnly = true)
     public SalesPostPage findFirstPage(SalesPostFilterCond cond, int limit){
-        List<SalesPostResponse> results = salesPostRepositoryCustom.findFirstPage(cond, limit);
+        List<SalesPostSearchDto> results = salesPostRepositoryCustom.searchFirstPage(cond, limit);
         return createSalesPostPage(results);
     }
 
     @Transactional(readOnly = true)
     public SalesPostPage findLastPage(SalesPostFilterCond cond, int limit){
-        List<SalesPostResponse> results = salesPostRepositoryCustom.findLastPage(cond, limit);
+        List<SalesPostSearchDto> results = salesPostRepositoryCustom.searchLastPage(cond, limit);
         return createReverseSalesPostPage(results);
     }
 
     @Transactional(readOnly = true)
     public SalesPostPage findNextPage(SalesPostFilterCond cond, Long lastId, int limit){
-        List<SalesPostResponse> results = salesPostRepositoryCustom.findNextPage(cond, lastId, limit);
+        List<SalesPostSearchDto> results = salesPostRepositoryCustom.searchNextPage(cond, lastId, limit);
         return createSalesPostPage(results);
     }
 
     @Transactional(readOnly = true)
     public SalesPostPage findPreviousPage(SalesPostFilterCond cond, Long lastId, int limit){
-        List<SalesPostResponse> results = salesPostRepositoryCustom.findPreviousPage(cond, lastId, limit);
+        List<SalesPostSearchDto> results = salesPostRepositoryCustom.searchPreviousPage(cond, lastId, limit);
         return createReverseSalesPostPage(results);
     }
-
     @Transactional(readOnly = true)
-    public SalesPostDetailResponse getSellingPost(Long salesPostId){
+    public List<SalesPostSearchResponse> createSearchResponseByDto(List<SalesPostSearchDto> searchDtos) {
+        List<Long> resumeIds = searchDtos.stream()
+                .map(SalesPostSearchDto::getResumeId)
+                .toList();
 
-        SalesPostDetailResponse salesPostDetailResponse = salesPostRepositoryCustom.getDetailSalesPost(salesPostId);
-        if(SalesStatus.CANCELED.equals(salesPostDetailResponse.getStatus())){
-            throw new ApiException(SalesPostErrorCode.NOT_SELLING);
-        }
-        return salesPostDetailResponse;
+        Map<Long, String> urlMap = salesPostRepositoryCustom.getThumbnailUrl(resumeIds).stream()
+                .collect(Collectors.toMap(
+                        SalesPostThumbnailUrlDto::getResumeId,
+                        SalesPostThumbnailUrlDto::getThumbnailImageUrl
+                ));
+
+        return searchDtos.stream()
+                .map(dto -> {
+                    String thumbnailUrl = urlMap.get(dto.getResumeId());
+                    return SalesPostSearchResponse.from(dto, thumbnailUrl);
+                })
+                .toList();
     }
 
-    private SalesPostPage createSalesPostPage(List<SalesPostResponse> results) {
+    private SalesPostPage createSalesPostPage(List<SalesPostSearchDto> searchDtos) {
+        validSearchDtoEmpty(searchDtos);
 
-        if(results.isEmpty()){
-            throw new ApiException(SalesPostErrorCode.SALES_POST_NO_CONTENT);
-        }
+        List<SalesPostSearchResponse> results = createSearchResponseByDto(searchDtos);
 
-        SalesPostResponse lastRecord = results.get(results.size() - 1);
-
-        return SalesPostPage.builder()
-                .results(results)
-                .lastId(lastRecord.getId())
-                .build();
+        SalesPostSearchResponse lastRecord = results.get(results.size() - 1);
+        return SalesPostPage.from(results, lastRecord);
     }
 
-    private SalesPostPage createReverseSalesPostPage(List<SalesPostResponse> results) {
+    private SalesPostPage createReverseSalesPostPage(List<SalesPostSearchDto> searchDtos) {
+        validSearchDtoEmpty(searchDtos);
 
-        if(results.isEmpty()){
+        List<SalesPostSearchResponse> results = createSearchResponseByDto(searchDtos);
+
+        SalesPostSearchResponse firstRecord = results.get(0);
+        return SalesPostPage.from(results, firstRecord);
+    }
+
+    private void validSearchDtoEmpty(List<SalesPostSearchDto> searchDtos) {
+        if(searchDtos.isEmpty()){
             throw new ApiException(SalesPostErrorCode.SALES_POST_NO_CONTENT);
         }
-
-        SalesPostResponse firstRecord = results.get(0);
-
-        return SalesPostPage.builder()
-                .results(results)
-                .lastId(firstRecord.getId())
-                .build();
     }
 }

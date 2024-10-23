@@ -41,7 +41,7 @@ public class ResumeRepositoryCustomImpl implements ResumeRepositoryCustom {
                         resumeEntity.levelType.as("level"),
                         resumeEntity.resumeStatus.as("status"),
                         resumeEntity.modifiedAt.as("modifiedAt"),
-                        Expressions.stringTemplate("concat(substring({0}, 1, 15), '...')",
+                        Expressions.stringTemplate("concat(substring({0}, 1, 10), '...')",
                                 resumeEntity.description).as("summary")))
                 .from(resumeEntity)
                 .where(dateRangeCond(periodCond),
@@ -62,7 +62,7 @@ public class ResumeRepositoryCustomImpl implements ResumeRepositoryCustom {
                         resumeEntity.levelType.as("level"),
                         resumeEntity.resumeStatus.as("status"),
                         resumeEntity.modifiedAt.as("modifiedAt"),
-                        Expressions.stringTemplate("concat(substring({0}, 1, 15), '...')",
+                        Expressions.stringTemplate("concat(substring({0}, 1, 10), '...')",
                                 resumeEntity.description).as("summary")))
                 .from(resumeEntity)
                 .where(dateRangeCond(periodCond),
@@ -89,7 +89,7 @@ public class ResumeRepositoryCustomImpl implements ResumeRepositoryCustom {
                         resumeEntity.levelType.as("level"),
                         resumeEntity.resumeStatus.as("status"),
                         resumeEntity.modifiedAt.as("modifiedAt"),
-                        Expressions.stringTemplate("concat(substring({0}, 1, 15), '...')",
+                        Expressions.stringTemplate("concat(substring({0}, 1, 10), '...')",
                                 resumeEntity.description).as("summary")))
                 .from(resumeEntity)
                 .where(dateRangeCond(periodCond),
@@ -114,7 +114,7 @@ public class ResumeRepositoryCustomImpl implements ResumeRepositoryCustom {
                         resumeEntity.levelType.as("level"),
                         resumeEntity.resumeStatus.as("status"),
                         resumeEntity.modifiedAt.as("modifiedAt"),
-                        Expressions.stringTemplate("concat(substring({0}, 1, 15), '...')",
+                        Expressions.stringTemplate("concat(substring({0}, 1, 10), '...')",
                                 resumeEntity.description).as("summary")))
                 .from(resumeEntity)
                 .where(dateRangeCond(periodCond),
