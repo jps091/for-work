@@ -18,12 +18,12 @@ public class SalesPostSearchResponse {
     private BigDecimal price;
     private String thumbnailImageUrl;
 
-    public static SalesPostSearchResponse from(SalesPostSearchDto dto, String thumbnailImageUrl){
+    public static SalesPostSearchResponse from(SalesPostSearchDto dto){
         return SalesPostSearchResponse.builder()
                 .resumeId(dto.getResumeId())
                 .title(dto.getTitle())
                 .price(dto.getPrice())
-                .thumbnailImageUrl(thumbnailImageUrl)
+                .thumbnailImageUrl(dto.getUrl())
                 .build();
     }
 }

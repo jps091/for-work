@@ -118,23 +118,12 @@ public class SalesPostService {
         List<SalesPostSearchDto> results = salesPostRepositoryCustom.searchPreviousPage(cond, lastId, limit);
         return createReverseSalesPostPage(results);
     }
+
     @Transactional(readOnly = true)
     public List<SalesPostSearchResponse> createSearchResponseByDto(List<SalesPostSearchDto> searchDtos) {
-        List<Long> resumeIds = searchDtos.stream()
-                .map(SalesPostSearchDto::getResumeId)
-                .toList();
-
-        Map<Long, String> urlMap = salesPostRepositoryCustom.getThumbnailUrl(resumeIds).stream()
-                .collect(Collectors.toMap(
-                        SalesPostThumbnailUrlDto::getResumeId,
-                        SalesPostThumbnailUrlDto::getThumbnailImageUrl
-                ));
 
         return searchDtos.stream()
-                .map(dto -> {
-                    String thumbnailUrl = urlMap.get(dto.getResumeId());
-                    return SalesPostSearchResponse.from(dto, thumbnailUrl);
-                })
+                .map(SalesPostSearchResponse::from)
                 .toList();
     }
 

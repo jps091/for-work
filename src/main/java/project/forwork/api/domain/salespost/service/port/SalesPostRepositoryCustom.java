@@ -22,6 +22,4 @@ public interface SalesPostRepositoryCustom {
     List<SalesPostSearchDto> searchNextPage(SalesPostFilterCond cond, Long lastId, int limit);
 
     List<SalesPostSearchDto> searchPreviousPage(SalesPostFilterCond cond, Long lastId, int limit);
-
-    List<SalesPostThumbnailUrlDto> getThumbnailUrl(List<Long> resumeIds);
 }

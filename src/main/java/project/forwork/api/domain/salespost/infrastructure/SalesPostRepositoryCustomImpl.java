@@ -89,7 +89,8 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
                 .select(Projections.fields(SalesPostSearchDto.class,
                         ExpressionUtils.as(createTitleExpression(), "title"),
                         resumeEntity.id.as("resumeId"),
-                        resumeEntity.price.as("price")
+                        resumeEntity.price.as("price"),
+                        thumbnailImageEntity.url.as("url")
                 ))
                 .from(salesPostEntity)
                 .join(salesPostEntity.resumeEntity, resumeEntity)
@@ -110,7 +111,8 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
                 .select(Projections.fields(SalesPostSearchDto.class,
                         ExpressionUtils.as(createTitleExpression(), "title"),
                         resumeEntity.id.as("resumeId"),
-                        resumeEntity.price.as("price")
+                        resumeEntity.price.as("price"),
+                        thumbnailImageEntity.url.as("url")
                 ))
                 .from(salesPostEntity)
                 .join(salesPostEntity.resumeEntity, resumeEntity)
@@ -134,7 +136,8 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
                 .select(Projections.fields(SalesPostSearchDto.class,
                         ExpressionUtils.as(createTitleExpression(), "title"),
                         resumeEntity.id.as("resumeId"),
-                        resumeEntity.price.as("price")
+                        resumeEntity.price.as("price"),
+                        thumbnailImageEntity.url.as("url")
                 ))
                 .from(salesPostEntity)
                 .join(salesPostEntity.resumeEntity, resumeEntity)
@@ -159,7 +162,8 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
                 .select(Projections.fields(SalesPostSearchDto.class,
                         ExpressionUtils.as(createTitleExpression(), "title"),
                         resumeEntity.id.as("resumeId"),
-                        resumeEntity.price.as("price")
+                        resumeEntity.price.as("price"),
+                        thumbnailImageEntity.url.as("url")
                 ))
                 .from(salesPostEntity)
                 .join(salesPostEntity.resumeEntity, resumeEntity)
@@ -174,21 +178,6 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
 
         Collections.reverse(results);
         return results;
-    }
-
-    public List<SalesPostThumbnailUrlDto> getThumbnailUrl(List<Long> resumeIds){
-        return queryFactory
-                .select(Projections.fields(SalesPostThumbnailUrlDto.class,
-                        resumeEntity.id.as("resumeId"),
-                        thumbnailImageEntity.url.as("thumbnailImageUrl")
-                ))
-                .from(salesPostEntity)
-                .join(salesPostEntity.resumeEntity, resumeEntity)
-                .join(salesPostEntity.thumbnailImageEntity, thumbnailImageEntity)
-                .where(
-                        salesPostEntity.resumeEntity.id.in(resumeIds)
-                )
-                .fetch();
     }
 
     private Expression<String> createTitleExpression() {
