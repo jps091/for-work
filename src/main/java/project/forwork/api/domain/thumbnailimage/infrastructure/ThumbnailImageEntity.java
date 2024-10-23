@@ -27,7 +27,7 @@ public class ThumbnailImageEntity extends BaseTimeEntity{
     private String url;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "field") @NotNull
+    @Column(name = "field", unique = true) @NotNull
     private FieldType fieldType;
 
     public static ThumbnailImageEntity from(ThumbnailImage thumbnailImage){

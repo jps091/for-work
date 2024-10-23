@@ -18,7 +18,7 @@ public class FakeThumbnailImageRepository implements ThumbnailImageRepository {
 
 
     @Override
-    public ThumbnailImage getByFieldType(FieldType type) {
+    public ThumbnailImage getByFieldWithThrow(FieldType type) {
         return data.stream().filter(t -> t.getFieldType().equals(type)).findFirst()
                 .orElseThrow(() -> new ApiException(ThumbnailImageErrorCode.NOT_FOUND));
     }
@@ -44,5 +44,11 @@ public class FakeThumbnailImageRepository implements ThumbnailImageRepository {
             data.add(thumbnailImage);
             return thumbnailImage;
         }
+    }
+
+    @Override
+    public ThumbnailImage getByIdWithThrow(Long id) {
+        return data.stream().filter(t -> t.getId().equals(id)).findFirst()
+                .orElseThrow(() -> new ApiException(ThumbnailImageErrorCode.NOT_FOUND));
     }
 }

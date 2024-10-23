@@ -64,7 +64,6 @@ CREATE TABLE sales_posts (
                              modified_at timestamp DEFAULT NULL,
                              registered_at timestamp DEFAULT NULL,
                              status varchar(255) NOT NULL,
-                             title varchar(25) NOT NULL,
                              resume_id bigint NOT NULL,
                              thumbnail_image_id bigint DEFAULT NULL,
                              PRIMARY KEY (sales_post_id),

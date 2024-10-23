@@ -24,7 +24,6 @@ public class FakeSalesPostRepository implements SalesPostRepository {
             SalesPost newSalesPost = SalesPost.builder()
                     .id(id.incrementAndGet())
                     .resume(salesPost.getResume())
-                    .title(salesPost.getTitle())
                     .thumbnailImage(salesPost.getThumbnailImage())
                     .salesStatus(salesPost.getSalesStatus())
                     .registeredAt(salesPost.getRegisteredAt())
