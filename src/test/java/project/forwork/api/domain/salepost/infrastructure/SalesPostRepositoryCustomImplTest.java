@@ -11,7 +11,7 @@ import org.springframework.test.context.jdbc.SqlGroup;
 import project.forwork.api.common.infrastructure.enums.FieldType;
 import project.forwork.api.common.infrastructure.enums.LevelType;
 import project.forwork.api.domain.salespost.controller.model.SalesPostFilterCond;
-import project.forwork.api.domain.salespost.controller.model.SalesPostResponse;
+import project.forwork.api.domain.salespost.infrastructure.model.SalesPostSearchDto;
 import project.forwork.api.domain.salespost.infrastructure.SalesPostRepositoryCustomImpl;
 import project.forwork.api.domain.salespost.infrastructure.enums.FieldCond;
 import project.forwork.api.domain.salespost.infrastructure.enums.LevelCond;
@@ -44,12 +44,12 @@ class SalesPostRepositoryCustomImplTest {
         SalesPostFilterCond cond = SalesPostFilterCond.from(null, null, null, null, null);
 
         //when(상황발생) 기본 정렬 최신 등록순
-        List<SalesPostResponse> result = repository.findFirstPage(cond, 2);
+        List<SalesPostSearchDto> result = repository.searchFirstPage(cond, 2);
 
         //then(검증)
         assertThat(result).hasSize(2);
-        assertThat(result.get(0).getId()).isEqualTo(6L);
-        assertThat(result.get(1).getId()).isEqualTo(8L);
+        assertThat(result.get(0).getResumeId()).isEqualTo(6L);
+        assertThat(result.get(1).getResumeId()).isEqualTo(8L);
     }
 // 7,5,4,3,1 back
     @Test
@@ -58,13 +58,12 @@ class SalesPostRepositoryCustomImplTest {
         SalesPostFilterCond cond = SalesPostFilterCond.from(null, null, null, FieldCond.BACKEND, null);
 
         //when(상황발생) 기본 정렬 최신 등록순
-        List<SalesPostResponse> result = repository.findFirstPage(cond, 2);
+        List<SalesPostSearchDto> result = repository.searchFirstPage(cond, 2);
 
         //then(검증)
         assertThat(result).hasSize(2);
-        assertThat(result.get(0).getId()).isEqualTo(7L);
-        assertThat(result.get(1).getId()).isEqualTo(5L);
-        assertThat(result).allMatch(salesPostResponse -> salesPostResponse.getField().equals(FieldType.BACKEND));
+        assertThat(result.get(0).getResumeId()).isEqualTo(7L);
+        assertThat(result.get(1).getResumeId()).isEqualTo(5L);
     }
 
     @Test
@@ -73,7 +72,7 @@ class SalesPostRepositoryCustomImplTest {
         SalesPostFilterCond cond = SalesPostFilterCond.from(null, new BigDecimal("60000"), null, null, null);
 
         //when(상황발생) 기본 정렬 최신 등록순
-        List<SalesPostResponse> result = repository.findFirstPage(cond, 2);
+        List<SalesPostSearchDto> result = repository.searchFirstPage(cond, 2);
         //then(검증)
         assertThat(result).hasSize(2);
         assertThat(result.get(0).getPrice()).isGreaterThan(new BigDecimal("60000"));
@@ -86,10 +85,10 @@ class SalesPostRepositoryCustomImplTest {
         SalesPostFilterCond cond = SalesPostFilterCond.from(null, null, new BigDecimal("50000"), null, null);
 
         //when(상황발생) 기본 정렬 최신 등록순
-        List<SalesPostResponse> result = repository.findFirstPage(cond, 2);
+        List<SalesPostSearchDto> result = repository.searchFirstPage(cond, 2);
         //then(검증)
         assertThat(result).hasSize(1);
-        assertThat(result.get(0).getId()).isEqualTo(7L);
+        assertThat(result.get(0).getResumeId()).isEqualTo(7L);
         assertThat(result.get(0).getPrice()).isLessThan(new BigDecimal("50000"));
     }
 
@@ -99,7 +98,7 @@ class SalesPostRepositoryCustomImplTest {
         SalesPostFilterCond cond = SalesPostFilterCond.from(null, new BigDecimal("80000"), new BigDecimal("100000"), null, null);
 
         //when(상황발생) 기본 정렬 최신 등록순
-        List<SalesPostResponse> result = repository.findFirstPage(cond, 10);
+        List<SalesPostSearchDto> result = repository.searchFirstPage(cond, 10);
         //then(검증)
     }
     //3 6 7 2 8 1 5 /1 3 5 7
@@ -110,14 +109,13 @@ class SalesPostRepositoryCustomImplTest {
                 (SalesPostSortType.BEST_SELLING, null, null, FieldCond.BACKEND, null);
 
         //when(상황발생) 기본 정렬 최신 등록순
-        List<SalesPostResponse> result = repository.findFirstPage(cond, 3);
+        List<SalesPostSearchDto> result = repository.searchFirstPage(cond, 3);
 
         //then(검증)
         assertThat(result).hasSize(3);
-        assertThat(result.get(0).getId()).isEqualTo(4L);
-        assertThat(result.get(1).getId()).isEqualTo(7L);
-        assertThat(result.get(2).getId()).isEqualTo(1L);
-        assertThat(result).allMatch(salesPostResponse -> salesPostResponse.getField().equals(FieldType.BACKEND));
+        assertThat(result.get(0).getResumeId()).isEqualTo(3L);
+        assertThat(result.get(1).getResumeId()).isEqualTo(7L);
+        assertThat(result.get(2).getResumeId()).isEqualTo(1L);
     }
 
     @Test
@@ -127,14 +125,13 @@ class SalesPostRepositoryCustomImplTest {
                 (SalesPostSortType.BEST_SELLING, new BigDecimal("60000.00"), new BigDecimal("90000.00"), FieldCond.BACKEND, null);
 
         //when(상황발생) 기본 정렬 최신 등록순
-        List<SalesPostResponse> result = repository.findFirstPage(cond, 3);
+        List<SalesPostSearchDto> result = repository.searchFirstPage(cond, 3);
 
         //then(검증)
         assertThat(result).hasSize(3);
-        assertThat(result.get(0).getId()).isEqualTo(4L);
-        assertThat(result.get(1).getId()).isEqualTo(1L);
-        assertThat(result.get(2).getId()).isEqualTo(5L);
-        assertThat(result).allMatch(salesPostResponse -> salesPostResponse.getField().equals(FieldType.BACKEND));
+        assertThat(result.get(0).getResumeId()).isEqualTo(3L);
+        assertThat(result.get(1).getResumeId()).isEqualTo(1L);
+        assertThat(result.get(2).getResumeId()).isEqualTo(5L);
     }
 
     @Test
@@ -143,12 +140,12 @@ class SalesPostRepositoryCustomImplTest {
         SalesPostFilterCond cond = SalesPostFilterCond.from(null, null, null, null, null);
 
         //when(상황발생) 기본 정렬 최신 등록순
-        List<SalesPostResponse> result = repository.findNextPage(cond, 7L, 2);
+        List<SalesPostSearchDto> result = repository.searchNextPage(cond, 7L, 2);
 
         //then(검증)
         assertThat(result).hasSize(2);
-        assertThat(result.get(0).getId()).isEqualTo(5L);
-        assertThat(result.get(1).getId()).isEqualTo(4L);
+        assertThat(result.get(0).getResumeId()).isEqualTo(5L);
+        assertThat(result.get(1).getResumeId()).isEqualTo(3L);
     }
 
     @Test
@@ -157,12 +154,12 @@ class SalesPostRepositoryCustomImplTest {
         SalesPostFilterCond cond = SalesPostFilterCond.from(SalesPostSortType.OLD, null, null, null, null);
 
         //when(상황발생) 기본 정렬 최신 등록순
-        List<SalesPostResponse> result = repository.findNextPage(cond, 5L, 2);
+        List<SalesPostSearchDto> result = repository.searchNextPage(cond, 5L, 2);
 
         //then(검증)
         assertThat(result).hasSize(2);
-        assertThat(result.get(0).getId()).isEqualTo(7L);
-        assertThat(result.get(1).getId()).isEqualTo(8L);
+        assertThat(result.get(0).getResumeId()).isEqualTo(7L);
+        assertThat(result.get(1).getResumeId()).isEqualTo(8L);
     }
 
     @Test
@@ -171,12 +168,12 @@ class SalesPostRepositoryCustomImplTest {
         SalesPostFilterCond cond = SalesPostFilterCond.from(SalesPostSortType.NEW, null, null, null, null);
 
         //when(상황발생) 기본 정렬 최신 등록순
-        List<SalesPostResponse> result = repository.findNextPage(cond, 5L, 2);
+        List<SalesPostSearchDto> result = repository.searchNextPage(cond, 5L, 2);
 
         //then(검증)
         assertThat(result).hasSize(2);
-        assertThat(result.get(0).getId()).isEqualTo(4L);
-        assertThat(result.get(1).getId()).isEqualTo(2L);
+        assertThat(result.get(0).getResumeId()).isEqualTo(3L);
+        assertThat(result.get(1).getResumeId()).isEqualTo(2L);
     }
 
     @Test
@@ -186,13 +183,13 @@ class SalesPostRepositoryCustomImplTest {
         SalesPostFilterCond cond = SalesPostFilterCond.from(SalesPostSortType.HIGHEST_PRICE, null, null, null, null);
 
         //when(상황발생) 기본 정렬 최신 등록순
-        List<SalesPostResponse> result = repository.findNextPage(cond, 8L, 3);
+        List<SalesPostSearchDto> result = repository.searchNextPage(cond, 8L, 3);
 
         //then(검증)
         assertThat(result).hasSize(3);
-        assertThat(result.get(0).getId()).isEqualTo(2L);
-        assertThat(result.get(1).getId()).isEqualTo(1L);
-        assertThat(result.get(2).getId()).isEqualTo(5L);
+        assertThat(result.get(0).getResumeId()).isEqualTo(2L);
+        assertThat(result.get(1).getResumeId()).isEqualTo(1L);
+        assertThat(result.get(2).getResumeId()).isEqualTo(5L);
     }
 
     @Test
@@ -201,13 +198,13 @@ class SalesPostRepositoryCustomImplTest {
         SalesPostFilterCond cond = SalesPostFilterCond.from(SalesPostSortType.LOWEST_PRICE, null, null, null, null);
 
         //when(상황발생) 기본 정렬 최신 등록순
-        List<SalesPostResponse> result = repository.findNextPage(cond, 7L, 3);
+        List<SalesPostSearchDto> result = repository.searchNextPage(cond, 7L, 3);
 
         //then(검증)
         assertThat(result).hasSize(3);
-        assertThat(result.get(0).getId()).isEqualTo(6L);
-        assertThat(result.get(1).getId()).isEqualTo(4L);
-        assertThat(result.get(2).getId()).isEqualTo(5L);
+        assertThat(result.get(0).getResumeId()).isEqualTo(6L);
+        assertThat(result.get(1).getResumeId()).isEqualTo(3L);
+        assertThat(result.get(2).getResumeId()).isEqualTo(5L);
     }
 
     //3 6 7 2 8 1 5
@@ -217,13 +214,13 @@ class SalesPostRepositoryCustomImplTest {
         SalesPostFilterCond cond = SalesPostFilterCond.from(SalesPostSortType.BEST_SELLING, null, null, null, null);
 
         //when(상황발생) 기본 정렬 최신 등록순
-        List<SalesPostResponse> result = repository.findNextPage(cond, 2L, 3);
+        List<SalesPostSearchDto> result = repository.searchNextPage(cond, 2L, 3);
 
         //then(검증)
         assertThat(result).hasSize(3);
-        assertThat(result.get(0).getId()).isEqualTo(8L);
-        assertThat(result.get(1).getId()).isEqualTo(1L);
-        assertThat(result.get(2).getId()).isEqualTo(5L);
+        assertThat(result.get(0).getResumeId()).isEqualTo(8L);
+        assertThat(result.get(1).getResumeId()).isEqualTo(1L);
+        assertThat(result.get(2).getResumeId()).isEqualTo(5L);
     }
 
     @Test
@@ -232,12 +229,11 @@ class SalesPostRepositoryCustomImplTest {
         SalesPostFilterCond cond = SalesPostFilterCond.from(null, null, null, FieldCond.AI, null);
 
         //when(상황발생) 기본 정렬 최신 등록순
-        List<SalesPostResponse> result = repository.findNextPage(cond, 7L, 1);
+        List<SalesPostSearchDto> result = repository.searchNextPage(cond, 7L, 1);
 
         //then(검증)
         assertThat(result).hasSize(1);
-        assertThat(result.get(0).getId()).isEqualTo(2L);
-        assertThat(result).allMatch(salesPostResponse -> salesPostResponse.getField().equals(FieldType.AI));
+        assertThat(result.get(0).getResumeId()).isEqualTo(2L);
     }
 
     @Test
@@ -246,13 +242,12 @@ class SalesPostRepositoryCustomImplTest {
         SalesPostFilterCond cond = SalesPostFilterCond.from(SalesPostSortType.OLD, null, null, FieldCond.BACKEND, null);
 
         //when(상황발생) 기본 정렬 최신 등록순
-        List<SalesPostResponse> result = repository.findNextPage(cond, 1L, 2);
+        List<SalesPostSearchDto> result = repository.searchNextPage(cond, 1L, 2);
 
         //then(검증)
         assertThat(result).hasSize(2);
-        assertThat(result.get(0).getId()).isEqualTo(4L);
-        assertThat(result.get(1).getId()).isEqualTo(5L);
-        assertThat(result).allMatch(salesPostResponse -> salesPostResponse.getField().equals(FieldType.BACKEND));
+        assertThat(result.get(0).getResumeId()).isEqualTo(3L);
+        assertThat(result.get(1).getResumeId()).isEqualTo(5L);
     }
 
     @Test
@@ -261,12 +256,12 @@ class SalesPostRepositoryCustomImplTest {
         SalesPostFilterCond cond = SalesPostFilterCond.from(null, null, null, null, null);
 
         //when(상황발생) 기본 정렬 최신 등록순
-        List<SalesPostResponse> result = repository.findPreviousPage(cond, 4L, 2);
+        List<SalesPostSearchDto> result = repository.searchPreviousPage(cond, 4L, 2);
 
         //then(검증)
         assertThat(result).hasSize(2);
-        assertThat(result.get(0).getId()).isEqualTo(7L);
-        assertThat(result.get(1).getId()).isEqualTo(5L);
+        assertThat(result.get(0).getResumeId()).isEqualTo(7L);
+        assertThat(result.get(1).getResumeId()).isEqualTo(5L);
     }
 
     @Test
@@ -275,12 +270,12 @@ class SalesPostRepositoryCustomImplTest {
         SalesPostFilterCond cond = SalesPostFilterCond.from(SalesPostSortType.NEW, null, null, null, null);
 
         //when(상황발생) 기본 정렬 최신 등록순
-        List<SalesPostResponse> result = repository.findPreviousPage(cond, 5L, 2);
+        List<SalesPostSearchDto> result = repository.searchPreviousPage(cond, 5L, 2);
 
         //then(검증)
         assertThat(result).hasSize(2);
-        assertThat(result.get(0).getId()).isEqualTo(8L);
-        assertThat(result.get(1).getId()).isEqualTo(7L);
+        assertThat(result.get(0).getResumeId()).isEqualTo(8L);
+        assertThat(result.get(1).getResumeId()).isEqualTo(7L);
     }
 
     @Test
@@ -289,12 +284,12 @@ class SalesPostRepositoryCustomImplTest {
         SalesPostFilterCond cond = SalesPostFilterCond.from(SalesPostSortType.OLD, null, null, null, null);
 
         //when(상황발생) 기본 정렬 최신 등록순
-        List<SalesPostResponse> result = repository.findPreviousPage(cond, 5L, 2);
+        List<SalesPostSearchDto> result = repository.searchPreviousPage(cond, 5L, 2);
 
         //then(검증)
         assertThat(result).hasSize(2);
-        assertThat(result.get(0).getId()).isEqualTo(2L);
-        assertThat(result.get(1).getId()).isEqualTo(4L);
+        assertThat(result.get(0).getResumeId()).isEqualTo(2L);
+        assertThat(result.get(1).getResumeId()).isEqualTo(3L);
     }
 
     @Test
@@ -304,13 +299,13 @@ class SalesPostRepositoryCustomImplTest {
         SalesPostFilterCond cond = SalesPostFilterCond.from(SalesPostSortType.HIGHEST_PRICE, null, null, null, null);
 
         //when(상황발생) 기본 정렬 최신 등록순
-        List<SalesPostResponse> result = repository.findPreviousPage(cond, 4L, 3);
+        List<SalesPostSearchDto> result = repository.searchPreviousPage(cond, 4L, 3);
 
         //then(검증)
         assertThat(result).hasSize(3);
-        assertThat(result.get(0).getId()).isEqualTo(2L); // 2
-        assertThat(result.get(1).getId()).isEqualTo(1L); // 1
-        assertThat(result.get(2).getId()).isEqualTo(5L); // 5
+        assertThat(result.get(0).getResumeId()).isEqualTo(2L); // 2
+        assertThat(result.get(1).getResumeId()).isEqualTo(1L); // 1
+        assertThat(result.get(2).getResumeId()).isEqualTo(5L); // 5
     }
 
     @Test
@@ -319,13 +314,13 @@ class SalesPostRepositoryCustomImplTest {
         SalesPostFilterCond cond = SalesPostFilterCond.from(SalesPostSortType.LOWEST_PRICE, null, null, null, null);
 
         //when(상황발생) 기본 정렬 최신 등록순
-        List<SalesPostResponse> result = repository.findPreviousPage(cond, 5L, 3);
+        List<SalesPostSearchDto> result = repository.searchPreviousPage(cond, 5L, 3);
 
         //then(검증)
         assertThat(result).hasSize(3);
-        assertThat(result.get(0).getId()).isEqualTo(7L);
-        assertThat(result.get(1).getId()).isEqualTo(6L);
-        assertThat(result.get(2).getId()).isEqualTo(4L);
+        assertThat(result.get(0).getResumeId()).isEqualTo(7L);
+        assertThat(result.get(1).getResumeId()).isEqualTo(6L);
+        assertThat(result.get(2).getResumeId()).isEqualTo(3L);
     }
 
     ///3 6 7 2 8 1 5
@@ -335,13 +330,13 @@ class SalesPostRepositoryCustomImplTest {
         SalesPostFilterCond cond = SalesPostFilterCond.from(SalesPostSortType.BEST_SELLING, null, null, null, null);
 
         //when(상황발생) 기본 정렬 최신 등록순
-        List<SalesPostResponse> result = repository.findPreviousPage(cond, 5L, 3);
+        List<SalesPostSearchDto> result = repository.searchPreviousPage(cond, 5L, 3);
 
         //then(검증)
         assertThat(result).hasSize(3);
-        assertThat(result.get(0).getId()).isEqualTo(2L);
-        assertThat(result.get(1).getId()).isEqualTo(8L);
-        assertThat(result.get(2).getId()).isEqualTo(1L);
+        assertThat(result.get(0).getResumeId()).isEqualTo(2L);
+        assertThat(result.get(1).getResumeId()).isEqualTo(8L);
+        assertThat(result.get(2).getResumeId()).isEqualTo(1L);
     }
 
     @Test
@@ -350,12 +345,11 @@ class SalesPostRepositoryCustomImplTest {
         SalesPostFilterCond cond = SalesPostFilterCond.from(null, null, null, null, LevelCond.SENIOR);
 
         //when(상황발생) 기본 정렬 최신 등록순
-        List<SalesPostResponse> result = repository.findPreviousPage(cond, 1L, 1);
+        List<SalesPostSearchDto> result = repository.searchPreviousPage(cond, 1L, 1);
 
         //then(검증)
         assertThat(result).hasSize(1);
-        assertThat(result.get(0).getId()).isEqualTo(2L);
-        assertThat(result).allMatch(salesPostResponse -> salesPostResponse.getLevel().equals(LevelType.SENIOR));
+        assertThat(result.get(0).getResumeId()).isEqualTo(2L);
     }
 
     @Test
@@ -364,12 +358,12 @@ class SalesPostRepositoryCustomImplTest {
         SalesPostFilterCond cond = SalesPostFilterCond.from(null, null, null, null, null);
 
         //when(상황발생) 기본 정렬 최신 등록순
-        List<SalesPostResponse> result = repository.findLastPage(cond, 2);
+        List<SalesPostSearchDto> result = repository.searchLastPage(cond, 2);
 
         //then(검증)
         assertThat(result).hasSize(2);
-        assertThat(result.get(0).getId()).isEqualTo(2L);
-        assertThat(result.get(1).getId()).isEqualTo(1L);
+        assertThat(result.get(0).getResumeId()).isEqualTo(2L);
+        assertThat(result.get(1).getResumeId()).isEqualTo(1L);
     }
 
 /*    @Test
@@ -382,9 +376,9 @@ class SalesPostRepositoryCustomImplTest {
 
         //then(검증)
         assertThat(result).hasSize(3);
-        assertThat(result.get(0).getId()).isEqualTo(7L);
-        assertThat(result.get(1).getId()).isEqualTo(1L);
-        assertThat(result.get(2).getId()).isEqualTo(4L);
+        assertThat(result.get(0).getResumeId()).isEqualTo(7L);
+        assertThat(result.get(1).getResumeId()).isEqualTo(1L);
+        assertThat(result.get(2).getResumeId()).isEqualTo(4L);
         assertThat(result).allMatch(salesPostResponse -> salesPostResponse.getField().equals(FieldType.BACKEND));
     }*/
 }

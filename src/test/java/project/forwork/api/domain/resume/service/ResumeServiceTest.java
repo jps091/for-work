@@ -149,7 +149,6 @@ class ResumeServiceTest {
         SalesPost salesPost1 = SalesPost.builder()
                 .id(1L)
                 .resume(resume1)
-                .title(resume1.createSalesPostTitle())
                 .salesStatus(SalesStatus.SELLING)
                 .build();
 

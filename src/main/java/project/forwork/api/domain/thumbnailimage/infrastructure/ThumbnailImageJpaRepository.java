@@ -6,5 +6,5 @@ import project.forwork.api.common.infrastructure.enums.FieldType;
 import java.util.Optional;
 
 public interface ThumbnailImageJpaRepository extends JpaRepository<ThumbnailImageEntity, Long> {
-    Optional<ThumbnailImageEntity> findByFieldType(FieldType type);
+    Optional<ThumbnailImageEntity> findByFieldType(FieldType field);
 }
