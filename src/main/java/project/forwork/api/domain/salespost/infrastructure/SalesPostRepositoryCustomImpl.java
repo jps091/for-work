@@ -96,8 +96,7 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
                 .where(
                         priceRangeCond(cond.getMinPrice(), cond.getMaxPrice()),
                         fieldEqual(cond.getField()),
-                        levelEqual(cond.getLevel()),
-                        salesPostEntity.salesStatus.eq(SalesStatus.SELLING)
+                        levelEqual(cond.getLevel())
                 )
                 .orderBy(orderSpecifier)
                 .limit(limit).fetch();
@@ -117,8 +116,7 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
                 .where(
                         priceRangeCond(cond.getMinPrice(), cond.getMaxPrice()),
                         fieldEqual(cond.getField()),
-                        levelEqual(cond.getLevel()),
-                        salesPostEntity.salesStatus.eq(SalesStatus.SELLING)
+                        levelEqual(cond.getLevel())
                 )
                 .orderBy(orderSpecifier)
                 .limit(limit).fetch();
@@ -141,8 +139,7 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
                 .where(priceRangeCond(cond.getMinPrice(), cond.getMaxPrice()),
                         fieldEqual(cond.getField()),
                         levelEqual(cond.getLevel()),
-                        compareCondBySortType(cond.getSortType(), lastId),
-                        (salesPostEntity.salesStatus.eq(SalesStatus.SELLING))
+                        compareCondBySortType(cond.getSortType(), lastId)
                 )
                 .orderBy(orderSpecifier)
                 .limit(limit).fetch();
@@ -166,8 +163,7 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
                 .where(priceRangeCond(cond.getMinPrice(), cond.getMaxPrice()),
                         fieldEqual(cond.getField()),
                         levelEqual(cond.getLevel()),
-                        reverseCompareCondBySortType(cond.getSortType(), lastId),
-                        (salesPostEntity.salesStatus.eq(SalesStatus.SELLING))
+                        reverseCompareCondBySortType(cond.getSortType(), lastId)
                 )
                 .orderBy(orderSpecifier)
                 .limit(limit).fetch();

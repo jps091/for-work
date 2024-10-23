@@ -7,6 +7,7 @@ import java.util.List;
 
 
 public interface ThumbnailImageRepository {
-    ThumbnailImage getByFieldType(FieldType type);
+    ThumbnailImage getByFieldWithThrow(FieldType type);
+    ThumbnailImage getByIdWithThrow(Long id);
     void saveAll(List<ThumbnailImage> thumbnailImages);
 }

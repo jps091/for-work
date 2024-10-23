@@ -105,7 +105,6 @@ class ResumeDecisionServiceTest {
         SalesPost salesPost = SalesPost.builder()
                 .id(1L)
                 .resume(resume1)
-                .title(resume1.createSalesPostTitle())
                 .salesStatus(SalesStatus.CANCELED)
                 .thumbnailImage(thumbnailImage1)
                 .build();

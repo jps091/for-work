@@ -13,6 +13,7 @@ import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.common.service.port.RedisUtils;
 import project.forwork.api.domain.cart.infrastructure.enums.CartStatus;
 import project.forwork.api.domain.cart.model.Cart;
+import project.forwork.api.domain.token.service.TokenAuthService;
 import project.forwork.api.domain.token.service.TokenCookieService;
 import project.forwork.api.domain.token.service.TokenHeaderService;
 import project.forwork.api.domain.user.controller.model.EmailVerifyRequest;
@@ -41,7 +42,7 @@ class UserServiceTest {
     private TestUuidHolder testUuidHolder;
     private FakeMailSender fakeMailSender;
     @Mock
-    private TokenHeaderService tokenHeaderService;
+    private TokenAuthService tokenAuthService;
     @Mock
     private RedisUtils redisUtils;
     @BeforeEach
@@ -56,7 +57,7 @@ class UserServiceTest {
                 .redisUtils(redisUtils)
                 .cartRepository(fakeCartRepository)
                 .uuidHolder(testUuidHolder)
-                .tokenHeaderService(tokenHeaderService)
+                .tokenAuthService(tokenAuthService)
                 .build();
 
         User user = User.builder()
@@ -176,11 +177,12 @@ class UserServiceTest {
 
         //when(상황발생)
         HttpServletResponse response = mock(HttpServletResponse.class);
-        userService.delete(currentUser, response);
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        userService.delete(currentUser, request, response);
 
         //then(검증)
         assertThat(fakeUserRepository.findById(currentUser.getId())).isEmpty();
-        verify(tokenHeaderService).expiredRefreshTokenAndHeaders(eq(currentUser.getId()), eq(response));
+        verify(tokenAuthService).deleteTokensWithUserDelete(eq(currentUser.getId()), eq(request), eq(response));
     }
 
     @Test

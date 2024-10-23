@@ -24,8 +24,15 @@ public class ThumbnailImageRepositoryImpl implements ThumbnailImageRepository {
     }
 
     @Override
-    public ThumbnailImage getByFieldType(FieldType type) {
-        return thumbnailImageJpaRepository.findByFieldType(type)
+    public ThumbnailImage getByIdWithThrow(Long id) {
+        return thumbnailImageJpaRepository.findById(id)
+                .orElseThrow(() -> new ApiException(ThumbnailImageErrorCode.NOT_FOUND))
+                .toModel();
+    }
+
+    @Override
+    public ThumbnailImage getByFieldWithThrow(FieldType field) {
+        return thumbnailImageJpaRepository.findByFieldType(field)
                 .orElseThrow(() -> new ApiException(ThumbnailImageErrorCode.NOT_FOUND))
                 .toModel();
     }
