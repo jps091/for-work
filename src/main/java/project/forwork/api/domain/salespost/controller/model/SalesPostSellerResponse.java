@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class SalesPostSellerResponse {
 
-    private Long id;
+    private Long resumeId;
     private String title;
     private Integer salesQuantity;
     private SalesStatus status;

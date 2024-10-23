@@ -95,21 +95,18 @@ class SalesPostServiceTest {
         SalesPost salesPost1 = SalesPost.builder()
                 .id(1L)
                 .resume(resume1)
-                .title(resume1.createSalesPostTitle())
                 .salesStatus(SalesStatus.SELLING)
                 .build();
 
         SalesPost salesPost2 = SalesPost.builder()
                 .id(2L)
                 .resume(resume2)
-                .title(resume2.createSalesPostTitle())
                 .salesStatus(SalesStatus.CANCELED)
                 .build();
 
         SalesPost salesPost3 = SalesPost.builder()
                 .id(3L)
                 .resume(resume3)
-                .title(resume3.createSalesPostTitle())
                 .salesStatus(SalesStatus.CANCELED)
                 .build();
 

@@ -23,12 +23,12 @@ public class SalesPostOpenController {
 
     private final SalesPostService salesPostService;
 
-    @Operation(summary = "단건 sale-post 조회 API", description = "sale-post 상세")
-    @GetMapping("/{salesPostId}")
+    @Operation(summary = "단건 sale-post 조회 API", description = "이력서 ID로 판매글 조회 (이력서 판매글은 서로 1대1 매핑)")
+    @GetMapping("/{resumeId}")
     public Api<SalesPostDetailResponse> retrieve(
-            @PathVariable Long salesPostId
+            @PathVariable Long resumeId
     ){
-        SalesPostDetailResponse salesPostResponse = salesPostService.getSellingPost(salesPostId);
+        SalesPostDetailResponse salesPostResponse = salesPostService.getSellingPost(resumeId);
         return Api.OK(salesPostResponse);
     }
 
@@ -43,7 +43,7 @@ public class SalesPostOpenController {
                      lastId : 이전, 다음 페이지 호출시 반드시 필요
                     """)
     @GetMapping
-    public Api<SalesPostPage> getFilteredPage(
+    public Api<SalesPostPage> searchFilteredPage(
             @RequestParam(required = false) SalesPostSortType sortType,
             @RequestParam(required = false) BigDecimal minPrice,
             @RequestParam(required = false) BigDecimal maxPrice,
@@ -55,7 +55,7 @@ public class SalesPostOpenController {
     ) {
         // 필터링 및 페이징을 처리하는 서비스 호출
         SalesPostPage result = salesPostService
-                .getFilteredAndPagedResults(sortType, minPrice, maxPrice, field, level, pageStep, lastId, limit);
+                .searchFilteredResults(sortType, minPrice, maxPrice, field, level, pageStep, lastId, limit);
         return Api.OK(result);
     }
 }

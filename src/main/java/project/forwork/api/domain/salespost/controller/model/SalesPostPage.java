@@ -13,5 +13,12 @@ import java.util.List;
 @NoArgsConstructor
 public class SalesPostPage {
     private Long lastId;
-    private List<SalesPostResponse> results;
+    private List<SalesPostSearchResponse> results;
+
+    public static SalesPostPage from(List<SalesPostSearchResponse> results, SalesPostSearchResponse record){
+        return SalesPostPage.builder()
+                .results(results)
+                .lastId(record.getResumeId())
+                .build();
+    }
 }

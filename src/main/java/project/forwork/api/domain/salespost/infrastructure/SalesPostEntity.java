@@ -29,9 +29,6 @@ public class SalesPostEntity extends BaseTimeEntity {
     @JoinColumn(name = "resume_id") @NotNull
     private ResumeEntity resumeEntity;
 
-    @Column(length = 25) @NotNull
-    private String title;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "thumbnail_image_id") @NotNull
     private ThumbnailImageEntity thumbnailImageEntity;
@@ -44,7 +41,6 @@ public class SalesPostEntity extends BaseTimeEntity {
         SalesPostEntity salesPostEntity = new SalesPostEntity();
         salesPostEntity.id = salesPost.getId();
         salesPostEntity.resumeEntity = ResumeEntity.from(salesPost.getResume());
-        salesPostEntity.title = salesPost.getTitle();
         salesPostEntity.thumbnailImageEntity = ThumbnailImageEntity.from(salesPost.getThumbnailImage());
         salesPostEntity.salesStatus = salesPost.getSalesStatus();
         //salesPostEntity.version = salesPost.getVersion();
@@ -55,7 +51,6 @@ public class SalesPostEntity extends BaseTimeEntity {
         return SalesPost.builder()
                 .id(id)
                 .resume(resumeEntity.toModel())
-                .title(title)
                 .thumbnailImage(thumbnailImageEntity.toModel())
                 .salesStatus(salesStatus)
                 .registeredAt(getModifiedAt())

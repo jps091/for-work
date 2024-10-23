@@ -1,4 +1,4 @@
-package project.forwork.api.domain.salespost.controller.model;
+package project.forwork.api.domain.salespost.infrastructure.model;
 
 import lombok.*;
 import project.forwork.api.common.infrastructure.enums.FieldType;
@@ -9,12 +9,8 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Getter
-@AllArgsConstructor
 @NoArgsConstructor
-@Builder
-@Data
 public class SalesPostQueryDto {
-    private Long salesPostId;
     private Long resumeId;
     private BigDecimal price;
     private Integer salesQuantity;

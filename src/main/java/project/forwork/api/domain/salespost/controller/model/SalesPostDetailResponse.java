@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Builder
 @Data
 public class SalesPostDetailResponse {
-    private Long id;
+    private Long resumeId;
     private String title;
     private BigDecimal price;
     private String thumbnailImageUrl;

@@ -18,7 +18,6 @@ import java.time.LocalDateTime;
 public class SalesPost {
     private final Long id;
     private final Resume resume;
-    private final String title;
     private final ThumbnailImage thumbnailImage;
     private final SalesStatus salesStatus;
     private final LocalDateTime registeredAt;
@@ -28,7 +27,6 @@ public class SalesPost {
 
         return SalesPost.builder()
                 .resume(resume)
-                .title(resume.createSalesPostTitle())
                 .thumbnailImage(thumbnailImage)
                 .salesStatus(SalesStatus.SELLING)
                 .build();
@@ -38,7 +36,6 @@ public class SalesPost {
         return SalesPost.builder()
                 .id(id)
                 .resume(resume)
-                .title(title)
                 .thumbnailImage(thumbnailImage)
                 .salesStatus(status)
                 .registeredAt(registeredAt)

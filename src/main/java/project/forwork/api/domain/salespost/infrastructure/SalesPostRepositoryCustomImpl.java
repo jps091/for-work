@@ -1,9 +1,8 @@
 package project.forwork.api.domain.salespost.infrastructure;
 
-import com.querydsl.core.types.Order;
-import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.*;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +12,9 @@ import project.forwork.api.domain.salespost.infrastructure.enums.FieldCond;
 import project.forwork.api.domain.salespost.infrastructure.enums.LevelCond;
 import project.forwork.api.domain.salespost.infrastructure.enums.SalesPostSortType;
 import project.forwork.api.domain.salespost.infrastructure.enums.SalesStatus;
+import project.forwork.api.domain.salespost.infrastructure.model.SalesPostQueryDto;
+import project.forwork.api.domain.salespost.infrastructure.model.SalesPostSearchDto;
+import project.forwork.api.domain.salespost.infrastructure.model.SalesPostThumbnailUrlDto;
 import project.forwork.api.domain.salespost.service.port.SalesPostRepositoryCustom;
 
 import java.math.BigDecimal;
@@ -40,11 +42,11 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
      * 4. 페이징처리 :
      */
 
-    public SalesPostDetailResponse getDetailSalesPost(Long salesPostId){
+    public SalesPostDetailResponse getDetailSalesPost(Long resumeId){
         return queryFactory
                 .select(Projections.fields(SalesPostDetailResponse.class,
-                        salesPostEntity.id.as("id"),
-                        salesPostEntity.title.as("title"),
+                        ExpressionUtils.as(createTitleExpression(), "title"),
+                        resumeEntity.id.as("resumeId"), // TODO API 수정
                         resumeEntity.salesQuantity.as("salesQuantity"),
                         thumbnailImageEntity.url.as("thumbnailImageUrl"),
                         resumeEntity.price.as("price"),
@@ -58,7 +60,7 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
                 .join(salesPostEntity.resumeEntity, resumeEntity)
                 .join(salesPostEntity.thumbnailImageEntity, thumbnailImageEntity)
                 .where(
-                        salesPostEntity.id.eq(salesPostId)
+                        salesPostEntity.resumeEntity.id.eq(resumeId)
                 )
                 .fetchOne();
     }
@@ -67,8 +69,8 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
 
         return queryFactory
                 .select(Projections.fields(SalesPostSellerResponse.class,
-                        salesPostEntity.id.as("id"),
-                        salesPostEntity.title.as("title"),
+                        ExpressionUtils.as(createTitleExpression(), "title"),
+                        resumeEntity.id.as("resumeId"), // TODO API 수정
                         resumeEntity.salesQuantity.as("salesQuantity"),
                         salesPostEntity.registeredAt.as("registeredAt"),
                         salesPostEntity.salesStatus.as("status")
@@ -80,23 +82,17 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
     }
 
 
-    public List<SalesPostResponse> findFirstPage(SalesPostFilterCond cond, int limit){
+    public List<SalesPostSearchDto> searchFirstPage(SalesPostFilterCond cond, int limit){
         OrderSpecifier<?>[] orderSpecifier = createOrderSpecifier(cond.getSortType());
 
         return queryFactory
-                .select(Projections.fields(SalesPostResponse.class,
-                        salesPostEntity.id.as("id"),
-                        salesPostEntity.title.as("title"),
-                        resumeEntity.price.as("price"),
-                        thumbnailImageEntity.url.as("thumbnailImageUrl"),
-                        resumeEntity.salesQuantity.as("salesQuantity"),
-                        resumeEntity.fieldType.as("field"),
-                        resumeEntity.levelType.as("level"),
-                        salesPostEntity.salesStatus.as("status"),
-                        salesPostEntity.registeredAt.as("registeredAt")))
+                .select(Projections.fields(SalesPostSearchDto.class,
+                        ExpressionUtils.as(createTitleExpression(), "title"),
+                        resumeEntity.id.as("resumeId"),
+                        resumeEntity.price.as("price")
+                ))
                 .from(salesPostEntity)
                 .join(salesPostEntity.resumeEntity, resumeEntity)
-                .join(salesPostEntity.thumbnailImageEntity, thumbnailImageEntity)
                 .where(
                         priceRangeCond(cond.getMinPrice(), cond.getMaxPrice()),
                         fieldEqual(cond.getField()),
@@ -107,23 +103,17 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
                 .limit(limit).fetch();
     }
 
-    public List<SalesPostResponse> findLastPage(SalesPostFilterCond cond, int limit){
+    public List<SalesPostSearchDto> searchLastPage(SalesPostFilterCond cond, int limit){
         OrderSpecifier<?>[] orderSpecifier = createReversedOrderSpecifier(cond.getSortType());
 
-        List<SalesPostResponse> results = queryFactory
-                .select(Projections.fields(SalesPostResponse.class,
-                        salesPostEntity.id.as("id"),
-                        salesPostEntity.title.as("title"),
-                        resumeEntity.price.as("price"),
-                        thumbnailImageEntity.url.as("thumbnailImageUrl"),
-                        resumeEntity.salesQuantity.as("salesQuantity"),
-                        resumeEntity.fieldType.as("field"),
-                        resumeEntity.levelType.as("level"),
-                        salesPostEntity.salesStatus.as("status"),
-                        salesPostEntity.registeredAt.as("registeredAt")))
+        List<SalesPostSearchDto> results = queryFactory
+                .select(Projections.fields(SalesPostSearchDto.class,
+                        ExpressionUtils.as(createTitleExpression(), "title"),
+                        resumeEntity.id.as("resumeId"),
+                        resumeEntity.price.as("price")
+                ))
                 .from(salesPostEntity)
                 .join(salesPostEntity.resumeEntity, resumeEntity)
-                .join(salesPostEntity.thumbnailImageEntity, thumbnailImageEntity)
                 .where(
                         priceRangeCond(cond.getMinPrice(), cond.getMaxPrice()),
                         fieldEqual(cond.getField()),
@@ -137,23 +127,17 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
         return results;
     }
 
-    public List<SalesPostResponse> findNextPage(SalesPostFilterCond cond, Long lastId, int limit){
+    public List<SalesPostSearchDto> searchNextPage(SalesPostFilterCond cond, Long lastId, int limit){
         OrderSpecifier<?>[] orderSpecifier = createOrderSpecifier(cond.getSortType());
 
         return queryFactory
-                .select(Projections.fields(SalesPostResponse.class,
-                        salesPostEntity.id.as("id"),
-                        salesPostEntity.title.as("title"),
-                        resumeEntity.price.as("price"),
-                        thumbnailImageEntity.url.as("thumbnailImageUrl"),
-                        resumeEntity.salesQuantity.as("salesQuantity"),
-                        resumeEntity.fieldType.as("field"),
-                        resumeEntity.levelType.as("level"),
-                        salesPostEntity.salesStatus.as("status"),
-                        salesPostEntity.registeredAt.as("registeredAt")))
+                .select(Projections.fields(SalesPostSearchDto.class,
+                        ExpressionUtils.as(createTitleExpression(), "title"),
+                        resumeEntity.id.as("resumeId"),
+                        resumeEntity.price.as("price")
+                ))
                 .from(salesPostEntity)
                 .join(salesPostEntity.resumeEntity, resumeEntity)
-                .join(salesPostEntity.thumbnailImageEntity, thumbnailImageEntity)
                 .where(priceRangeCond(cond.getMinPrice(), cond.getMaxPrice()),
                         fieldEqual(cond.getField()),
                         levelEqual(cond.getLevel()),
@@ -163,29 +147,27 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
                 .orderBy(orderSpecifier)
                 .limit(limit).fetch();
     }
+    // 분야 년차(필터링)
+    // 날짜, 판매량, 가격  (정렬조건)
+    // 분야 년차 가격 이력서 id
+    // 분야 년차 날짜 id 가격
 
-    public List<SalesPostResponse> findPreviousPage(SalesPostFilterCond cond, Long lastId, int limit){
+    public List<SalesPostSearchDto> searchPreviousPage(SalesPostFilterCond cond, Long lastId, int limit){
         OrderSpecifier<?>[] orderSpecifier = createReversedOrderSpecifier(cond.getSortType());
 
-        List<SalesPostResponse> results = queryFactory
-                .select(Projections.fields(SalesPostResponse.class,
-                        salesPostEntity.id.as("id"),
-                        salesPostEntity.title.as("title"),
-                        resumeEntity.price.as("price"),
-                        thumbnailImageEntity.url.as("thumbnailImageUrl"),
-                        resumeEntity.salesQuantity.as("salesQuantity"),
-                        resumeEntity.fieldType.as("field"),
-                        resumeEntity.levelType.as("level"),
-                        salesPostEntity.salesStatus.as("status"),
-                        salesPostEntity.registeredAt.as("registeredAt")))
+        List<SalesPostSearchDto> results = queryFactory
+                .select(Projections.fields(SalesPostSearchDto.class,
+                        ExpressionUtils.as(createTitleExpression(), "title"),
+                        resumeEntity.id.as("resumeId"),
+                        resumeEntity.price.as("price")
+                ))
                 .from(salesPostEntity)
                 .join(salesPostEntity.resumeEntity, resumeEntity)
-                .join(salesPostEntity.thumbnailImageEntity, thumbnailImageEntity)
-                .where(reverseCompareCondBySortType(cond.getSortType(), lastId),
-                        (salesPostEntity.salesStatus.eq(SalesStatus.SELLING)),
-                        priceRangeCond(cond.getMinPrice(), cond.getMaxPrice()),
+                .where(priceRangeCond(cond.getMinPrice(), cond.getMaxPrice()),
                         fieldEqual(cond.getField()),
-                        levelEqual(cond.getLevel())
+                        levelEqual(cond.getLevel()),
+                        reverseCompareCondBySortType(cond.getSortType(), lastId),
+                        (salesPostEntity.salesStatus.eq(SalesStatus.SELLING))
                 )
                 .orderBy(orderSpecifier)
                 .limit(limit).fetch();
@@ -194,11 +176,33 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
         return results;
     }
 
-    private SalesPostQueryDto getSalesPostDto(Long salesPostId){
+    public List<SalesPostThumbnailUrlDto> getThumbnailUrl(List<Long> resumeIds){
+        return queryFactory
+                .select(Projections.fields(SalesPostThumbnailUrlDto.class,
+                        resumeEntity.id.as("resumeId"),
+                        thumbnailImageEntity.url.as("thumbnailImageUrl")
+                ))
+                .from(salesPostEntity)
+                .join(salesPostEntity.resumeEntity, resumeEntity)
+                .join(salesPostEntity.thumbnailImageEntity, thumbnailImageEntity)
+                .where(
+                        salesPostEntity.resumeEntity.id.in(resumeIds)
+                )
+                .fetch();
+    }
+
+    private Expression<String> createTitleExpression() {
+        return Expressions.stringTemplate(
+                "concat({0}, ' ', {1}, ' 이력서 #', {2})",
+                resumeEntity.fieldType,
+                resumeEntity.levelType,
+                resumeEntity.id);
+    }
+
+    private SalesPostQueryDto getSalesPostDto(Long resumeId){
 
         return queryFactory
                 .select(Projections.fields(SalesPostQueryDto.class,
-                        salesPostEntity.id.as("salesPostId"),
                         resumeEntity.salesQuantity.as("salesQuantity"),
                         resumeEntity.price.as("price"),
                         resumeEntity.id.as("resumeId"),
@@ -206,7 +210,7 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
                 ))
                 .from(salesPostEntity)
                 .join(salesPostEntity.resumeEntity, resumeEntity)
-                .where(salesPostEntity.id.eq(salesPostId))
+                .where(salesPostEntity.resumeEntity.id.eq(resumeId))
                 .fetchOne();
     }
 
@@ -233,7 +237,7 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
 
         if(SalesPostSortType.BEST_SELLING.equals(sortType)){
             return (resumeEntity.salesQuantity.eq(salesPostDto.getSalesQuantity())
-                    .and(resumeEntity.id.lt(salesPostDto.getSalesPostId())))
+                    .and(resumeEntity.id.lt(salesPostDto.getResumeId())))
                     .or(resumeEntity.salesQuantity.lt(salesPostDto.getSalesQuantity()));
         }
 
@@ -292,7 +296,7 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
 
         if(SalesPostSortType.BEST_SELLING.equals(sortType)){
             return (resumeEntity.salesQuantity.eq(salesPostDto.getSalesQuantity())
-                    .and(resumeEntity.id.gt(salesPostDto.getSalesPostId())))
+                    .and(resumeEntity.id.gt(salesPostDto.getResumeId())))
                     .or(resumeEntity.salesQuantity.gt(salesPostDto.getSalesQuantity()));
         }
         // NEW, DEFAULT
