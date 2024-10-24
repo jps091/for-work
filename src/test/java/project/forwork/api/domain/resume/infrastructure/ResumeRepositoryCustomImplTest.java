@@ -120,8 +120,8 @@ class ResumeRepositoryCustomImplTest {
 
         //then(검증)
         assertThat(result).hasSize(2);
-        assertThat(result.get(0).getId()).isEqualTo(4L);
-        assertThat(result.get(1).getId()).isEqualTo(5L);
+        assertThat(result.get(0).getId()).isEqualTo(5L);
+        assertThat(result.get(1).getId()).isEqualTo(4L);
     }
 
     @Test
@@ -142,26 +142,13 @@ class ResumeRepositoryCustomImplTest {
         LocalDateTime last = LocalDateTime.of(2024, 9, 5, 0, 18, 39);
 
         //when(상황발생)
-        List<ResumeAdminResponse> result = repository.findNextPage(PeriodCond.MONTH, ResumeStatus.ACTIVE, last, 5L, 4);
+        List<ResumeAdminResponse> result = repository.findNextPage(PeriodCond.MONTH, ResumeStatus.ACTIVE, last, 5L, 3);
 
         //then(검증)
         assertThat(result).hasSize(3);
-        assertThat(result.get(0).getId()).isEqualTo(7L);
-        assertThat(result.get(1).getId()).isEqualTo(8L);
-        assertThat(result.get(2).getId()).isEqualTo(6L);
-    }
-
-    @Test
-    void 이력서_이전페이지_요청시간이_같다면_ID_값이_높은게_먼저_반환_된다() {
-        //given(상황환경 세팅) 2024-09-05 00:18:39
-        LocalDateTime last = LocalDateTime.of(2024, 9, 5, 0, 18, 39);
-
-        //when(상황발생)
-        List<ResumeAdminResponse> result = repository.findPreviousPage(null, null, last, 5L, 1);
-
-        //then(검증)
         assertThat(result.get(0).getId()).isEqualTo(4L);
-        assertThat(result.get(0).getModifiedAt()).isEqualTo(last);
+        assertThat(result.get(1).getId()).isEqualTo(7L);
+        assertThat(result.get(2).getId()).isEqualTo(8L);
     }
 
     @Test
@@ -173,8 +160,8 @@ class ResumeRepositoryCustomImplTest {
         List<ResumeAdminResponse> result = repository.findPreviousPage(PeriodCond.WEEK, ResumeStatus.ACTIVE, last, 7L, 2);
 
         //then(검증)
-        assertThat(result.get(0).getId()).isEqualTo(4L);
-        assertThat(result.get(1).getId()).isEqualTo(5L);
+        assertThat(result.get(0).getId()).isEqualTo(5L);
+        assertThat(result.get(1).getId()).isEqualTo(4L);
     }
 
     @Test

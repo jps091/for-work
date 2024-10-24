@@ -5,7 +5,6 @@ import project.forwork.api.domain.salespost.controller.model.SalesPostDetailResp
 import project.forwork.api.domain.salespost.controller.model.SalesPostFilterCond;
 import project.forwork.api.domain.salespost.infrastructure.model.SalesPostSearchDto;
 import project.forwork.api.domain.salespost.controller.model.SalesPostSellerResponse;
-import project.forwork.api.domain.salespost.infrastructure.model.SalesPostThumbnailUrlDto;
 
 
 import java.util.List;

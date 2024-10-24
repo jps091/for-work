@@ -12,7 +12,6 @@ import project.forwork.api.domain.resume.model.Resume;
 import project.forwork.api.domain.salespost.controller.model.*;
 import project.forwork.api.domain.salespost.infrastructure.enums.*;
 import project.forwork.api.domain.salespost.infrastructure.model.SalesPostSearchDto;
-import project.forwork.api.domain.salespost.infrastructure.model.SalesPostThumbnailUrlDto;
 import project.forwork.api.domain.salespost.model.SalesPost;
 import project.forwork.api.domain.salespost.service.port.SalesPostRepository;
 import project.forwork.api.domain.salespost.service.port.SalesPostRepositoryCustom;
@@ -21,8 +20,6 @@ import project.forwork.api.domain.user.service.port.UserRepository;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 @Builder
