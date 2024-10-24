@@ -11,4 +11,5 @@ public class SalesPostSearchDto {
     private Long resumeId;
     private BigDecimal price;
     private String title;
+    private String url;
 }

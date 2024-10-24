@@ -12,7 +12,6 @@ import project.forwork.api.domain.resume.model.Resume;
 import project.forwork.api.domain.salespost.controller.model.*;
 import project.forwork.api.domain.salespost.infrastructure.enums.*;
 import project.forwork.api.domain.salespost.infrastructure.model.SalesPostSearchDto;
-import project.forwork.api.domain.salespost.infrastructure.model.SalesPostThumbnailUrlDto;
 import project.forwork.api.domain.salespost.model.SalesPost;
 import project.forwork.api.domain.salespost.service.port.SalesPostRepository;
 import project.forwork.api.domain.salespost.service.port.SalesPostRepositoryCustom;
@@ -21,8 +20,6 @@ import project.forwork.api.domain.user.service.port.UserRepository;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 @Builder
@@ -118,23 +115,12 @@ public class SalesPostService {
         List<SalesPostSearchDto> results = salesPostRepositoryCustom.searchPreviousPage(cond, lastId, limit);
         return createReverseSalesPostPage(results);
     }
+
     @Transactional(readOnly = true)
     public List<SalesPostSearchResponse> createSearchResponseByDto(List<SalesPostSearchDto> searchDtos) {
-        List<Long> resumeIds = searchDtos.stream()
-                .map(SalesPostSearchDto::getResumeId)
-                .toList();
-
-        Map<Long, String> urlMap = salesPostRepositoryCustom.getThumbnailUrl(resumeIds).stream()
-                .collect(Collectors.toMap(
-                        SalesPostThumbnailUrlDto::getResumeId,
-                        SalesPostThumbnailUrlDto::getThumbnailImageUrl
-                ));
 
         return searchDtos.stream()
-                .map(dto -> {
-                    String thumbnailUrl = urlMap.get(dto.getResumeId());
-                    return SalesPostSearchResponse.from(dto, thumbnailUrl);
-                })
+                .map(SalesPostSearchResponse::from)
                 .toList();
     }
 
