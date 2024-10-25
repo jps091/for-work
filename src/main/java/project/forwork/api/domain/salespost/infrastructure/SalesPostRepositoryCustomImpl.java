@@ -35,18 +35,12 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
         this.queryFactory  = new JPAQueryFactory(em);
     }
 
-    /***
-     * 1. 기본적으로 최신 등록순으로 정렬
-     * 2. 정렬 조건 : 최신 등록순, 조회순, 많이팔린순
-     * 3. 검색 조건 : 가격(범위), 분야, 년차
-     * 4. 페이징처리 :
-     */
 
     public SalesPostDetailResponse getDetailSalesPost(Long resumeId){
         return queryFactory
                 .select(Projections.fields(SalesPostDetailResponse.class,
                         ExpressionUtils.as(createTitleExpression(), "title"),
-                        resumeEntity.id.as("resumeId"), // TODO API 수정
+                        resumeEntity.id.as("resumeId"),
                         resumeEntity.salesQuantity.as("salesQuantity"),
                         thumbnailImageEntity.url.as("thumbnailImageUrl"),
                         resumeEntity.price.as("price"),
@@ -70,7 +64,7 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
         return queryFactory
                 .select(Projections.fields(SalesPostSellerResponse.class,
                         ExpressionUtils.as(createTitleExpression(), "title"),
-                        resumeEntity.id.as("resumeId"), // TODO API 수정
+                        resumeEntity.id.as("resumeId"),
                         resumeEntity.salesQuantity.as("salesQuantity"),
                         salesPostEntity.registeredAt.as("registeredAt"),
                         salesPostEntity.salesStatus.as("status")
@@ -87,8 +81,9 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
 
         return queryFactory
                 .select(Projections.fields(SalesPostSearchDto.class,
-                        ExpressionUtils.as(createTitleExpression(), "title"),
                         resumeEntity.id.as("resumeId"),
+                        resumeEntity.fieldType.as("field"),
+                        resumeEntity.levelType.as("level"),
                         resumeEntity.price.as("price")
                 ))
                 .from(salesPostEntity)
@@ -107,8 +102,9 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
 
         List<SalesPostSearchDto> results = queryFactory
                 .select(Projections.fields(SalesPostSearchDto.class,
-                        ExpressionUtils.as(createTitleExpression(), "title"),
                         resumeEntity.id.as("resumeId"),
+                        resumeEntity.fieldType.as("field"),
+                        resumeEntity.levelType.as("level"),
                         resumeEntity.price.as("price")
                 ))
                 .from(salesPostEntity)
@@ -130,8 +126,9 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
 
         return queryFactory
                 .select(Projections.fields(SalesPostSearchDto.class,
-                        ExpressionUtils.as(createTitleExpression(), "title"),
                         resumeEntity.id.as("resumeId"),
+                        resumeEntity.fieldType.as("field"),
+                        resumeEntity.levelType.as("level"),
                         resumeEntity.price.as("price")
                 ))
                 .from(salesPostEntity)
@@ -144,18 +141,15 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
                 .orderBy(orderSpecifier)
                 .limit(limit).fetch();
     }
-    // 분야 년차(필터링)
-    // 날짜, 판매량, 가격  (정렬조건)
-    // 분야 년차 가격 이력서 id
-    // 분야 년차 날짜 id 가격
 
     public List<SalesPostSearchDto> searchPreviousPage(SalesPostFilterCond cond, Long lastId, int limit){
         OrderSpecifier<?>[] orderSpecifier = createReversedOrderSpecifier(cond.getSortType());
 
         List<SalesPostSearchDto> results = queryFactory
                 .select(Projections.fields(SalesPostSearchDto.class,
-                        ExpressionUtils.as(createTitleExpression(), "title"),
                         resumeEntity.id.as("resumeId"),
+                        resumeEntity.fieldType.as("field"),
+                        resumeEntity.levelType.as("level"),
                         resumeEntity.price.as("price")
                 ))
                 .from(salesPostEntity)
@@ -170,21 +164,6 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
 
         Collections.reverse(results);
         return results;
-    }
-
-    public List<SalesPostThumbnailUrlDto> getThumbnailUrl(List<Long> resumeIds){
-        return queryFactory
-                .select(Projections.fields(SalesPostThumbnailUrlDto.class,
-                        resumeEntity.id.as("resumeId"),
-                        thumbnailImageEntity.url.as("thumbnailImageUrl")
-                ))
-                .from(salesPostEntity)
-                .join(salesPostEntity.resumeEntity, resumeEntity)
-                .join(salesPostEntity.thumbnailImageEntity, thumbnailImageEntity)
-                .where(
-                        salesPostEntity.resumeEntity.id.in(resumeIds)
-                )
-                .fetch();
     }
 
     private Expression<String> createTitleExpression() {
@@ -311,15 +290,15 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
                     new OrderSpecifier<>(Order.ASC, resumeEntity.modifiedAt),
                     new OrderSpecifier<>(Order.ASC, resumeEntity.id)
             };
-            case HIGHEST_PRICE -> new OrderSpecifier[] { // 살짝 느림
+            case HIGHEST_PRICE -> new OrderSpecifier[] {
                     new OrderSpecifier<>(Order.ASC, resumeEntity.price),
                     new OrderSpecifier<>(Order.ASC, resumeEntity.id)
             };
-            case LOWEST_PRICE -> new OrderSpecifier[] { // 아주 빠름
+            case LOWEST_PRICE -> new OrderSpecifier[] {
                     new OrderSpecifier<>(Order.DESC, resumeEntity.price),
                     new OrderSpecifier<>(Order.DESC, resumeEntity.id)
             };
-            case BEST_SELLING -> new OrderSpecifier[] { //
+            case BEST_SELLING -> new OrderSpecifier[] {
                     new OrderSpecifier<>(Order.ASC, resumeEntity.salesQuantity),
                     new OrderSpecifier<>(Order.ASC, resumeEntity.id)
             };

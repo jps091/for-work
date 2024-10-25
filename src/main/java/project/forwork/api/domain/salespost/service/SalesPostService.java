@@ -8,11 +8,11 @@ import project.forwork.api.common.domain.CurrentUser;
 import project.forwork.api.common.error.SalesPostErrorCode;
 import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.common.infrastructure.enums.PageStep;
+import project.forwork.api.common.service.port.RedisUtils;
 import project.forwork.api.domain.resume.model.Resume;
 import project.forwork.api.domain.salespost.controller.model.*;
 import project.forwork.api.domain.salespost.infrastructure.enums.*;
 import project.forwork.api.domain.salespost.infrastructure.model.SalesPostSearchDto;
-import project.forwork.api.domain.salespost.infrastructure.model.SalesPostThumbnailUrlDto;
 import project.forwork.api.domain.salespost.model.SalesPost;
 import project.forwork.api.domain.salespost.service.port.SalesPostRepository;
 import project.forwork.api.domain.salespost.service.port.SalesPostRepositoryCustom;
@@ -21,8 +21,6 @@ import project.forwork.api.domain.user.service.port.UserRepository;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 @Builder
@@ -33,6 +31,7 @@ public class SalesPostService {
     private final SalesPostRepository salesPostRepository;
     private final SalesPostRepositoryCustom salesPostRepositoryCustom;
     private final UserRepository userRepository;
+    private final RedisUtils redisUtils;
 
     @Transactional
     public void changeSalesStatus(CurrentUser currentUser, Long salesPostId, SalesStatus status){
@@ -118,22 +117,15 @@ public class SalesPostService {
         List<SalesPostSearchDto> results = salesPostRepositoryCustom.searchPreviousPage(cond, lastId, limit);
         return createReverseSalesPostPage(results);
     }
+
     @Transactional(readOnly = true)
     public List<SalesPostSearchResponse> createSearchResponseByDto(List<SalesPostSearchDto> searchDtos) {
-        List<Long> resumeIds = searchDtos.stream()
-                .map(SalesPostSearchDto::getResumeId)
-                .toList();
-
-        Map<Long, String> urlMap = salesPostRepositoryCustom.getThumbnailUrl(resumeIds).stream()
-                .collect(Collectors.toMap(
-                        SalesPostThumbnailUrlDto::getResumeId,
-                        SalesPostThumbnailUrlDto::getThumbnailImageUrl
-                ));
-
         return searchDtos.stream()
                 .map(dto -> {
-                    String thumbnailUrl = urlMap.get(dto.getResumeId());
-                    return SalesPostSearchResponse.from(dto, thumbnailUrl);
+                    String title = createSalesPostTitle(dto);
+                    String thumbnailUrl = redisUtils.getData(dto.getField().toString());
+                    //String thumbnailUrl = "www";
+                    return SalesPostSearchResponse.from(dto, title, thumbnailUrl);
                 })
                 .toList();
     }
@@ -160,5 +152,9 @@ public class SalesPostService {
         if(searchDtos.isEmpty()){
             throw new ApiException(SalesPostErrorCode.SALES_POST_NO_CONTENT);
         }
+    }
+
+    private String createSalesPostTitle(SalesPostSearchDto dto){
+        return dto.getField().toString() + " " + dto.getLevel().toString() + " 이력서 #" + dto.getResumeId();
     }
 }

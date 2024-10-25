@@ -11,11 +11,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import project.forwork.api.common.domain.CurrentUser;
 import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.common.service.port.RedisUtils;
-import project.forwork.api.domain.cart.infrastructure.enums.CartStatus;
 import project.forwork.api.domain.cart.model.Cart;
 import project.forwork.api.domain.token.service.TokenAuthService;
-import project.forwork.api.domain.token.service.TokenCookieService;
-import project.forwork.api.domain.token.service.TokenHeaderService;
 import project.forwork.api.domain.user.controller.model.EmailVerifyRequest;
 import project.forwork.api.domain.user.controller.model.PasswordModifyRequest;
 import project.forwork.api.domain.user.controller.model.PasswordVerifyRequest;
@@ -215,7 +212,7 @@ class UserServiceTest {
         userService.sendCode(email);
 
         //then(검증)
-        verify(redisUtils).setData(eq(expectedKey), eq(expectedCertificationCode), eq(300L));
+        verify(redisUtils).setDataWithTimeout(eq(expectedKey), eq(expectedCertificationCode), eq(300L));
         verify(redisUtils).createKeyForm(eq(emailPrefix), eq(email));
 
         assertThat(fakeMailSender.getEmail()).isEqualTo(email);
