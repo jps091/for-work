@@ -23,7 +23,7 @@ public class RedisCacheConfig {
     public static final String SHORT_STRING_CACHE = "shortStringCache";
     public static final String SHORT_JSON_CACHE = "shortJsonCache";
 
-    @Bean
+    @Bean(name = "redisCacheManager")
     public CacheManager cacheManager(RedisConnectionFactory redisConnectionFactory) {
         RedisCacheConfiguration jsonCacheConfig = createRedisCacheConfiguration(new Jackson2JsonRedisSerializer<>(Object.class));
         RedisCacheConfiguration stringCacheConfig = createRedisCacheConfiguration(new StringRedisSerializer());
