@@ -80,14 +80,15 @@ for-work는 취업준비생 혹은 이직을 희망하는 사람들을 위해 �
 ```
 ---
 
-## 🌟 트러블 슈팅
-1. 
+## 🪃 아키텍처
+
+<img width="900" height="700" alt="image" src="https://github.com/user-attachments/assets/2d93af17-8a4a-4987-8e85-b6611c1181d9">
 
 ---
 
 ## 💼 ERD
 
-<img width="800" height="700" alt="image" src="https://github.com/user-attachments/assets/fa804a6b-7a15-4e85-bab2-45bf468d67c4">
+<img width="900" height="700" alt="image" src="https://github.com/user-attachments/assets/fa804a6b-7a15-4e85-bab2-45bf468d67c4">
 
 ---
 
