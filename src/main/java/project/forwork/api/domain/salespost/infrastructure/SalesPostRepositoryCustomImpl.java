@@ -11,8 +11,10 @@ import project.forwork.api.domain.salespost.controller.model.*;
 import project.forwork.api.domain.salespost.infrastructure.enums.FieldCond;
 import project.forwork.api.domain.salespost.infrastructure.enums.LevelCond;
 import project.forwork.api.domain.salespost.infrastructure.enums.SalesPostSortType;
+import project.forwork.api.domain.salespost.infrastructure.enums.SalesStatus;
 import project.forwork.api.domain.salespost.infrastructure.model.SalesPostQueryDto;
 import project.forwork.api.domain.salespost.infrastructure.model.SalesPostSearchDto;
+import project.forwork.api.domain.salespost.infrastructure.model.SalesPostThumbnailUrlDto;
 import project.forwork.api.domain.salespost.service.port.SalesPostRepositoryCustom;
 
 import java.math.BigDecimal;
@@ -32,6 +34,7 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
     public SalesPostRepositoryCustomImpl(EntityManager em) {
         this.queryFactory  = new JPAQueryFactory(em);
     }
+
 
     public SalesPostDetailResponse getDetailSalesPost(Long resumeId){
         return queryFactory
@@ -78,14 +81,13 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
 
         return queryFactory
                 .select(Projections.fields(SalesPostSearchDto.class,
-                        ExpressionUtils.as(createTitleExpression(), "title"),
                         resumeEntity.id.as("resumeId"),
-                        resumeEntity.price.as("price"),
-                        thumbnailImageEntity.url.as("url")
+                        resumeEntity.fieldType.as("field"),
+                        resumeEntity.levelType.as("level"),
+                        resumeEntity.price.as("price")
                 ))
                 .from(salesPostEntity)
                 .join(salesPostEntity.resumeEntity, resumeEntity)
-                .join(salesPostEntity.thumbnailImageEntity, thumbnailImageEntity)
                 .where(
                         priceRangeCond(cond.getMinPrice(), cond.getMaxPrice()),
                         fieldEqual(cond.getField()),
@@ -100,14 +102,13 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
 
         List<SalesPostSearchDto> results = queryFactory
                 .select(Projections.fields(SalesPostSearchDto.class,
-                        ExpressionUtils.as(createTitleExpression(), "title"),
                         resumeEntity.id.as("resumeId"),
-                        resumeEntity.price.as("price"),
-                        thumbnailImageEntity.url.as("url")
+                        resumeEntity.fieldType.as("field"),
+                        resumeEntity.levelType.as("level"),
+                        resumeEntity.price.as("price")
                 ))
                 .from(salesPostEntity)
                 .join(salesPostEntity.resumeEntity, resumeEntity)
-                .join(salesPostEntity.thumbnailImageEntity, thumbnailImageEntity)
                 .where(
                         priceRangeCond(cond.getMinPrice(), cond.getMaxPrice()),
                         fieldEqual(cond.getField()),
@@ -125,14 +126,13 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
 
         return queryFactory
                 .select(Projections.fields(SalesPostSearchDto.class,
-                        ExpressionUtils.as(createTitleExpression(), "title"),
                         resumeEntity.id.as("resumeId"),
-                        resumeEntity.price.as("price"),
-                        thumbnailImageEntity.url.as("url")
+                        resumeEntity.fieldType.as("field"),
+                        resumeEntity.levelType.as("level"),
+                        resumeEntity.price.as("price")
                 ))
                 .from(salesPostEntity)
                 .join(salesPostEntity.resumeEntity, resumeEntity)
-                .join(salesPostEntity.thumbnailImageEntity, thumbnailImageEntity)
                 .where(priceRangeCond(cond.getMinPrice(), cond.getMaxPrice()),
                         fieldEqual(cond.getField()),
                         levelEqual(cond.getLevel()),
@@ -147,14 +147,13 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
 
         List<SalesPostSearchDto> results = queryFactory
                 .select(Projections.fields(SalesPostSearchDto.class,
-                        ExpressionUtils.as(createTitleExpression(), "title"),
                         resumeEntity.id.as("resumeId"),
-                        resumeEntity.price.as("price"),
-                        thumbnailImageEntity.url.as("url")
+                        resumeEntity.fieldType.as("field"),
+                        resumeEntity.levelType.as("level"),
+                        resumeEntity.price.as("price")
                 ))
                 .from(salesPostEntity)
                 .join(salesPostEntity.resumeEntity, resumeEntity)
-                .join(salesPostEntity.thumbnailImageEntity, thumbnailImageEntity)
                 .where(priceRangeCond(cond.getMinPrice(), cond.getMaxPrice()),
                         fieldEqual(cond.getField()),
                         levelEqual(cond.getLevel()),

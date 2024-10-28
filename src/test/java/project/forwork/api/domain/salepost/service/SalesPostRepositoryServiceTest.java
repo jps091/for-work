@@ -113,9 +113,9 @@ class SalesPostRepositoryServiceTest {
 
         //then(검증)
         assertThat(result).hasSize(2);
-        assertThat(result.get(0).getResumeId()).isEqualTo(4L);
-        assertThat(result.get(1).getResumeId()).isEqualTo(5L);
-        assertThat(salesPostPage.getLastId()).isEqualTo(5L);
+        assertThat(result.get(0).getResumeId()).isEqualTo(5L);
+        assertThat(result.get(1).getResumeId()).isEqualTo(3L);
+        assertThat(salesPostPage.getLastId()).isEqualTo(3L);
     }
 
     @Test

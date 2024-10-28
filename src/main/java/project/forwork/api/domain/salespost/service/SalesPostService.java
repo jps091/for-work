@@ -8,6 +8,7 @@ import project.forwork.api.common.domain.CurrentUser;
 import project.forwork.api.common.error.SalesPostErrorCode;
 import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.common.infrastructure.enums.PageStep;
+import project.forwork.api.common.service.port.RedisUtils;
 import project.forwork.api.domain.resume.model.Resume;
 import project.forwork.api.domain.salespost.controller.model.*;
 import project.forwork.api.domain.salespost.infrastructure.enums.*;
@@ -30,6 +31,7 @@ public class SalesPostService {
     private final SalesPostRepository salesPostRepository;
     private final SalesPostRepositoryCustom salesPostRepositoryCustom;
     private final UserRepository userRepository;
+    private final RedisUtils redisUtils;
 
     @Transactional
     public void changeSalesStatus(CurrentUser currentUser, Long salesPostId, SalesStatus status){
@@ -118,9 +120,13 @@ public class SalesPostService {
 
     @Transactional(readOnly = true)
     public List<SalesPostSearchResponse> createSearchResponseByDto(List<SalesPostSearchDto> searchDtos) {
-
         return searchDtos.stream()
-                .map(SalesPostSearchResponse::from)
+                .map(dto -> {
+                    String title = createSalesPostTitle(dto);
+                    String thumbnailUrl = redisUtils.getData(dto.getField().toString());
+                    //String thumbnailUrl = "www";
+                    return SalesPostSearchResponse.from(dto, title, thumbnailUrl);
+                })
                 .toList();
     }
 
@@ -146,5 +152,9 @@ public class SalesPostService {
         if(searchDtos.isEmpty()){
             throw new ApiException(SalesPostErrorCode.SALES_POST_NO_CONTENT);
         }
+    }
+
+    private String createSalesPostTitle(SalesPostSearchDto dto){
+        return dto.getField().toString() + " " + dto.getLevel().toString() + " 이력서 #" + dto.getResumeId();
     }
 }

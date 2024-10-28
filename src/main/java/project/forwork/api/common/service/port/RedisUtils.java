@@ -1,7 +1,8 @@
 package project.forwork.api.common.service.port;
 
 public interface RedisUtils {
-    void setData(String key, String value, Long expiredTime);
+    void setDataWithTimeout(String key, String value, Long expiredTime);
+    void setData(String key, String value);
 
     Long getExpirationTime(String key);
 
