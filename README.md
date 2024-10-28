@@ -43,7 +43,7 @@
 ├── domain # 주요 비즈니스 도메인
 │ └── user # 사용자 관련 도메인
 │       ├── controller
-│       ├── infrastructure 
+│       ├── infrastructure
 │       ├── model
 │       └── service
 │ ├── cartresume # 장바구니 이력서 관련 도메인
