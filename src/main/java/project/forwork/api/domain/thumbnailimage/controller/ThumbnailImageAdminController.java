@@ -13,19 +13,24 @@ import project.forwork.api.domain.thumbnailimage.service.ThumbnailImageService;
 @RestController
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping("/open-api/v1/thumbnail-image")
-@Tag(name = "ThumbnailImage for Admin", description = "썸네일 이미지 데이터베이스 저장 컨트롤러")
+@RequestMapping("/admin-api/v1/thumbnail-image")
+@Tag(name = "썸네일 이미지 관리자 전용 컨트롤러", description = "썸네일 이미지 저장 컨트롤러")
 
 public class ThumbnailImageAdminController {
 
     private final ThumbnailImageService thumbnailImageService;
 
-    @Operation(summary = "썸네일 이미지 최초 데이터베이스 등록할때만 사용",
-            description = "데이터베이스가 변경 되거나 썸네일 이미지가 S3에서 수정 되었을때만 사용하세요")
-    @PostMapping
-    public Api<String> register(
-    ){
-        thumbnailImageService.register();
-        return Api.OK("썸네일 이미지 등록 완료");
+    @Operation(summary = "썸네일 이미지 최초 데이터베이스 등록할때만 사용")
+    @PostMapping("/db")
+    public Api<String> registerToDatabase(){
+        thumbnailImageService.registerToDatabase();
+        return Api.OK("썸네일 이미지 데이터베이스 등록 완료");
+    }
+
+    @Operation(summary = "썸네일 이미지 레디스에 캐싱 할때 사용")
+    @PostMapping("/redis")
+    public Api<String> registerToRedis(){
+        thumbnailImageService.registerToRedis();
+        return Api.OK("썸네일 이미지 레디스 등록 완료");
     }
 }

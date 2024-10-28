@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import project.forwork.api.common.error.TokenErrorCode;
 import project.forwork.api.common.error.UserErrorCode;
 import project.forwork.api.common.exception.ApiException;
-import project.forwork.api.common.service.port.ClockHolder;
 import project.forwork.api.common.service.port.RedisUtils;
 import project.forwork.api.domain.token.helper.ifs.TokenHelperIfs;
 import project.forwork.api.domain.token.model.*;
@@ -83,7 +82,7 @@ public class TokenService {
         Token refreshToken = tokenHelper.issueRefreshToken(userId);
         String key = "refreshToken:userId:" + userId;
 
-        redisUtils.setData(key, refreshToken.getToken(), refreshToken.getTtl());
+        redisUtils.setDataWithTimeout(key, refreshToken.getToken(), refreshToken.getTtl());
 
         return refreshToken;
     }

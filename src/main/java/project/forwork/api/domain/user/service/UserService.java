@@ -16,8 +16,6 @@ import project.forwork.api.common.service.port.UuidHolder;
 import project.forwork.api.domain.cart.model.Cart;
 import project.forwork.api.domain.cart.service.port.CartRepository;
 import project.forwork.api.domain.token.service.TokenAuthService;
-import project.forwork.api.domain.token.service.TokenCookieService;
-import project.forwork.api.domain.token.service.TokenHeaderService;
 import project.forwork.api.domain.user.controller.model.*;
 import project.forwork.api.domain.user.model.User;
 import project.forwork.api.domain.user.service.port.UserRepository;
@@ -106,7 +104,7 @@ public class UserService {
     private String issueCertificationCode(String email){
         String certificationCode = uuidHolder.random();
         String key = getKeyByEmail(email);
-        redisUtils.setData(key, certificationCode, 300L);
+        redisUtils.setDataWithTimeout(key, certificationCode, 300L);
 
         return certificationCode;
     }
