@@ -75,6 +75,7 @@ public class OrderService {
     private final SalesPostRepository salesPostRepository;
     private final ResumeRepository resumeRepository;
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public Order create(CurrentUser currentUser, ConfirmPaymentRequest body){
         User user = userRepository.getByIdWithThrow(currentUser.getId());
 
