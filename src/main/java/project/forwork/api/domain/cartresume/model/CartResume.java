@@ -7,7 +7,6 @@ import project.forwork.api.domain.cart.model.Cart;
 import project.forwork.api.domain.resume.model.Resume;
 
 import java.math.BigDecimal;
-import java.util.Objects;
 
 
 @Getter
@@ -30,6 +29,6 @@ public class CartResume {
     }
 
     public String getTitle(){
-        return resume.createSalesPostTitle();
+        return resume.createTitle();
     }
 }

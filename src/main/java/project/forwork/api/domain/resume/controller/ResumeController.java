@@ -30,13 +30,13 @@ public class ResumeController {
     @Operation(summary = "Resume 생성", description = "Resume 생성")
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(value = "/register", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public Api<ResumeSellerDetailResponse> register(
+    public Api<String > register(
             @Parameter(hidden = true) @Current CurrentUser currentUser,
             @RequestPart("resumeData") @Valid ResumeRegisterRequest resumeRegisterBody,
             @RequestPart("descriptionImage") @NotNull MultipartFile file
     ){
         Resume resume = resumeService.register(currentUser, resumeRegisterBody, file);
-        return Api.CREATED(ResumeSellerDetailResponse.from(resume));
+        return Api.CREATED(resume.createTitle() +" 등록 완료");
     }
 
 

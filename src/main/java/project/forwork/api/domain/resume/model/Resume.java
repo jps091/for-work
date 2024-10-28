@@ -103,7 +103,7 @@ public class Resume {
                 .build();
     }
 
-    public String createSalesPostTitle(){
+    public String createTitle(){
         return field.toString() + " " + level.toString() + " 이력서 #" + getId();
     }
 

@@ -76,11 +76,12 @@ dependencies {
 
 	//caffeine
 	implementation 'org.springframework.boot:spring-boot-starter-cache'
-	implementation 'com.github.ben-manes.caffeine:caffeine'
+	implementation 'com.github.ben-manes.caffeine:caffeine:3.1.8'
 
 	// redis
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
 
 	//query dsl
 	implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
