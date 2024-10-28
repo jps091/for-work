@@ -16,6 +16,7 @@ import project.forwork.api.domain.salespost.infrastructure.model.SalesPostSearch
 import project.forwork.api.domain.salespost.model.SalesPost;
 import project.forwork.api.domain.salespost.service.port.SalesPostRepository;
 import project.forwork.api.domain.salespost.service.port.SalesPostRepositoryCustom;
+import project.forwork.api.domain.thumbnailimage.service.ThumbnailImageService;
 import project.forwork.api.domain.user.model.User;
 import project.forwork.api.domain.user.service.port.UserRepository;
 
@@ -31,7 +32,8 @@ public class SalesPostService {
     private final SalesPostRepository salesPostRepository;
     private final SalesPostRepositoryCustom salesPostRepositoryCustom;
     private final UserRepository userRepository;
-    private final RedisUtils redisUtils;
+    private final ThumbnailImageService thumbnailImageService;
+    //private final RedisUtils redisUtils;
 
     @Transactional
     public void changeSalesStatus(CurrentUser currentUser, Long salesPostId, SalesStatus status){
@@ -123,8 +125,8 @@ public class SalesPostService {
         return searchDtos.stream()
                 .map(dto -> {
                     String title = createSalesPostTitle(dto);
-                    String thumbnailUrl = redisUtils.getData(dto.getField().toString());
-                    //String thumbnailUrl = "www";
+                    //String thumbnailUrl = redisUtils.getData(dto.getField().toString());
+                    String thumbnailUrl = thumbnailImageService.getThumbnailUrl(dto.getField());
                     return SalesPostSearchResponse.from(dto, title, thumbnailUrl);
                 })
                 .toList();
