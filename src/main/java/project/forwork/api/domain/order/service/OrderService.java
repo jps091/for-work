@@ -137,8 +137,14 @@ public class OrderService {
         return order.getRequestId();
     }
 
-    @Transactional(readOnly = true)
+    @Transactional(readOnly = true) // TODO 예외처리
     public List<OrderResponse> findAll(CurrentUser currentUser){
+
+        List<Order> orders = orderRepository.findByUserId(currentUser.getId());
+        if(orders.isEmpty()){
+            throw new ApiException(OrderErrorCode.ORDER_NO_CONTENT);
+        }
+
         return orderRepository.findByUserId(currentUser.getId()).stream()
                 .map(order -> {
                     List<OrderTitleResponse> orderTitles = orderResumeRepositoryCustom.findOrderTitleByOrderId(order.getId());
