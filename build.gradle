@@ -74,7 +74,11 @@ dependencies {
 	//jwt
 	implementation 'com.auth0:java-jwt:4.0.0'
 
-	//redis
+	//caffeine
+	implementation 'org.springframework.boot:spring-boot-starter-cache'
+	implementation 'com.github.ben-manes.caffeine:caffeine'
+
+	// redis
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 

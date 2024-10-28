@@ -1,6 +1,7 @@
 package project.forwork.api.domain.thumbnailimage.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.forwork.api.common.infrastructure.enums.FieldType;
@@ -23,6 +24,12 @@ public class ThumbnailImageService {
     public void registerToRedis(){
         List<ThumbnailImage> thumbnailImages = getThumbnailImages();
         thumbnailImages.forEach(image -> redisUtils.setData(image.getFieldToString(), image.getUrl()));
+    }
+
+    @Cacheable(value = "thumbnailUrls", key = "#fieldType", cacheManager = "caffeineCacheManager")
+    public String getThumbnailUrl(FieldType fieldType) {
+        ThumbnailImage thumbnailImage = thumbnailImageRepository.getByFieldWithThrow(fieldType);
+        return thumbnailImage.getUrl();
     }
 
     private List<ThumbnailImage> getThumbnailImages() {
