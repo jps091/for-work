@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class ResumeSellerResponse {
 
+    private Long resumeId;
     private String summary;
     private Integer salesQuantity;
     private FieldType field;
@@ -26,6 +27,7 @@ public class ResumeSellerResponse {
 
     public static ResumeSellerResponse from(Resume resume){
         return ResumeSellerResponse.builder()
+                .resumeId(resume.getId())
                 .summary(resume.getDescriptionSummary())
                 .salesQuantity(resume.getSalesQuantity())
                 .field(resume.getField())
