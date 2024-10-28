@@ -29,13 +29,12 @@ for-work는 취업준비생 혹은 이직을 희망하는 사람들을 위해 �
 
 
 ### 1. 이력서 판매글 등록 흐름 
-<img width="700" height="400" alt="image" src="https://github.com/user-attachments/assets/94a43936-f87e-4c7b-a5f2-841019660d54">
+<img width="700" height="400" src="https://github.com/user-attachments/assets/36b4324a-afff-4a29-b320-7b2fcb7fad85">
 
 
 ### 2. 이력서 구매 흐름
 - [핵심 비지니스 로직에 대한 안정성을 높이기 위해 재시도 및 별도의 로그 테이블을 구성 하였습니다.](https://github.com/jps091/for-work/wiki/@Retryable-&-LogTable-%EC%84%A4%EA%B3%84%EB%A1%9C-%EC%84%9C%EB%B9%84%EC%8A%A4-%EC%95%88%EC%A0%95%EC%84%B1-%EB%86%92%EC%9D%B4%EA%B8%B0) 
-<img width="900" height="450" alt="image" src="https://github.com/user-attachments/assets/24b3ae5b-229f-4662-bbca-f107cfaa4513">
-
+<img width="900" height="450" alt="image" src="https://github.com/user-attachments/assets/2de832e6-20c2-48be-a09d-1c9f6e095261">
 
 ---
 
@@ -82,7 +81,7 @@ for-work는 취업준비생 혹은 이직을 희망하는 사람들을 위해 �
 
 ## 🪃 아키텍처
 
-<img width="900" height="700" alt="image" src="https://github.com/user-attachments/assets/2d93af17-8a4a-4987-8e85-b6611c1181d9">
+<img width="800" height="600" alt="image" src="https://github.com/user-attachments/assets/2d93af17-8a4a-4987-8e85-b6611c1181d9">
 
 ---
 
