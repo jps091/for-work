@@ -1,5 +1,6 @@
 package project.forwork.api.domain.orderresume.service;
 
+import io.netty.channel.ConnectTimeoutException;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -7,6 +8,7 @@ import org.springframework.mail.MailException;
 import org.springframework.mail.MailSendException;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.forwork.api.common.service.port.ClockHolder;
@@ -18,7 +20,9 @@ import project.forwork.api.domain.orderresume.service.port.OrderResumeRepository
 import project.forwork.api.domain.orderresume.service.port.OrderResumeRepositoryCustom;
 import project.forwork.api.domain.resume.service.ResumeQuantityService;
 
+import java.net.SocketTimeoutException;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @Slf4j
@@ -49,14 +53,14 @@ public class OrderResumeMailService {
     }
 
     @Retryable(
-            value = { MailSendException.class, MailException.class },
+            value = { MailException.class, SocketTimeoutException.class, ConnectTimeoutException.class },
             maxAttempts = 1,
             backoff =  @Backoff(delay = 2000)
     )
     public void sendEmail(PurchaseResponse purchaseResponse){
         String title = "for-work 구매 이력서 : " + purchaseResponse.getSalesPostTitle();
         String content = "주문 번호 #" + purchaseResponse.getOrderId() +" <URL> : "+ purchaseResponse.getResumeUrl();
-
+        log.info("sendEmail={}",title);
         try{
             mailSender.send(purchaseResponse.getEmail(), title, content);
             mailLogService.registerSuccessLog(purchaseResponse);
@@ -64,6 +68,23 @@ public class OrderResumeMailService {
             log.error("send email fail orderId={}", purchaseResponse.getOrderId(), e);
             mailLogService.registerFailLog(purchaseResponse, e);
             throw e;
+        }
+    }
+
+    @Async("emailTaskExecutor")
+    public void asyncTest(){
+        try {
+            Thread.sleep(1000); //
+        }catch (Exception e) {
+            log.error("[Error] : {} ",e.getMessage());
+        }
+    }
+
+    public void test(){
+        try {
+            Thread.sleep(1000);
+        }catch (Exception e) {
+            log.error("[Error] : {} ",e.getMessage());
         }
     }
 }

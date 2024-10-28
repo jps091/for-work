@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestClientResponseException;
 import project.forwork.api.common.domain.CurrentUser;
 import project.forwork.api.common.error.TransactionErrorCode;
 import project.forwork.api.common.exception.ApiException;
@@ -22,6 +23,7 @@ import project.forwork.api.domain.transaction.service.port.TransactionRepository
 import java.math.BigDecimal;
 import java.net.SocketTimeoutException;
 import java.util.List;
+import java.util.concurrent.RejectedExecutionException;
 
 @Slf4j
 @Service
@@ -54,15 +56,11 @@ public class CheckoutService {
             transactionRepository.save(tx);
 
         }catch (Exception e){
-            log.error("caught process order-payment", e);
-
-            if (e instanceof RestClientException && e.getCause() instanceof SocketTimeoutException) {
-                retryLogService.register(body.getRequestId(), RetryType.CONFIRM, e);
-                throw new ApiException(TransactionErrorCode.SERVER_ERROR);
-            }
-
             // 결제 실패 시 주문 상태 업데이트
             orderService.updateOrderConfirmFailure(order);
+
+            log.error("caught process order-payment", e);
+            throwApiExceptionIfStatusCode500(e, order.getRequestId(), RetryType.CONFIRM);
             throw e;  // 예외를 다시 던져서 상위 로직에서 처리할 수 있게 함
         }
     }
@@ -81,11 +79,7 @@ public class CheckoutService {
 
         }catch (Exception e){
             log.error("caught process cancel-payment", e);
-
-            if (e instanceof RestClientException && e.getCause() instanceof SocketTimeoutException) {
-                retryLogService.register(transaction.getPaymentKey(), RetryType.CANCEL, e);
-                throw new ApiException(TransactionErrorCode.SERVER_ERROR);
-            }
+            throwApiExceptionIfStatusCode500(e, requestId, RetryType.CANCEL);
             throw e;
         }
     }
@@ -107,11 +101,17 @@ public class CheckoutService {
         }catch (Exception e){
             log.error("caught process partial-cancel-payment", e);
 
-            if (e instanceof RestClientException && e.getCause() instanceof SocketTimeoutException) {
-                retryLogService.register(transaction.getPaymentKey(), RetryType.PARTIAL_CANCEL, e);
+            throwApiExceptionIfStatusCode500(e, requestId, RetryType.PARTIAL_CANCEL);
+            throw e;
+        }
+    }
+
+    private void throwApiExceptionIfStatusCode500(Exception e, String requestId, RetryType confirm) {
+        if (e instanceof RestClientResponseException restException) {
+            if (restException.getStatusCode().value() == 500) {
+                retryLogService.register(requestId, confirm, e);
                 throw new ApiException(TransactionErrorCode.SERVER_ERROR);
             }
-            throw e;
         }
     }
 

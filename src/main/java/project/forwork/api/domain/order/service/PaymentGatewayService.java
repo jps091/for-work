@@ -1,5 +1,6 @@
 package project.forwork.api.domain.order.service;
 
+import io.netty.channel.ConnectTimeoutException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,7 +34,7 @@ public class PaymentGatewayService {
     public String URL;
 
     @Retryable(
-            value = SocketTimeoutException.class,
+            value = {SocketTimeoutException.class, ConnectTimeoutException.class},
             maxAttempts = 2,
             backoff =  @Backoff(delay = 2000)
     )
@@ -73,6 +74,11 @@ public class PaymentGatewayService {
         cancelPayment(paymentKey, body, "부분");
     }
 
+    @Retryable(
+            value = {SocketTimeoutException.class, ConnectTimeoutException.class},
+            maxAttempts = 2,
+            backoff =  @Backoff(delay = 2000)
+    )
     public void cancelPayment(String paymentKey, Object cancelRequestBody, String cancelType) {
         String authorizations = getAuthorizations();
         String cancelURL = cancelUrl(paymentKey);

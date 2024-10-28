@@ -19,7 +19,7 @@ public class RetryLogService {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void register(String requestId, RetryType type, Exception e) {
 
-        project.forwork.api.domain.retrylog.model.RetryLog retryLog = RetryLog.builder()
+        RetryLog retryLog = RetryLog.builder()
                 .requestId(requestId)
                 .errorResponse(e.getMessage())
                 .type(type)
