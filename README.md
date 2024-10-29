@@ -6,22 +6,6 @@ for-work는 취업준비생 혹은 이직을 희망하는 사람들을 위해 �
 
 ## 📅 개발 기간
 2024.09 ~ 2024.10
-
----
-
-## 🛠 기술 스택
-- Backend: Spring Boot 3.3.5, Java 17
-- Database: MySQL
-- Caching: Redis, Caffeine
-- ORM: Spring Data JPA, Querydsl
-- Authentication: JWT
-- Build Tool: Gradle
-- API Documentation: Swagger
-- Version Control: Git, GitHub, Git Actions
-- Infrastructure: AWS EC2, S3, RDS
-- Containerization: Docker
-- Monitoring: Scouter, Slack
-- Testing: JMeter
   
 ---
 
