@@ -1,7 +1,7 @@
 # 📑 for-work - 이력서 쇼핑몰 README
 
-for-work는 취업준비생 혹은 이직을 희망하는 사람들을 위해 모범이 되고 참고 할 수 있는 이력서를 판매하는 쇼핑몰 입니다.
-
+취업준비생 혹은 이직을 희망하는 사람들을 위해 모범이 되고 참고 할 수 있는 이력서를 판매하는 쇼핑몰 입니다.<br>
+프로젝트 관련 회고 및 트러블 슈팅은 [여기](https://github.com/jps091/for-work/wiki)를 클릭 해주세요.
 ---
 
 ## 📅 개발 기간
@@ -41,7 +41,7 @@ for-work는 취업준비생 혹은 이직을 희망하는 사람들을 위해 �
 │ ├── infrastructure # 인프라 관련 설정
 │ └── service # 공통 서비스
 ├── domain # 주요 비즈니스 도메인
-│   └── user # 사용자 관련 도메인
+│ └── user # 사용자 관련 도메인
 │       ├── controller
 │       ├── infrastructure 
 │       ├── model
@@ -75,15 +75,16 @@ for-work는 취업준비생 혹은 이직을 희망하는 사람들을 위해 �
 
 ---
 
-## 📝 API 명세서 [SWAGGER](http://43.201.73.11:8080/swagger-ui/index.html?urls.primaryName=%EC%A0%84%EC%B2%B4%20%EC%82%AC%EC%9A%A9%EC%9E%90%EB%A5%BC%20%EC%9C%84%ED%95%9C%20For-work%20Service%20%EB%8F%84%EB%A9%94%EC%9D%B8%20API#/SalesPostOpenController/getFilteredPage)
-1. [/open-api/v1/users (회원가입, 로그인 관련 API)](https://cuboid-sunfish-749.notion.site/1-open-api-v1-users-API-125bb83a1adf8058b761f7aea46a368d?pvs=4)
-2. [/api/v1/users (회원 정보 관련 API)](https://cuboid-sunfish-749.notion.site/2-api-v1-users-API-125bb83a1adf8055b989ea3d9703127e?pvs=4)
-3. [/api/v1/resumes (이력서 관리 판매자 전용 API)](https://cuboid-sunfish-749.notion.site/3-api-v1-resumes-API-125bb83a1adf802db310f1c66d3fb4ef?pvs=4)
-4. [/admin-api/v1/resumes (관리자 전용 API)](https://cuboid-sunfish-749.notion.site/4-admin-api-v1-resumes-API-125bb83a1adf801aa9aed118927b8e93?pvs=4)
-5. [/open-api/v1/sales-posts (판매글 조회 관련 API)](https://cuboid-sunfish-749.notion.site/5-open-api-v1-sales-posts-API-125bb83a1adf8060a748dfc09bbd65da?pvs=4)
-6. [/api/v1/sales-posts (판매글 관리 판매자 전용 API)](https://cuboid-sunfish-749.notion.site/6-api-v1-sales-posts-API-125bb83a1adf8087b933c649108fa7f4?pvs=4)
-7. [/api/v1/cart-resumes (장바구니 상세 기능 API)](/api/v1/cart-resumes (장바구니 상세 기능 API))
-8. [/api/v1/checkout (주문 생성 및 결제, 환불 관련 API)](https://cuboid-sunfish-749.notion.site/8-api-v1-checkout-API-125bb83a1adf80d09b8dce430def4f92?pvs=4)
-9. [/api/v1/orders (구매자 주문 관리 관련 API)](https://cuboid-sunfish-749.notion.site/9-api-v1-orders-API-125bb83a1adf80bba604c203038bd6e5?pvs=4)
-10. [/api/v1/token/reissue (JWT 재발급 API)](https://cuboid-sunfish-749.notion.site/10-api-v1-token-reissue-JWT-API-125bb83a1adf80e2aadcc10aec7dab20?pvs=4)
+## 📝 API 명세서 
+0. [스웨거 API 명세서](http://43.201.73.11:8080/swagger-ui/index.html?urls.primaryName=%EC%A0%84%EC%B2%B4%20%EC%82%AC%EC%9A%A9%EC%9E%90%EB%A5%BC%20%EC%9C%84%ED%95%9C%20For-work%20Service%20%EB%8F%84%EB%A9%94%EC%9D%B8%20API#/SalesPostOpenController/getFilteredPage)
+1. [노션 /open-api/v1/users (회원가입, 로그인 관련 API)](https://cuboid-sunfish-749.notion.site/1-open-api-v1-users-API-125bb83a1adf8058b761f7aea46a368d?pvs=4)
+2. [노션 /api/v1/users (회원 정보 관련 API)](https://cuboid-sunfish-749.notion.site/2-api-v1-users-API-125bb83a1adf8055b989ea3d9703127e?pvs=4)
+3. [노션 /api/v1/resumes (이력서 관리 판매자 전용 API)](https://cuboid-sunfish-749.notion.site/3-api-v1-resumes-API-125bb83a1adf802db310f1c66d3fb4ef?pvs=4)
+4. [노션 /admin-api/v1/resumes (관리자 전용 API)](https://cuboid-sunfish-749.notion.site/4-admin-api-v1-resumes-API-125bb83a1adf801aa9aed118927b8e93?pvs=4)
+5. [노션 /open-api/v1/sales-posts (판매글 조회 관련 API)](https://cuboid-sunfish-749.notion.site/5-open-api-v1-sales-posts-API-125bb83a1adf8060a748dfc09bbd65da?pvs=4)
+6. [노션 /api/v1/sales-posts (판매글 관리 판매자 전용 API)](https://cuboid-sunfish-749.notion.site/6-api-v1-sales-posts-API-125bb83a1adf8087b933c649108fa7f4?pvs=4)
+7. [노션 /api/v1/cart-resumes (장바구니 상세 기능 API)](/api/v1/cart-resumes (장바구니 상세 기능 API))
+8. [노션 /api/v1/checkout (주문 생성 및 결제, 환불 관련 API)](https://cuboid-sunfish-749.notion.site/8-api-v1-checkout-API-125bb83a1adf80d09b8dce430def4f92?pvs=4)
+9. [노션 /api/v1/orders (구매자 주문 관리 관련 API)](https://cuboid-sunfish-749.notion.site/9-api-v1-orders-API-125bb83a1adf80bba604c203038bd6e5?pvs=4)
+10. [노션 /api/v1/token/reissue (JWT 재발급 API)](https://cuboid-sunfish-749.notion.site/10-api-v1-token-reissue-JWT-API-125bb83a1adf80e2aadcc10aec7dab20?pvs=4)
 
