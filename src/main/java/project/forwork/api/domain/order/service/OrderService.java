@@ -117,6 +117,7 @@ public class OrderService {
     public void updateOrderConfirmFailure(Order order) {
         Order failedOrder = order.updateStatus(OrderStatus.PAYMENT_FAILED);
         orderRepository.save(failedOrder);
+        orderResumeService.updateFailByOrder(order);
     }
 
 
@@ -145,11 +146,11 @@ public class OrderService {
             throw new ApiException(OrderErrorCode.ORDER_NO_CONTENT);
         }
 
-        return orderRepository.findByUserId(currentUser.getId()).stream()
+        return orders.stream()
                 .map(order -> {
                     List<OrderTitleResponse> orderTitles = orderResumeRepositoryCustom.findOrderTitleByOrderId(order.getId());
                     String orderResumeTitle = orderTitles.get(0).getTitle();
-                    String orderTitle = orderTitles.size() == 1 ? orderResumeTitle : orderResumeTitle + "...";
+                    String orderTitle = createOrderTitle(orderTitles, orderResumeTitle);
                     return OrderResponse.from(order, orderTitle);
                 }).toList();
     }
@@ -170,5 +171,9 @@ public class OrderService {
 
     private boolean isRequestIdEqual(String source, String target){
         return source.split("-")[0].equals(target.split("-")[0]);
+    }
+
+    private static String createOrderTitle(List<OrderTitleResponse> orderTitles, String orderResumeTitle) {
+        return orderTitles.size() == 1 ? orderResumeTitle : orderResumeTitle + "외 " + orderTitles.size() + "건";
     }
 }

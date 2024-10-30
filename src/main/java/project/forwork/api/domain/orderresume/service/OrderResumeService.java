@@ -35,7 +35,13 @@ public class OrderResumeService {
         orderResumeRepository.saveAll(orderResumes);
     }
 
-
+    public void updateFailByOrder(Order order){
+        List<OrderResume> orderResumes = orderResumeRepository.findByOrderId(order.getId())
+                .stream()
+                .map(OrderResume::updateStatusPaymentFail)
+                .toList();
+        orderResumeRepository.saveAll(orderResumes);
+    }
 
     // 즉시 구매 확정
     public Order sendMailForNowConfirmedOrder(Long userId, Order order, List<Long> orderResumeIds){
