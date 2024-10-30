@@ -10,6 +10,7 @@ import java.util.Optional;
 public interface OrderResumeRepository {
     OrderResume save(OrderResume orderResume);
     List<OrderResume> saveAll(List<OrderResume> orderResumes);
+    List<OrderResume> findByOrderId(Long orderId);
     OrderResume getByIdWithThrow(long orderResumeId);
     Optional<OrderResume> findById(long orderResumeId);
     List<OrderResume> findByOrderIdAndStatus(List<Long> orderResumeIds, Long orderId, OrderResumeStatus status);

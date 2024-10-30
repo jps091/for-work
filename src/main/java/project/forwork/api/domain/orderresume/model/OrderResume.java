@@ -60,6 +60,15 @@ public class OrderResume {
                 .build();
     }
 
+    public OrderResume updateStatusPaymentFail(){
+        return OrderResume.builder()
+                .id(id)
+                .order(order)
+                .resume(resume)
+                .status(OrderResumeStatus.PAYMENT_FAIL)
+                .build();
+    }
+
     public BigDecimal getPrice(){
         return resume.getPrice();
     }

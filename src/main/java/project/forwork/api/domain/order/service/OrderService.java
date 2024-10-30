@@ -117,6 +117,7 @@ public class OrderService {
     public void updateOrderConfirmFailure(Order order) {
         Order failedOrder = order.updateStatus(OrderStatus.PAYMENT_FAILED);
         orderRepository.save(failedOrder);
+        orderResumeService.updateFailByOrder(order);
     }
 
 
@@ -145,7 +146,7 @@ public class OrderService {
             throw new ApiException(OrderErrorCode.ORDER_NO_CONTENT);
         }
 
-        return orderRepository.findByUserId(currentUser.getId()).stream()
+        return orders.stream()
                 .map(order -> {
                     List<OrderTitleResponse> orderTitles = orderResumeRepositoryCustom.findOrderTitleByOrderId(order.getId());
                     String orderResumeTitle = orderTitles.get(0).getTitle();

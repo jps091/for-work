@@ -31,6 +31,13 @@ public class OrderResumeRepositoryImpl implements OrderResumeRepository {
     }
 
     @Override
+    public List<OrderResume> findByOrderId(Long orderId) {
+        return orderResumeJpaRepository.findByOrderEntity_Id(orderId).stream()
+                .map(OrderResumeEntity::toModel)
+                .toList();
+    }
+
+    @Override
     public OrderResume getByIdWithThrow(long orderResumeId) {
         return findById(orderResumeId).orElseThrow(() -> new ApiException(OrderResumeErrorCode.NOT_FOUND, orderResumeId));
     }

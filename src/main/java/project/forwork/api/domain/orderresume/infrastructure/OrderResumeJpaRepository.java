@@ -10,7 +10,7 @@ import project.forwork.api.domain.orderresume.infrastructure.enums.OrderResumeSt
 import java.util.List;
 
 public interface OrderResumeJpaRepository extends JpaRepository<OrderResumeEntity, Long> {
-
+    List<OrderResumeEntity> findByOrderEntity_Id(@Param("orderId") Long orderId);
     @Query("select ore from OrderResumeEntity ore" +
             " join fetch ore.orderEntity o" +
             " where o IN (:orderEntity)" +
