@@ -137,7 +137,7 @@ public class OrderService {
         return order.getRequestId();
     }
 
-    @Transactional(readOnly = true) // TODO 예외처리
+    @Transactional(readOnly = true)
     public List<OrderResponse> findAll(CurrentUser currentUser){
 
         List<Order> orders = orderRepository.findByUserId(currentUser.getId());

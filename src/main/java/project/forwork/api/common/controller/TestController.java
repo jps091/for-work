@@ -104,4 +104,23 @@ public class TestController {
         orderResumeMailService.test();
         return new ResponseEntity<>("confirm", HttpStatus.OK);
     }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/test/sql")
+    @Transactional
+    public ResponseEntity<String> sqlOnce(
+    ){
+        Resume resume = resumeRepository.getByIdWithThrow(2L);
+        return new ResponseEntity<>(resume.getLevel().toString(), HttpStatus.OK);
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/test/loop")
+    public ResponseEntity<String> loop(
+    ){
+        int count = 30;
+        for(int i = 0; i < count; i++){
+            if(i == count -1)
+                System.out.println("i = " + i);
+        }
+        return new ResponseEntity<>("loop end: "+ count, HttpStatus.OK);
+    }
 }

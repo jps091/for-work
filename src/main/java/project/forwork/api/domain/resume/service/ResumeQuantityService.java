@@ -21,13 +21,9 @@ public class ResumeQuantityService {
     private final ResumeRepository resumeRepository;
 
     public void addSalesQuantityWithAllPessimistic(List<Long> resumeIds){
-
         List<Resume> resumes = resumeRepository.findByIdsWithPessimisticLock(resumeIds).stream()
                 .map(Resume::increaseSalesQuantity)
                 .toList();
-        for (Resume resume : resumes) {
-            log.info("ALL={}   Quantity={}",resume.getId() , resume.getSalesQuantity());
-        }
         resumeRepository.saveAll(resumes);
     }
 
@@ -35,8 +31,7 @@ public class ResumeQuantityService {
         for (Long resumeId : resumeIds) {
             Resume resume = resumeRepository.getByIdWithPessimisticLock(resumeId);
             resume = resume.increaseSalesQuantity();
-            Resume save = resumeRepository.save(resume);
-            log.info("ONCE={}   Quantity={}",save.getId() , save.getSalesQuantity());
+            resumeRepository.save(resume);
         }
     }
 
