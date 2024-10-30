@@ -16,13 +16,13 @@
 ## 🚴 주요 기능 동작 흐름
 
 
-### 1. 이력서 판매글 등록 흐름 
+### 1. 이력서 판매글 등록 흐름
 <img width="700" height="400" src="https://github.com/user-attachments/assets/36b4324a-afff-4a29-b320-7b2fcb7fad85">
 
 
 ### 2. 이력서 구매 흐름
-- [핵심 비지니스 로직에 대한 안정성을 높이기 위해 재시도 및 별도의 로그 테이블을 구성 하였습니다.](https://github.com/jps091/for-work/wiki/@Retryable-&-LogTable-%EC%84%A4%EA%B3%84%EB%A1%9C-%EC%84%9C%EB%B9%84%EC%8A%A4-%EC%95%88%EC%A0%95%EC%84%B1-%EB%86%92%EC%9D%B4%EA%B8%B0) 
-<img width="900" height="450" alt="image" src="https://github.com/user-attachments/assets/2de832e6-20c2-48be-a09d-1c9f6e095261">
+- [핵심 비지니스 로직에 대한 안정성을 높이기 위해 재시도 및 별도의 로그 테이블을 구성 하였습니다.](https://github.com/jps091/for-work/wiki/@Retryable-&-LogTable-%EC%84%A4%EA%B3%84%EB%A1%9C-%EC%84%9C%EB%B9%84%EC%8A%A4-%EC%95%88%EC%A0%95%EC%84%B1-%EB%86%92%EC%9D%B4%EA%B8%B0)
+  <img width="900" height="450" alt="image" src="https://github.com/user-attachments/assets/2de832e6-20c2-48be-a09d-1c9f6e095261">
 
 ---
 
@@ -31,7 +31,7 @@
 1. Presentation, Application, Domain, Persistence 4계층으로 프로젝트를 구성 하였습니다.
 2. Persistent Object와 Domain Object를 분리 하여 핵심 비지니스 로직은 Domain Object에 구현 하였습니다.
 3. Repository는 인터페이스로 설계 하여 서비스 계층과 결합도를 낮췄습니다.
- - 더 자세한 설명은 [4계층 프로젝트를 도입한 이유](https://github.com/jps091/for-work/wiki/%EB%8F%84%EB%A9%94%EC%9D%B8%EC%9D%84-%EB%8F%84%EC%9E%85%ED%95%9C-%EC%9D%B4%EC%9C%A0)를 확인 해주세요.
+- 더 자세한 설명은 [4계층 프로젝트를 도입한 이유](https://github.com/jps091/for-work/wiki/%EB%8F%84%EB%A9%94%EC%9D%B8%EC%9D%84-%EB%8F%84%EC%9E%85%ED%95%9C-%EC%9D%B4%EC%9C%A0)를 확인 해주세요.
 
 ```markdown
 ├── common # 공통 모듈 및 설정 파일
@@ -79,7 +79,7 @@
 
 ---
 
-## 📝 API 명세서 
+## 📝 API 명세서
 0. [스웨거 API 명세서](http://43.201.73.11:8080/swagger-ui/index.html?urls.primaryName=%EC%A0%84%EC%B2%B4%20%EC%82%AC%EC%9A%A9%EC%9E%90%EB%A5%BC%20%EC%9C%84%ED%95%9C%20For-work%20Service%20%EB%8F%84%EB%A9%94%EC%9D%B8%20API#/SalesPostOpenController/getFilteredPage)
 1. [노션 /open-api/v1/users (회원가입, 로그인 관련 API)](https://cuboid-sunfish-749.notion.site/1-open-api-v1-users-API-125bb83a1adf8058b761f7aea46a368d?pvs=4)
 2. [노션 /api/v1/users (회원 정보 관련 API)](https://cuboid-sunfish-749.notion.site/2-api-v1-users-API-125bb83a1adf8055b989ea3d9703127e?pvs=4)
