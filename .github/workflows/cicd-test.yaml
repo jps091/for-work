@@ -1,0 +1,30 @@
+name: cicd-1
+on:
+  pull_request:
+    types: [opened, synchronize, closed]
+    branches:
+      - dev
+    paths:
+      - 'api/**'
+
+jobs:
+  test: #pr 이오픈되거나 싱크로나즈 될때 즉 CI 과정
+    if: github.event.action == 'opened' || github.event.action == 'synchronize'
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
+  image-build: # pr 이 머지되면 실행 되면 잡 즉 CD 과정
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: action/checkout@v4
+
+  deploy: # image-build 다음 실행되는 잡 즉 CD 과정@
+    runs-on: ubuntu-latest
+    needs: [image-build]
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
