@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import project.forwork.api.common.infrastructure.BaseTimeEntity;
-import project.forwork.api.domain.user.infrastructure.enums.RoleType;
+import project.forwork.api.domain.user.infrastructure.enums.UserStatus;
 import project.forwork.api.domain.user.model.User;
 
 import java.time.LocalDateTime;
@@ -34,8 +34,8 @@ public class UserEntity extends BaseTimeEntity {
     private String name;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "role") @NotNull
-    private RoleType roleType;
+    @Column(name = "status") @NotNull
+    private UserStatus status;
 
     @Column(name = "last_login_at", columnDefinition = "TIMESTAMP")
     private LocalDateTime lastLoginAt;
@@ -46,7 +46,7 @@ public class UserEntity extends BaseTimeEntity {
         userEntity.email = user.getEmail();
         userEntity.password = user.getPassword();
         userEntity.name = user.getName();
-        userEntity.roleType = user.getRoleType();
+        userEntity.status = user.getStatus();
         userEntity.lastLoginAt = user.getLastLoginAt();
         return userEntity;
     }
@@ -57,7 +57,7 @@ public class UserEntity extends BaseTimeEntity {
                 .email(email)
                 .password(password)
                 .name(name)
-                .roleType(roleType)
+                .status(status)
                 .lastLoginAt(lastLoginAt)
                 .build();
     }

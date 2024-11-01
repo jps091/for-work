@@ -4,22 +4,23 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
-public enum RoleType {
+public enum UserStatus {
 
     ADMIN("관리자"),
-    USER("일반사용자"),
+    USER("일반 유저"),
+    DELETE("탈퇴 유저")
     ;
 
     private String description;
 
     @JsonCreator
-    public static RoleType from(String s) {
-        for (RoleType status : RoleType.values()) {
+    public static UserStatus from(String s) {
+        for (UserStatus status : UserStatus.values()) {
             if (status.name().equalsIgnoreCase(s)) {
                 return status;
             }
         }
-        throw new IllegalArgumentException("Invalid RoleType: " + s);
+        throw new IllegalArgumentException("Invalid Status: " + s);
     }
 
 }

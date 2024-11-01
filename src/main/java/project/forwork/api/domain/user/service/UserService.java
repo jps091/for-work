@@ -15,11 +15,20 @@ import project.forwork.api.common.service.port.RedisUtils;
 import project.forwork.api.common.service.port.UuidHolder;
 import project.forwork.api.domain.cart.model.Cart;
 import project.forwork.api.domain.cart.service.port.CartRepository;
+import project.forwork.api.domain.cartresume.service.port.CartResumeRepository;
+import project.forwork.api.domain.resume.controller.model.ResumeSellerResponse;
+import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
+import project.forwork.api.domain.resume.model.Resume;
+import project.forwork.api.domain.resume.service.ResumeService;
+import project.forwork.api.domain.resume.service.port.ResumeRepository;
+import project.forwork.api.domain.salespost.model.SalesPost;
+import project.forwork.api.domain.salespost.service.port.SalesPostRepository;
 import project.forwork.api.domain.token.service.TokenAuthService;
 import project.forwork.api.domain.user.controller.model.*;
 import project.forwork.api.domain.user.model.User;
 import project.forwork.api.domain.user.service.port.UserRepository;
 
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -30,8 +39,11 @@ public class UserService {
     public static final String EMAIL_PREFIX = "email:";
 
     private final UserRepository userRepository;
+    private final SalesPostRepository salesPostRepository;
     private final TokenAuthService tokenAuthService;
     private final CartRepository cartRepository;
+    private final ResumeRepository resumeRepository;
+    private final CartResumeRepository cartResumeRepository;
     private final MailSender mailSender;
     private final UuidHolder uuidHolder;
     private final RedisUtils redisUtils;
@@ -68,7 +80,12 @@ public class UserService {
     ){
         User user = userRepository.getByIdWithThrow(currentUser.getId());
         tokenAuthService.deleteTokensWithUserDelete(user.getId(), request, response);
-        userRepository.delete(user);
+
+        deleteResumeAndSalesPost(currentUser);
+        deleteCart(user);
+
+        user = user.delete();
+        userRepository.save(user);
     }
 
     public void verifyPassword(CurrentUser currentUser, PasswordVerifyRequest body){
@@ -99,6 +116,31 @@ public class UserService {
         }
 
         deleteCertificationCode(body.getEmail());
+    }
+
+    @Transactional
+    public void deleteCart(User user) {
+        cartRepository.delete(user.getId());
+    }
+    @Transactional
+    public void deleteResumeAndSalesPost(CurrentUser currentUser) {
+        List<ResumeStatus> statusList = List.of(ResumeStatus.ACTIVE, ResumeStatus.PENDING, ResumeStatus.REJECTED);
+
+        List<Resume> resumeList = resumeRepository.findAllBySeller(currentUser.getId(), statusList);
+        if(resumeList.isEmpty()){
+            return;
+        }
+
+        List<Long> resumeIds = resumeList.stream()
+                .map(Resume::delete)
+                .map(resumeRepository::save)
+                .map(Resume::getId)
+                .toList();
+
+        resumeIds.forEach(resumeId -> {
+            salesPostRepository.deleteByResumeId(resumeId);
+            cartResumeRepository.deleteAllByResumeId(resumeId);
+        });
     }
 
     private String issueCertificationCode(String email){

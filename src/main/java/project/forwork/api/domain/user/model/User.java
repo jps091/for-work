@@ -7,7 +7,7 @@ import project.forwork.api.common.error.UserErrorCode;
 import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.common.service.port.ClockHolder;
 import project.forwork.api.domain.user.controller.model.UserCreateRequest;
-import project.forwork.api.domain.user.infrastructure.enums.RoleType;
+import project.forwork.api.domain.user.infrastructure.enums.UserStatus;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -21,7 +21,7 @@ public class User {
     private final String name;
     private final String email;
     private final String password;
-    private final RoleType roleType;
+    private final UserStatus status;
     private final LocalDateTime lastLoginAt;
 
     public static User from(UserCreateRequest body){
@@ -29,11 +29,15 @@ public class User {
                 .email(body.getEmail())
                 .name(body.getName())
                 .password(body.getPassword())
-                .roleType(RoleType.USER)
+                .status(UserStatus.USER)
                 .build();
     }
 
     public User login(ClockHolder clockHolder, String password){
+        if(status.equals(UserStatus.DELETE)){
+            throw new ApiException(UserErrorCode.DELETE_USER);
+        }
+
         if (!this.password.equals(password)) {
             throw new ApiException(UserErrorCode.PASSWORD_NOT_MATCH);
         }
@@ -42,7 +46,7 @@ public class User {
                 .name(name)
                 .email(email)
                 .password(password)
-                .roleType(roleType)
+                .status(status)
                 .lastLoginAt(clockHolder.now())
                 .build();
     }
@@ -53,7 +57,7 @@ public class User {
                 .name(name)
                 .email(email)
                 .password(password)
-                .roleType(roleType)
+                .status(status)
                 .lastLoginAt(lastLoginAt)
                 .build();
     }
@@ -64,7 +68,18 @@ public class User {
                 .name(name)
                 .email(email)
                 .password(tempPassword)
-                .roleType(roleType)
+                .status(status)
+                .lastLoginAt(lastLoginAt)
+                .build();
+    }
+
+    public User delete(){
+        return User.builder()
+                .id(id)
+                .name(name)
+                .email(email)
+                .password(password)
+                .status(UserStatus.DELETE)
                 .lastLoginAt(lastLoginAt)
                 .build();
     }
@@ -73,7 +88,7 @@ public class User {
         return !Objects.equals(this.password, password);
     }
     public boolean isAdminMismatch(){
-        return roleType != RoleType.ADMIN;
+        return status != UserStatus.ADMIN;
     }
     public boolean isNameMismatch(String name){
         return !Objects.equals(this.name, name);

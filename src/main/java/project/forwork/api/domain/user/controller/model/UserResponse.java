@@ -1,7 +1,7 @@
 package project.forwork.api.domain.user.controller.model;
 
 import lombok.*;
-import project.forwork.api.domain.user.infrastructure.enums.RoleType;
+import project.forwork.api.domain.user.infrastructure.enums.UserStatus;
 import project.forwork.api.domain.user.model.User;
 
 @Builder
@@ -11,13 +11,13 @@ import project.forwork.api.domain.user.model.User;
 public class UserResponse {
     private String name;
     private String email;
-    private RoleType roleType;
+    private UserStatus status;
 
     public static UserResponse from(User user){
         return UserResponse.builder()
                 .email(user.getEmail())
                 .name(user.getName())
-                .roleType(user.getRoleType())
+                .status(user.getStatus())
                 .build();
     }
 }
