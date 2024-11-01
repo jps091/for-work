@@ -42,4 +42,6 @@ public interface CartResumeJpaRepository extends JpaRepository<CartResumeEntity,
             " where u.id = :userId" +
             " and cr.id IN (:cartResumeIds)")
     List<CartResumeEntity> findByUserAndSelected(@Param("userId") Long userId, @Param("cartResumeIds") List<Long> cartResumeIds);
+
+    void deleteAllByResumeEntity_Id(Long resumeId);
  }

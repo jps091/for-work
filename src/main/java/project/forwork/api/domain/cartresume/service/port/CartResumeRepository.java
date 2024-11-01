@@ -18,4 +18,6 @@ public interface CartResumeRepository {
     List<CartResume> findByUserAndSelected(Long userId, List<Long> cartResumeIds);
     List<CartResume> findByConfirmedResumes(Long userId, List<Long> resumeIds);
     List<CartResume> findAllInCart(Long userId);
+
+    void deleteAllByResumeId(Long resumeId);
 }

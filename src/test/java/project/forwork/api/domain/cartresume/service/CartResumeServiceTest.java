@@ -15,9 +15,7 @@ import project.forwork.api.common.infrastructure.enums.FieldType;
 import project.forwork.api.common.infrastructure.enums.LevelType;
 import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
 import project.forwork.api.domain.resume.model.Resume;
-import project.forwork.api.domain.salespost.infrastructure.enums.SalesStatus;
-import project.forwork.api.domain.salespost.model.SalesPost;
-import project.forwork.api.domain.user.infrastructure.enums.RoleType;
+import project.forwork.api.domain.user.infrastructure.enums.UserStatus;
 import project.forwork.api.domain.user.model.User;
 import project.forwork.api.mock.*;
 
@@ -47,7 +45,7 @@ class CartResumeServiceTest {
                 .email("user1@naver.com")
                 .name("user1")
                 .password("123")
-                .roleType(RoleType.USER)
+                .status(UserStatus.USER)
                 .build();
 
         User user2 = User.builder()
@@ -55,7 +53,7 @@ class CartResumeServiceTest {
                 .email("user2@naver.com")
                 .name("user2")
                 .password("123")
-                .roleType(RoleType.USER)
+                .status(UserStatus.USER)
                 .build();
 
         Resume resume1 = Resume.builder()

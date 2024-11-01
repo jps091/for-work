@@ -11,6 +11,7 @@ public enum CartResumeErrorCode implements ErrorCodeIfs{
     RESUME_EXISTS_CART(400, 7402, "장바구니에 해당 이력서가 이미 존재 합니다."),
     NOT_SELECTED(400, 7403, "선택한 이력서가 없습니다. 이력서를 선택 해주세요."),
     RETRY_SELECT(400, 7404, "장바구니에서 이력서를 다시 선택 해주세요."),
+    DELETE_RESUME(400, 7405, "삭제된 이력서 상품 입니다. 장바구니에 담을 수 없습니다."),
     ;
 
     private final Integer httpStatusCode;

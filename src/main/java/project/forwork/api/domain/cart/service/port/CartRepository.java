@@ -6,4 +6,5 @@ public interface CartRepository {
     Cart save(Cart cart);
 
     Cart getByUserIdWithThrow(Long userId);
+    void delete(Long userId);
 }
