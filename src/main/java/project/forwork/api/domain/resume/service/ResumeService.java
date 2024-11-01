@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import project.forwork.api.common.controller.port.S3Service;
 import project.forwork.api.common.error.ResumeErrorCode;
 import project.forwork.api.common.exception.ApiException;
+import project.forwork.api.domain.cartresume.service.port.CartResumeRepository;
 import project.forwork.api.domain.orderresume.model.OrderResume;
 import project.forwork.api.domain.resume.controller.model.*;
 import project.forwork.api.common.infrastructure.enums.PageStep;
@@ -42,6 +43,7 @@ public class ResumeService {
     private final ResumeRepositoryCustom resumeRepositoryCustom;
     private final UserRepository userRepository;
     private final SalesPostRepository salesPostRepository;
+    private final CartResumeRepository cartResumeRepository;
     private final S3Service s3Service;
 
     public Resume register(CurrentUser currentUser, ResumeRegisterRequest body, MultipartFile file){
@@ -75,8 +77,12 @@ public class ResumeService {
         Resume resume = resumeRepository.getByIdWithThrow(resumeId);
         validateAuthor(currentUser, resume);
 
-        s3Service.deleteFile(resume.getResumeUrl());
-        resumeRepository.delete(resume);
+        //s3Service.deleteFile(resume.getDescriptionImageUrl());
+        resume = resume.delete();
+        resumeRepository.save(resume);
+
+        salesPostRepository.deleteByResumeId(resumeId);
+        cartResumeRepository.deleteAllByResumeId(resumeId);
     }
 
     @Transactional(readOnly = true)
@@ -135,9 +141,8 @@ public class ResumeService {
     }
 
     public List<ResumeSellerResponse> findResumesBySeller(CurrentUser currentUser){
-        User user = userRepository.getByIdWithThrow(currentUser.getId());
-
-        List<ResumeSellerResponse> resumeAdminResponses = resumeRepository.findAllBySeller(user)
+        List<ResumeStatus> statusList = List.of(ResumeStatus.ACTIVE, ResumeStatus.PENDING, ResumeStatus.REJECTED);
+        List<ResumeSellerResponse> resumeAdminResponses = resumeRepository.findAllBySeller(currentUser.getId(), statusList)
                 .stream()
                 .map(ResumeSellerResponse::from)
                 .toList();

@@ -41,7 +41,7 @@ public class ResumeController {
 
 
     @Operation(summary = "Resume 삭제 API", description = "ResumeId 입력")
-    @DeleteMapping("/{resumeId}")
+    @PostMapping("/{resumeId}")
     public Api<String> delete(
             @Parameter(description = "삭제할 Resume ID", required = true, example = "1")
             @PathVariable Long resumeId,

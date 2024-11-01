@@ -1,5 +1,6 @@
 package project.forwork.api.domain.resume.service.port;
 
+import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
 import project.forwork.api.domain.resume.model.Resume;
 import project.forwork.api.domain.user.model.User;
 
@@ -16,7 +17,7 @@ public interface ResumeRepository {
 
     Optional<Resume> findById(Long id);
 
-    List<Resume> findAllBySeller(User seller);
+    List<Resume> findAllBySeller(Long userId, List<ResumeStatus> statusList);
 
     List<Resume> findByIdsWithPessimisticLock(List<Long> resumeIds);
 

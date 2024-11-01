@@ -68,6 +68,7 @@ public class Resume {
                 .resumeUrl(body.getResumeUrl())
                 .descriptionImageUrl(descriptionUrl)
                 .price(body.getPrice())
+                .salesQuantity(salesQuantity)
                 .description(body.getDescription())
                 .status(ResumeStatus.PENDING)
                 .build();
@@ -85,6 +86,21 @@ public class Resume {
                 .salesQuantity(salesQuantity)
                 .description(description)
                 .status(status)
+                .build();
+    }
+
+    public Resume delete(){
+        return Resume.builder()
+                .id(id)
+                .seller(seller)
+                .field(field)
+                .level(level)
+                .resumeUrl(resumeUrl)
+                .descriptionImageUrl(descriptionImageUrl)
+                .price(price)
+                .salesQuantity(salesQuantity)
+                .description(description)
+                .status(ResumeStatus.DELETE)
                 .build();
     }
 

@@ -8,7 +8,8 @@ public enum ResumeStatus {
 
     PENDING("대기"),
     ACTIVE("활성"),
-    REJECTED("거절")
+    REJECTED("거절"),
+    DELETE("삭제")
     ;
 
     private String description;

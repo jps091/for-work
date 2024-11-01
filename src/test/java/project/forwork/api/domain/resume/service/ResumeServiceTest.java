@@ -15,7 +15,7 @@ import project.forwork.api.domain.resumedecision.model.ResumeDecision;
 import project.forwork.api.domain.resumedecision.infrastructure.enums.DecisionStatus;
 import project.forwork.api.domain.salespost.infrastructure.enums.SalesStatus;
 import project.forwork.api.domain.salespost.model.SalesPost;
-import project.forwork.api.domain.user.infrastructure.enums.RoleType;
+import project.forwork.api.domain.user.infrastructure.enums.UserStatus;
 import project.forwork.api.domain.user.model.User;
 import project.forwork.api.mock.*;
 
@@ -31,17 +31,22 @@ class ResumeServiceTest {
     private FakeResumeRepository fakeResumeRepository;
     private FakeSalesPostRepository fakeSalesPostRepository;
     private FakeS3Service fakeS3Service;
+    private FakeCartResumeRepository fakeCartResumeRepository;
+
+    private FakeUserRepository fakeUserRepository;
 
     @BeforeEach
     void init(){
-        FakeUserRepository fakeUserRepository = new FakeUserRepository();
+        fakeUserRepository = new FakeUserRepository();
         fakeResumeRepository = new FakeResumeRepository();
         fakeSalesPostRepository = new FakeSalesPostRepository();
         fakeS3Service = new FakeS3Service();
+        fakeCartResumeRepository = new FakeCartResumeRepository();
         FakeResumeDecisionRepository fakeResumeDecisionRepository = new FakeResumeDecisionRepository();
         this.resumeService = ResumeService.builder()
                 .resumeRepository(fakeResumeRepository)
                 .userRepository(fakeUserRepository)
+                .cartResumeRepository(fakeCartResumeRepository)
                 .resumeDecisionRepository(fakeResumeDecisionRepository)
                 .salesPostRepository(fakeSalesPostRepository)
                 .s3Service(fakeS3Service)
@@ -52,7 +57,7 @@ class ResumeServiceTest {
                 .email("user1@naver.com")
                 .name("user1")
                 .password("123")
-                .roleType(RoleType.USER)
+                .status(UserStatus.USER)
                 .build();
 
         User user2 = User.builder()
@@ -60,7 +65,7 @@ class ResumeServiceTest {
                 .email("user2@naver.com")
                 .name("user2")
                 .password("123")
-                .roleType(RoleType.USER)
+                .status(UserStatus.USER)
                 .build();
 
         User admin = User.builder()
@@ -68,7 +73,7 @@ class ResumeServiceTest {
                 .email("admin@naver.com")
                 .name("admin")
                 .password("321")
-                .roleType(RoleType.ADMIN)
+                .status(UserStatus.ADMIN)
                 .build();
         fakeUserRepository.save(user1);
         fakeUserRepository.save(user2);
@@ -267,6 +272,36 @@ class ResumeServiceTest {
 
         // then
         assertThatThrownBy(() -> resumeService.modify(2L, currentUser, request, descriptionImage))
+                .isInstanceOf(ApiException.class);
+    }
+
+    @Test
+    void 이력서를_삭제_하면_상태가_DELETE로_변경_된다(){
+        //given(상황환경 세팅)
+        CurrentUser currentUser = CurrentUser.builder()
+                .id(1L)
+                .build();
+
+        // when
+        resumeService.delete(1L, currentUser);
+
+        // then
+        Resume resume = fakeResumeRepository.getByIdWithThrow(1L);
+        assertThat(resume.getStatus()).isEqualTo(ResumeStatus.DELETE);
+    }
+
+    @Test
+    void 이력서를_삭제_하면_판매글은_삭제된다(){
+        //given(상황환경 세팅)
+        CurrentUser currentUser = CurrentUser.builder()
+                .id(1L)
+                .build();
+
+        // when
+        resumeService.delete(1L, currentUser);
+
+        // then
+        assertThatThrownBy(() -> fakeSalesPostRepository.getByIdWithThrow(1L))
                 .isInstanceOf(ApiException.class);
     }
 }
