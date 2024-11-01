@@ -6,13 +6,18 @@ import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
 import project.forwork.api.domain.user.infrastructure.UserEntity;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface ResumeJpaRepository extends JpaRepository<ResumeEntity, Long>{
-    List<ResumeEntity> findAllBySellerEntity(UserEntity seller);
+
+    @Query("select r from ResumeEntity r" +
+            " where  r.sellerEntity.id = :userId and" +
+            " r.resumeStatus IN (:statusList)")
+    List<ResumeEntity> findBySellerIdAndStatus(@Param("userId") Long userId, @Param("statusList")List<ResumeStatus> statusList);
 
     @Query("select r from ResumeEntity r where r.id IN (:resumeIds)")
     List<ResumeEntity> findByIds(@Param("resumeIds") List<Long> resumeIds);

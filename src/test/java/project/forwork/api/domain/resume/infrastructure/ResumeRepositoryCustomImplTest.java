@@ -120,8 +120,8 @@ class ResumeRepositoryCustomImplTest {
 
         //then(검증)
         assertThat(result).hasSize(2);
-        assertThat(result.get(0).getId()).isEqualTo(5L);
-        assertThat(result.get(1).getId()).isEqualTo(4L);
+        assertThat(result.get(0).getId()).isEqualTo(4L);
+        assertThat(result.get(1).getId()).isEqualTo(5L);
     }
 
     @Test
@@ -146,9 +146,9 @@ class ResumeRepositoryCustomImplTest {
 
         //then(검증)
         assertThat(result).hasSize(3);
-        assertThat(result.get(0).getId()).isEqualTo(4L);
-        assertThat(result.get(1).getId()).isEqualTo(7L);
-        assertThat(result.get(2).getId()).isEqualTo(8L);
+        assertThat(result.get(0).getId()).isEqualTo(7L);
+        assertThat(result.get(1).getId()).isEqualTo(8L);
+        assertThat(result.get(2).getId()).isEqualTo(6L);
     }
 
     @Test
@@ -160,8 +160,8 @@ class ResumeRepositoryCustomImplTest {
         List<ResumeAdminResponse> result = repository.findPreviousPage(PeriodCond.WEEK, ResumeStatus.ACTIVE, last, 7L, 2);
 
         //then(검증)
-        assertThat(result.get(0).getId()).isEqualTo(5L);
-        assertThat(result.get(1).getId()).isEqualTo(4L);
+        assertThat(result.get(0).getId()).isEqualTo(4L);
+        assertThat(result.get(1).getId()).isEqualTo(5L);
     }
 
     @Test

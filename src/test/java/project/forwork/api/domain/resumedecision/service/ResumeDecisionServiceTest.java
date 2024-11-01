@@ -11,7 +11,7 @@ import project.forwork.api.domain.resume.model.Resume;
 import project.forwork.api.domain.salespost.infrastructure.enums.SalesStatus;
 import project.forwork.api.domain.salespost.model.SalesPost;
 import project.forwork.api.domain.thumbnailimage.model.ThumbnailImage;
-import project.forwork.api.domain.user.infrastructure.enums.RoleType;
+import project.forwork.api.domain.user.infrastructure.enums.UserStatus;
 import project.forwork.api.domain.user.model.User;
 import project.forwork.api.mock.*;
 
@@ -48,7 +48,7 @@ class ResumeDecisionServiceTest {
                 .email("user1@naver.com")
                 .name("user1")
                 .password("123")
-                .roleType(RoleType.USER)
+                .status(UserStatus.USER)
                 .build();
 
 
@@ -57,7 +57,7 @@ class ResumeDecisionServiceTest {
                 .email("admin@naver.com")
                 .name("admin")
                 .password("321")
-                .roleType(RoleType.ADMIN)
+                .status(UserStatus.ADMIN)
                 .build();
         fakeUserRepository.save(user1);
         fakeUserRepository.save(admin);

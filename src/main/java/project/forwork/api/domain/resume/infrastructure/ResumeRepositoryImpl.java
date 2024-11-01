@@ -4,10 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import project.forwork.api.common.error.ResumeErrorCode;
 import project.forwork.api.common.exception.ApiException;
+import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
 import project.forwork.api.domain.resume.model.Resume;
 import project.forwork.api.domain.resume.service.port.ResumeRepository;
-import project.forwork.api.domain.user.infrastructure.UserEntity;
-import project.forwork.api.domain.user.model.User;
+
 
 import java.util.List;
 import java.util.Optional;
@@ -67,8 +67,8 @@ public class ResumeRepositoryImpl implements ResumeRepository {
     }
 
     @Override
-    public List<Resume> findAllBySeller(User seller) {
-        return resumeJpaRepository.findAllBySellerEntity(UserEntity.from(seller))
+    public List<Resume> findAllBySeller(Long userId, List<ResumeStatus> statusList) {
+        return resumeJpaRepository.findBySellerIdAndStatus(userId, statusList)
                 .stream()
                 .map(ResumeEntity::toModel)
                 .toList();
