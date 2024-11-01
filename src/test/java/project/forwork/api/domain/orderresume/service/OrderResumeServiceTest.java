@@ -8,18 +8,15 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import project.forwork.api.domain.cartresume.model.CartResume;
 import project.forwork.api.domain.order.infrastructure.enums.OrderStatus;
 import project.forwork.api.domain.order.model.Order;
 import project.forwork.api.domain.orderresume.infrastructure.enums.OrderResumeStatus;
 import project.forwork.api.domain.orderresume.model.OrderResume;
-import project.forwork.api.domain.orderresume.service.port.OrderResumeRepositoryCustom;
 import project.forwork.api.common.infrastructure.enums.FieldType;
 import project.forwork.api.common.infrastructure.enums.LevelType;
 import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
 import project.forwork.api.domain.resume.model.Resume;
-import project.forwork.api.domain.resume.service.ResumeQuantityService;
-import project.forwork.api.domain.user.infrastructure.enums.RoleType;
+import project.forwork.api.domain.user.infrastructure.enums.UserStatus;
 import project.forwork.api.domain.user.model.User;
 import project.forwork.api.mock.*;
 
@@ -54,7 +51,7 @@ class OrderResumeServiceTest {
                 .email("user1@naver.com")
                 .name("user1")
                 .password("123")
-                .roleType(RoleType.USER)
+                .status(UserStatus.USER)
                 .build();
 
         User user2 = User.builder()
@@ -62,7 +59,7 @@ class OrderResumeServiceTest {
                 .email("user2@naver.com")
                 .name("user2")
                 .password("123")
-                .roleType(RoleType.USER)
+                .status(UserStatus.USER)
                 .build();
         fakeUserRepository.save(user1);
         fakeUserRepository.save(user2);

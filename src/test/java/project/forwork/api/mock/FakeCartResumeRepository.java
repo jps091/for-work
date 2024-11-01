@@ -92,4 +92,9 @@ public class FakeCartResumeRepository implements CartResumeRepository {
                         Objects.equals(cartResume.getCart().getUser().getId(), userId))
                 .toList();
     }
+
+    @Override
+    public void deleteAllByResumeId(Long resumeId) {
+        data.removeIf(cr -> Objects.equals(cr.getResume().getId(), resumeId));
+    }
 }

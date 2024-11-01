@@ -1,14 +1,14 @@
 package project.forwork.api.domain.user.service;
 
 import org.junit.jupiter.api.Test;
-import project.forwork.api.domain.user.infrastructure.enums.RoleType;
+import project.forwork.api.domain.user.infrastructure.enums.UserStatus;
 import project.forwork.api.domain.user.model.User;
 import project.forwork.api.mock.FakeMailSender;
 import project.forwork.api.mock.FakeUserRepository;
 import project.forwork.api.mock.TestUuidHolder;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+
 class PasswordInitializationServiceTest {
     @Test
     void 비밀번호를_임시_비밀번호로_초기화_하고_메일을_발송한다(){
@@ -24,7 +24,7 @@ class PasswordInitializationServiceTest {
                 .email("user1@naver.com")
                 .name("user1")
                 .password("123")
-                .roleType(RoleType.USER)
+                .status(UserStatus.USER)
                 .build();
         fakeUserRepository.save(user);
 

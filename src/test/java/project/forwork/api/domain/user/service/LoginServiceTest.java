@@ -10,12 +10,9 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.common.service.port.RedisUtils;
-import project.forwork.api.domain.token.model.TokenResponse;
 import project.forwork.api.domain.token.service.TokenAuthService;
-import project.forwork.api.domain.token.service.TokenHeaderService;
-import project.forwork.api.domain.user.controller.model.LoginResponse;
 import project.forwork.api.domain.user.controller.model.UserLoginRequest;
-import project.forwork.api.domain.user.infrastructure.enums.RoleType;
+import project.forwork.api.domain.user.infrastructure.enums.UserStatus;
 import project.forwork.api.domain.user.model.User;
 import project.forwork.api.mock.FakeUserRepository;
 import project.forwork.api.mock.TestClockHolder;
@@ -57,41 +54,21 @@ class LoginServiceTest {
                 .email("user@naver.com")
                 .name("user")
                 .password("123")
-                .roleType(RoleType.USER)
+                .status(UserStatus.USER)
                 .build();
 
         fakeUserRepository.save(user);
-    }
-/*    @Test //TODO Mockito 공부 필요
-    void UserLoginRequest_으로_로그인을_할_수_있다() {
-        // given(상황환경 세팅)
-        UserLoginRequest loginUser = UserLoginRequest.builder()
-                .email("user@naver.com")
+
+        User user2 = User.builder()
+                .id(2L)
+                .email("user2@naver.com")
+                .name("user2")
                 .password("123")
+                .status(UserStatus.DELETE)
                 .build();
 
-        String key = "loginAttempt:userId:" + 1L;
-        when(redisUtils.createKeyForm(anyString(), anyLong())).thenReturn(key);
-        when(redisUtils.incrementDataInitTimeOut(eq(key), anyLong())).thenReturn(1L);
-
-        // HttpServletResponse와 User 객체를 모킹
-        HttpServletResponse response = mock(HttpServletResponse.class);
-        User user = fakeUserRepository.getByIdWithThrow(1L);
-
-        // TokenResponse를 모킹해서 반환하도록 설정
-        TokenResponse tokenResponse = new TokenResponse("access-token", System.currentTimeMillis() + 3600000, "refresh-token", System.currentTimeMillis() + 7200000);
-
-        // tokenHeaderService.addTokenToHeaders()를 모킹
-        when(tokenHeaderService.addTokenToHeaders(eq(response), eq(user))).thenReturn(tokenResponse);  // tokenResponse가 null이 아니도록 설정
-
-        // when(상황발생)
-        LoginResponse loginResponse = loginService.login(response, loginUser);
-
-        // then(검증)
-        assertThat(loginResponse.getUserId()).isEqualTo(user.getId());
-        verify(tokenHeaderService).addTokenToHeaders(eq(response), eq(user));
-        verify(redisUtils).deleteData(anyString());  // 로그인 시도 횟수 초기화
-    }*/
+        fakeUserRepository.save(user2);
+    }
 
     @Test
     void 존재하지_않는_이메일로_로그인_시도시_예외발생(){
@@ -145,5 +122,19 @@ class LoginServiceTest {
 
         verify(passwordInitializationService).issueTemporaryPassword(eq(user));
         verify(redisUtils).deleteData(eq(loginAttemptKey));
+    }
+
+    @Test
+    void 회원탈퇴_유저정보로_로그인시_실패(){
+        //given(상황환경 세팅)
+        UserLoginRequest loginUser = UserLoginRequest.builder()
+                .email("user2@naver.com")
+                .password("123")
+                .build();
+        //when(상황발생)
+        //then(검증)
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        assertThatThrownBy(() -> loginService.login(response, loginUser))
+                .isInstanceOf(ApiException.class);
     }
 }

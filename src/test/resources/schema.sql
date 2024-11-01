@@ -15,7 +15,7 @@ CREATE TABLE users (
                        name varchar(10) NOT NULL,
                        email varchar(50) NOT NULL,
                        password varchar(20) NOT NULL,
-                       role varchar(255) NOT NULL,
+                       status varchar(255) NOT NULL,
                        PRIMARY KEY (user_id),
                        UNIQUE (email)
 );

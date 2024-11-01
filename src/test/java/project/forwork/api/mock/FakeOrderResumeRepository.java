@@ -78,4 +78,12 @@ public class FakeOrderResumeRepository implements OrderResumeRepository {
                         Objects.equals(orderResume.getStatus(), status))
                 .toList();
     }
+
+    @Override
+    public List<OrderResume> findByOrderId(Long orderId) {
+        return data.stream()
+                .filter(orderResume ->
+                        Objects.equals(orderResume.getOrder().getId(), orderId))
+                .toList();
+    }
 }
