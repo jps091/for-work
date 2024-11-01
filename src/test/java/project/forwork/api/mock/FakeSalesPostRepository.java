@@ -72,4 +72,8 @@ public class FakeSalesPostRepository implements SalesPostRepository {
         return findById(salesPostId).orElseThrow(() -> new ApiException(SalesPostErrorCode.SALES_POST_NOT_FOUND));
     }
 
+    @Override
+    public void deleteByResumeId(Long resumeId) {
+        data.removeIf(s -> Objects.equals(s.getResume().getId(), resumeId));
+    }
 }

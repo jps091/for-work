@@ -11,9 +11,8 @@ import project.forwork.api.domain.resume.model.Resume;
 import project.forwork.api.domain.salespost.infrastructure.enums.SalesStatus;
 import project.forwork.api.domain.salespost.model.SalesPost;
 import project.forwork.api.domain.salespost.service.SalesPostService;
-import project.forwork.api.domain.user.infrastructure.enums.RoleType;
+import project.forwork.api.domain.user.infrastructure.enums.UserStatus;
 import project.forwork.api.domain.user.model.User;
-import project.forwork.api.mock.FakeResumeRepository;
 import project.forwork.api.mock.FakeSalesPostRepository;
 import project.forwork.api.mock.FakeUserRepository;
 
@@ -42,7 +41,7 @@ class SalesPostServiceTest {
                 .email("user1@naver.com")
                 .name("user1")
                 .password("123")
-                .roleType(RoleType.USER)
+                .status(UserStatus.USER)
                 .build();
 
         User user2 = User.builder()
@@ -50,7 +49,7 @@ class SalesPostServiceTest {
                 .email("user2@naver.com")
                 .name("user2")
                 .password("123")
-                .roleType(RoleType.USER)
+                .status(UserStatus.USER)
                 .build();
 
         fakeUserRepository.save(user1);

@@ -62,5 +62,8 @@ public class SalesPostRepositoryImpl implements SalesPostRepository {
         return salesPostJpaRepository.findByResumeEntity(ResumeEntity.from(resume)).map(SalesPostEntity::toModel);
     }
 
-
+    @Override
+    public void deleteByResumeId(Long resumeId) {
+        salesPostJpaRepository.deleteByResumeEntity_Id(resumeId);
+    }
 }
