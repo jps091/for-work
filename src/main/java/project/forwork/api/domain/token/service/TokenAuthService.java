@@ -4,6 +4,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import project.forwork.api.common.error.TokenErrorCode;
 import project.forwork.api.common.exception.ApiException;
@@ -14,6 +15,7 @@ import java.util.Arrays;
 import java.util.Optional;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class TokenAuthService {
 
@@ -30,6 +32,7 @@ public class TokenAuthService {
 
     public String reissueAccessToken(HttpServletRequest request, HttpServletResponse response){
         String refreshToken = extractRefreshTokenFromCookies(request);
+        log.info("refreshToken={}",refreshToken);
         TokenResponse tokenResponse = tokenService.reissueTokenResponse(refreshToken);
         registerRefreshTokenWithCookie(response, tokenResponse);
         return tokenResponse.getAccessToken();
@@ -68,6 +71,11 @@ public class TokenAuthService {
         cookie.setHttpOnly(true);
         cookie.setMaxAge(60 * 60);
         response.addCookie(cookie);
+
+        // 3. SameSite=None 속성을 포함한 Set-Cookie 헤더 추가
+        String cookieHeader = String.format("%s=%s; Path=/; HttpOnly; Secure; SameSite=None",
+                REFRESH_TOKEN, tokenResponse.getRefreshToken());
+        response.addHeader("Set-Cookie", cookieHeader);
     }
 
     private String extractRefreshTokenFromCookies(HttpServletRequest request) {

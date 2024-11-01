@@ -45,7 +45,7 @@ public class CurrentUserResolver implements HandlerMethodArgumentResolver {
                 .id(user.getId())
                 .name(user.getName())
                 .email(user.getEmail())
-                .roleType(user.getRoleType())
+                .status(user.getStatus())
                 .build();
     }
 }

@@ -1,7 +1,7 @@
 package project.forwork.api.common.domain;
 
 import lombok.*;
-import project.forwork.api.domain.user.infrastructure.enums.RoleType;
+import project.forwork.api.domain.user.infrastructure.enums.UserStatus;
 
 @Builder
 @AllArgsConstructor
@@ -10,9 +10,9 @@ public class CurrentUser {
     private final Long id;
     private final String name;
     private final String email;
-    private final RoleType roleType;
+    private final UserStatus status;
 
     public boolean isAdminMismatch(){
-        return roleType != RoleType.ADMIN;
+        return status != UserStatus.ADMIN;
     }
 }
