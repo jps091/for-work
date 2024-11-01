@@ -2,7 +2,6 @@ package project.forwork.api.mock;
 
 import project.forwork.api.common.error.UserErrorCode;
 import project.forwork.api.common.exception.ApiException;
-import project.forwork.api.domain.user.infrastructure.enums.RoleType;
 import project.forwork.api.domain.user.model.User;
 import project.forwork.api.domain.user.service.port.UserRepository;
 
@@ -26,7 +25,7 @@ public class FakeUserRepository implements UserRepository {
                     .name(user.getName())
                     .email(user.getEmail())
                     .password(user.getPassword())
-                    .roleType(user.getRoleType())
+                    .status(user.getStatus())
                     .build();
             data.add(newUser);
             return newUser;

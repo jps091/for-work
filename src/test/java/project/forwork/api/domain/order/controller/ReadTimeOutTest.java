@@ -11,7 +11,7 @@ import project.forwork.api.common.domain.CurrentUser;
 import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.domain.order.controller.model.ConfirmPaymentRequest;
 import project.forwork.api.domain.order.service.CheckoutService;
-import project.forwork.api.domain.user.infrastructure.enums.RoleType;
+import project.forwork.api.domain.user.infrastructure.enums.UserStatus;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -30,7 +30,7 @@ class ReadTimeOutTest {
     void read_time_out이_발생해서_SocketTimeoutException_가_발생하면_결제_승인은_실패하고_ApiException_이_발생_한다() {
         CurrentUser currentUser = CurrentUser.builder()
                 .id(4L)
-                .roleType(RoleType.USER)
+                .status(UserStatus.USER)
                 .build();
         ConfirmPaymentRequest body = ConfirmPaymentRequest.builder()
                 .resumeIds(List.of(1L))

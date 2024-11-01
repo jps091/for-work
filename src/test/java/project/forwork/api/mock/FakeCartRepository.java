@@ -4,6 +4,7 @@ import project.forwork.api.common.error.CartErrorCode;
 import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.domain.cart.model.Cart;
 import project.forwork.api.domain.cart.service.port.CartRepository;
+import project.forwork.api.domain.user.model.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,5 +38,10 @@ public class FakeCartRepository implements CartRepository {
     public Cart getByUserIdWithThrow(Long userId) {
         return data.stream().filter(c -> Objects.equals(c.getUser().getId(), userId)).findAny()
                 .orElseThrow(() -> new ApiException(CartErrorCode.CART_NOT_FOUND, userId));
+    }
+
+    @Override
+    public void delete(Long userId) {
+        data.removeIf(c -> Objects.equals(c.getUser().getId(), userId));
     }
 }

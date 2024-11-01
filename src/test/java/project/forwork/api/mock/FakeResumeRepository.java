@@ -62,8 +62,10 @@ public class FakeResumeRepository implements ResumeRepository {
     }
 
     @Override
-    public List<Resume> findAllBySeller(User seller) {
-        return data.stream().filter(r -> Objects.equals(r.getSeller().getId(), seller.getId())).toList();
+    public List<Resume> findAllBySeller(Long userId, List<ResumeStatus> statusList) {
+        return data.stream().filter(r -> Objects.equals(r.getSeller().getId(), userId) &&
+                        !Objects.equals(r.getStatus(), ResumeStatus.DELETE))
+                        .toList();
     }
 
     @Override
