@@ -10,7 +10,6 @@ import lombok.experimental.SuperBuilder;
 import project.forwork.api.common.infrastructure.BaseTimeEntity;
 import project.forwork.api.domain.maillog.infrastructure.enums.Result;
 import project.forwork.api.domain.maillog.model.MailLog;
-import project.forwork.api.domain.orderresume.infrastructure.enums.OrderResumeStatus;
 
 @Entity
 @Table(name = "mail_logs")

@@ -28,34 +28,15 @@ public class Api<T> {
         return api;
     }
 
-    public static <T> Api<T> FOUND(T data){
-        Api<T> api = new Api<>();
-        api.result = Result.FOUND();
-        api.body = data;
-        return api;
-    }
-
     public static Api<Object> ERROR(ErrorCodeIfs errorCodeIfs){
         Api<Object> api = new Api<Object>();
         api.result = Result.ERROR(errorCodeIfs);
         return api;
     }
 
-    public static Api<Object> ERROR(ErrorCodeIfs errorCodeIfs, Throwable tx){
-        Api<Object> api = new Api<Object>();
-        api.result = Result.ERROR(errorCodeIfs, tx);
-        return api;
-    }
-
     public static Api<Object> ERROR(ErrorCodeIfs errorCodeIfs, String description){
         Api<Object> api = new Api<Object>();
         api.result = Result.ERROR(errorCodeIfs, description);
-        return api;
-    }
-
-    public static <T> Api<T> ERROR(Integer resultCode, String resultMessage, String resultDescription) {
-        Api<T> api = new Api<>();
-        api.result = Result.ERROR(resultCode, resultMessage, resultDescription);
         return api;
     }
 }

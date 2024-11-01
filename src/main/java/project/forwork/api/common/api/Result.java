@@ -34,14 +34,6 @@ public class Result {
                 .build();
     }
 
-    public static Result FOUND(){
-        return Result.builder()
-                .resultCode(ErrorCode.FOUND.getErrorCode())
-                .resultMessage(ErrorCode.FOUND.getDescription())
-                .resultDescription("성공")
-                .build();
-    }
-
     public static Result ERROR(ErrorCodeIfs errorCodeIfs){
         return Result.builder()
                 .resultCode(errorCodeIfs.getErrorCode())
@@ -50,27 +42,11 @@ public class Result {
                 .build();
     }
 
-    public static Result ERROR(ErrorCodeIfs errorCodeIfs, Throwable tx){
-        return Result.builder()
-                .resultCode(errorCodeIfs.getErrorCode())
-                .resultMessage(errorCodeIfs.getDescription())
-                .resultDescription(tx.getLocalizedMessage())
-                .build();
-    }
-
     public static Result ERROR(ErrorCodeIfs errorCodeIfs, String description){
         return Result.builder()
                 .resultCode(errorCodeIfs.getErrorCode())
                 .resultMessage(errorCodeIfs.getDescription())
                 .resultDescription(description)
-                .build();
-    }
-
-    public static Result ERROR(Integer resultCode, String resultMessage, String resultDescription) {
-        return Result.builder()
-                .resultCode(resultCode)
-                .resultMessage(resultMessage)
-                .resultDescription(resultDescription)
                 .build();
     }
 }

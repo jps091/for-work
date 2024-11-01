@@ -16,7 +16,7 @@ import project.forwork.api.domain.orderresume.service.OrderResumeMailService;
 import project.forwork.api.domain.resume.model.Resume;
 import project.forwork.api.domain.resume.service.ResumeQuantityService;
 import project.forwork.api.domain.resume.service.port.ResumeRepository;
-import project.forwork.api.domain.user.infrastructure.enums.RoleType;
+import project.forwork.api.domain.user.infrastructure.enums.UserStatus;
 
 import java.util.List;
 import java.util.UUID;
@@ -69,7 +69,7 @@ public class TestController {
     ){
         CurrentUser currentUser = CurrentUser.builder()
                         .id(4L)
-                        .roleType(RoleType.USER)
+                        .status(UserStatus.USER)
                         .build();
         log.info("controller ConfirmRequest={}",body);
         checkoutService.processOrderAndPayment(currentUser, body);
