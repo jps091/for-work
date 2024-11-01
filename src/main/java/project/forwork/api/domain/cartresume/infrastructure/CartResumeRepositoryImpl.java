@@ -72,4 +72,9 @@ public class CartResumeRepositoryImpl implements CartResumeRepository {
                 .map(CartResumeEntity::toModel)
                 .toList();
     }
+
+    @Override
+    public void deleteAllByResumeId(Long resumeId){
+        cartResumeJpaRepository.deleteAllByResumeEntity_Id(resumeId);
+    }
 }

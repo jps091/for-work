@@ -24,4 +24,9 @@ public class CartRepositoryImpl implements CartRepository {
                 .orElseThrow(() -> new ApiException(CartErrorCode.CART_NOT_FOUND, userId))
                 .toModel();
     }
+
+    @Override
+    public void delete(Long userId) {
+        cartJpaRepository.deleteByUserEntity_Id(userId);
+    }
 }
