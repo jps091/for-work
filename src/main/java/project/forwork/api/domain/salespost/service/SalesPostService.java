@@ -8,7 +8,6 @@ import project.forwork.api.common.domain.CurrentUser;
 import project.forwork.api.common.error.SalesPostErrorCode;
 import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.common.infrastructure.enums.PageStep;
-import project.forwork.api.common.service.port.RedisUtils;
 import project.forwork.api.domain.resume.model.Resume;
 import project.forwork.api.domain.salespost.controller.model.*;
 import project.forwork.api.domain.salespost.infrastructure.enums.*;
@@ -33,7 +32,6 @@ public class SalesPostService {
     private final SalesPostRepositoryCustom salesPostRepositoryCustom;
     private final UserRepository userRepository;
     private final ThumbnailImageService thumbnailImageService;
-    //private final RedisUtils redisUtils;
 
     @Transactional
     public void changeSalesStatus(CurrentUser currentUser, Long salesPostId, SalesStatus status){

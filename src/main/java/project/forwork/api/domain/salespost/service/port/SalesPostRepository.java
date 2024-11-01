@@ -14,4 +14,5 @@ public interface SalesPostRepository {
     Optional<SalesPost> findById(Long salesPostId);
     SalesPost getByResumeWithThrow(Resume resume);
     Optional<SalesPost> findByResume(Resume resume);
+    void deleteByResumeId(Long resumeId);
 }
