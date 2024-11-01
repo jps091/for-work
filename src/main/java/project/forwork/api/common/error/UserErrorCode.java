@@ -14,6 +14,7 @@ public enum UserErrorCode implements ErrorCodeIfs{
     PASSWORD_NOT_MATCH(400, 1404, "비밀번호가 일치하지 않습니다."),
     PASSWORD_ISSUE(400, 1405, "로그인 실패가 5번을 초과하여 임시 비밀번호를 가입 이메일로 전송하였습니다."),
     EMAIL_VERIFY_FAIL(400, 1406, "이메일 인증코드가 일치 하지 않습니다."),
+    DELETE_USER(400, 1407, "회원 탈퇴한 유저 입니다."),
     ;
 
     private final Integer httpStatusCode;

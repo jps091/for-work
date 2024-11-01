@@ -53,7 +53,9 @@ public class UserOpenApiController {
         return Api.OK("인증코드 검증 성공");
     }
 
-    @Operation(summary = "회원 로그인 API", description = "ID, 패스워드 입력")
+    @Operation(summary = "회원 로그인 API",
+            description = "테스트용 관리자 : ID = admin@test.com / PW = admin1234@<br>" +
+                    "테스트용 일반 회원 : ID = user@test.com / PW = for1234@")
     @PostMapping("/login")
     public Api<LoginResponse> login(
             @Valid @RequestBody

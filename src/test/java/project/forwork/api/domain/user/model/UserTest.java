@@ -3,7 +3,7 @@ package project.forwork.api.domain.user.model;
 import org.junit.jupiter.api.Test;
 import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.domain.user.controller.model.UserCreateRequest;
-import project.forwork.api.domain.user.infrastructure.enums.RoleType;
+import project.forwork.api.domain.user.infrastructure.enums.UserStatus;
 import project.forwork.api.mock.TestClockHolder;
 
 import java.time.LocalDateTime;
@@ -29,7 +29,7 @@ class UserTest {
         assertThat(user.getId()).isNull();
         assertThat(user.getEmail()).isEqualTo("test@naver.com");
         assertThat(user.getPassword()).isEqualTo("123");
-        assertThat(user.getRoleType()).isEqualTo(RoleType.USER);
+        assertThat(user.getStatus()).isEqualTo(UserStatus.USER);
     }
 
     @Test
@@ -38,6 +38,7 @@ class UserTest {
         User user = User.builder()
                 .email("test@naver.com")
                 .name("kim")
+                .status(UserStatus.USER)
                 .password("123")
                 .build();
 
@@ -54,6 +55,7 @@ class UserTest {
         User user = User.builder()
                 .email("test@naver.com")
                 .name("kim")
+                .status(UserStatus.USER)
                 .password("123")
                 .build();
         //when(상황발생)
@@ -117,7 +119,7 @@ class UserTest {
                 .email("test@naver.com")
                 .name("kim")
                 .password("123")
-                .roleType(RoleType.USER)
+                .status(UserStatus.USER)
                 .build();
 
         //when(상황발생)
