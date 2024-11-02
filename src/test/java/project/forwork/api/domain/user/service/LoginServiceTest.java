@@ -11,6 +11,7 @@ import org.mockito.quality.Strictness;
 import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.common.service.port.RedisUtils;
 import project.forwork.api.domain.token.service.TokenAuthService;
+import project.forwork.api.domain.token.service.TokenHeaderService;
 import project.forwork.api.domain.user.controller.model.UserLoginRequest;
 import project.forwork.api.domain.user.infrastructure.enums.UserStatus;
 import project.forwork.api.domain.user.model.User;
@@ -28,7 +29,8 @@ import static org.mockito.Mockito.*;
 class LoginServiceTest {
     private LoginService loginService;
     @Mock
-    private TokenAuthService tokenAuthService;
+    private TokenHeaderService tokenHeaderService;
+    //private TokenAuthService tokenAuthService;
     @Mock
     private RedisUtils redisUtils;
     @Mock
@@ -42,7 +44,8 @@ class LoginServiceTest {
         fakeUserRepository = new FakeUserRepository();
         testClockHolder = new TestClockHolder(123L);
         loginService = LoginService.builder()
-                .tokenAuthService(tokenAuthService)
+                //.tokenAuthService(tokenAuthService)
+                .tokenHeaderService(tokenHeaderService)
                 .redisUtils(redisUtils)
                 .clockHolder(testClockHolder)
                 .userRepository(fakeUserRepository)
