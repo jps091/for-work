@@ -73,7 +73,7 @@ public class TestController {
                         .build();
         log.info("controller ConfirmRequest={}",body);
         checkoutService.processOrderAndPayment(currentUser, body);
-        return new ResponseEntity<>("confirm", HttpStatus.OK);
+        return new ResponseEntity<>("confirm#", HttpStatus.OK);
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/test/pess")
