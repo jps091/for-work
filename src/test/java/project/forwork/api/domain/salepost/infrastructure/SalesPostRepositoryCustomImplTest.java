@@ -8,8 +8,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlGroup;
-import project.forwork.api.common.infrastructure.enums.FieldType;
-import project.forwork.api.common.infrastructure.enums.LevelType;
 import project.forwork.api.domain.salespost.controller.model.SalesPostFilterCond;
 import project.forwork.api.domain.salespost.infrastructure.model.SalesPostSearchDto;
 import project.forwork.api.domain.salespost.infrastructure.SalesPostRepositoryCustomImpl;
@@ -22,7 +20,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@TestPropertySource("classpath:repository-custom-test.yml")
+@TestPropertySource("classpath:repository-custom-test.yaml")
 @DataJpaTest
 @Import({SalesPostRepositoryCustomImpl.class})
 @SqlGroup({

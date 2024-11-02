@@ -24,7 +24,7 @@ import java.util.concurrent.Executors;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
-@TestPropertySource("classpath:repository-custom-test.yml")
+@TestPropertySource("classpath:repository-custom-test.yaml")
 @SpringBootTest
 class ResumeQuantityServiceTest {
 

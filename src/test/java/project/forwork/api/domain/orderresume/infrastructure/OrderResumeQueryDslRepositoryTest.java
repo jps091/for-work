@@ -10,16 +10,14 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlGroup;
 import project.forwork.api.domain.orderresume.controller.model.OrderResumeResponse;
-import project.forwork.api.domain.orderresume.infrastructure.enums.OrderResumeStatus;
 import project.forwork.api.domain.orderresume.controller.model.PurchaseResponse;
 import project.forwork.api.domain.orderresume.model.OrderResume;
 
 import java.util.List;
-import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@TestPropertySource("classpath:repository-custom-test.yml")
+@TestPropertySource("classpath:repository-custom-test.yaml")
 @DataJpaTest
 @Import({OrderResumeRepositoryCustomImpl.class, OrderResumeRepositoryImpl.class})
 @SqlGroup({
