@@ -11,7 +11,9 @@ import project.forwork.api.common.error.UserErrorCode;
 import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.common.service.port.ClockHolder;
 import project.forwork.api.common.service.port.RedisUtils;
+import project.forwork.api.domain.token.model.TokenResponse;
 import project.forwork.api.domain.token.service.TokenAuthService;
+import project.forwork.api.domain.token.service.TokenHeaderService;
 import project.forwork.api.domain.user.controller.model.LoginResponse;
 import project.forwork.api.domain.user.controller.model.PasswordInitRequest;
 import project.forwork.api.domain.user.controller.model.UserLoginRequest;
@@ -26,7 +28,8 @@ public class LoginService {
     private static final String LOGIN_ATTEMPT_KEY_PREFIX = "loginAttempt:userId:";
     private static final int MAX_LOGIN_ATTEMPTS = 5;
     private final UserRepository userRepository;
-    private final TokenAuthService tokenAuthService;
+    //private final TokenAuthService tokenAuthService;
+    private final TokenHeaderService tokenHeaderService;
     private final ClockHolder clockHolder;
     private final RedisUtils redisUtils;
     private final PasswordInitializationService passwordInitializationService;
@@ -42,16 +45,18 @@ public class LoginService {
         user = user.login(clockHolder, loginUser.getPassword());
         userRepository.save(user);
 
-        String refreshToken = tokenAuthService.getRefreshTokenAndIssueToken(response, user);
+        //String accessToken = tokenAuthService.issueToken(response, user);
+        TokenResponse tokenResponse = tokenHeaderService.addTokenToHeaders(response, user);
 
         String key = getKeyByLoginAttempt(user);
         initLoginAttemptCount(key);
 
-        return LoginResponse.from(user.getId(), refreshToken);
+        return LoginResponse.from(user.getId(), tokenResponse);
     }
 
     public void logout(HttpServletRequest request, HttpServletResponse response){
-        tokenAuthService.expireTokens(request, response);
+        //tokenAuthService.expireTokens(request, response);
+        tokenHeaderService.expireTokensInHeaders(response);
     }
 
     @Transactional
