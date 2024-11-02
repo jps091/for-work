@@ -23,7 +23,7 @@ public class TokenAuthService {
     public static final String ACCESS_TOKEN_HEADER = "Authorization";
     public static final String REFRESH_TOKEN = "refreshToken";
 
-    public String getRefreshTokenAndIssueToken(HttpServletResponse response, User loginUser) {
+    public String issueToken(HttpServletResponse response, User loginUser) {
         TokenResponse tokenResponse = tokenService.issueTokenResponse(loginUser);
         registerAccessTokenWithHeader(response, tokenResponse);
         registerRefreshTokenWithCookie(response, tokenResponse);
@@ -66,16 +66,14 @@ public class TokenAuthService {
     }
 
     private void registerRefreshTokenWithCookie(HttpServletResponse response, TokenResponse tokenResponse){
-        Cookie cookie = new Cookie(REFRESH_TOKEN, tokenResponse.getRefreshToken());
-        cookie.setPath("/");
-        cookie.setHttpOnly(true);
-        cookie.setMaxAge(60 * 60);
-        response.addCookie(cookie);
+        String cookieHeader = String.format(
+                "REFRESH_TOKEN=%s; Path=/; HttpOnly; Max-Age=%d; SameSite=None",
+                tokenResponse.getRefreshToken(),
+                60 * 60 // 1시간 유지
+        );
 
-        // 3. SameSite=None 속성을 포함한 Set-Cookie 헤더 추가
-        String cookieHeader = String.format("%s=%s; Path=/; HttpOnly; Secure; SameSite=None",
-                REFRESH_TOKEN, tokenResponse.getRefreshToken());
-        response.addHeader("Set-Cookie", cookieHeader);
+        // HTTP 환경이므로 Secure 속성은 추가하지 않습니다
+        response.setHeader("Set-Cookie", cookieHeader);
     }
 
     private String extractRefreshTokenFromCookies(HttpServletRequest request) {
