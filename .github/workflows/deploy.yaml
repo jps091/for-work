@@ -4,7 +4,7 @@ on:
     types: [closed]
     branches: [dev]
     paths:
-      - 'src/main/java/**'
+      - 'src/**'
 
 jobs:
   image-build:
