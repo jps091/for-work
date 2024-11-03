@@ -10,7 +10,6 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.common.service.port.RedisUtils;
-import project.forwork.api.domain.token.service.TokenAuthService;
 import project.forwork.api.domain.token.service.TokenHeaderService;
 import project.forwork.api.domain.user.controller.model.UserLoginRequest;
 import project.forwork.api.domain.user.infrastructure.enums.UserStatus;
@@ -30,7 +29,6 @@ class LoginServiceTest {
     private LoginService loginService;
     @Mock
     private TokenHeaderService tokenHeaderService;
-    //private TokenAuthService tokenAuthService;
     @Mock
     private RedisUtils redisUtils;
     @Mock

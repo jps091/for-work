@@ -18,15 +18,16 @@ public class TokenHeaderService {
     private final TokenService tokenService;
 
     public TokenResponse addTokenToHeaders(HttpServletResponse response, User loginUser) {
-        TokenResponse tokenResponse = tokenService.issueTokenResponse(loginUser);
+        TokenResponse tokenResponse = tokenService.issueTokenResponse(loginUser.getId());
         setHeaderByTokenResponse(response, tokenResponse);
-
         return tokenResponse;
     }
 
-    public void expireTokensInHeaders(HttpServletResponse response) {
-        response.setHeader(ACCESS_TOKEN_HEADER, "");
-        response.setHeader(REFRESH_TOKEN_HEADER, "");
+    public String reissueRefreshTokenAndHeaders(HttpServletRequest request, HttpServletResponse response) {
+        String refreshToken = extractRefreshTokenFromHeader(request);
+        TokenResponse tokenResponse = tokenService.reissueTokenResponse(refreshToken);
+        setHeaderByTokenResponse(response, tokenResponse);
+        return tokenResponse.getAccessToken();
     }
 
     public void expiredRefreshTokenAndHeaders(
@@ -37,22 +38,29 @@ public class TokenHeaderService {
         expireTokensInHeaders(response);
     }
 
-    public void reissueRefreshTokenAndHeaders(HttpServletRequest request, HttpServletResponse response) {
-        String refreshToken = extractTokenFromHeader(request, REFRESH_TOKEN_HEADER);
-        TokenResponse tokenResponse = tokenService.reissueTokenResponse(refreshToken);
-        setHeaderByTokenResponse(response, tokenResponse);
+    public void expireTokensInHeaders(HttpServletResponse response) {
+        response.setHeader(ACCESS_TOKEN_HEADER, "");
+        response.setHeader(REFRESH_TOKEN_HEADER, "");
     }
 
-    public String extractTokenFromHeader(HttpServletRequest request, String headerName) {
-        String token = request.getHeader(headerName);
+    public String extractAccessTokenFromHeader(HttpServletRequest request) {
+        String token = request.getHeader(ACCESS_TOKEN_HEADER);
         if (token == null || !token.startsWith("Bearer ")) {
             throw new ApiException(TokenErrorCode.TOKEN_NOT_FOUND);
         }
         return token.substring(7); // "Bearer " 이후의 토큰 값만 반환
     }
 
+    private String extractRefreshTokenFromHeader(HttpServletRequest request) {
+        String token = request.getHeader(REFRESH_TOKEN_HEADER);
+        if (token == null) {
+            throw new ApiException(TokenErrorCode.TOKEN_NOT_FOUND);
+        }
+        return token;
+    }
+
     private void setHeaderByTokenResponse(HttpServletResponse response, TokenResponse tokenResponse) {
-        response.setHeader(ACCESS_TOKEN_HEADER, "Bearer " + tokenResponse.getAccessToken());
-        response.setHeader(REFRESH_TOKEN_HEADER, "Bearer " + tokenResponse.getRefreshToken());
+        //response.setHeader(ACCESS_TOKEN_HEADER, "Bearer " + tokenResponse.getAccessToken());
+        response.setHeader(REFRESH_TOKEN_HEADER, tokenResponse.getRefreshToken());
     }
 }

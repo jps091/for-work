@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import project.forwork.api.common.api.Api;
-import project.forwork.api.domain.token.service.TokenAuthService;
+import project.forwork.api.domain.token.service.TokenHeaderService;
 
 @RestController
 @RequiredArgsConstructor
@@ -17,7 +17,7 @@ import project.forwork.api.domain.token.service.TokenAuthService;
 @Tag(name = "TokenCookiesController")
 public class TokenAuthController {
 
-    private final TokenAuthService tokenAuthService;
+    private final TokenHeaderService tokenHeaderService;
 
     @Operation(summary = "Access Token 재발급 API", description = "Refresh Token을 이용해 새로운 Access Token을 발급")
     @PostMapping("/reissue")
@@ -25,7 +25,7 @@ public class TokenAuthController {
             HttpServletRequest request,
             HttpServletResponse response
     ){
-        String accessToken = tokenAuthService.reissueAccessToken(request, response);
+        String accessToken = tokenHeaderService.reissueRefreshTokenAndHeaders(request, response);
         return Api.OK(accessToken);
     }
 }

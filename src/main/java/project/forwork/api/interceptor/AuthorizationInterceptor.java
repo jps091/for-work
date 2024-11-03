@@ -10,12 +10,11 @@ import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
-import project.forwork.api.domain.token.service.TokenAuthService;
+import project.forwork.api.domain.token.service.TokenHeaderService;
 import project.forwork.api.domain.token.service.TokenService;
 
 import java.util.Objects;
 
-import static project.forwork.api.domain.token.service.TokenAuthService.*;
 
 
 @Component
@@ -25,7 +24,7 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
 
     public static final String USER_ID = "userId";
     private final TokenService tokenService;
-    private final TokenAuthService tokenAuthService;
+    private final TokenHeaderService tokenHeaderService;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler){
@@ -35,7 +34,7 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
         }
 
         RequestAttributes requestContext = Objects.requireNonNull(RequestContextHolder.getRequestAttributes());
-        String accessToken = tokenAuthService.extractTokenFromHeader(request, ACCESS_TOKEN_HEADER);
+        String accessToken = tokenHeaderService.extractAccessTokenFromHeader(request);
         Long userId = tokenService.validateAndGetUserId(accessToken);
         requestContext.setAttribute(USER_ID, userId, RequestAttributes.SCOPE_REQUEST);
         return true;

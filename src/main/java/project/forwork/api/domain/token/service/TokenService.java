@@ -11,7 +11,6 @@ import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.common.service.port.RedisUtils;
 import project.forwork.api.domain.token.helper.ifs.TokenHelperIfs;
 import project.forwork.api.domain.token.model.*;
-import project.forwork.api.domain.user.model.User;
 
 import java.util.Objects;
 
@@ -22,9 +21,8 @@ public class TokenService {
     public static final String PREFIX_TOKEN_KEY = "refreshToken:userId:";
     private final TokenHelperIfs tokenHelper;
     private final RedisUtils redisUtils;
-    public TokenResponse issueTokenResponse(User user) {
+    public TokenResponse issueTokenResponse(Long userId) {
 
-        Long userId = user.getId();
         String key = getRefreshTokenKeyFrom(userId);
 
         if(redisUtils.getData(key) != null){
