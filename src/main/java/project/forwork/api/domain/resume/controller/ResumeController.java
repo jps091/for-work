@@ -32,10 +32,10 @@ public class ResumeController {
     @PostMapping(value = "/register", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public Api<String > register(
             @Parameter(hidden = true) @Current CurrentUser currentUser,
-            @RequestPart("resumeData") @Valid ResumeRegisterRequest resumeRegisterBody,
+            @RequestPart("resumeData") @Valid ResumeRegisterRequest body,
             @RequestPart("descriptionImage") @NotNull MultipartFile file
     ){
-        Resume resume = resumeService.register(currentUser, resumeRegisterBody, file);
+        Resume resume = resumeService.register(currentUser, body, file);
         return Api.CREATED(resume.createTitle() +" 등록 완료");
     }
 
@@ -59,7 +59,7 @@ public class ResumeController {
             @PathVariable Long resumeId,
             @Parameter(hidden = true) @Current CurrentUser currentUser,
             @RequestPart("resumeData") @Valid ResumeModifyRequest body,
-            @RequestPart("descriptionImage") @Valid @NotNull MultipartFile file
+            @RequestPart(value = "descriptionImage", required = false) MultipartFile file
     ){
         resumeService.modify(resumeId, currentUser, body, file);
         return Api.OK("Resume 변경 완료 되었습니다.");

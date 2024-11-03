@@ -97,14 +97,7 @@ public class TestController {
         mailSender.send("seokin23@naver.com", "e","e");
         return new ResponseEntity<>(count, HttpStatus.OK);
     }
-
-    @RequestMapping(method = RequestMethod.POST, value = "/test/mail")
-    public ResponseEntity<String> mail(
-    ){
-        orderResumeMailService.test();
-        return new ResponseEntity<>("confirm", HttpStatus.OK);
-    }
-
+    
     @RequestMapping(method = RequestMethod.GET, value = "/test/sql")
     @Transactional
     public ResponseEntity<String> sqlOnce(

@@ -54,19 +54,21 @@ public class Resume {
                 .build();
     }
 
-    public Resume modify(ResumeModifyRequest body, String descriptionUrl){
+    public Resume modify(ResumeModifyRequest body, String newUrl){
         if(body.getPrice().compareTo(new BigDecimal("100000")) > 0 ||
                 body.getPrice().compareTo(new BigDecimal("10000")) < 0){
             throw new ApiException(ResumeErrorCode.PRICE_NOT_VALID);
         }
-
+        if(newUrl == null){
+            newUrl = descriptionImageUrl;
+        }
         return Resume.builder()
                 .id(id)
                 .seller(seller)
                 .field(body.getField())
                 .level(body.getLevel())
                 .resumeUrl(body.getResumeUrl())
-                .descriptionImageUrl(descriptionUrl)
+                .descriptionImageUrl(newUrl)
                 .price(body.getPrice())
                 .salesQuantity(salesQuantity)
                 .description(body.getDescription())

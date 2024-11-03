@@ -1,6 +1,5 @@
 package project.forwork.api.domain.user.service;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,17 +9,11 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import project.forwork.api.common.domain.CurrentUser;
 import project.forwork.api.common.exception.ApiException;
-import project.forwork.api.common.infrastructure.enums.FieldType;
-import project.forwork.api.common.infrastructure.enums.LevelType;
 import project.forwork.api.common.service.port.RedisUtils;
 import project.forwork.api.domain.cart.infrastructure.enums.CartStatus;
 import project.forwork.api.domain.cart.model.Cart;
-import project.forwork.api.domain.cartresume.model.CartResume;
-import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
-import project.forwork.api.domain.resume.model.Resume;
-import project.forwork.api.domain.salespost.infrastructure.enums.SalesStatus;
-import project.forwork.api.domain.salespost.model.SalesPost;
-import project.forwork.api.domain.token.service.TokenAuthService;
+import project.forwork.api.domain.resume.service.ResumeService;
+import project.forwork.api.domain.token.service.TokenHeaderService;
 import project.forwork.api.domain.user.controller.model.EmailVerifyRequest;
 import project.forwork.api.domain.user.controller.model.PasswordModifyRequest;
 import project.forwork.api.domain.user.controller.model.PasswordVerifyRequest;
@@ -29,13 +22,11 @@ import project.forwork.api.domain.user.infrastructure.enums.UserStatus;
 import project.forwork.api.domain.user.model.User;
 import project.forwork.api.mock.*;
 
-import java.math.BigDecimal;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static reactor.core.publisher.Mono.when;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
@@ -43,13 +34,12 @@ class UserServiceTest {
     private UserService userService;
     private FakeUserRepository fakeUserRepository;
     private FakeCartRepository fakeCartRepository;
-    private FakeCartResumeRepository fakeCartResumeRepository;
-    private FakeSalesPostRepository fakeSalesPostRepository ;
-    private FakeResumeRepository fakeResumeRepository;
     private TestUuidHolder testUuidHolder;
     private FakeMailSender fakeMailSender;
     @Mock
-    private TokenAuthService tokenAuthService;
+    private ResumeService resumeService;
+    @Mock
+    private TokenHeaderService tokenHeaderService;
     @Mock
     private RedisUtils redisUtils;
     @BeforeEach
@@ -58,20 +48,15 @@ class UserServiceTest {
         testUuidHolder = new TestUuidHolder("aaaaa-111111-eeeee");
         fakeMailSender = new FakeMailSender();
         fakeCartRepository = new FakeCartRepository();
-        fakeCartResumeRepository = new FakeCartResumeRepository();
-        fakeSalesPostRepository = new FakeSalesPostRepository();
-        fakeResumeRepository = new FakeResumeRepository();
         userService = UserService.builder()
                 .mailSender(fakeMailSender)
                 .userRepository(fakeUserRepository)
-                .cartResumeRepository(fakeCartResumeRepository)
                 .cartRepository(fakeCartRepository)
-                .resumeRepository(fakeResumeRepository)
-                .salesPostRepository(fakeSalesPostRepository)
+                .resumeService(resumeService)
                 .redisUtils(redisUtils)
                 .cartRepository(fakeCartRepository)
                 .uuidHolder(testUuidHolder)
-                .tokenAuthService(tokenAuthService)
+                .tokenHeaderService(tokenHeaderService)
                 .build();
 
         User user = User.builder()
@@ -81,43 +66,14 @@ class UserServiceTest {
                 .password("123")
                 .status(UserStatus.USER)
                 .build();
-
         fakeUserRepository.save(user);
-
-        Resume resume = Resume.builder()
-                .id(1L)
-                .seller(user)
-                .field(FieldType.AI)
-                .level(LevelType.JUNIOR)
-                .resumeUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
-                .descriptionImageUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
-                .price(new BigDecimal("10000.00"))
-                .description("test resume1")
-                .status(ResumeStatus.ACTIVE)
-                .build();
-
-        SalesPost salesPost = SalesPost.builder()
-                .id(1L)
-                .resume(resume)
-                .salesStatus(SalesStatus.SELLING)
-                .build();
 
         Cart cart = Cart.builder()
                 .id(1L)
                 .user(user)
                 .status(CartStatus.ACTIVE)
                 .build();
-
-        CartResume cartResume = CartResume.builder()
-                .id(1L)
-                .resume(resume)
-                .cart(cart)
-                .build();
-
         fakeCartRepository.save(cart);
-        fakeResumeRepository.save(resume);
-        fakeSalesPostRepository.save(salesPost);
-        fakeCartResumeRepository.save(cartResume);
     }
     
     @Test
@@ -218,11 +174,10 @@ class UserServiceTest {
 
         //when(상황발생)
         HttpServletResponse response = mock(HttpServletResponse.class);
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        userService.delete(currentUser, request, response);
+        userService.delete(currentUser, response);
 
         //then(검증)
-        verify(tokenAuthService).deleteTokensWithUserDelete(eq(currentUser.getId()), eq(request), eq(response));
+        verify(tokenHeaderService).expiredRefreshTokenAndHeaders(eq(currentUser.getId()), eq(response));
     }
 
     @Test
@@ -234,8 +189,7 @@ class UserServiceTest {
 
         //when(상황발생)
         HttpServletResponse response = mock(HttpServletResponse.class);
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        userService.delete(currentUser, request, response);
+        userService.delete(currentUser, response);
 
         //then(검증)
         User user = fakeUserRepository.getByIdWithThrow(1L);
@@ -243,7 +197,7 @@ class UserServiceTest {
     }
 
     @Test
-    void 회원탈퇴를_하면_판매중인_이력서_상태가_DELETE로_변경_된다(){
+    void 회원탈퇴를_하면_장바구니는_삭제_된다(){
         //given(상황환경 세팅)
         CurrentUser currentUser = CurrentUser.builder()
                 .id(1L)
@@ -251,45 +205,10 @@ class UserServiceTest {
 
         //when(상황발생)
         HttpServletResponse response = mock(HttpServletResponse.class);
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        userService.delete(currentUser, request, response);
+        userService.delete(currentUser, response);
 
         //then(검증)
-        Resume resume = fakeResumeRepository.getByIdWithThrow(1L);
-        assertThat(resume.getStatus()).isEqualTo(ResumeStatus.DELETE);
-    }
-
-    @Test
-    void 회원탈퇴를_하면_장바구니이력서_가_삭제된다(){
-        //given(상황환경 세팅)
-        CurrentUser currentUser = CurrentUser.builder()
-                .id(1L)
-                .build();
-
-        //when(상황발생)
-        HttpServletResponse response = mock(HttpServletResponse.class);
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        userService.delete(currentUser, request, response);
-
-        //then(검증)
-        assertThatThrownBy(() ->  fakeCartResumeRepository.getByIdWithThrow(1L))
-                .isInstanceOf(ApiException.class);
-    }
-
-    @Test
-    void 회원탈퇴를_하면_판매글_삭제된다(){
-        //given(상황환경 세팅)
-        CurrentUser currentUser = CurrentUser.builder()
-                .id(1L)
-                .build();
-
-        //when(상황발생)
-        HttpServletResponse response = mock(HttpServletResponse.class);
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        userService.delete(currentUser, request, response);
-
-        //then(검증)
-        assertThatThrownBy(() ->  fakeSalesPostRepository.getByIdWithThrow(1L))
+        assertThatThrownBy(() -> fakeCartRepository.getByUserIdWithThrow(1L))
                 .isInstanceOf(ApiException.class);
     }
 

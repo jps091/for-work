@@ -41,10 +41,9 @@ public class UserController {
     @Operation(summary = "로그아웃 API", description = "로그아웃")
     @PostMapping("/logout")
     public Api<String> logout(
-            HttpServletRequest request,
             HttpServletResponse response
     ){
-        loginService.logout(request, response);
+        loginService.logout(response);
         return Api.OK("로그아웃 성공");
     }
 
@@ -72,10 +71,9 @@ public class UserController {
     @DeleteMapping
     public Api<String> delete(
             @Parameter(hidden = true) @Current CurrentUser currentUser,
-            HttpServletRequest request,
             HttpServletResponse response
     ){
-        userService.delete(currentUser, request, response);
+        userService.delete(currentUser, response);
         return Api.OK("회원 탈퇴 성공");
     }
 }

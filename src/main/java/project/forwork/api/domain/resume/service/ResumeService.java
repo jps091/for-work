@@ -61,10 +61,15 @@ public class ResumeService {
     ){
         Resume resume = resumeRepository.getByIdWithThrow(resumeId);
         validateAuthor(currentUser, resume);
-        String descriptionUrl = s3Service.saveFile(file);
+
+        String descriptionUrl = null;
+        if(file != null && !file.isEmpty()){
+            descriptionUrl = s3Service.saveFile(file);
+        }
 
         resume = resume.modify(body, descriptionUrl);
         resumeRepository.save(resume);
+
 
         // 만약 이미 승인을 받아서 판매글이 있다면 판매글 상태 변경
         salesPostRepository.findByResume(resume).ifPresent(salesPost -> {
@@ -83,6 +88,26 @@ public class ResumeService {
 
         salesPostRepository.deleteByResumeId(resumeId);
         cartResumeRepository.deleteAllByResumeId(resumeId);
+    }
+
+    public void deleteAll(CurrentUser currentUser) {
+        List<ResumeStatus> statusList = List.of(ResumeStatus.ACTIVE, ResumeStatus.PENDING, ResumeStatus.REJECTED);
+
+        List<Resume> resumeList = resumeRepository.findAllBySeller(currentUser.getId(), statusList);
+        if(resumeList.isEmpty()){
+            return;
+        }
+
+        List<Long> resumeIds = resumeList.stream()
+                .map(Resume::delete)
+                .map(resumeRepository::save)
+                .map(Resume::getId)
+                .toList();
+
+        resumeIds.forEach(resumeId -> {
+            salesPostRepository.deleteByResumeId(resumeId);
+            cartResumeRepository.deleteAllByResumeId(resumeId);
+        });
     }
 
     @Transactional(readOnly = true)
