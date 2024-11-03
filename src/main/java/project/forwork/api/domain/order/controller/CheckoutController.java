@@ -10,6 +10,7 @@ import project.forwork.api.common.annotation.Current;
 import project.forwork.api.common.api.Api;
 import project.forwork.api.common.domain.CurrentUser;
 import project.forwork.api.domain.order.controller.model.*;
+import project.forwork.api.domain.order.model.Order;
 import project.forwork.api.domain.order.service.CheckoutService;
 
 @RestController
@@ -22,12 +23,12 @@ public class CheckoutController {
 
     @Operation(summary = "결제 요청 api", description = "결제 요청시 주문도 같이 생성 됩니다.")
     @PostMapping("/confirm")
-    public Api<String> confirm(
+    public Api<PaymentResponse> confirm(
             @Parameter(hidden = true) @Current CurrentUser currentUser,
             @Valid @RequestBody ConfirmPaymentRequest body
     ){
-        checkoutService.processOrderAndPayment(currentUser, body);
-        return Api.OK("주문 생성 및 결제 승인 성공");
+        Order order = checkoutService.processOrderAndPayment(currentUser, body);
+        return Api.OK(PaymentResponse.from(order));
     }
 
     @Operation(summary = "주문 전체 취소 및 전액 환불 api",

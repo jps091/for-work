@@ -7,12 +7,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import project.forwork.api.common.domain.CurrentUser;
-import project.forwork.api.common.error.CartResumeErrorCode;
 import project.forwork.api.common.error.OrderErrorCode;
 import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.common.service.port.ClockHolder;
 import project.forwork.api.common.service.port.UuidHolder;
-import project.forwork.api.domain.cartresume.service.port.CartResumeRepository;
 import project.forwork.api.domain.order.controller.model.*;
 import project.forwork.api.domain.order.infrastructure.enums.OrderStatus;
 import project.forwork.api.domain.order.model.Order;
@@ -21,19 +19,13 @@ import project.forwork.api.domain.orderresume.controller.model.OrderResumeRespon
 import project.forwork.api.domain.orderresume.controller.model.OrderTitleResponse;
 import project.forwork.api.domain.orderresume.model.OrderResume;
 import project.forwork.api.domain.orderresume.service.OrderResumeService;
-import project.forwork.api.domain.orderresume.service.port.OrderResumeRepository;
 import project.forwork.api.domain.orderresume.service.port.OrderResumeRepositoryCustom;
 import project.forwork.api.domain.resume.model.Resume;
 import project.forwork.api.domain.resume.service.port.ResumeRepository;
-import project.forwork.api.domain.salespost.infrastructure.enums.SalesStatus;
-import project.forwork.api.domain.salespost.model.SalesPost;
-import project.forwork.api.domain.salespost.service.port.SalesPostRepository;
 import project.forwork.api.domain.user.model.User;
 import project.forwork.api.domain.user.service.port.UserRepository;
 
-import java.math.BigDecimal;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @Builder
@@ -43,15 +35,12 @@ import java.util.Objects;
 public class OrderService {
 
     private final OrderRepository orderRepository;
-    private final CartResumeRepository cartResumeRepository;
-    private final OrderResumeRepository orderResumeRepository;
     private final OrderResumeRepositoryCustom orderResumeRepositoryCustom;
     private final UserRepository userRepository;
+    private final ResumeRepository resumeRepository;
+    private final OrderResumeService orderResumeService;
     private final ClockHolder clockHolder;
     private final UuidHolder uuidHolder;
-    private final OrderResumeService orderResumeService;
-    private final SalesPostRepository salesPostRepository;
-    private final ResumeRepository resumeRepository;
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public Order create(CurrentUser currentUser, ConfirmPaymentRequest body){
@@ -86,6 +75,14 @@ public class OrderService {
         return orderRepository.save(order);
     }
 
+    public List<Order> updateOrdersByStatus(List<Order> orders, OrderStatus status) {
+        List<Order> updatedOrders = orders.stream()
+                .map(order -> order.updateStatus(status))
+                .toList();
+
+        return orderRepository.saveAll(updatedOrders);
+    }
+
     public Order updateOrderPaid(Order order) {
         Order paidOrder = order.updatePaid(clockHolder);
         return orderRepository.save(paidOrder);
@@ -95,7 +92,7 @@ public class OrderService {
     public void updateOrderConfirmFailure(Order order) {
         Order failedOrder = order.updateStatus(OrderStatus.PAYMENT_FAILED);
         orderRepository.save(failedOrder);
-        orderResumeService.updateFailByOrder(order);
+        orderResumeService.updateFailByOrder(failedOrder);
     }
 
 
@@ -137,14 +134,12 @@ public class OrderService {
     public OrderDetailResponse getOrderDetail(CurrentUser currentUser, Long orderId){
         Order order = orderRepository.getOrderWithThrow(currentUser.getId(), orderId);
         List<OrderResumeResponse> orderResumes = orderResumeRepositoryCustom.findByOrderId(order.getId());
+        return OrderDetailResponse.from(order, orderResumes);
+    }
 
-        return OrderDetailResponse.builder()
-                .email(order.getBuyerEmail())
-                .totalAmount(order.getTotalAmount())
-                .paidAt(order.getPaidAt())
-                .orderId(order.getId())
-                .orderResumeResponses(orderResumes)
-                .build();
+    @Transactional(readOnly = true)
+    public List<Order> findOrdersByStatus(OrderStatus status, int limit){
+        return orderRepository.findByStatus(status, limit);
     }
 
     private boolean isRequestIdEqual(String source, String target){

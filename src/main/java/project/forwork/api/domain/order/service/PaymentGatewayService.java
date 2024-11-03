@@ -13,7 +13,7 @@ import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
-import project.forwork.api.domain.order.controller.model.ConfirmPaymentDto;
+import project.forwork.api.domain.order.infrastructure.model.ConfirmPaymentDto;
 import project.forwork.api.domain.order.controller.model.PaymentFullCancelRequest;
 import project.forwork.api.domain.order.controller.model.PaymentPartialCancelRequest;
 

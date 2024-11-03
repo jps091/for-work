@@ -1,7 +1,7 @@
-package project.forwork.api.domain.order.controller.model;
+package project.forwork.api.domain.order.infrastructure.model;
 
 import lombok.*;
-
+import project.forwork.api.domain.order.controller.model.ConfirmPaymentRequest;
 
 
 @Builder
