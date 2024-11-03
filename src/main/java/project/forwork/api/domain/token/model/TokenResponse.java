@@ -1,11 +1,14 @@
 package project.forwork.api.domain.token.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
 import java.util.Objects;
 
 @Getter
+@Builder
+@AllArgsConstructor
 public class TokenResponse {
 
     private final String accessToken;
@@ -13,13 +16,6 @@ public class TokenResponse {
     private final String refreshToken;
     private final long refreshTokenExpiredAt;
 
-    @Builder
-    public TokenResponse(String accessToken, long accessTokenExpiredAt, String refreshToken, long refreshTokenExpiredAt) {
-        this.accessToken = accessToken;
-        this.accessTokenExpiredAt = accessTokenExpiredAt;
-        this.refreshToken = refreshToken;
-        this.refreshTokenExpiredAt = refreshTokenExpiredAt;
-    }
     public static TokenResponse from(Token accessToken, Token refreshToken) {
         Objects.requireNonNull(accessToken, "유효하지 않은 Access 토큰입니다.");
         Objects.requireNonNull(refreshToken, "유효하지 않은 Refresh 토큰입니다.");

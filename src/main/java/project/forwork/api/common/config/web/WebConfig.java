@@ -12,6 +12,8 @@ import project.forwork.api.resolver.CurrentUserResolver;
 
 import java.util.List;
 
+import static project.forwork.api.domain.token.service.TokenHeaderService.REFRESH_TOKEN_HEADER;
+
 @RequiredArgsConstructor
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
@@ -75,8 +77,8 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addMapping("/**")
                 .allowedOriginPatterns("*")
                 .allowedMethods("GET", "POST", "PUT", "DELETE")
-                .allowedHeaders("Authorization", "Content-Type")
-                .exposedHeaders("Custom-Header")
+                .allowedHeaders("Authorization", "Content-Type", REFRESH_TOKEN_HEADER)
+                .exposedHeaders(REFRESH_TOKEN_HEADER)
                 .allowCredentials(true)
                 .maxAge(3600);
     }

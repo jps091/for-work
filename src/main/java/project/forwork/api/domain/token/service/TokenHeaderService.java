@@ -3,9 +3,11 @@ package project.forwork.api.domain.token.service;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.stereotype.Service;
 import project.forwork.api.common.error.TokenErrorCode;
 import project.forwork.api.common.exception.ApiException;
+import project.forwork.api.domain.token.controller.model.AccessTokenResponse;
 import project.forwork.api.domain.token.model.TokenResponse;
 import project.forwork.api.domain.user.model.User;
 
@@ -23,11 +25,11 @@ public class TokenHeaderService {
         return tokenResponse;
     }
 
-    public String reissueRefreshTokenAndHeaders(HttpServletRequest request, HttpServletResponse response) {
+    public AccessTokenResponse reissueRefreshTokenAndHeaders(HttpServletRequest request, HttpServletResponse response) {
         String refreshToken = extractRefreshTokenFromHeader(request);
         TokenResponse tokenResponse = tokenService.reissueTokenResponse(refreshToken);
         setHeaderByTokenResponse(response, tokenResponse);
-        return tokenResponse.getAccessToken();
+        return new AccessTokenResponse(tokenResponse.getAccessToken());
     }
 
     public void expiredRefreshTokenAndHeaders(
@@ -60,7 +62,6 @@ public class TokenHeaderService {
     }
 
     private void setHeaderByTokenResponse(HttpServletResponse response, TokenResponse tokenResponse) {
-        //response.setHeader(ACCESS_TOKEN_HEADER, "Bearer " + tokenResponse.getAccessToken());
         response.setHeader(REFRESH_TOKEN_HEADER, tokenResponse.getRefreshToken());
     }
 }
