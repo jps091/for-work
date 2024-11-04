@@ -23,12 +23,12 @@ public class CheckoutController {
 
     @Operation(summary = "결제 요청 api", description = "결제 요청시 주문도 같이 생성 됩니다.")
     @PostMapping("/confirm")
-    public Api<PaymentResponse> confirm(
+    public Api<String> confirm(
             @Parameter(hidden = true) @Current CurrentUser currentUser,
             @Valid @RequestBody ConfirmPaymentRequest body
     ){
-        Order order = checkoutService.processOrderAndPayment(currentUser, body);
-        return Api.OK(PaymentResponse.from(order));
+        checkoutService.processOrderAndPayment(currentUser, body);
+        return Api.OK("주문 생성 및 결제 성공");
     }
 
     @Operation(summary = "주문 전체 취소 및 전액 환불 api",

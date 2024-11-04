@@ -36,11 +36,10 @@ public class CheckoutService {
     private final RetryLogService retryLogService;
     private final CartResumeService cartResumeService;
 
-    public Order processOrderAndPayment(CurrentUser currentUser, ConfirmPaymentRequest body){
+    public void processOrderAndPayment(CurrentUser currentUser, ConfirmPaymentRequest body){
         // 멱등성 확인 후 주문 생성
         validRequestId(body);
         Order order = orderService.create(currentUser, body);
-
         try{
             // 결체 요청
             ConfirmPaymentDto confirmPaymentDto = ConfirmPaymentDto.from(body);
@@ -51,7 +50,6 @@ public class CheckoutService {
 
             Transaction tx = Transaction.create(currentUser, body.getRequestId(), body.getPaymentKey(), body.getAmount(), TransactionType.PAYMENT);
             transactionRepository.save(tx);
-            return order;
         }catch (Exception e){
             // 결제 실패 시 주문 상태 업데이트
             orderService.updateOrderConfirmFailure(order);
