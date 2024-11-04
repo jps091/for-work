@@ -6,13 +6,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import project.forwork.api.domain.salespost.infrastructure.model.SalesPostSearchDto;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 @Getter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class SalesPostSearchResponse {
+public class SalesPostSearchResponse implements Serializable {
+    private static final long serialVersionUID = 1L;
     private Long resumeId;
     private String title;
     private BigDecimal price;

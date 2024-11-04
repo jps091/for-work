@@ -5,7 +5,6 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.forwork.api.common.infrastructure.enums.FieldType;
-import project.forwork.api.common.service.port.RedisUtils;
 import project.forwork.api.domain.thumbnailimage.model.ThumbnailImage;
 import project.forwork.api.domain.thumbnailimage.service.port.ThumbnailImageRepository;
 
@@ -16,17 +15,14 @@ import java.util.List;
 public class ThumbnailImageService {
 
     private final ThumbnailImageRepository thumbnailImageRepository;
-    private final RedisUtils redisUtils;
+
     @Transactional
     public void registerToDatabase(){
         thumbnailImageRepository.saveAll(getThumbnailImages());
     }
-    public void registerToRedis(){
-        List<ThumbnailImage> thumbnailImages = getThumbnailImages();
-        thumbnailImages.forEach(image -> redisUtils.setData(image.getFieldToString(), image.getUrl()));
-    }
 
-    @Cacheable(value = "thumbnailUrls", key = "#fieldType", cacheManager = "caffeineCacheManager")
+    @Transactional(readOnly = true)
+    @Cacheable(cacheNames = "getThumbnailUrl", key = "#fieldType", cacheManager = "caffeineCacheManager")
     public String getThumbnailUrl(FieldType fieldType) {
         ThumbnailImage thumbnailImage = thumbnailImageRepository.getByFieldWithThrow(fieldType);
         return thumbnailImage.getUrl();

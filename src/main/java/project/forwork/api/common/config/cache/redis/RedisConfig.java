@@ -1,8 +1,9 @@
-package project.forwork.api.common.config.redis;
+package project.forwork.api.common.config.cache.redis;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
@@ -24,14 +25,10 @@ public class RedisConfig {
         return new LettuceConnectionFactory(new RedisStandaloneConfiguration(host, port));
     }
 
-    //@Bean
+    @Bean
+    @Primary
     public RedisTemplate<String, String> redisStringTemplate(){
         return createStringRedisTemplate();
-    }
-
-    //@Bean
-    public RedisTemplate<String, Object> redisJsonTemplate(){
-        return createJsonRedisTemplate();
     }
 
     private RedisTemplate<String, String> createStringRedisTemplate(){
@@ -45,21 +42,6 @@ public class RedisConfig {
         redisTemplate.setHashValueSerializer(new StringRedisSerializer());
 
         redisTemplate.setDefaultSerializer(new StringRedisSerializer());
-
-        return redisTemplate;
-    }
-
-    private RedisTemplate<String, Object> createJsonRedisTemplate(){
-        RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
-        redisTemplate.setConnectionFactory(redisConnectionFactory());
-
-        redisTemplate.setKeySerializer(new StringRedisSerializer());
-        redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(Object.class));
-
-        redisTemplate.setHashKeySerializer(new StringRedisSerializer());
-        redisTemplate.setHashValueSerializer(new Jackson2JsonRedisSerializer<>(Object.class));
-
-        redisTemplate.setDefaultSerializer(new Jackson2JsonRedisSerializer<>(Object.class));
 
         return redisTemplate;
     }

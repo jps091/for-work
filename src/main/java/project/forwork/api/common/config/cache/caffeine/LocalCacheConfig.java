@@ -1,4 +1,4 @@
-package project.forwork.api.common.config.caffeine;
+package project.forwork.api.common.config.cache.caffeine;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
 import org.springframework.cache.CacheManager;
@@ -17,8 +17,8 @@ public class LocalCacheConfig {
     @Bean
     public Caffeine<Object, Object> caffeineConfig() {
         return Caffeine.newBuilder()
-                .expireAfterWrite(10, TimeUnit.MINUTES)  // 10분 후 만료
-                .maximumSize(1000);  // 최대 캐시 항목 수
+                .expireAfterWrite(10, TimeUnit.MINUTES)  // 마지막 접근 기준 10분 후 만료 -> LRU
+                .maximumSize(100);
     }
 
     @Bean(name = "caffeineCacheManager")

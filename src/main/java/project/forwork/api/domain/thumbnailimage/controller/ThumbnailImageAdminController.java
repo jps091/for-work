@@ -26,11 +26,4 @@ public class ThumbnailImageAdminController {
         thumbnailImageService.registerToDatabase();
         return Api.OK("썸네일 이미지 데이터베이스 등록 완료");
     }
-
-    @Operation(summary = "썸네일 이미지 레디스에 캐싱 할때 사용")
-    @PostMapping("/redis")
-    public Api<String> registerToRedis(){
-        thumbnailImageService.registerToRedis();
-        return Api.OK("썸네일 이미지 레디스 등록 완료");
-    }
 }

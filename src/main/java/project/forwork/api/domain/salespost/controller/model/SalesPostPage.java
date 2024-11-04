@@ -5,13 +5,15 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Getter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class SalesPostPage {
+public class SalesPostPage implements Serializable {
+    private static final long serialVersionUID = 1L;
     private Long lastId;
     private List<SalesPostSearchResponse> results;
 

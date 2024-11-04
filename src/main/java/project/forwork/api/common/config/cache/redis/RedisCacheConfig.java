@@ -1,4 +1,4 @@
-package project.forwork.api.common.config.redis;
+package project.forwork.api.common.config.cache.redis;
 
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
@@ -20,17 +20,15 @@ import java.util.Map;
 @EnableCaching
 public class RedisCacheConfig {
 
-    public static final String SHORT_STRING_CACHE = "shortStringCache";
-    public static final String SHORT_JSON_CACHE = "shortJsonCache";
+    public static final String JSON_CACHE = "jsonCache";
+    public static final Long JSON_TTL = 5L;
 
     @Bean(name = "redisCacheManager")
     public CacheManager cacheManager(RedisConnectionFactory redisConnectionFactory) {
         RedisCacheConfiguration jsonCacheConfig = createRedisCacheConfiguration(new Jackson2JsonRedisSerializer<>(Object.class));
-        RedisCacheConfiguration stringCacheConfig = createRedisCacheConfiguration(new StringRedisSerializer());
 
         Map<String, RedisCacheConfiguration> cacheConfigurations = new HashMap<>();
-        setCacheConfigurations(cacheConfigurations, SHORT_STRING_CACHE, jsonCacheConfig, 5);
-        setCacheConfigurations(cacheConfigurations, SHORT_JSON_CACHE, stringCacheConfig, 5);
+        cacheConfigurations.put(JSON_CACHE, jsonCacheConfig.entryTtl(Duration.ofMinutes(JSON_TTL)));
 
 
         return RedisCacheManager.builder(redisConnectionFactory)
@@ -44,15 +42,4 @@ public class RedisCacheConfig {
                 .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
                 .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(redisSerializer));
     }
-
-    private void setCacheConfigurations(
-            Map<String, RedisCacheConfiguration> cacheConfiguration,
-            String cacheKey,
-            RedisCacheConfiguration redisCacheConfiguration,
-            long ttlInMinutes
-    ){
-        cacheConfiguration.put(cacheKey, redisCacheConfiguration.entryTtl(Duration.ofMinutes(ttlInMinutes)));
-    }
-
-
 }
