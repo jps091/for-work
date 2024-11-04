@@ -1,6 +1,7 @@
 package project.forwork.api.domain.thumbnailimage.infrastructure;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import project.forwork.api.common.error.ThumbnailImageErrorCode;
 import project.forwork.api.common.exception.ApiException;
@@ -11,6 +12,7 @@ import project.forwork.api.domain.thumbnailimage.service.port.ThumbnailImageRepo
 import java.util.List;
 
 @Repository
+@Slf4j
 @RequiredArgsConstructor
 public class ThumbnailImageRepositoryImpl implements ThumbnailImageRepository {
 
@@ -32,6 +34,7 @@ public class ThumbnailImageRepositoryImpl implements ThumbnailImageRepository {
 
     @Override
     public ThumbnailImage getByFieldWithThrow(FieldType field) {
+        log.info("getByFieldWithThrow");
         return thumbnailImageJpaRepository.findByFieldType(field)
                 .orElseThrow(() -> new ApiException(ThumbnailImageErrorCode.NOT_FOUND))
                 .toModel();

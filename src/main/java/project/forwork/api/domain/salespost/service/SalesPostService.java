@@ -2,6 +2,7 @@ package project.forwork.api.domain.salespost.service;
 
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.forwork.api.common.domain.CurrentUser;
@@ -30,6 +31,7 @@ public class SalesPostService {
 
     private final SalesPostRepository salesPostRepository;
     private final SalesPostRepositoryCustom salesPostRepositoryCustom;
+    private final SalesPostPageService salesPostPageService;
     private final UserRepository userRepository;
     private final ThumbnailImageService thumbnailImageService;
 
@@ -87,74 +89,10 @@ public class SalesPostService {
     ){
         SalesPostFilterCond cond = SalesPostFilterCond.from(sortType, minPrice, maxPrice, field, level);
         return switch(pageStep){
-            case FIRST -> findFirstPage(cond, limit);
-            case LAST -> findLastPage(cond, limit);
-            case NEXT -> findNextPage(cond, lastId, limit);
-            case PREVIOUS -> findPreviousPage(cond, lastId, limit);
+            case FIRST -> salesPostPageService.findFirstPage(cond, limit);
+            case LAST -> salesPostPageService.findLastPage(cond, limit);
+            case NEXT -> salesPostPageService.findNextPage(cond, lastId, limit);
+            case PREVIOUS -> salesPostPageService.findPreviousPage(cond, lastId, limit);
         };
-    }
-
-    @Transactional(readOnly = true)
-    public SalesPostPage findFirstPage(SalesPostFilterCond cond, int limit){
-        List<SalesPostSearchDto> results = salesPostRepositoryCustom.searchFirstPage(cond, limit);
-        return createSalesPostPage(results);
-    }
-
-    @Transactional(readOnly = true)
-    public SalesPostPage findLastPage(SalesPostFilterCond cond, int limit){
-        List<SalesPostSearchDto> results = salesPostRepositoryCustom.searchLastPage(cond, limit);
-        return createReverseSalesPostPage(results);
-    }
-
-    @Transactional(readOnly = true)
-    public SalesPostPage findNextPage(SalesPostFilterCond cond, Long lastId, int limit){
-        List<SalesPostSearchDto> results = salesPostRepositoryCustom.searchNextPage(cond, lastId, limit);
-        return createSalesPostPage(results);
-    }
-
-    @Transactional(readOnly = true)
-    public SalesPostPage findPreviousPage(SalesPostFilterCond cond, Long lastId, int limit){
-        List<SalesPostSearchDto> results = salesPostRepositoryCustom.searchPreviousPage(cond, lastId, limit);
-        return createReverseSalesPostPage(results);
-    }
-
-    @Transactional(readOnly = true)
-    public List<SalesPostSearchResponse> createSearchResponseByDto(List<SalesPostSearchDto> searchDtos) {
-        return searchDtos.stream()
-                .map(dto -> {
-                    String title = createSalesPostTitle(dto);
-                    //String thumbnailUrl = redisUtils.getData(dto.getField().toString());
-                    String thumbnailUrl = thumbnailImageService.getThumbnailUrl(dto.getField());
-                    return SalesPostSearchResponse.from(dto, title, thumbnailUrl);
-                })
-                .toList();
-    }
-
-    private SalesPostPage createSalesPostPage(List<SalesPostSearchDto> searchDtos) {
-        validSearchDtoEmpty(searchDtos);
-
-        List<SalesPostSearchResponse> results = createSearchResponseByDto(searchDtos);
-
-        SalesPostSearchResponse lastRecord = results.get(results.size() - 1);
-        return SalesPostPage.from(results, lastRecord);
-    }
-
-    private SalesPostPage createReverseSalesPostPage(List<SalesPostSearchDto> searchDtos) {
-        validSearchDtoEmpty(searchDtos);
-
-        List<SalesPostSearchResponse> results = createSearchResponseByDto(searchDtos);
-
-        SalesPostSearchResponse firstRecord = results.get(0);
-        return SalesPostPage.from(results, firstRecord);
-    }
-
-    private void validSearchDtoEmpty(List<SalesPostSearchDto> searchDtos) {
-        if(searchDtos.isEmpty()){
-            throw new ApiException(SalesPostErrorCode.SALES_POST_NO_CONTENT);
-        }
-    }
-
-    private String createSalesPostTitle(SalesPostSearchDto dto){
-        return dto.getField().toString() + " " + dto.getLevel().toString() + " 이력서 #" + dto.getResumeId();
     }
 }
