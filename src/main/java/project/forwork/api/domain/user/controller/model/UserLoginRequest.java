@@ -13,10 +13,10 @@ public class UserLoginRequest {
 
     @NotBlank
     @Email
-    @Schema(example = "seokin23@naver.com")
+    @Schema(example = "admin@test.com")
     private String email;
 
     @NotBlank
-    @Schema(example = "123")
+    @Schema(example = "admin1234@")
     private String password;
 }
