@@ -12,7 +12,6 @@ import project.forwork.api.common.domain.CurrentUser;
 import project.forwork.api.common.service.port.MailSender;
 import project.forwork.api.domain.order.controller.model.ConfirmPaymentRequest;
 import project.forwork.api.domain.order.service.CheckoutService;
-import project.forwork.api.domain.orderresume.service.OrderResumeMailService;
 import project.forwork.api.domain.resume.model.Resume;
 import project.forwork.api.domain.resume.service.ResumeQuantityService;
 import project.forwork.api.domain.resume.service.port.ResumeRepository;
@@ -28,7 +27,6 @@ public class TestController {
     private final CheckoutService checkoutService;
     private final ResumeRepository resumeRepository;
     private final ResumeQuantityService resumeQuantityService;
-    private final OrderResumeMailService orderResumeMailService;
     private final MailSender mailSender;
 
     @GetMapping("/open-api/order")
