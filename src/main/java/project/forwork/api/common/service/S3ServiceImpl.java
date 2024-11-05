@@ -26,11 +26,11 @@ public class S3ServiceImpl implements S3Service {
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
+    @Value("${cloud.aws.cloudfront.url}")
+    private String cloudFrontUrl;  // CloudFront URL 추가
+
     public String saveFile(MultipartFile file){
         String randomFileName = generateRandomFileName(file);
-
-        log.info("File upload started: " + randomFileName);
-
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentLength(file.getSize());
         metadata.setContentType(file.getContentType());
@@ -48,21 +48,11 @@ public class S3ServiceImpl implements S3Service {
             throw new ApiException(S3ErrorCode.IO_ERROR, e);
         }
 
-        log.info("File upload completed: " + randomFileName);
-
-        return amazonS3.getUrl(bucket, randomFileName).toString();
+        return cloudFrontUrl + "/" + randomFileName;
     }
 
     public void deleteFile(String fileUrl){
-        String[] urlParts = fileUrl.split("/");
-        String fileBucket = urlParts[2].split("\\.")[0];
-
-        if(!fileBucket.equals(bucket)){
-            log.error("S3 버킷 경로를 확인 해주세요.");
-            throw new ApiException(S3ErrorCode.S3_BUCKET_INCORRECT);
-        }
-
-        String objectKey = String.join("/", Arrays.copyOfRange(urlParts, 3, urlParts.length));
+        String objectKey = fileUrl.replace(cloudFrontUrl + "/", "");
 
         if(!amazonS3.doesObjectExist(bucket, objectKey)){
             log.error("S3 버킷에 파일이 존재 하지 않습니다.");
@@ -78,8 +68,6 @@ public class S3ServiceImpl implements S3Service {
             log.error("AWS SDK client error : " + e.getMessage());
             throw new ApiException(S3ErrorCode.AWS_SDK_ERROR, e);
         }
-
-        log.info("File delete complete: " + objectKey);
     }
 
     private String generateRandomFileName(MultipartFile multipartFile){
@@ -95,7 +83,6 @@ public class S3ServiceImpl implements S3Service {
         if(!allowedExtensions.contains(fileExtension)){
             throw new ApiException(S3ErrorCode.VALID_FILE_FORMAT);
         }
-
         return fileExtension;
     }
 }

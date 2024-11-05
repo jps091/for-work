@@ -62,10 +62,10 @@ public class CheckoutService {
 
     public void cancelPayment(CurrentUser currentUser, Long orderId){
         String requestId = orderService.getRequestIdByOrderId(orderId);
-        Transaction transaction = transactionRepository.getByRequestIdAndEmail(requestId, currentUser.getEmail());
 
         try{
             PaymentFullCancelRequest body = createCancelBody();
+            Transaction transaction = transactionRepository.getByRequestIdAndEmail(requestId, currentUser.getEmail());
             pgService.cancelFullPayment(transaction.getPaymentKey(), body);
             Order order = orderService.cancelOrder(currentUser, orderId);
 
@@ -81,9 +81,9 @@ public class CheckoutService {
 
     public void cancelPartialPayment(CurrentUser currentUser, Long orderId, PartialCancelRequest body){
         String requestId = orderService.getRequestIdByOrderId(orderId);
-        Transaction transaction = transactionRepository.getByRequestIdAndEmail(requestId, currentUser.getEmail());
 
         try{
+            Transaction transaction = transactionRepository.getByRequestIdAndEmail(requestId, currentUser.getEmail());
             List<OrderResume> orderResumes = orderResumeService.getCancelRequestOrderResumes(body.getOrderResumeIds(), orderId);
             PaymentPartialCancelRequest paymentBody = createPartialCancelBody(orderResumes);
 
@@ -95,7 +95,6 @@ public class CheckoutService {
 
         }catch (Exception e){
             log.error("caught process partial-cancel-payment", e);
-
             throwApiExceptionIfStatusCode500(e, requestId, RetryType.PARTIAL_CANCEL);
             throw e;
         }

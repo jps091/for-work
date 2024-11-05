@@ -82,7 +82,7 @@ public class ResumeService {
         Resume resume = resumeRepository.getByIdWithThrow(resumeId);
         validateAuthor(currentUser, resume);
 
-        //s3Service.deleteFile(resume.getDescriptionImageUrl());
+        s3Service.deleteFile(resume.getDescriptionImageUrl()); //TODO 주석해제
         resume = resume.delete();
         resumeRepository.save(resume);
 

@@ -35,7 +35,7 @@ public class PaymentGatewayService {
 
     @Retryable(
             value = {SocketTimeoutException.class, ConnectTimeoutException.class},
-            maxAttempts = 2,
+            maxAttempts = 1,
             backoff =  @Backoff(delay = 2000)
     )
     public void confirm(ConfirmPaymentDto body){
@@ -76,7 +76,7 @@ public class PaymentGatewayService {
 
     @Retryable(
             value = {SocketTimeoutException.class, ConnectTimeoutException.class},
-            maxAttempts = 2,
+            maxAttempts = 1,
             backoff =  @Backoff(delay = 2000)
     )
     public void cancelPayment(String paymentKey, Object cancelRequestBody, String cancelType) {
