@@ -5,7 +5,6 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import project.forwork.api.domain.salespost.controller.model.*;
@@ -25,7 +24,6 @@ import static project.forwork.api.domain.salespost.infrastructure.QSalesPostEnti
 import static project.forwork.api.domain.thumbnailimage.infrastructure.QThumbnailImageEntity.*;
 
 @Repository
-@Slf4j
 public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
@@ -78,7 +76,6 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
 
     public List<SalesPostSearchDto> searchFirstPage(SalesPostFilterCond cond, int limit){
         OrderSpecifier<?>[] orderSpecifier = createOrderSpecifier(cond.getSortType());
-        log.info("searchFirstPage");
         return queryFactory
                 .select(Projections.fields(SalesPostSearchDto.class,
                         resumeEntity.id.as("resumeId"),

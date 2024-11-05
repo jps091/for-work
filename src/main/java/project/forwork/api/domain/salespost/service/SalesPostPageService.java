@@ -5,26 +5,19 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import project.forwork.api.common.domain.CurrentUser;
 import project.forwork.api.common.error.SalesPostErrorCode;
 import project.forwork.api.common.exception.ApiException;
-import project.forwork.api.common.infrastructure.enums.PageStep;
-import project.forwork.api.domain.resume.model.Resume;
 import project.forwork.api.domain.salespost.controller.model.*;
-import project.forwork.api.domain.salespost.infrastructure.enums.FieldCond;
-import project.forwork.api.domain.salespost.infrastructure.enums.LevelCond;
-import project.forwork.api.domain.salespost.infrastructure.enums.SalesPostSortType;
-import project.forwork.api.domain.salespost.infrastructure.enums.SalesStatus;
 import project.forwork.api.domain.salespost.infrastructure.model.SalesPostSearchDto;
-import project.forwork.api.domain.salespost.model.SalesPost;
 import project.forwork.api.domain.salespost.service.port.SalesPostRepository;
 import project.forwork.api.domain.salespost.service.port.SalesPostRepositoryCustom;
 import project.forwork.api.domain.thumbnailimage.service.ThumbnailImageService;
-import project.forwork.api.domain.user.model.User;
 import project.forwork.api.domain.user.service.port.UserRepository;
 
-import java.math.BigDecimal;
 import java.util.List;
+
+import static project.forwork.api.common.config.cache.redis.RedisCacheConfig.FIRST;
+
 
 @Service
 @Builder
@@ -38,7 +31,7 @@ public class SalesPostPageService {
 
 
     @Transactional(readOnly = true)
-    @Cacheable(cacheNames = "firstPageByCond", key = "'salespost:field:' + #cond.field + ':firstpage:sort:' + #cond.sortType",
+    @Cacheable(cacheNames = FIRST, key = "'salespost:field:' + #cond.field + ':firstpage:sort:' + #cond.sortType",
             condition = "#cond.sortType == T(project.forwork.api.domain.salespost.infrastructure.enums.SalesPostSortType).BEST_SELLING && " +
                     "#cond.level == T(project.forwork.api.domain.salespost.infrastructure.enums.LevelCond).UNSELECTED &&" +
                     "#cond.minPrice == null && #cond.maxPrice == null",
