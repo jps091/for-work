@@ -14,5 +14,4 @@ public class SalesPostQueryDto {
     private Long resumeId;
     private BigDecimal price;
     private Integer salesQuantity;
-    private LocalDateTime modifiedAt;
 }
