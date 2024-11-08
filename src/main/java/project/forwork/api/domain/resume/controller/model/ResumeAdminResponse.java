@@ -19,16 +19,5 @@ public class ResumeAdminResponse {
     private FieldType field;
     private LevelType level;
     private ResumeStatus status;
-    private LocalDateTime modifiedAt;
-
-    public static ResumeAdminResponse from(Resume resume){
-        return ResumeAdminResponse.builder()
-                .id(resume.getId())
-                .summary(resume.getDescription().substring(0, 15) + "...")
-                .field(resume.getField())
-                .level(resume.getLevel())
-                .status(resume.getStatus())
-                .modifiedAt(resume.getModifiedAt())
-                .build();
-    }
+    private LocalDateTime registeredAt;
 }

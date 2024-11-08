@@ -40,14 +40,14 @@ public class ResumeRepositoryCustomImpl implements ResumeRepositoryCustom {
                         resumeEntity.fieldType.as("field"),
                         resumeEntity.levelType.as("level"),
                         resumeEntity.resumeStatus.as("status"),
-                        resumeEntity.modifiedAt.as("modifiedAt"),
+                        resumeEntity.registeredAt.as("registeredAt"),
                         Expressions.stringTemplate("concat(substring({0}, 1, 10), '...')",
                                 resumeEntity.description).as("summary")))
                 .from(resumeEntity)
                 .where(dateRangeCond(periodCond),
                         resumeStatusEqual(status)
                 )
-                .orderBy(resumeEntity.modifiedAt.asc(), resumeEntity.id.asc())
+                .orderBy(resumeEntity.id.asc())
                 .limit(limit)
                 .fetch();
     }
@@ -61,14 +61,14 @@ public class ResumeRepositoryCustomImpl implements ResumeRepositoryCustom {
                         resumeEntity.fieldType.as("field"),
                         resumeEntity.levelType.as("level"),
                         resumeEntity.resumeStatus.as("status"),
-                        resumeEntity.modifiedAt.as("modifiedAt"),
+                        resumeEntity.registeredAt.as("registeredAt"),
                         Expressions.stringTemplate("concat(substring({0}, 1, 10), '...')",
                                 resumeEntity.description).as("summary")))
                 .from(resumeEntity)
                 .where(dateRangeCond(periodCond),
                         resumeStatusEqual(status)
                 )
-                .orderBy(resumeEntity.modifiedAt.desc(), resumeEntity.id.desc())
+                .orderBy(resumeEntity.id.desc())
                 .limit(limit)
                 .fetch();
 
@@ -80,7 +80,7 @@ public class ResumeRepositoryCustomImpl implements ResumeRepositoryCustom {
 
     public List<ResumeAdminResponse> findNextPage(
             PeriodCond periodCond, ResumeStatus status,
-            LocalDateTime lastModifiedAt, Long lastId, int limit
+            Long lastId, int limit
     ){
         return  queryFactory
                 .select(Projections.fields(ResumeAdminResponse.class,
@@ -88,24 +88,21 @@ public class ResumeRepositoryCustomImpl implements ResumeRepositoryCustom {
                         resumeEntity.fieldType.as("field"),
                         resumeEntity.levelType.as("level"),
                         resumeEntity.resumeStatus.as("status"),
-                        resumeEntity.modifiedAt.as("modifiedAt"),
+                        resumeEntity.registeredAt.as("registeredAt"),
                         Expressions.stringTemplate("concat(substring({0}, 1, 10), '...')",
                                 resumeEntity.description).as("summary")))
                 .from(resumeEntity)
                 .where(dateRangeCond(periodCond),
                         resumeStatusEqual(status),
-                        (resumeEntity.modifiedAt.eq(lastModifiedAt)
-                                .and(resumeEntity.id.gt(lastId)))
-                                 .or(resumeEntity.modifiedAt.gt(lastModifiedAt))
-                )
-                .orderBy(resumeEntity.modifiedAt.asc(), resumeEntity.id.asc())
+                        (resumeEntity.id.gt(lastId)))
+                .orderBy(resumeEntity.id.asc())
                 .limit(limit)
                 .fetch();
     }
 
     public List<ResumeAdminResponse> findPreviousPage(
             PeriodCond periodCond, ResumeStatus status,
-            LocalDateTime lastModifiedAt, Long lastId, int limit
+            Long lastId, int limit
     ){
         List<ResumeAdminResponse> results = queryFactory
                 .select(Projections.fields(ResumeAdminResponse.class,
@@ -113,17 +110,14 @@ public class ResumeRepositoryCustomImpl implements ResumeRepositoryCustom {
                         resumeEntity.fieldType.as("field"),
                         resumeEntity.levelType.as("level"),
                         resumeEntity.resumeStatus.as("status"),
-                        resumeEntity.modifiedAt.as("modifiedAt"),
+                        resumeEntity.registeredAt.as("registeredAt"),
                         Expressions.stringTemplate("concat(substring({0}, 1, 10), '...')",
                                 resumeEntity.description).as("summary")))
                 .from(resumeEntity)
                 .where(dateRangeCond(periodCond),
                         resumeStatusEqual(status),
-                        (resumeEntity.modifiedAt.eq(lastModifiedAt)
-                                .and(resumeEntity.id.lt(lastId)))
-                                .or(resumeEntity.modifiedAt.lt(lastModifiedAt))
-                )
-                .orderBy(resumeEntity.modifiedAt.desc(), resumeEntity.id.desc())
+                        (resumeEntity.id.lt(lastId)))
+                .orderBy(resumeEntity.id.desc())
                 .limit(limit)
                 .fetch();
 

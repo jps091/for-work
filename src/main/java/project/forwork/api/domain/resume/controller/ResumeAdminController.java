@@ -54,13 +54,14 @@ public class ResumeAdminController {
             @RequestParam(required = false) PeriodCond periodCond,
             @RequestParam(required = false) ResumeStatus status,
             @RequestParam(defaultValue = "FIRST") PageStep pageStep,
-            @RequestParam(required = false) LocalDateTime lastModifiedAt,
+            //@RequestParam(required = false) LocalDateTime lastModifiedAt,
             @RequestParam(required = false) Long lastId,
             @RequestParam(defaultValue = "6") int limit
     ) {
         // 필터링 및 페이징을 처리하는 서비스 호출
         ResumePage result = resumeService
-                .getFilteredAndPagedResults(periodCond, status, pageStep, lastModifiedAt, lastId, limit);
+                .getFilteredAndPagedResults(periodCond, status, pageStep, lastId, limit);
+        //.getFilteredAndPagedResults(periodCond, status, pageStep, lastModifiedAt, lastId, limit);
         return Api.OK(result);
     }
 }

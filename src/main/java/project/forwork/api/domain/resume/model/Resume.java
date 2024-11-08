@@ -33,7 +33,7 @@ public class Resume {
     private Integer salesQuantity;
     private final String description;
     private final ResumeStatus status;
-    private final LocalDateTime modifiedAt;
+    private final LocalDateTime registeredAt;
 
 
     public static Resume from(User user, ResumeRegisterRequest body, String descriptionUrl){

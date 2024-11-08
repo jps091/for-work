@@ -13,6 +13,6 @@ import java.util.List;
 public interface ResumeRepositoryCustom {
     List<ResumeAdminResponse> findFirstPage(PeriodCond periodCond, ResumeStatus status, int limit);
     List<ResumeAdminResponse> findLastPage(PeriodCond periodCond, ResumeStatus status, int limit);
-    List<ResumeAdminResponse> findNextPage(PeriodCond periodCond, ResumeStatus status, LocalDateTime lastModifiedAt, Long lastId, int limit);
-    List<ResumeAdminResponse> findPreviousPage(PeriodCond periodCond, ResumeStatus status, LocalDateTime lastModifiedAt, Long lastId, int limit);
+    List<ResumeAdminResponse> findNextPage(PeriodCond periodCond, ResumeStatus status, Long lastId, int limit);
+    List<ResumeAdminResponse> findPreviousPage(PeriodCond periodCond, ResumeStatus status, Long lastId, int limit);
 }

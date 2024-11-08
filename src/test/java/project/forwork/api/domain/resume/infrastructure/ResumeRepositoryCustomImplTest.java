@@ -94,29 +94,13 @@ class ResumeRepositoryCustomImplTest {
         assertThat(result).hasSize(2);
     }
 
-    @Test
-    void 이력서_다음페이지_요청시간이_같다면_ID_값이_낮은게_먼저_반환_된다() {
-        //given(상황환경 세팅)
-        //2024-09-04 00:18:39
-        LocalDateTime last = LocalDateTime.of(2024, 9, 5, 0, 18, 39);
-
-        //when(상황발생)
-        List<ResumeAdminResponse> result = repository.findNextPage(null, null, last, 4L, 2);
-
-        //then(검증)
-        assertThat(result).hasSize(2);
-        assertThat(result.get(0).getId()).isEqualTo(5L);
-        assertThat(result.get(0).getModifiedAt()).isEqualTo(last);
-    }
-
 
     @Test
     void 이력서_다음페이지_조건_WEEK() {
         //given(상황환경 세팅) 2024-09-04 00:18:39
-        LocalDateTime last = LocalDateTime.of(2024, 9, 4, 0, 18, 39);
 
         //when(상황발생)
-        List<ResumeAdminResponse> result = repository.findNextPage(PeriodCond.WEEK, null, last, 3L, 2);
+        List<ResumeAdminResponse> result = repository.findNextPage(PeriodCond.WEEK, null, 3L, 2);
 
         //then(검증)
         assertThat(result).hasSize(2);
@@ -130,7 +114,7 @@ class ResumeRepositoryCustomImplTest {
         LocalDateTime last = LocalDateTime.of(2024, 9, 4, 0, 18, 39);
 
         //when(상황발생)
-        List<ResumeAdminResponse> result = repository.findNextPage(PeriodCond.WEEK, ResumeStatus.PENDING, last, 3L, 2);
+        List<ResumeAdminResponse> result = repository.findNextPage(PeriodCond.WEEK, ResumeStatus.PENDING, 3L, 2);
 
         //then(검증)
         assertThat(result).hasSize(0);
@@ -142,13 +126,13 @@ class ResumeRepositoryCustomImplTest {
         LocalDateTime last = LocalDateTime.of(2024, 9, 5, 0, 18, 39);
 
         //when(상황발생)
-        List<ResumeAdminResponse> result = repository.findNextPage(PeriodCond.MONTH, ResumeStatus.ACTIVE, last, 5L, 3);
+        List<ResumeAdminResponse> result = repository.findNextPage(PeriodCond.MONTH, ResumeStatus.ACTIVE, 5L, 3);
 
         //then(검증)
         assertThat(result).hasSize(3);
-        assertThat(result.get(0).getId()).isEqualTo(7L);
-        assertThat(result.get(1).getId()).isEqualTo(8L);
-        assertThat(result.get(2).getId()).isEqualTo(6L);
+        assertThat(result.get(0).getId()).isEqualTo(6L);
+        assertThat(result.get(1).getId()).isEqualTo(7L);
+        assertThat(result.get(2).getId()).isEqualTo(8L);
     }
 
     @Test
@@ -157,11 +141,11 @@ class ResumeRepositoryCustomImplTest {
         LocalDateTime last = LocalDateTime.of(2024, 9, 7, 0, 18, 39);
 
         //when(상황발생)
-        List<ResumeAdminResponse> result = repository.findPreviousPage(PeriodCond.WEEK, ResumeStatus.ACTIVE, last, 7L, 2);
+        List<ResumeAdminResponse> result = repository.findPreviousPage(PeriodCond.WEEK, ResumeStatus.ACTIVE, 7L, 2);
 
         //then(검증)
-        assertThat(result.get(0).getId()).isEqualTo(4L);
-        assertThat(result.get(1).getId()).isEqualTo(5L);
+        assertThat(result.get(0).getId()).isEqualTo(5L);
+        assertThat(result.get(1).getId()).isEqualTo(6L);
     }
 
     @Test
@@ -170,7 +154,7 @@ class ResumeRepositoryCustomImplTest {
         LocalDateTime last = LocalDateTime.of(2024, 9, 4, 0, 18, 39);
 
         //when(상황발생)
-        List<ResumeAdminResponse> result = repository.findPreviousPage(PeriodCond.MONTH, ResumeStatus.PENDING, last, 3L, 2);
+        List<ResumeAdminResponse> result = repository.findPreviousPage(PeriodCond.MONTH, ResumeStatus.PENDING, 3L, 2);
 
         //then(검증)
         assertThat(result.get(0).getId()).isEqualTo(1L);

@@ -11,6 +11,5 @@ import java.util.List;
 @NoArgsConstructor
 public class ResumePage {
     private Long lastId;
-    private LocalDateTime lastModifiedAt;
     private List<ResumeAdminResponse> results;
 }

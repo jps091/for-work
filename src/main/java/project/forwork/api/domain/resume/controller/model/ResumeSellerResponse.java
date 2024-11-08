@@ -33,7 +33,7 @@ public class ResumeSellerResponse {
                 .field(resume.getField())
                 .level(resume.getLevel())
                 .status(resume.getStatus())
-                .modifiedAt(resume.getModifiedAt())
+                .modifiedAt(resume.getRegisteredAt())
                 .build();
     }
 }
