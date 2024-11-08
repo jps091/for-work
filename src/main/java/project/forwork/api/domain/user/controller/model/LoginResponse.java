@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import project.forwork.api.domain.token.model.TokenResponse;
+import project.forwork.api.domain.user.infrastructure.enums.UserStatus;
+import project.forwork.api.domain.user.model.User;
 
 @Getter
 @AllArgsConstructor
@@ -12,11 +14,13 @@ import project.forwork.api.domain.token.model.TokenResponse;
 @Builder
 public class LoginResponse {
     private Long userId;
+    private UserStatus status;
     private String accessToken;
 
-    public static LoginResponse from(Long userId, TokenResponse tokenResponse){
+    public static LoginResponse from(User user, TokenResponse tokenResponse){
         return LoginResponse.builder()
-                .userId(userId)
+                .userId(user.getId())
+                .status(user.getStatus())
                 .accessToken(tokenResponse.getAccessToken())
                 .build();
     }

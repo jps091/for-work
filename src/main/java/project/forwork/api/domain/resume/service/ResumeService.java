@@ -120,14 +120,15 @@ public class ResumeService {
 
     public ResumePage getFilteredAndPagedResults(
             PeriodCond periodCond, ResumeStatus status, PageStep pageStep,
-            LocalDateTime lastModifiedAt, Long lastId, int limit
+            //LocalDateTime lastModifiedAt, Long lastId, int limit
+            Long lastId, int limit
     ){
 
         return switch(pageStep){
             case FIRST -> findFirstPage(periodCond, status, limit);
             case LAST -> findLastPage(periodCond, status, limit);
-            case NEXT -> findNextPage(periodCond, status, lastModifiedAt, lastId, limit);
-            case PREVIOUS -> findPreviousPage(periodCond, status, lastModifiedAt, lastId, limit);
+            case NEXT -> findNextPage(periodCond, status, lastId, limit);
+            case PREVIOUS -> findPreviousPage(periodCond, status, lastId, limit);
         };
     }
 
@@ -150,18 +151,18 @@ public class ResumeService {
     @Transactional(readOnly = true)
     public ResumePage findNextPage(
             PeriodCond periodCond, ResumeStatus status,
-            LocalDateTime lastModifiedAt, Long lastId, int limit
+            Long lastId, int limit
     ){
-        List<ResumeAdminResponse> results = resumeRepositoryCustom.findNextPage(periodCond, status, lastModifiedAt, lastId, limit);
+        List<ResumeAdminResponse> results = resumeRepositoryCustom.findNextPage(periodCond, status, lastId, limit);
         return createResumePage(results);
     }
 
     @Transactional(readOnly = true)
     public ResumePage findPreviousPage(
             PeriodCond periodCond, ResumeStatus status,
-            LocalDateTime lastModifiedAt, Long lastId, int limit
+            Long lastId, int limit
     ){
-        List<ResumeAdminResponse> results = resumeRepositoryCustom.findPreviousPage(periodCond, status, lastModifiedAt, lastId, limit);
+        List<ResumeAdminResponse> results = resumeRepositoryCustom.findPreviousPage(periodCond, status, lastId, limit);
         return createReverseResumePage(results);
     }
 
@@ -200,7 +201,6 @@ public class ResumeService {
 
         return ResumePage.builder()
                 .lastId(lastRecord.getId())
-                .lastModifiedAt(lastRecord.getModifiedAt())
                 .results(results)
                 .build();
     }
@@ -215,7 +215,6 @@ public class ResumeService {
 
         return ResumePage.builder()
                 .results(results)
-                .lastModifiedAt(firstRecord.getModifiedAt())
                 .lastId(firstRecord.getId())
                 .build();
     }

@@ -48,7 +48,7 @@ public class LoginService {
         String key = getKeyByLoginAttempt(user);
         initLoginAttemptCount(key);
 
-        return LoginResponse.from(user.getId(), tokenResponse);
+        return LoginResponse.from(user, tokenResponse);
     }
 
     public void logout(HttpServletResponse response){

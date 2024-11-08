@@ -87,7 +87,7 @@ public class ResumeEntity extends BaseTimeEntity {
                 .description(description)
                 .status(resumeStatus)
                 .salesQuantity(salesQuantity)
-                .modifiedAt(getModifiedAt())
+                .registeredAt(getRegisteredAt())
                 .build();
     }
 }

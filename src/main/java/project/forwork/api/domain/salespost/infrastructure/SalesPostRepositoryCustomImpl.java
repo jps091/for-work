@@ -177,8 +177,7 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
                 .select(Projections.fields(SalesPostQueryDto.class,
                         resumeEntity.salesQuantity.as("salesQuantity"),
                         resumeEntity.price.as("price"),
-                        resumeEntity.id.as("resumeId"),
-                        resumeEntity.modifiedAt.as("modifiedAt")
+                        resumeEntity.id.as("resumeId")
                 ))
                 .from(salesPostEntity)
                 .join(salesPostEntity.resumeEntity, resumeEntity)
@@ -190,9 +189,7 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
         SalesPostQueryDto salesPostDto = getSalesPostDto(lastId);
 
         if(SalesPostSortType.OLD.equals(sortType)){
-            return (resumeEntity.modifiedAt.eq(salesPostDto.getModifiedAt())
-                    .and(resumeEntity.id.gt(salesPostDto.getResumeId())))
-                    .or(resumeEntity.modifiedAt.gt(salesPostDto.getModifiedAt()));
+            return resumeEntity.id.gt(salesPostDto.getResumeId());
         }
 
         if(SalesPostSortType.LOWEST_PRICE.equals(sortType)){
@@ -214,19 +211,15 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
         }
 
         // NEW, DEFAULT
-        return (resumeEntity.modifiedAt.eq(salesPostDto.getModifiedAt())
-                .and(resumeEntity.id.lt(salesPostDto.getResumeId())))
-                .or(resumeEntity.modifiedAt.lt(salesPostDto.getModifiedAt()));
+        return resumeEntity.id.lt(salesPostDto.getResumeId());
     }
 
     private OrderSpecifier<?>[] createOrderSpecifier(SalesPostSortType sortType) {
         return switch (sortType) {
             case OLD -> new OrderSpecifier[] {
-                    new OrderSpecifier<>(Order.ASC, resumeEntity.modifiedAt),
                     new OrderSpecifier<>(Order.ASC, resumeEntity.id)
             };
             case NEW, DEFAULT -> new OrderSpecifier[] {
-                    new OrderSpecifier<>(Order.DESC, resumeEntity.modifiedAt),
                     new OrderSpecifier<>(Order.DESC, resumeEntity.id)
             };
             case HIGHEST_PRICE -> new OrderSpecifier[] {
@@ -249,9 +242,7 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
         SalesPostQueryDto salesPostDto = getSalesPostDto(lastId);
 
         if(SalesPostSortType.OLD.equals(sortType)){
-            return (resumeEntity.modifiedAt.eq(salesPostDto.getModifiedAt())
-                    .and(resumeEntity.id.lt(salesPostDto.getResumeId())))
-                    .or(resumeEntity.modifiedAt.lt(salesPostDto.getModifiedAt()));
+            return resumeEntity.id.lt(salesPostDto.getResumeId());
         }
 
         if(SalesPostSortType.LOWEST_PRICE.equals(sortType)){
@@ -272,19 +263,15 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
                     .or(resumeEntity.salesQuantity.gt(salesPostDto.getSalesQuantity()));
         }
         // NEW, DEFAULT
-        return (resumeEntity.modifiedAt.eq(salesPostDto.getModifiedAt())
-                .and(resumeEntity.id.gt(salesPostDto.getResumeId())))
-                .or(resumeEntity.modifiedAt.gt(salesPostDto.getModifiedAt()));
+        return resumeEntity.id.gt(salesPostDto.getResumeId());
     }
 
     private OrderSpecifier<?>[] createReversedOrderSpecifier(SalesPostSortType sortType) {
         return switch (sortType) {
             case OLD -> new OrderSpecifier[] {
-                    new OrderSpecifier<>(Order.DESC, resumeEntity.modifiedAt),
                     new OrderSpecifier<>(Order.DESC, resumeEntity.id)
             };
             case NEW, DEFAULT -> new OrderSpecifier[] {
-                    new OrderSpecifier<>(Order.ASC, resumeEntity.modifiedAt),
                     new OrderSpecifier<>(Order.ASC, resumeEntity.id)
             };
             case HIGHEST_PRICE -> new OrderSpecifier[] {
