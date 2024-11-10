@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import project.forwork.api.common.api.Api;
 import project.forwork.api.domain.salespost.controller.model.SalesPostDetailResponse;
-import project.forwork.api.domain.salespost.controller.model.SalesPostPage;
+import project.forwork.api.domain.salespost.controller.model.SalesPostSearchResponse;
 import project.forwork.api.domain.salespost.infrastructure.enums.FieldCond;
 import project.forwork.api.domain.salespost.infrastructure.enums.LevelCond;
 import project.forwork.api.common.infrastructure.enums.PageStep;
@@ -14,6 +14,7 @@ import project.forwork.api.domain.salespost.infrastructure.enums.SalesPostSortTy
 import project.forwork.api.domain.salespost.service.SalesPostService;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -43,7 +44,7 @@ public class SalesPostOpenController {
                      lastId : 이전, 다음 페이지 호출시 반드시 필요
                     """)
     @GetMapping
-    public Api<SalesPostPage> searchFilteredPage(
+    public Api<List<SalesPostSearchResponse>> searchFilteredPage(
             @RequestParam(required = false) SalesPostSortType sortType,
             @RequestParam(required = false) BigDecimal minPrice,
             @RequestParam(required = false) BigDecimal maxPrice,
@@ -54,7 +55,7 @@ public class SalesPostOpenController {
             @RequestParam(required = false) Long lastId
     ) {
         // 필터링 및 페이징을 처리하는 서비스 호출
-        SalesPostPage result = salesPostService
+        List<SalesPostSearchResponse> result = salesPostService
                 .searchFilteredResults(sortType, minPrice, maxPrice, field, level, pageStep, lastId, limit);
         return Api.OK(result);
     }

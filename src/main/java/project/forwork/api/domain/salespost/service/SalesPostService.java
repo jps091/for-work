@@ -23,7 +23,6 @@ import java.util.List;
 
 @Service
 @Builder
-@Transactional
 @RequiredArgsConstructor
 public class SalesPostService {
 
@@ -34,18 +33,17 @@ public class SalesPostService {
     private final ThumbnailImageService thumbnailImageService;
 
     @Transactional
-    public void changeSalesStatus(CurrentUser currentUser, Long salesPostId, SalesStatus status){
-        Resume resume = validateSellerAndResumeStatus(currentUser, salesPostId);
-
-        SalesPost salesPost = salesPostRepository.getByResumeWithThrow(resume);
+    public void changeSalesStatus(CurrentUser currentUser, Long resumeId, SalesStatus status){
+        SalesPost salesPost = validateSellerAndResumeStatus(currentUser, resumeId);
         salesPost = salesPost.changeStatus(status);
         salesPostRepository.save(salesPost);
     }
 
-    @Transactional
-    public Resume validateSellerAndResumeStatus(CurrentUser currentUser, Long salesPostId){
+
+    @Transactional(readOnly = true)
+    public SalesPost validateSellerAndResumeStatus(CurrentUser currentUser, Long resumeId){
         User user = userRepository.getByIdWithThrow(currentUser.getId());
-        SalesPost salesPost = salesPostRepository.getByIdWithThrow(salesPostId);
+        SalesPost salesPost = salesPostRepository.getByResumeIdWithThrow(resumeId);
         Resume resume = salesPost.getResume();
 
         if(resume.isAuthorMismatch(user.getId())){
@@ -56,7 +54,7 @@ public class SalesPostService {
             throw new ApiException(SalesPostErrorCode.STATUS_NOT_ACTIVE, resume.getId());
         }
 
-        return resume;
+        return salesPost;
     }
 
     @Transactional(readOnly = true)
@@ -80,7 +78,7 @@ public class SalesPostService {
         return salesPostDetailResponse;
     }
 
-    public SalesPostPage searchFilteredResults(
+    public List<SalesPostSearchResponse> searchFilteredResults(
             SalesPostSortType sortType, BigDecimal minPrice, BigDecimal maxPrice,
             FieldCond field, LevelCond level,
             PageStep pageStep, Long lastId, int limit

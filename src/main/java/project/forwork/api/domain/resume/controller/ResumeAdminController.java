@@ -9,14 +9,14 @@ import org.springframework.web.bind.annotation.*;
 import project.forwork.api.common.annotation.Current;
 import project.forwork.api.common.api.Api;
 import project.forwork.api.domain.resume.controller.model.ResumeAdminDetailResponse;
-import project.forwork.api.domain.resume.controller.model.ResumePage;
+import project.forwork.api.domain.resume.controller.model.ResumeAdminResponse;
 import project.forwork.api.common.infrastructure.enums.PageStep;
 import project.forwork.api.domain.resume.infrastructure.enums.PeriodCond;
 import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
 import project.forwork.api.domain.resume.model.Resume;
 import project.forwork.api.domain.resume.service.ResumeService;
 import project.forwork.api.common.domain.CurrentUser;
-import java.time.LocalDateTime;
+import java.util.List;
 
 @RestController
 @Slf4j
@@ -50,18 +50,16 @@ public class ResumeAdminController {
                      lastId : 이전, 다음 페이지 호출시 반드시 필요
                     """)
     @GetMapping
-    public Api<ResumePage> getFilteredPage(
+    public Api<List<ResumeAdminResponse>> getFilteredPage(
             @RequestParam(required = false) PeriodCond periodCond,
             @RequestParam(required = false) ResumeStatus status,
             @RequestParam(defaultValue = "FIRST") PageStep pageStep,
-            //@RequestParam(required = false) LocalDateTime lastModifiedAt,
             @RequestParam(required = false) Long lastId,
             @RequestParam(defaultValue = "6") int limit
-    ) {
+    ){
         // 필터링 및 페이징을 처리하는 서비스 호출
-        ResumePage result = resumeService
+        List<ResumeAdminResponse> result = resumeService
                 .getFilteredAndPagedResults(periodCond, status, pageStep, lastId, limit);
-        //.getFilteredAndPagedResults(periodCond, status, pageStep, lastModifiedAt, lastId, limit);
         return Api.OK(result);
     }
 }

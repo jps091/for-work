@@ -46,7 +46,7 @@ public class  ResumeDecisionService {
     }
 
     public void registerSalesPost(Resume newResume, ThumbnailImage thumbnailImage) {
-        salesPostRepository.findByResume(newResume).ifPresentOrElse(
+        salesPostRepository.findByResumeId(newResume.getId()).ifPresentOrElse(
                 salesPost -> {
                     // 판매 상태를 SELLING으로 변경 후 저장
                     SalesPost newSalesPost = salesPost.changeStatus(SalesStatus.SELLING);

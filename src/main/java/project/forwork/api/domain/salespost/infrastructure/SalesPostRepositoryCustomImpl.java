@@ -211,7 +211,7 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
         }
 
         // NEW, DEFAULT
-        return resumeEntity.id.lt(salesPostDto.getResumeId());
+        return resumeEntity.id.lt(salesPostDto.getResumeId()); // r.id < lastId
     }
 
     private OrderSpecifier<?>[] createOrderSpecifier(SalesPostSortType sortType) {
@@ -263,7 +263,7 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
                     .or(resumeEntity.salesQuantity.gt(salesPostDto.getSalesQuantity()));
         }
         // NEW, DEFAULT
-        return resumeEntity.id.gt(salesPostDto.getResumeId());
+        return resumeEntity.id.gt(salesPostDto.getResumeId()); // r.id > lastId
     }
 
     private OrderSpecifier<?>[] createReversedOrderSpecifier(SalesPostSortType sortType) {

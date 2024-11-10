@@ -152,7 +152,7 @@ class ResumeDecisionServiceTest {
 
         //when(상황발생)
         resumeDecisionService.registerSalesPost(resume, thumbnailImage1);
-        SalesPost salesPost = fakeSalesPostRepository.getByResumeWithThrow(resume);
+        SalesPost salesPost = fakeSalesPostRepository.getByResumeIdWithThrow(resume.getId());
 
         //then(검증)
         assertThat(salesPost.getSalesStatus()).isEqualTo(SalesStatus.SELLING);
@@ -170,7 +170,7 @@ class ResumeDecisionServiceTest {
 
         //when(상황발생)
         resumeDecisionService.registerSalesPost(resume, thumbnailImage2);
-        SalesPost salesPost = fakeSalesPostRepository.getByResumeWithThrow(resume);
+        SalesPost salesPost = fakeSalesPostRepository.getByResumeIdWithThrow(resume.getId());
 
         //then(검증)
         assertThat(salesPost.getSalesStatus()).isEqualTo(SalesStatus.SELLING);

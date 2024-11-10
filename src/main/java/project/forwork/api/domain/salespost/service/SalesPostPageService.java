@@ -36,48 +36,31 @@ public class SalesPostPageService {
                     "#cond.level == T(project.forwork.api.domain.salespost.infrastructure.enums.LevelCond).UNSELECTED &&" +
                     "#cond.minPrice == null && #cond.maxPrice == null",
             cacheManager = "redisCacheManager")
-    public SalesPostPage findFirstPage(SalesPostFilterCond cond, int limit){
+    public List<SalesPostSearchResponse> findFirstPage(SalesPostFilterCond cond, int limit){
         List<SalesPostSearchDto> results = salesPostRepositoryCustom.searchFirstPage(cond, limit);
-        return createSalesPostPage(results);
+        return createSearchResponseByDto(results);
     }
 
     @Transactional(readOnly = true)
-    public SalesPostPage findLastPage(SalesPostFilterCond cond, int limit){
+    public List<SalesPostSearchResponse> findLastPage(SalesPostFilterCond cond, int limit){
         List<SalesPostSearchDto> results = salesPostRepositoryCustom.searchLastPage(cond, limit);
-        return createReverseSalesPostPage(results);
+        return createSearchResponseByDto(results);
     }
 
     @Transactional(readOnly = true)
-    public SalesPostPage findNextPage(SalesPostFilterCond cond, Long lastId, int limit){
+    public List<SalesPostSearchResponse> findNextPage(SalesPostFilterCond cond, Long lastId, int limit){
         List<SalesPostSearchDto> results = salesPostRepositoryCustom.searchNextPage(cond, lastId, limit);
-        return createSalesPostPage(results);
+        return createSearchResponseByDto(results);
     }
 
     @Transactional(readOnly = true)
-    public SalesPostPage findPreviousPage(SalesPostFilterCond cond, Long lastId, int limit){
+    public List<SalesPostSearchResponse> findPreviousPage(SalesPostFilterCond cond, Long lastId, int limit){
         List<SalesPostSearchDto> results = salesPostRepositoryCustom.searchPreviousPage(cond, lastId, limit);
-        return createReverseSalesPostPage(results);
-    }
-
-    private SalesPostPage createSalesPostPage(List<SalesPostSearchDto> searchDtos) {
-        validSearchDtoEmpty(searchDtos);
-
-        List<SalesPostSearchResponse> results = createSearchResponseByDto(searchDtos);
-
-        SalesPostSearchResponse lastRecord = results.get(results.size() - 1);
-        return SalesPostPage.from(results, lastRecord);
-    }
-
-    private SalesPostPage createReverseSalesPostPage(List<SalesPostSearchDto> searchDtos) {
-        validSearchDtoEmpty(searchDtos);
-
-        List<SalesPostSearchResponse> results = createSearchResponseByDto(searchDtos);
-
-        SalesPostSearchResponse firstRecord = results.get(0);
-        return SalesPostPage.from(results, firstRecord);
+        return createSearchResponseByDto(results);
     }
 
     private List<SalesPostSearchResponse> createSearchResponseByDto(List<SalesPostSearchDto> searchDtos) {
+        validSearchDtoEmpty(searchDtos);
         return searchDtos.stream()
                 .map(dto -> {
                     String title = createSalesPostTitle(dto);

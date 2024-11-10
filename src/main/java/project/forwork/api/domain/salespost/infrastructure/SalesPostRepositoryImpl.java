@@ -51,15 +51,15 @@ public class SalesPostRepositoryImpl implements SalesPostRepository {
     }
 
     @Override
-    public SalesPost getByResumeWithThrow(Resume resume) {
-        return salesPostJpaRepository.findByResumeEntity(ResumeEntity.from(resume))
+    public SalesPost getByResumeIdWithThrow(Long resumeId) {
+        return salesPostJpaRepository.findByResumeEntity_Id(resumeId)
                 .orElseThrow(() -> new ApiException(SalesPostErrorCode.SALES_POST_NOT_FOUND))
                 .toModel();
     }
 
     @Override
-    public Optional<SalesPost> findByResume(Resume resume) {
-        return salesPostJpaRepository.findByResumeEntity(ResumeEntity.from(resume)).map(SalesPostEntity::toModel);
+    public Optional<SalesPost> findByResumeId(Long resumeId) {
+        return salesPostJpaRepository.findByResumeEntity_Id(resumeId).map(SalesPostEntity::toModel);
     }
 
     @Override
