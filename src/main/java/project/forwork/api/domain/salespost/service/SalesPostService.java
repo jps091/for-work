@@ -14,7 +14,9 @@ import project.forwork.api.domain.salespost.infrastructure.enums.*;
 import project.forwork.api.domain.salespost.model.SalesPost;
 import project.forwork.api.domain.salespost.service.port.SalesPostRepository;
 import project.forwork.api.domain.salespost.service.port.SalesPostRepositoryCustom;
+import project.forwork.api.domain.thumbnailimage.model.ThumbnailImage;
 import project.forwork.api.domain.thumbnailimage.service.ThumbnailImageService;
+import project.forwork.api.domain.thumbnailimage.service.port.ThumbnailImageRepository;
 import project.forwork.api.domain.user.model.User;
 import project.forwork.api.domain.user.service.port.UserRepository;
 
@@ -30,7 +32,24 @@ public class SalesPostService {
     private final SalesPostRepositoryCustom salesPostRepositoryCustom;
     private final SalesPostPageService salesPostPageService;
     private final UserRepository userRepository;
-    private final ThumbnailImageService thumbnailImageService;
+    private final ThumbnailImageRepository thumbnailImageRepository;
+
+    @Transactional
+    public void registerSalesPost(Resume newResume) {
+        salesPostRepository.findByResumeId(newResume.getId()).ifPresentOrElse(
+                salesPost -> {
+                    // 판매 상태를 SELLING으로 변경 후 저장
+                    SalesPost newSalesPost = salesPost.changeStatus(SalesStatus.SELLING);
+                    salesPostRepository.save(newSalesPost);
+                },
+                () -> {
+                    // 새로운 SalesPost 생성 후 저장
+                    ThumbnailImage thumbnailImage = thumbnailImageRepository.getByFieldWithThrow(newResume.getField());
+                    SalesPost newSalesPost = SalesPost.create(newResume, thumbnailImage);
+                    salesPostRepository.save(newSalesPost);
+                }
+        );
+    }
 
     @Transactional
     public void changeSalesStatus(CurrentUser currentUser, Long resumeId, SalesStatus status){

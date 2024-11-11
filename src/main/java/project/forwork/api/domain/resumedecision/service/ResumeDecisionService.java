@@ -12,6 +12,7 @@ import project.forwork.api.domain.resumedecision.service.port.ResumeDecisionRepo
 import project.forwork.api.common.domain.CurrentUser;
 import project.forwork.api.domain.salespost.infrastructure.enums.SalesStatus;
 import project.forwork.api.domain.salespost.model.SalesPost;
+import project.forwork.api.domain.salespost.service.SalesPostService;
 import project.forwork.api.domain.salespost.service.port.SalesPostRepository;
 import project.forwork.api.domain.thumbnailimage.model.ThumbnailImage;
 import project.forwork.api.domain.thumbnailimage.service.port.ThumbnailImageRepository;
@@ -25,10 +26,9 @@ import project.forwork.api.domain.user.service.port.UserRepository;
 public class  ResumeDecisionService {
 
     private final ResumeDecisionRepository resumeDecisionRepository;
-    private final SalesPostRepository salesPostRepository;
     private final ResumeRepository resumeRepository;
     private final UserRepository userRepository;
-    private final ThumbnailImageRepository thumbnailImageRepository;
+    private final SalesPostService salesPostService;
 
     public void approve(CurrentUser currentUser, Long resumeId){
         User admin = userRepository.getByIdWithThrow(currentUser.getId());
@@ -37,27 +37,10 @@ public class  ResumeDecisionService {
         resume = resume.updateStatus(ResumeStatus.ACTIVE);
         Resume newResume = resumeRepository.save(resume);
 
-        ThumbnailImage thumbnailImage = thumbnailImageRepository.getByFieldWithThrow(newResume.getField());
-
         ResumeDecision resumeDecision = ResumeDecision.approve(admin, resume);
         resumeDecisionRepository.save(resumeDecision);
 
-        registerSalesPost(newResume, thumbnailImage);
-    }
-
-    public void registerSalesPost(Resume newResume, ThumbnailImage thumbnailImage) {
-        salesPostRepository.findByResumeId(newResume.getId()).ifPresentOrElse(
-                salesPost -> {
-                    // 판매 상태를 SELLING으로 변경 후 저장
-                    SalesPost newSalesPost = salesPost.changeStatus(SalesStatus.SELLING);
-                    salesPostRepository.save(newSalesPost);
-                },
-                () -> {
-                    // 새로운 SalesPost 생성 후 저장
-                    SalesPost newSalesPost = SalesPost.create(newResume, thumbnailImage);
-                    salesPostRepository.save(newSalesPost);
-                }
-        );
+        salesPostService.registerSalesPost(newResume);
     }
 
     public void deny(CurrentUser currentUser, Long resumeId){

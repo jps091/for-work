@@ -64,6 +64,7 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
                         ExpressionUtils.as(createTitleExpression(), "title"),
                         resumeEntity.id.as("resumeId"),
                         resumeEntity.salesQuantity.as("salesQuantity"),
+                        resumeEntity.resumeStatus.as("resumeStatus"),
                         salesPostEntity.registeredAt.as("registeredAt"),
                         salesPostEntity.salesStatus.as("status")
                 ))

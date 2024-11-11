@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
 import project.forwork.api.domain.salespost.infrastructure.enums.SalesStatus;
 
 import java.time.LocalDateTime;
@@ -18,5 +19,6 @@ public class SalesPostSellerResponse {
     private String title;
     private Integer salesQuantity;
     private SalesStatus status;
+    private ResumeStatus resumeStatus;
     private LocalDateTime registeredAt;
 }
