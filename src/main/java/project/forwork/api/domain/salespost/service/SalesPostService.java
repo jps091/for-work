@@ -97,7 +97,7 @@ public class SalesPostService {
         return salesPostDetailResponse;
     }
 
-    public List<SalesPostSearchResponse> searchFilteredResults(
+    public SalesPostPage searchFilteredResults(
             SalesPostSortType sortType, BigDecimal minPrice, BigDecimal maxPrice,
             FieldCond field, LevelCond level,
             PageStep pageStep, Long lastId, int limit

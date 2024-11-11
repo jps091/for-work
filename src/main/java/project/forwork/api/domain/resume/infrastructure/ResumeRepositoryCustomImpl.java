@@ -41,8 +41,8 @@ public class ResumeRepositoryCustomImpl implements ResumeRepositoryCustom {
                         resumeEntity.levelType.as("level"),
                         resumeEntity.resumeStatus.as("status"),
                         resumeEntity.registeredAt.as("registeredAt"),
-                        Expressions.stringTemplate("concat(substring({0}, 1, 10), '...')",
-                                resumeEntity.description).as("summary")))
+                        Expressions.stringTemplate("concat('#', {0}, ' ', substring({1}, 1, 6), '..')",
+                                resumeEntity.id, resumeEntity.description).as("summary")))
                 .from(resumeEntity)
                 .where(dateRangeCond(periodCond),
                         resumeStatusEqual(status)
@@ -62,8 +62,8 @@ public class ResumeRepositoryCustomImpl implements ResumeRepositoryCustom {
                         resumeEntity.levelType.as("level"),
                         resumeEntity.resumeStatus.as("status"),
                         resumeEntity.registeredAt.as("registeredAt"),
-                        Expressions.stringTemplate("concat(substring({0}, 1, 10), '...')",
-                                resumeEntity.description).as("summary")))
+                        Expressions.stringTemplate("concat('#', {0}, ' ', substring({1}, 1, 6), '..')",
+                                resumeEntity.id, resumeEntity.description).as("summary")))
                 .from(resumeEntity)
                 .where(dateRangeCond(periodCond),
                         resumeStatusEqual(status)
@@ -74,7 +74,6 @@ public class ResumeRepositoryCustomImpl implements ResumeRepositoryCustom {
 
         // 서버에서 데이터를 오름차순으로 정렬
         Collections.reverse(results);
-
         return results;
     }
 
@@ -89,8 +88,8 @@ public class ResumeRepositoryCustomImpl implements ResumeRepositoryCustom {
                         resumeEntity.levelType.as("level"),
                         resumeEntity.resumeStatus.as("status"),
                         resumeEntity.registeredAt.as("registeredAt"),
-                        Expressions.stringTemplate("concat(substring({0}, 1, 10), '...')",
-                                resumeEntity.description).as("summary")))
+                        Expressions.stringTemplate("concat('#', {0}, ' ', substring({1}, 1, 6), '..')",
+                                resumeEntity.id, resumeEntity.description).as("summary")))
                 .from(resumeEntity)
                 .where(dateRangeCond(periodCond),
                         resumeStatusEqual(status),
@@ -111,8 +110,8 @@ public class ResumeRepositoryCustomImpl implements ResumeRepositoryCustom {
                         resumeEntity.levelType.as("level"),
                         resumeEntity.resumeStatus.as("status"),
                         resumeEntity.registeredAt.as("registeredAt"),
-                        Expressions.stringTemplate("concat(substring({0}, 1, 10), '...')",
-                                resumeEntity.description).as("summary")))
+                        Expressions.stringTemplate("concat('#', {0}, ' ', substring({1}, 1, 6), '..')",
+                                resumeEntity.id, resumeEntity.description).as("summary")))
                 .from(resumeEntity)
                 .where(dateRangeCond(periodCond),
                         resumeStatusEqual(status),
@@ -123,7 +122,6 @@ public class ResumeRepositoryCustomImpl implements ResumeRepositoryCustom {
 
         // 서버에서 데이터를 오름차순으로 정렬
         Collections.reverse(results);
-
         return results;
     }
 

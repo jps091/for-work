@@ -11,6 +11,7 @@ import project.forwork.api.common.api.Api;
 import project.forwork.api.domain.resume.controller.model.ResumeAdminDetailResponse;
 import project.forwork.api.domain.resume.controller.model.ResumeAdminResponse;
 import project.forwork.api.common.infrastructure.enums.PageStep;
+import project.forwork.api.domain.resume.controller.model.ResumePage;
 import project.forwork.api.domain.resume.infrastructure.enums.PeriodCond;
 import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
 import project.forwork.api.domain.resume.model.Resume;
@@ -50,7 +51,7 @@ public class ResumeAdminController {
                      lastId : 이전, 다음 페이지 호출시 반드시 필요
                     """)
     @GetMapping
-    public Api<List<ResumeAdminResponse>> getFilteredPage(
+    public Api<ResumePage> getFilteredPage(
             @RequestParam(required = false) PeriodCond periodCond,
             @RequestParam(required = false) ResumeStatus status,
             @RequestParam(defaultValue = "FIRST") PageStep pageStep,
@@ -58,7 +59,7 @@ public class ResumeAdminController {
             @RequestParam(defaultValue = "6") int limit
     ){
         // 필터링 및 페이징을 처리하는 서비스 호출
-        List<ResumeAdminResponse> result = resumeService
+        ResumePage result = resumeService
                 .getFilteredAndPagedResults(periodCond, status, pageStep, lastId, limit);
         return Api.OK(result);
     }

@@ -122,7 +122,7 @@ public class ResumeService {
         return resumeAdminResponses;
     }
 
-    public List<ResumeAdminResponse> getFilteredAndPagedResults(
+    public ResumePage getFilteredAndPagedResults(
             PeriodCond periodCond, ResumeStatus status,
             PageStep pageStep, Long lastId, int limit
     ){

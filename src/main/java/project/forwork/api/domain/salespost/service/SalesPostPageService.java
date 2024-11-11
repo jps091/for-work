@@ -15,6 +15,7 @@ import project.forwork.api.domain.thumbnailimage.service.ThumbnailImageService;
 import project.forwork.api.domain.user.service.port.UserRepository;
 
 import java.util.List;
+import java.util.Objects;
 
 import static project.forwork.api.common.config.cache.redis.RedisCacheConfig.FIRST;
 
@@ -36,38 +37,49 @@ public class SalesPostPageService {
                     "#cond.level == T(project.forwork.api.domain.salespost.infrastructure.enums.LevelCond).UNSELECTED &&" +
                     "#cond.minPrice == null && #cond.maxPrice == null",
             cacheManager = "redisCacheManager")
-    public List<SalesPostSearchResponse> findFirstPage(SalesPostFilterCond cond, int limit){
+    public SalesPostPage findFirstPage(SalesPostFilterCond cond, int limit){
         List<SalesPostSearchDto> results = salesPostRepositoryCustom.searchFirstPage(cond, limit);
-        return createSearchResponseByDto(results);
+        return createSearchResponseByDto(results, true, false);
     }
 
     @Transactional(readOnly = true)
-    public List<SalesPostSearchResponse> findLastPage(SalesPostFilterCond cond, int limit){
+    public SalesPostPage findLastPage(SalesPostFilterCond cond, int limit){
         List<SalesPostSearchDto> results = salesPostRepositoryCustom.searchLastPage(cond, limit);
-        return createSearchResponseByDto(results);
+        return createSearchResponseByDto(results, false, true);
     }
 
     @Transactional(readOnly = true)
-    public List<SalesPostSearchResponse> findNextPage(SalesPostFilterCond cond, Long lastId, int limit){
-        List<SalesPostSearchDto> results = salesPostRepositoryCustom.searchNextPage(cond, lastId, limit);
-        return createSearchResponseByDto(results);
+    public SalesPostPage findNextPage(SalesPostFilterCond cond, Long lastId, int limit){
+        List<SalesPostSearchDto> results = salesPostRepositoryCustom.searchNextPage(cond, lastId, limit + 1);
+        boolean isLastPage = results.size() <= limit; // limit + 1과 비교하여 마지막 페이지 여부 판단
+        if (!isLastPage) {
+            results = results.subList(0, limit); // limit 개수만큼
+        }
+
+        return createSearchResponseByDto(results, false, isLastPage);
     }
 
     @Transactional(readOnly = true)
-    public List<SalesPostSearchResponse> findPreviousPage(SalesPostFilterCond cond, Long lastId, int limit){
-        List<SalesPostSearchDto> results = salesPostRepositoryCustom.searchPreviousPage(cond, lastId, limit);
-        return createSearchResponseByDto(results);
+    public SalesPostPage findPreviousPage(SalesPostFilterCond cond, Long lastId, int limit){
+        List<SalesPostSearchDto> results = salesPostRepositoryCustom.searchPreviousPage(cond, lastId, limit + 1);
+        boolean isFirstPage = results.size() <= limit; // limit + 1과 비교하여 마지막 페이지 여부 판단
+        if (!isFirstPage) {
+            results = results.subList(1, limit + 1); // limit 개수만큼
+        }
+
+        return createSearchResponseByDto(results, isFirstPage, false);
     }
 
-    private List<SalesPostSearchResponse> createSearchResponseByDto(List<SalesPostSearchDto> searchDtos) {
+    private SalesPostPage createSearchResponseByDto(List<SalesPostSearchDto> searchDtos, boolean isFirstPage, boolean isLastPage) {
         validSearchDtoEmpty(searchDtos);
-        return searchDtos.stream()
+        List<SalesPostSearchResponse> result = searchDtos.stream()
                 .map(dto -> {
                     String title = createSalesPostTitle(dto);
                     String thumbnailUrl = thumbnailImageService.getThumbnailUrl(dto.getField());
                     return SalesPostSearchResponse.from(dto, title, thumbnailUrl);
                 })
                 .toList();
+        return SalesPostPage.from(result, isFirstPage, isLastPage);
     }
 
     private void validSearchDtoEmpty(List<SalesPostSearchDto> searchDtos) {
