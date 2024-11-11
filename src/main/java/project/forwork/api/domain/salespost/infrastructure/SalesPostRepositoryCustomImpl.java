@@ -11,6 +11,7 @@ import project.forwork.api.domain.salespost.controller.model.*;
 import project.forwork.api.domain.salespost.infrastructure.enums.FieldCond;
 import project.forwork.api.domain.salespost.infrastructure.enums.LevelCond;
 import project.forwork.api.domain.salespost.infrastructure.enums.SalesPostSortType;
+import project.forwork.api.domain.salespost.infrastructure.enums.SalesStatus;
 import project.forwork.api.domain.salespost.infrastructure.model.SalesPostQueryDto;
 import project.forwork.api.domain.salespost.infrastructure.model.SalesPostSearchDto;
 import project.forwork.api.domain.salespost.service.port.SalesPostRepositoryCustom;
@@ -32,7 +33,6 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
     public SalesPostRepositoryCustomImpl(EntityManager em) {
         this.queryFactory  = new JPAQueryFactory(em);
     }
-
 
     public SalesPostDetailResponse getDetailSalesPost(Long resumeId){
         return queryFactory
@@ -58,12 +58,12 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
     }
 
     public List<SalesPostSellerResponse> findBySeller(Long sellerId){
-
         return queryFactory
                 .select(Projections.fields(SalesPostSellerResponse.class,
                         ExpressionUtils.as(createTitleExpression(), "title"),
                         resumeEntity.id.as("resumeId"),
                         resumeEntity.salesQuantity.as("salesQuantity"),
+                        resumeEntity.resumeStatus.as("resumeStatus"),
                         salesPostEntity.registeredAt.as("registeredAt"),
                         salesPostEntity.salesStatus.as("status")
                 ))
@@ -88,7 +88,8 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
                 .where(
                         priceRangeCond(cond.getMinPrice(), cond.getMaxPrice()),
                         fieldEqual(cond.getField()),
-                        levelEqual(cond.getLevel())
+                        levelEqual(cond.getLevel()),
+                        salesPostEntity.salesStatus.eq(SalesStatus.SELLING)
                 )
                 .orderBy(orderSpecifier)
                 .limit(limit).fetch();
@@ -109,7 +110,8 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
                 .where(
                         priceRangeCond(cond.getMinPrice(), cond.getMaxPrice()),
                         fieldEqual(cond.getField()),
-                        levelEqual(cond.getLevel())
+                        levelEqual(cond.getLevel()),
+                        salesPostEntity.salesStatus.eq(SalesStatus.SELLING)
                 )
                 .orderBy(orderSpecifier)
                 .limit(limit).fetch();
@@ -133,7 +135,8 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
                 .where(priceRangeCond(cond.getMinPrice(), cond.getMaxPrice()),
                         fieldEqual(cond.getField()),
                         levelEqual(cond.getLevel()),
-                        compareCondBySortType(cond.getSortType(), lastId)
+                        compareCondBySortType(cond.getSortType(), lastId),
+                        salesPostEntity.salesStatus.eq(SalesStatus.SELLING)
                 )
                 .orderBy(orderSpecifier)
                 .limit(limit).fetch();
@@ -154,7 +157,8 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
                 .where(priceRangeCond(cond.getMinPrice(), cond.getMaxPrice()),
                         fieldEqual(cond.getField()),
                         levelEqual(cond.getLevel()),
-                        reverseCompareCondBySortType(cond.getSortType(), lastId)
+                        reverseCompareCondBySortType(cond.getSortType(), lastId),
+                        salesPostEntity.salesStatus.eq(SalesStatus.SELLING)
                 )
                 .orderBy(orderSpecifier)
                 .limit(limit).fetch();
@@ -172,7 +176,6 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
     }
 
     private SalesPostQueryDto getSalesPostDto(Long resumeId){
-
         return queryFactory
                 .select(Projections.fields(SalesPostQueryDto.class,
                         resumeEntity.salesQuantity.as("salesQuantity"),
@@ -211,7 +214,7 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
         }
 
         // NEW, DEFAULT
-        return resumeEntity.id.lt(salesPostDto.getResumeId());
+        return resumeEntity.id.lt(salesPostDto.getResumeId()); // r.id < lastId
     }
 
     private OrderSpecifier<?>[] createOrderSpecifier(SalesPostSortType sortType) {
@@ -238,7 +241,6 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
     }
 
     private BooleanExpression reverseCompareCondBySortType(SalesPostSortType sortType, Long lastId) {
-
         SalesPostQueryDto salesPostDto = getSalesPostDto(lastId);
 
         if(SalesPostSortType.OLD.equals(sortType)){
@@ -263,7 +265,7 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
                     .or(resumeEntity.salesQuantity.gt(salesPostDto.getSalesQuantity()));
         }
         // NEW, DEFAULT
-        return resumeEntity.id.gt(salesPostDto.getResumeId());
+        return resumeEntity.id.gt(salesPostDto.getResumeId()); // r.id > lastId
     }
 
     private OrderSpecifier<?>[] createReversedOrderSpecifier(SalesPostSortType sortType) {

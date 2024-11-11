@@ -2,6 +2,9 @@ package project.forwork.api.domain.resumedecision.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import project.forwork.api.common.domain.CurrentUser;
 import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.common.infrastructure.enums.FieldType;
@@ -10,6 +13,7 @@ import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
 import project.forwork.api.domain.resume.model.Resume;
 import project.forwork.api.domain.salespost.infrastructure.enums.SalesStatus;
 import project.forwork.api.domain.salespost.model.SalesPost;
+import project.forwork.api.domain.salespost.service.SalesPostService;
 import project.forwork.api.domain.thumbnailimage.model.ThumbnailImage;
 import project.forwork.api.domain.user.infrastructure.enums.UserStatus;
 import project.forwork.api.domain.user.model.User;
@@ -19,28 +23,26 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
-
+@ExtendWith(MockitoExtension.class)
 class ResumeDecisionServiceTest {
 
     private ResumeDecisionService resumeDecisionService;
-    private FakeSalesPostRepository fakeSalesPostRepository;
-    private FakeResumeDecisionRepository fakeResumeDecisionRepository;
     private  FakeResumeRepository fakeResumeRepository;
-    private FakeThumbnailImageRepository fakeThumbnailImageRepository;
+    private  FakeUserRepository fakeUserRepository;
+    private  FakeResumeDecisionRepository fakeResumeDecisionRepository;
+    @Mock
+    private SalesPostService salesPostService;
 
     @BeforeEach
     void init(){
-        FakeUserRepository fakeUserRepository = new FakeUserRepository();
+        fakeUserRepository = new FakeUserRepository();
         fakeResumeRepository = new FakeResumeRepository();
         fakeResumeDecisionRepository = new FakeResumeDecisionRepository();
-        fakeSalesPostRepository = new FakeSalesPostRepository();
-        fakeThumbnailImageRepository = new FakeThumbnailImageRepository();
         resumeDecisionService = ResumeDecisionService.builder()
                 .resumeRepository(fakeResumeRepository)
                 .userRepository(fakeUserRepository)
+                .salesPostService(salesPostService)
                 .resumeDecisionRepository(fakeResumeDecisionRepository)
-                .salesPostRepository(fakeSalesPostRepository)
-                .thumbnailImageRepository(fakeThumbnailImageRepository)
                 .build();
 
         User user1 = User.builder()
@@ -88,28 +90,6 @@ class ResumeDecisionServiceTest {
 
         fakeResumeRepository.save(resume1);
         fakeResumeRepository.save(resume2);
-
-        ThumbnailImage thumbnailImage1 = ThumbnailImage.builder()
-                .id(1L)
-                .url("www.test1.com")
-                .fieldType(FieldType.AI)
-                .build();
-        ThumbnailImage thumbnailImage2 = ThumbnailImage.builder()
-                .id(2L)
-                .url("www.test2.com")
-                .fieldType(FieldType.BACKEND)
-                .build();
-        fakeThumbnailImageRepository.saveAll(List.of(thumbnailImage1, thumbnailImage2));
-
-
-        SalesPost salesPost = SalesPost.builder()
-                .id(1L)
-                .resume(resume1)
-                .salesStatus(SalesStatus.CANCELED)
-                .thumbnailImage(thumbnailImage1)
-                .build();
-
-        fakeSalesPostRepository.save(salesPost);
     }
 
     @Test
@@ -138,43 +118,6 @@ class ResumeDecisionServiceTest {
         //then(검증)
         Resume resume = fakeResumeRepository.getByIdWithThrow(2L);
         assertThat(resume.getStatus()).isEqualTo(ResumeStatus.ACTIVE);
-    }
-
-    @Test
-    void CANCELED_상태인_판매글을_다시_APPROVE_하면_SELLING_으로_상태가_변경_된다(){
-        //given(상황환경 세팅)
-        Resume resume = fakeResumeRepository.getByIdWithThrow(1L);
-        ThumbnailImage thumbnailImage1 = ThumbnailImage.builder()
-                .id(1L)
-                .url("www.test1.com")
-                .fieldType(FieldType.AI)
-                .build();
-
-        //when(상황발생)
-        resumeDecisionService.registerSalesPost(resume, thumbnailImage1);
-        SalesPost salesPost = fakeSalesPostRepository.getByResumeWithThrow(resume);
-
-        //then(검증)
-        assertThat(salesPost.getSalesStatus()).isEqualTo(SalesStatus.SELLING);
-    }
-
-    @Test
-    void 이력서를_APPROVE_했는데_판매글이_존재_하지_않는다면_SELLING_상태인_판매글이_자동_생성_된다(){
-        //given(상황환경 세팅)
-        Resume resume = fakeResumeRepository.getByIdWithThrow(2L);
-        ThumbnailImage thumbnailImage2 = ThumbnailImage.builder()
-                .id(1L)
-                .url("www.test1.com")
-                .fieldType(FieldType.BACKEND)
-                .build();
-
-        //when(상황발생)
-        resumeDecisionService.registerSalesPost(resume, thumbnailImage2);
-        SalesPost salesPost = fakeSalesPostRepository.getByResumeWithThrow(resume);
-
-        //then(검증)
-        assertThat(salesPost.getSalesStatus()).isEqualTo(SalesStatus.SELLING);
-        assertThat(salesPost.getThumbnailImage()).isEqualTo(thumbnailImage2);
     }
 
     @Test

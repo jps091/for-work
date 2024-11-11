@@ -13,7 +13,7 @@ import java.util.Optional;
 
 public interface SalesPostJpaRepository extends JpaRepository<SalesPostEntity, Long> {
 
-    Optional<SalesPostEntity> findByResumeEntity(ResumeEntity resumeEntity);
+    Optional<SalesPostEntity> findByResumeEntity_Id(Long resumeId);
 
     @Lock(value = LockModeType.PESSIMISTIC_WRITE)
     @Query("select s from SalesPostEntity s where s.id = :id")

@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import project.forwork.api.common.api.Api;
 import project.forwork.api.domain.salespost.controller.model.SalesPostDetailResponse;
 import project.forwork.api.domain.salespost.controller.model.SalesPostPage;
+import project.forwork.api.domain.salespost.controller.model.SalesPostSearchResponse;
 import project.forwork.api.domain.salespost.infrastructure.enums.FieldCond;
 import project.forwork.api.domain.salespost.infrastructure.enums.LevelCond;
 import project.forwork.api.common.infrastructure.enums.PageStep;
@@ -14,6 +15,7 @@ import project.forwork.api.domain.salespost.infrastructure.enums.SalesPostSortTy
 import project.forwork.api.domain.salespost.service.SalesPostService;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor

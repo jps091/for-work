@@ -168,8 +168,8 @@ class ResumeRepositoryCustomImplTest {
 
         //then(검증)
         assertThat(result).hasSize(2);
-        assertThat(result.get(0).getId()).isEqualTo(8L);
-        assertThat(result.get(1).getId()).isEqualTo(6L);
+        assertThat(result.get(0).getId()).isEqualTo(7L);
+        assertThat(result.get(1).getId()).isEqualTo(8L);
     }
 
     @Test
@@ -180,7 +180,7 @@ class ResumeRepositoryCustomImplTest {
 
         //then(검증)
         assertThat(result).hasSize(2);
-        assertThat(result.get(0).getId()).isEqualTo(8L);
-        assertThat(result.get(1).getId()).isEqualTo(6L);
+        assertThat(result.get(0).getId()).isEqualTo(7L);
+        assertThat(result.get(1).getId()).isEqualTo(8L);
     }
 }

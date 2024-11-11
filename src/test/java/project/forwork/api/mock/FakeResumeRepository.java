@@ -29,7 +29,7 @@ public class FakeResumeRepository implements ResumeRepository {
                     .seller(resume.getSeller())
                     .field(resume.getField())
                     .level(resume.getLevel())
-                    .modifiedAt(resume.getModifiedAt())
+                    .registeredAt(resume.getRegisteredAt())
                     .salesQuantity(resume.getSalesQuantity())
                     .resumeUrl(resume.getResumeUrl())
                     .descriptionImageUrl(resume.getDescriptionImageUrl())

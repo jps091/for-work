@@ -36,17 +36,12 @@ public class ResumeDecisionEntity extends BaseTimeEntity{
     @Column(name = "status") @NotNull
     private DecisionStatus decisionStatus;
 
-    @NotNull
-    @Column(name = "decided_at", columnDefinition = "TIMESTAMP")
-    private LocalDateTime registeredAt;
-
     public static ResumeDecisionEntity from(ResumeDecision resumeDecision){
         ResumeDecisionEntity resumeDecisionEntity = new ResumeDecisionEntity();
         resumeDecisionEntity.id = resumeDecision.getId();
         resumeDecisionEntity.adminEntity = UserEntity.from(resumeDecision.getAdmin());
         resumeDecisionEntity.resumeEntity = ResumeEntity.from(resumeDecision.getResume());
         resumeDecisionEntity.decisionStatus = resumeDecision.getDecisionStatus();
-        resumeDecisionEntity.registeredAt = resumeDecision.getRegisteredAt();
         return resumeDecisionEntity;
     }
 
@@ -56,7 +51,7 @@ public class ResumeDecisionEntity extends BaseTimeEntity{
                 .admin(adminEntity.toModel())
                 .resume(resumeEntity.toModel())
                 .decisionStatus(decisionStatus)
-                .registeredAt(registeredAt)
+                .registeredAt(getRegisteredAt())
                 .build();
     }
 }

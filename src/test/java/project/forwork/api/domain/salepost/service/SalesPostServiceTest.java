@@ -11,12 +11,16 @@ import project.forwork.api.domain.resume.model.Resume;
 import project.forwork.api.domain.salespost.infrastructure.enums.SalesStatus;
 import project.forwork.api.domain.salespost.model.SalesPost;
 import project.forwork.api.domain.salespost.service.SalesPostService;
+import project.forwork.api.domain.thumbnailimage.model.ThumbnailImage;
+import project.forwork.api.domain.thumbnailimage.service.port.ThumbnailImageRepository;
 import project.forwork.api.domain.user.infrastructure.enums.UserStatus;
 import project.forwork.api.domain.user.model.User;
 import project.forwork.api.mock.FakeSalesPostRepository;
+import project.forwork.api.mock.FakeThumbnailImageRepository;
 import project.forwork.api.mock.FakeUserRepository;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -25,15 +29,18 @@ class SalesPostServiceTest {
 
     private SalesPostService salesPostService;
     private FakeSalesPostRepository fakeSalesPostRepository;
+    private FakeThumbnailImageRepository fakeThumbnailImageRepository;
     FakeUserRepository fakeUserRepository;
 
     @BeforeEach
     void init(){
         fakeUserRepository = new FakeUserRepository();
         fakeSalesPostRepository = new FakeSalesPostRepository();
+        fakeThumbnailImageRepository = new FakeThumbnailImageRepository();
         this.salesPostService = SalesPostService.builder()
                 .userRepository(fakeUserRepository)
                 .salesPostRepository(fakeSalesPostRepository)
+                .thumbnailImageRepository(fakeThumbnailImageRepository)
                 .build();
 
         User user1 = User.builder()
@@ -112,7 +119,78 @@ class SalesPostServiceTest {
         fakeSalesPostRepository.save(salesPost1);
         fakeSalesPostRepository.save(salesPost2);
         fakeSalesPostRepository.save(salesPost3);
+
+        ThumbnailImage thumbnailImage1 = ThumbnailImage.builder()
+                .id(1L)
+                .url("www.test1.com")
+                .fieldType(FieldType.AI)
+                .build();
+        ThumbnailImage thumbnailImage2 = ThumbnailImage.builder()
+                .id(2L)
+                .url("www.test2.com")
+                .fieldType(FieldType.BACKEND)
+                .build();
+        fakeThumbnailImageRepository.saveAll(List.of(thumbnailImage1, thumbnailImage2));
     }
+
+    @Test
+    void CANCELED_판매글을_다시_REGISTER_하면_SELLING_으로_상태가_변경_된다(){
+        //given(상황환경 세팅)
+        User user = User.builder()
+                .id(1L)
+                .email("test@com")
+                .password("123")
+                .build();
+
+        Resume resume2 = Resume.builder()
+                .id(2L)
+                .seller(user)
+                .field(FieldType.BACKEND)
+                .level(LevelType.NEW)
+                .resumeUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
+                .descriptionImageUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
+                .price(new BigDecimal("98000.00"))
+                .description("test resume2")
+                .status(ResumeStatus.ACTIVE)
+                .build();
+
+        //when(상황발생)
+        salesPostService.registerSalesPost(resume2);
+        SalesPost salesPost = fakeSalesPostRepository.getByResumeIdWithThrow(resume2.getId());
+
+        //then(검증)
+        assertThat(salesPost.getSalesStatus()).isEqualTo(SalesStatus.SELLING);
+    }
+
+    @Test
+    void 판매글이_존재_하지_않는_이력서를_가지고REGISTER를_하면_SELLING_상태인_판매글이_자동_생성_된다(){
+        //given(상황환경 세팅)
+        User user = User.builder()
+                .id(1L)
+                .email("test@com")
+                .password("123")
+                .build();
+
+        Resume resume4 = Resume.builder()
+                .id(4L)
+                .seller(user)
+                .field(FieldType.AI)
+                .level(LevelType.JUNIOR)
+                .resumeUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
+                .descriptionImageUrl("http://docs.google.com/presentation/d/1AT954aQPzBf0vm47yYqDDfGtbkejSmJ9/edit")
+                .price(new BigDecimal("10000.00"))
+                .description("test resume1")
+                .status(ResumeStatus.ACTIVE)
+                .build();
+
+        //when(상황발생)
+        salesPostService.registerSalesPost(resume4);
+        SalesPost salesPost = fakeSalesPostRepository.getByResumeIdWithThrow(resume4.getId());
+
+        //then(검증)
+        assertThat(salesPost.getSalesStatus()).isEqualTo(SalesStatus.SELLING);
+    }
+
 
     @Test
     void 판매_중지_글을_다시_판매중으로_변경할_수_있습니다(){

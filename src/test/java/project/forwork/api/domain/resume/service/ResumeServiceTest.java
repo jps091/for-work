@@ -2,6 +2,7 @@ package project.forwork.api.domain.resume.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.web.multipart.MultipartFile;
 import project.forwork.api.common.domain.CurrentUser;
 import project.forwork.api.common.exception.ApiException;
@@ -35,6 +36,9 @@ class ResumeServiceTest {
 
     private FakeUserRepository fakeUserRepository;
 
+    @Mock
+    private ResumePageService resumePageService;
+
     @BeforeEach
     void init(){
         fakeUserRepository = new FakeUserRepository();
@@ -47,9 +51,9 @@ class ResumeServiceTest {
                 .resumeRepository(fakeResumeRepository)
                 .userRepository(fakeUserRepository)
                 .cartResumeRepository(fakeCartResumeRepository)
-                .resumeDecisionRepository(fakeResumeDecisionRepository)
                 .salesPostRepository(fakeSalesPostRepository)
                 .s3Service(fakeS3Service)
+                .resumePageService(resumePageService)
                 .build();
 
         User user1 = User.builder()
@@ -251,7 +255,7 @@ class ResumeServiceTest {
         Resume resume = fakeResumeRepository.getByIdWithThrow(1L);
 
         // then
-        SalesPost salesPost = fakeSalesPostRepository.getByResumeWithThrow(resume);
+        SalesPost salesPost = fakeSalesPostRepository.getByResumeIdWithThrow(resume.getId());
         assertThat(salesPost.getSalesStatus()).isEqualTo(SalesStatus.CANCELED);
     }
 

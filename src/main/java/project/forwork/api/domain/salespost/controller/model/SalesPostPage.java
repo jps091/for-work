@@ -5,24 +5,22 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.io.Serial;
-import java.io.Serializable;
 import java.util.List;
 
 @Getter
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class SalesPostPage implements Serializable {
-    @Serial
-    private static final long serialVersionUID = 3201894841286387742L;
-    private Long lastId;
-    private List<SalesPostSearchResponse> results;
+@Builder
+public class SalesPostPage {
+    private List<SalesPostSearchResponse> result;
+    private boolean isFirstPage;
+    private boolean isLastPage;
 
-    public static SalesPostPage from(List<SalesPostSearchResponse> results, SalesPostSearchResponse record){
+    public static SalesPostPage from(List<SalesPostSearchResponse> result, boolean isFirstPage, boolean isLastPage){
         return SalesPostPage.builder()
-                .results(results)
-                .lastId(record.getResumeId())
+                .result(result)
+                .isFirstPage(isFirstPage)
+                .isLastPage(isLastPage)
                 .build();
     }
 }

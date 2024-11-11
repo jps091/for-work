@@ -36,13 +36,13 @@ public class SalesPostController {
     @Operation(summary = "sale-resume 상태 변경",
             description = "자신의 resume이 상태가 active일때만 가능\n" +
                     " SELLING, CANCEL 변경 가능")
-    @PutMapping("/{salesPostId}")
+    @PutMapping("/{resumeId}")
     public Api<String> changeSalesStatus(
             @Parameter(hidden = true) @Current CurrentUser currentUser,
-            @PathVariable Long salesPostId,
+            @PathVariable Long resumeId,
             @RequestParam SalesStatus status
     ){
-        salesPostService.changeSalesStatus(currentUser, salesPostId, status);
+        salesPostService.changeSalesStatus(currentUser, resumeId, status);
         return Api.OK("판매글 상태를 변경 완료 하였습니다.");
     }
 }
