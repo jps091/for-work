@@ -10,7 +10,7 @@ import project.forwork.api.domain.order.model.Order;
 import project.forwork.api.domain.orderresume.controller.model.OrderResumeResponse;
 import project.forwork.api.domain.orderresume.controller.model.OrderTitleResponse;
 import project.forwork.api.domain.orderresume.infrastructure.enums.OrderResumeStatus;
-import project.forwork.api.domain.orderresume.controller.model.PurchaseResponse;
+import project.forwork.api.domain.orderresume.controller.model.OrderResumeMailMessage;
 import project.forwork.api.domain.orderresume.model.OrderResume;
 import project.forwork.api.domain.orderresume.service.port.OrderResumeRepositoryCustom;
 
@@ -31,9 +31,9 @@ public class OrderResumeRepositoryCustomImpl implements OrderResumeRepositoryCus
     }
 
     @Override
-    public List<PurchaseResponse> findPurchaseResume(Order order) {
+    public List<OrderResumeMailMessage> findPurchaseResume(Order order) {
         return queryFactory
-                .select(Projections.fields(PurchaseResponse.class,
+                .select(Projections.fields(OrderResumeMailMessage.class,
                         orderEntity.id.as("orderId"),
                         userEntity.email.as("email"),
                         resumeEntity.resumeUrl.as("resumeUrl"),
@@ -50,12 +50,12 @@ public class OrderResumeRepositoryCustomImpl implements OrderResumeRepositoryCus
                 .fetch();
     }
 
-    public List<PurchaseResponse> findAllPurchaseResume(List<OrderResume> orderResumes) {
+    public List<OrderResumeMailMessage> findAllPurchaseResume(List<OrderResume> orderResumes) {
 
         List<Long> orderResumeIds = orderResumes.stream().map(OrderResume::getId).toList();
 
         return queryFactory
-                .select(Projections.fields(PurchaseResponse.class,
+                .select(Projections.fields(OrderResumeMailMessage.class,
                         orderEntity.id.as("orderId"),
                         userEntity.email.as("email"),
                         resumeEntity.resumeUrl.as("resumeUrl"),

@@ -8,7 +8,7 @@ import project.forwork.api.domain.maillog.model.MailLog;
 import project.forwork.api.domain.maillog.service.port.MailLogRepository;
 import project.forwork.api.domain.order.model.Order;
 import project.forwork.api.domain.order.service.port.OrderRepository;
-import project.forwork.api.domain.orderresume.controller.model.PurchaseResponse;
+import project.forwork.api.domain.orderresume.controller.model.OrderResumeMailMessage;
 
 @Service
 @RequiredArgsConstructor
@@ -18,14 +18,14 @@ public class MailLogService {
     private final OrderRepository orderRepository;
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void registerFailLog(PurchaseResponse body, Exception e){
+    public void registerFailLog(OrderResumeMailMessage body, Exception e){
         Order order = orderRepository.getByIdWithThrow(body.getOrderId());
         MailLog mailLog = MailLog.create(body.getEmail(), order.getRequestId(), body.getResumeId(), e);
         mailLogRepository.save(mailLog);
     }
 
     @Transactional
-    public void registerSuccessLog(PurchaseResponse body){
+    public void registerSuccessLog(OrderResumeMailMessage body){
         Order order = orderRepository.getByIdWithThrow(body.getOrderId());
         MailLog mailLog = MailLog.create(body.getEmail(), order.getRequestId(), body.getResumeId());
         mailLogRepository.save(mailLog);

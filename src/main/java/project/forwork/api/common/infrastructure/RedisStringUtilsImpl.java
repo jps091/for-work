@@ -2,12 +2,13 @@ package project.forwork.api.common.infrastructure;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import project.forwork.api.common.service.port.RedisUtils;
 
 import java.util.concurrent.TimeUnit;
 
-@Service
+@Component
 @RequiredArgsConstructor
 public class RedisStringUtilsImpl implements RedisUtils {
 

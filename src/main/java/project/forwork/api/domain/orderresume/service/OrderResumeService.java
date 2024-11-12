@@ -14,6 +14,7 @@ import project.forwork.api.domain.order.infrastructure.enums.OrderStatus;
 import project.forwork.api.domain.order.model.Order;
 import project.forwork.api.domain.orderresume.infrastructure.enums.OrderResumeStatus;
 import project.forwork.api.domain.orderresume.model.OrderResume;
+import project.forwork.api.domain.orderresume.producer.OrderResumeProducer;
 import project.forwork.api.domain.orderresume.service.port.OrderResumeRepository;
 import project.forwork.api.domain.resume.model.Resume;
 
@@ -29,6 +30,7 @@ public class OrderResumeService {
     private final OrderResumeMailService orderResumeMailService;
     private final CartResumeRepository cartResumeRepository;
     private final ClockHolder clockHolder;
+    private final OrderResumeProducer orderResumeProducer;
 
     public void createByResumes(Order order, List<Long> cartResumeIds){
         List<Resume> resumes = cartResumeRepository.findByIds(cartResumeIds).stream()
@@ -51,7 +53,7 @@ public class OrderResumeService {
                 .toList();
 
         List<OrderResume> confirmedResumes = orderResumeRepository.saveAll(orderedResumes);
-        orderResumeMailService.setupConfirmedResumesAndSendEmail(confirmedResumes);
+        orderResumeProducer.setupConfirmedResumesAndSendEmail(confirmedResumes);
 
         int confirmOrderSize = confirmedResumes.size();
         OrderStatus updateOrderStatus = getOrderStatusCheckConfirm(totalOrderSize, confirmOrderSize);
@@ -66,7 +68,7 @@ public class OrderResumeService {
                 .map(OrderResume::updateStatusConfirm)
                 .toList();
         List<OrderResume> confirmedResumes = orderResumeRepository.saveAll(orderedResumes);
-        orderResumeMailService.setupConfirmedResumesAndSendEmail(confirmedResumes);
+        orderResumeProducer.setupConfirmedResumesAndSendEmail(confirmedResumes);
     }
 
     public void cancelByOrder(Order order){
