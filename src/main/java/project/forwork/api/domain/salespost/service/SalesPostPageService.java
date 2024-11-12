@@ -38,7 +38,11 @@ public class SalesPostPageService {
                     "#cond.minPrice == null && #cond.maxPrice == null",
             cacheManager = "redisCacheManager")
     public SalesPostPage findFirstPage(SalesPostFilterCond cond, int limit){
-        List<SalesPostSearchDto> results = salesPostRepositoryCustom.searchFirstPage(cond, limit);
+        List<SalesPostSearchDto> results = salesPostRepositoryCustom.searchFirstPage(cond, limit + 1);
+        if(results.size() <= limit){
+            return createSearchResponseByDto(results, true, true);
+        }
+        results = results.subList(0, limit);
         return createSearchResponseByDto(results, true, false);
     }
 
@@ -89,6 +93,6 @@ public class SalesPostPageService {
     }
 
     private String createSalesPostTitle(SalesPostSearchDto dto){
-        return dto.getField().toString() + " " + dto.getLevel().toString() + " 이력서 #" + dto.getResumeId();
+        return "#" + dto.getResumeId() + " " + dto.getLevel().toString() + " " +  dto.getField().toString() + " 이력서";
     }
 }

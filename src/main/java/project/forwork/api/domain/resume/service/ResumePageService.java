@@ -27,7 +27,11 @@ public class ResumePageService {
     public ResumePage findFirstPage(
             PeriodCond periodCond, ResumeStatus status, int limit
     ){
-        List<ResumeAdminResponse> results = resumeRepositoryCustom.findFirstPage(periodCond, status, limit);
+        List<ResumeAdminResponse> results = resumeRepositoryCustom.findFirstPage(periodCond, status, limit + 1);
+        if(results.size() <= limit){
+            return createResumePage(results, true, true);
+        }
+        results = results.subList(0, limit);
         return createResumePage(results, true, false);
     }
 

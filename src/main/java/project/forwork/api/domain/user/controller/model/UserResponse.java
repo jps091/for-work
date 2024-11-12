@@ -9,12 +9,14 @@ import project.forwork.api.domain.user.model.User;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserResponse {
+    private Long userId;
     private String name;
     private String email;
     private UserStatus status;
 
     public static UserResponse from(User user){
         return UserResponse.builder()
+                .userId(user.getId())
                 .email(user.getEmail())
                 .name(user.getName())
                 .status(user.getStatus())
