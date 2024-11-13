@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import project.forwork.api.common.service.port.ClockHolder;
 import project.forwork.api.common.service.port.MailSender;
 import project.forwork.api.domain.maillog.service.MailLogService;
-import project.forwork.api.domain.orderresume.controller.model.OrderResumeMailMessage;
+import project.forwork.api.domain.orderresume.controller.model.OrderResumePurchaseInfo;
 import project.forwork.api.domain.orderresume.model.OrderResume;
 import project.forwork.api.domain.orderresume.service.port.OrderResumeRepository;
 import project.forwork.api.domain.orderresume.service.port.OrderResumeRepositoryCustom;
@@ -45,7 +45,7 @@ public class OrderResumeMailService {
 
         resumeQuantityService.addSalesQuantityWithOnePessimistic(resumeIds); // 판매량 1증가
 
-        List<OrderResumeMailMessage> purchaseRespons = orderResumeRepositoryCustom.findAllPurchaseResume(orderResumes);
+        List<OrderResumePurchaseInfo> purchaseRespons = orderResumeRepositoryCustom.findAllPurchaseResume(orderResumes);
         purchaseRespons.forEach(this::sendEmail);
     }
 
@@ -54,16 +54,15 @@ public class OrderResumeMailService {
             maxAttempts = 1,
             backoff =  @Backoff(delay = 2000)
     )
-    public void sendEmail(OrderResumeMailMessage orderResumeMailMessage){
+    public void sendEmail(OrderResumePurchaseInfo orderResumePurchaseInfo){
         String title = "for-work 구매 이력서 : "; //+ orderResumeMailMessage.getSalesPostTitle();
-        String content = "주문 번호 #" + orderResumeMailMessage.getOrderId() +" <URL> : "+ orderResumeMailMessage.getResumeUrl();
+        String content = "주문 번호 #" + orderResumePurchaseInfo.getOrderId() +" <URL> : "+ orderResumePurchaseInfo.getResumeUrl();
 
         try{
-            mailSender.send(orderResumeMailMessage.getEmail(), title, content);
-            mailLogService.registerSuccessLog(orderResumeMailMessage);
+            mailSender.send(orderResumePurchaseInfo.getBuyerEmail(), title, content);
         }catch (Exception e){
-            log.error("send email fail orderId={}", orderResumeMailMessage.getOrderId(), e);
-            mailLogService.registerFailLog(orderResumeMailMessage, e);
+            log.error("send email fail orderId={}", orderResumePurchaseInfo.getOrderId(), e);
+            mailLogService.registerFailLog(orderResumePurchaseInfo, e);
             throw e;
         }
     }

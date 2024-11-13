@@ -25,13 +25,4 @@ public class MailLog {
                 .errorResponse(e.getMessage())
                 .build();
     }
-
-    public static MailLog create(String email, String requestId, Long resumeId){
-        return MailLog.builder()
-                .email(email)
-                .requestId(requestId)
-                .resumeId(resumeId)
-                .emailType(EmailType.BUYER)
-                .build();
-    }
 }

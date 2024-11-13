@@ -39,7 +39,8 @@ public class UserOpenApiController {
     public Api<String> sendCertificationCode(
             @RequestParam String email
     ){
-        userService.sendCode(email);
+        //userService.sendCode(email);
+        userService.produceVerifyEmail(email);
         return Api.OK("인증 코드 이메일 전송 완료");
     }
 

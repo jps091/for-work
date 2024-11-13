@@ -9,6 +9,8 @@ import project.forwork.api.common.annotation.Current;
 import project.forwork.api.common.domain.CurrentUser;
 import project.forwork.api.common.error.UserErrorCode;
 import project.forwork.api.common.exception.ApiException;
+import project.forwork.api.common.infrastructure.Producer;
+import project.forwork.api.common.infrastructure.model.NoticeMessage;
 import project.forwork.api.common.service.port.MailSender;
 import project.forwork.api.common.service.port.RedisUtils;
 import project.forwork.api.common.service.port.UuidHolder;
@@ -36,6 +38,7 @@ public class UserService {
     private final MailSender mailSender;
     private final UuidHolder uuidHolder;
     private final RedisUtils redisUtils;
+    private final Producer producer;
 
     @Transactional
     public User register(UserCreateRequest body){
@@ -50,8 +53,10 @@ public class UserService {
         Cart cart = Cart.create(user);
         cartRepository.save(cart);
 
+        produceNoticeMessage(user);
         return user;
     }
+
     @Transactional
     public void updatePassword(
             CurrentUser currentUser, PasswordModifyRequest body
@@ -96,6 +101,10 @@ public class UserService {
         mailSender.send(email, title, content);
     }
 
+    public void produceVerifyEmail(String email){
+        producer.sendAuthMail(email);
+    }
+
     public void verifyEmail(EmailVerifyRequest body){
         String targetCode = redisUtils.getData(getKeyByEmail(body.getEmail()));
 
@@ -120,6 +129,11 @@ public class UserService {
 
     private static boolean isCodeMismatch(String sourceCode, String targetCode) {
         return !Objects.equals(sourceCode, targetCode);
+    }
+
+    private void produceNoticeMessage(User user) {
+        NoticeMessage message = NoticeMessage.from(user.getEmail());
+        producer.sendMemberNotice(message);
     }
 
     private void deleteCertificationCode(String email) {

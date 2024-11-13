@@ -9,11 +9,12 @@ import project.forwork.api.common.infrastructure.enums.LevelType;
 @Builder
 @Data
 @NoArgsConstructor
-public class OrderResumeMailMessage {
+public class OrderResumePurchaseInfo {
     private Long orderId;
     private Long resumeId;
-    private String email;
+    private String buyerEmail;
     private LevelType level;
     private FieldType field;
     private String resumeUrl;
+    private String sellerEmail;
 }

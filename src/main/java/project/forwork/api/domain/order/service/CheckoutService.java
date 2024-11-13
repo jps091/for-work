@@ -8,6 +8,7 @@ import org.springframework.web.client.RestClientResponseException;
 import project.forwork.api.common.domain.CurrentUser;
 import project.forwork.api.common.error.TransactionErrorCode;
 import project.forwork.api.common.exception.ApiException;
+import project.forwork.api.common.infrastructure.model.SellerMessage;
 import project.forwork.api.domain.cartresume.service.CartResumeService;
 import project.forwork.api.domain.cartresume.service.port.CartResumeRepository;
 import project.forwork.api.domain.order.controller.model.*;
@@ -129,5 +130,13 @@ public class CheckoutService {
                 .cancelAmount(cancelAmount)
                 .cancelReason("부분 주문 취소")
                 .build();
+    }
+
+    private SellerMessage createPaymentMessage(Transaction tx, Long orderId){
+        String title = "forwork 이력서 주문 결제 내역";
+        String content = "즉시 구매 확정을 하지 않을 경우 30~60분 후 이력서 저장 링크가 메일로 전송 됩니다. \n" +
+                "문의 사항은 해당 주소로 메일 부탁드립니다.";
+
+        return SellerMessage.from(tx.getUserEmail(), title, content);
     }
 }

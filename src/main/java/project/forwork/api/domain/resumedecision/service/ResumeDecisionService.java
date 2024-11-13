@@ -4,18 +4,15 @@ import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import project.forwork.api.common.infrastructure.Producer;
+import project.forwork.api.common.infrastructure.model.SalesRequestResultMessage;
 import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
 import project.forwork.api.domain.resume.model.Resume;
 import project.forwork.api.domain.resume.service.port.ResumeRepository;
 import project.forwork.api.domain.resumedecision.model.ResumeDecision;
 import project.forwork.api.domain.resumedecision.service.port.ResumeDecisionRepository;
 import project.forwork.api.common.domain.CurrentUser;
-import project.forwork.api.domain.salespost.infrastructure.enums.SalesStatus;
-import project.forwork.api.domain.salespost.model.SalesPost;
 import project.forwork.api.domain.salespost.service.SalesPostService;
-import project.forwork.api.domain.salespost.service.port.SalesPostRepository;
-import project.forwork.api.domain.thumbnailimage.model.ThumbnailImage;
-import project.forwork.api.domain.thumbnailimage.service.port.ThumbnailImageRepository;
 import project.forwork.api.domain.user.model.User;
 import project.forwork.api.domain.user.service.port.UserRepository;
 
@@ -29,6 +26,7 @@ public class  ResumeDecisionService {
     private final ResumeRepository resumeRepository;
     private final UserRepository userRepository;
     private final SalesPostService salesPostService;
+    private final Producer producer;
 
     public void approve(CurrentUser currentUser, Long resumeId){
         User admin = userRepository.getByIdWithThrow(currentUser.getId());
@@ -41,6 +39,7 @@ public class  ResumeDecisionService {
         resumeDecisionRepository.save(resumeDecision);
 
         salesPostService.registerSalesPost(newResume);
+        produceSalesRequestResultMessage(currentUser, resume, true);
     }
 
     public void deny(CurrentUser currentUser, Long resumeId){
@@ -52,5 +51,15 @@ public class  ResumeDecisionService {
 
         ResumeDecision resumeDecision = ResumeDecision.deny(admin, resume);
         resumeDecisionRepository.save(resumeDecision);
+
+        produceSalesRequestResultMessage(currentUser, resume, false);
+    }
+
+    private void produceSalesRequestResultMessage(CurrentUser currentUser, Resume resume, boolean isApprove) {
+        SalesRequestResultMessage message =SalesRequestResultMessage.deny(currentUser.getEmail(), resume.getResumeUrl());
+        if(isApprove){
+            message = SalesRequestResultMessage.approve(currentUser.getEmail(), resume.getResumeUrl());
+        }
+        producer.sendSalesRequestResultMail(message);
     }
 }
