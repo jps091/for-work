@@ -121,10 +121,20 @@ public class OrderService {
             throw new ApiException(OrderErrorCode.ORDER_NO_CONTENT);
         }
 
+//        return orders.stream()
+//                .map(order -> {
+//                    List<OrderTitleResponse> orderTitles = orderResumeRepositoryCustom.findOrderTitleByOrderId(order.getId());
+//                    String orderResumeTitle = orderTitles.get(0).getTitle();
+//                    String orderTitle = createOrderTitle(orderTitles, orderResumeTitle);
+//                    return OrderResponse.from(order, orderTitle);
+//                }).toList();
+
         return orders.stream()
                 .map(order -> {
                     List<OrderTitleResponse> orderTitles = orderResumeRepositoryCustom.findOrderTitleByOrderId(order.getId());
-                    String orderResumeTitle = orderTitles.get(0).getTitle();
+                    String orderResumeTitle = orderTitles.isEmpty()
+                            ? ("주문" + " #" + order.getId() + " 내역")
+                            : orderTitles.get(0).getTitle();
                     String orderTitle = createOrderTitle(orderTitles, orderResumeTitle);
                     return OrderResponse.from(order, orderTitle);
                 }).toList();
@@ -147,6 +157,6 @@ public class OrderService {
     }
 
     private static String createOrderTitle(List<OrderTitleResponse> orderTitles, String orderResumeTitle) {
-        return orderTitles.size() == 1 ? orderResumeTitle : orderResumeTitle + "외 " + orderTitles.size() + "건";
+        return orderTitles.size() == 1 ? orderResumeTitle : orderResumeTitle + " 외 " + orderTitles.size() + "건";
     }
 }

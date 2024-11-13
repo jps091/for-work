@@ -3,20 +3,21 @@ package project.forwork.api.domain.maillog.infrastructure.enums;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import project.forwork.api.common.infrastructure.enums.FieldType;
 
 @AllArgsConstructor
 @Getter
-public enum Result {
-    SUCCESS("발송 성공"),
-    FAIL("발송 실패"),
+public enum EmailType {
+    BUYER("구매자"),
+    SELLER("판매자"),
+    VERIFY("인증"),
+    NOTICE("공지"),
     ;
 
     private String description;
 
     @JsonCreator
-    public static Result from(String s) {
-        for (Result status : Result.values()) {
+    public static EmailType from(String s) {
+        for (EmailType status : EmailType.values()) {
             if (status.name().equalsIgnoreCase(s)) {
                 return status;
             }
