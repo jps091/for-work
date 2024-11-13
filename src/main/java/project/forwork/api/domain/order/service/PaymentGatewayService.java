@@ -14,8 +14,8 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 import project.forwork.api.domain.order.infrastructure.model.ConfirmPaymentDto;
-import project.forwork.api.domain.order.controller.model.PaymentFullCancelRequest;
-import project.forwork.api.domain.order.controller.model.PaymentPartialCancelRequest;
+import project.forwork.api.domain.order.infrastructure.model.PaymentFullCancelDto;
+import project.forwork.api.domain.order.infrastructure.model.PaymentPartialCancelDto;
 
 import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
@@ -66,11 +66,11 @@ public class PaymentGatewayService {
         }
     }
 
-    public void cancelFullPayment(String paymentKey, PaymentFullCancelRequest body) {
+    public void cancelFullPayment(String paymentKey, PaymentFullCancelDto body) {
         cancelPayment(paymentKey, body, "전체");
     }
 
-    public void cancelPartialPayment(String paymentKey, PaymentPartialCancelRequest body) {
+    public void cancelPartialPayment(String paymentKey, PaymentPartialCancelDto body) {
         cancelPayment(paymentKey, body, "부분");
     }
 

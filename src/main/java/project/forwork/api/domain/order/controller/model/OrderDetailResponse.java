@@ -1,6 +1,7 @@
 package project.forwork.api.domain.order.controller.model;
 
 import lombok.*;
+import project.forwork.api.domain.order.infrastructure.enums.OrderStatus;
 import project.forwork.api.domain.order.model.Order;
 import project.forwork.api.domain.orderresume.controller.model.OrderResumeResponse;
 
@@ -19,6 +20,7 @@ public class OrderDetailResponse {
     private String email;
     private List<OrderResumeResponse> orderResumeResponses;
     private BigDecimal totalAmount;
+    private OrderStatus orderStatus;
 
     public static OrderDetailResponse from(Order order, List<OrderResumeResponse> orderResumes){
         return OrderDetailResponse.builder()
@@ -26,6 +28,7 @@ public class OrderDetailResponse {
                 .totalAmount(order.getTotalAmount())
                 .paidAt(order.getPaidAt())
                 .orderId(order.getId())
+                .orderStatus(order.getStatus())
                 .orderResumeResponses(orderResumes)
                 .build();
     }

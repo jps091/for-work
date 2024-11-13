@@ -11,6 +11,8 @@ import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.domain.cartresume.service.CartResumeService;
 import project.forwork.api.domain.order.controller.model.*;
 import project.forwork.api.domain.order.infrastructure.model.ConfirmPaymentDto;
+import project.forwork.api.domain.order.infrastructure.model.PaymentFullCancelDto;
+import project.forwork.api.domain.order.infrastructure.model.PaymentPartialCancelDto;
 import project.forwork.api.domain.order.model.Order;
 import project.forwork.api.domain.orderresume.model.OrderResume;
 import project.forwork.api.domain.orderresume.service.OrderResumeService;
@@ -25,7 +27,6 @@ import java.util.List;
 
 @Slf4j
 @Service
-@Transactional
 @AllArgsConstructor
 public class CheckoutService {
 
@@ -36,7 +37,8 @@ public class CheckoutService {
     private final RetryLogService retryLogService;
     private final CartResumeService cartResumeService;
 
-    public void processOrderAndPayment(CurrentUser currentUser, ConfirmPaymentRequest body){
+    @Transactional
+    public ConfirmResponse processOrderAndPayment(CurrentUser currentUser, ConfirmPaymentRequest body){
         // 멱등성 확인 후 주문 생성
         validRequestId(body);
         Order order = orderService.create(currentUser, body);
@@ -45,11 +47,13 @@ public class CheckoutService {
             ConfirmPaymentDto confirmPaymentDto = ConfirmPaymentDto.from(body);
             pgService.confirm(confirmPaymentDto);
 
-            orderService.updateOrderPaid(order);
+            order = orderService.updateOrderPaid(order);
             cartResumeService.deleteByConfirmed(currentUser, body.getResumeIds());
 
             Transaction tx = Transaction.create(currentUser, body.getRequestId(), body.getPaymentKey(), body.getAmount(), TransactionType.PAYMENT);
             transactionRepository.save(tx);
+
+            return ConfirmResponse.from(order, body.getResumeIds());
         }catch (Exception e){
             // 결제 실패 시 주문 상태 업데이트
             orderService.updateOrderConfirmFailure(order);
@@ -59,12 +63,12 @@ public class CheckoutService {
             throw e;  // 예외를 다시 던져서 상위 로직에서 처리할 수 있게 함
         }
     }
-
+    @Transactional
     public void cancelPayment(CurrentUser currentUser, Long orderId){
         String requestId = orderService.getRequestIdByOrderId(orderId);
 
         try{
-            PaymentFullCancelRequest body = createCancelBody();
+            PaymentFullCancelDto body = createCancelBody();
             Transaction transaction = transactionRepository.getByRequestIdAndEmail(requestId, currentUser.getEmail());
             pgService.cancelFullPayment(transaction.getPaymentKey(), body);
             Order order = orderService.cancelOrder(currentUser, orderId);
@@ -79,13 +83,14 @@ public class CheckoutService {
         }
     }
 
+    @Transactional
     public void cancelPartialPayment(CurrentUser currentUser, Long orderId, PartialCancelRequest body){
         String requestId = orderService.getRequestIdByOrderId(orderId);
 
         try{
             Transaction transaction = transactionRepository.getByRequestIdAndEmail(requestId, currentUser.getEmail());
             List<OrderResume> orderResumes = orderResumeService.getCancelRequestOrderResumes(body.getOrderResumeIds(), orderId);
-            PaymentPartialCancelRequest paymentBody = createPartialCancelBody(orderResumes);
+            PaymentPartialCancelDto paymentBody = createPartialCancelBody(orderResumes);
 
             pgService.cancelPartialPayment(transaction.getPaymentKey(), paymentBody);
             orderService.cancelPartialOrder(currentUser, orderId, orderResumes);
@@ -113,18 +118,18 @@ public class CheckoutService {
         orderService.validRequestId(body.getRequestId());
     }
 
-    private static PaymentFullCancelRequest createCancelBody() {
-        return PaymentFullCancelRequest.builder()
+    private static PaymentFullCancelDto createCancelBody() {
+        return PaymentFullCancelDto.builder()
                 .cancelReason("주문 전체 취소")
                 .build();
     }
 
-    private PaymentPartialCancelRequest createPartialCancelBody(List<OrderResume> orderResumes){
+    private PaymentPartialCancelDto createPartialCancelBody(List<OrderResume> orderResumes){
         BigDecimal cancelAmount = orderResumes.stream()
                 .map(OrderResume::getPrice)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        return PaymentPartialCancelRequest.builder()
+        return PaymentPartialCancelDto.builder()
                 .cancelAmount(cancelAmount)
                 .cancelReason("부분 주문 취소")
                 .build();

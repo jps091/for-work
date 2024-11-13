@@ -8,7 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import project.forwork.api.common.infrastructure.BaseTimeEntity;
-import project.forwork.api.domain.maillog.infrastructure.enums.Result;
+import project.forwork.api.domain.maillog.infrastructure.enums.EmailType;
 import project.forwork.api.domain.maillog.model.MailLog;
 
 @Entity
@@ -27,15 +27,16 @@ public class MailLogEntity extends BaseTimeEntity {
     @Column(length = 50, name = "email") @NotNull
     private String email;
 
-    @Column(length = 25, name = "request_id") @NotNull
+    @Column(length = 25, name = "request_id")
     private String requestId;
 
-    @Column(name = "resume_id") @NotNull
+    @Column(name = "resume_id")
     private Long resumeId;
 
     @Enumerated(EnumType.STRING)
     @NotNull
-    private Result result;
+    @Column(name = "type")
+    private EmailType emailType;
 
     @Column(length = 255, name = "error_response") // char
     private String errorResponse;
@@ -46,7 +47,7 @@ public class MailLogEntity extends BaseTimeEntity {
         mailLogEntity.email = mailLog.getEmail();
         mailLogEntity.requestId = mailLog.getRequestId();
         mailLogEntity.resumeId = mailLog.getResumeId();
-        mailLogEntity.result = mailLog.getResult();
+        mailLogEntity.emailType = mailLog.getEmailType();
         mailLogEntity.errorResponse = mailLog.getErrorResponse();
         return  mailLogEntity;
     }
@@ -57,7 +58,7 @@ public class MailLogEntity extends BaseTimeEntity {
                 .email(email)
                 .requestId(requestId)
                 .resumeId(resumeId)
-                .result(result)
+                .emailType(emailType)
                 .errorResponse(errorResponse)
                 .build();
     }
