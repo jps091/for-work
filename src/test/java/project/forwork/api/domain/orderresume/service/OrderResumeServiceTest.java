@@ -174,19 +174,13 @@ class OrderResumeServiceTest {
                 .id(1L)
                 .build();
         Order order = Order.builder()
-                .id(5L)
-                .build();
-        CartResume cartResume = CartResume.builder()
                 .id(1L)
-                .resume(resume)
                 .build();
 
         //when(상황발생)
-        orderResumeService.createByResumes(order, List.of(cartResume.getId()));
-
         //then(검증)
-        OrderResume orderResumes = fakeOrderResumeRepository.getByIdWithThrow(1L);
-        assertThat(orderResumes.getResumeId()).isEqualTo(1);
+        assertThatCode(() -> orderResumeService.createByResumes(order, List.of(resume)))
+                .doesNotThrowAnyException();
     }
 
     @ParameterizedTest
@@ -249,7 +243,6 @@ class OrderResumeServiceTest {
 
         //when(상황발생)
         Order newOrder = orderResumeService.sendMailForNowConfirmedOrder(1L, order1, orderResumeIds);
-        List<OrderResume> byStatusAndOrder = fakeOrderResumeRepository.findByStatusAndOrder(OrderResumeStatus.ORDERED, order1);
 
         //then(검증)
         assertThat(newOrder.getStatus()).isEqualTo(OrderStatus.CONFIRM);

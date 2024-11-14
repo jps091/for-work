@@ -47,12 +47,12 @@ public class CheckoutService {
             pgService.confirm(confirmPaymentDto);
 
             Order order = orderService.create(currentUser, body);
-            cartResumeService.deleteByIds(currentUser, body.getCartResumeIds());
+            cartResumeService.deleteByPaidResumeIds(currentUser, body.getResumeIds());
 
             Transaction tx = Transaction.create(currentUser, body.getRequestId(), body.getPaymentKey(), body.getAmount(), TransactionType.PAYMENT);
             transactionRepository.save(tx);
 
-            return ConfirmResponse.from(order, body.getCartResumeIds());
+            return ConfirmResponse.from(order, body.getResumeIds());
         }catch (Exception e){
             log.error("caught process order-payment", e);
             throwApiExceptionIfStatusCode500(e, body.getRequestId(), RetryType.CONFIRM);

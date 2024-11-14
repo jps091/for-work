@@ -3,7 +3,6 @@ package project.forwork.api.domain.order.service;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import project.forwork.api.common.domain.CurrentUser;
 import project.forwork.api.common.error.OrderErrorCode;
@@ -19,6 +18,7 @@ import project.forwork.api.domain.orderresume.controller.model.OrderTitleRespons
 import project.forwork.api.domain.orderresume.model.OrderResume;
 import project.forwork.api.domain.orderresume.service.OrderResumeService;
 import project.forwork.api.domain.orderresume.service.port.OrderResumeRepositoryCustom;
+import project.forwork.api.domain.resume.model.Resume;
 import project.forwork.api.domain.resume.service.port.ResumeRepository;
 import project.forwork.api.domain.user.model.User;
 import project.forwork.api.domain.user.service.port.UserRepository;
@@ -45,7 +45,8 @@ public class OrderService {
         Order order = Order.create(user, body.getRequestId(), body.getAmount(), clockHolder);
         order = orderRepository.save(order);
 
-        orderResumeService.createByResumes(order, body.getCartResumeIds());
+        List<Resume> resumes = resumeRepository.findByIds(body.getResumeIds());
+        orderResumeService.createByResumes(order, resumes);
         return order;
     }
 

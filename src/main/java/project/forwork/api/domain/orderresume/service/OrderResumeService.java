@@ -32,11 +32,7 @@ public class OrderResumeService {
     private final ClockHolder clockHolder;
     private final OrderResumeProducer orderResumeProducer;
 
-    public void createByResumes(Order order, List<Long> cartResumeIds){
-        List<Resume> resumes = cartResumeRepository.findByIds(cartResumeIds).stream()
-                .map(CartResume::getResume)
-                .toList();
-
+    public void createByResumes(Order order, List<Resume> resumes){
         List<OrderResume> orderResumes = resumes.stream()
                 .map(resume -> OrderResume.create(order, resume))
                 .toList();

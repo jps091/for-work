@@ -85,12 +85,12 @@ public class FakeCartResumeRepository implements CartResumeRepository {
                 .toList();
     }
 
-    @Override
-    public List<CartResume> findByIds(List<Long> resumeIds) {
-        return data.stream()
-                .filter(cartResume -> resumeIds.contains(cartResume.getResume().getId()))
-                .toList();
-    }
+//    @Override
+//    public List<CartResume> findByIds(List<Long> resumeIds) {
+//        return data.stream()
+//                .filter(cartResume -> resumeIds.contains(cartResume.getResume().getId()))
+//                .toList();
+//    }
 
     @Override
     public void deleteAllByResumeId(Long resumeId) {
@@ -102,5 +102,13 @@ public class FakeCartResumeRepository implements CartResumeRepository {
         data.removeIf(cr ->
                 Objects.equals(cr.getCart().getId(), cartId) && cartResumeIds.contains(cr.getResume().getId())
         );
+    }
+
+    @Override
+    public List<CartResume> findByConfirmedResumes(Long userId, List<Long> resumeIds) {
+        return data.stream()
+                .filter(cartResume -> resumeIds.contains(cartResume.getResume().getId()) &&
+                        Objects.equals(cartResume.getCart().getUser().getId(), userId))
+                .toList();
     }
 }
