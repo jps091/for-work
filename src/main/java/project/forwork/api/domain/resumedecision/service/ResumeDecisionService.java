@@ -39,7 +39,7 @@ public class  ResumeDecisionService {
         resumeDecisionRepository.save(resumeDecision);
 
         salesPostService.registerSalesPost(newResume);
-        produceSalesRequestResultMessage(currentUser, resume, true);
+        produceSalesRequestResultMessage(resume, true);
     }
 
     public void deny(CurrentUser currentUser, Long resumeId){
@@ -52,13 +52,13 @@ public class  ResumeDecisionService {
         ResumeDecision resumeDecision = ResumeDecision.deny(admin, resume);
         resumeDecisionRepository.save(resumeDecision);
 
-        produceSalesRequestResultMessage(currentUser, resume, false);
+        produceSalesRequestResultMessage(resume, false);
     }
 
-    private void produceSalesRequestResultMessage(CurrentUser currentUser, Resume resume, boolean isApprove) {
-        SalesRequestResultMessage message =SalesRequestResultMessage.deny(currentUser.getEmail(), resume.getResumeUrl());
+    private void produceSalesRequestResultMessage(Resume resume, boolean isApprove) {
+        SalesRequestResultMessage message =SalesRequestResultMessage.deny(resume.getSellerEmail(), resume.getResumeUrl());
         if(isApprove){
-            message = SalesRequestResultMessage.approve(currentUser.getEmail(), resume.getResumeUrl());
+            message = SalesRequestResultMessage.approve(resume.getSellerEmail(), resume.getResumeUrl());
         }
         producer.sendSalesRequestResultMail(message);
     }

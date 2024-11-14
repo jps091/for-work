@@ -25,22 +25,22 @@ public class Producer {
 
     // 회원 - 구매자 메일 전송
     public void sendBuyerMail(BuyerMessage message) {
-        sendMail(MEMBER_EXCHANGE, MEMBER_BUYER_KEY, message);
+        sendMail(USER_EXCHANGE, USER_BUYER_KEY, message);
     }
 
     // 회원 - 판매자 메일 전송
     public void sendSellingMail(SellerMessage message) {
-        sendMail(MEMBER_EXCHANGE, MEMBER_SELLER_KEY, message);
+        sendMail(USER_EXCHANGE, USER_SELLER_KEY, message);
     }
 
     public void sendSalesRequestResultMail(SalesRequestResultMessage message) {
         log.info("sendSalesRequestResultMail={}", message);
-        sendMail(MEMBER_EXCHANGE, MEMBER_SELLER_KEY, message);
+        sendMail(USER_EXCHANGE, USER_SELLER_KEY, message);
     }
 
     // 회원 공통 공지 메일 전송
-    public void sendMemberNotice(NoticeMessage message) {
-        sendMail(MEMBER_NOTICE_KEY, MEMBER_EXCHANGE, message);
+    public void sendNotice(NoticeMessage message) {
+        sendMail(USER_NOTICE_KEY, USER_EXCHANGE, message);
     }
 
     private void sendMail(String exchange, String routingKey, Object message) {

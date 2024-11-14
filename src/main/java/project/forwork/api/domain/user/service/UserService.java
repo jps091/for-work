@@ -133,7 +133,7 @@ public class UserService {
 
     private void produceNoticeMessage(User user) {
         NoticeMessage message = NoticeMessage.from(user.getEmail());
-        producer.sendMemberNotice(message);
+        producer.sendNotice(message);
     }
 
     private void deleteCertificationCode(String email) {
