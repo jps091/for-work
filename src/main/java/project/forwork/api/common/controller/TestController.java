@@ -66,8 +66,8 @@ public class TestController {
             @RequestBody ConfirmPaymentRequest body
     ){
         CurrentUser currentUser = CurrentUser.builder()
-                        .id(4L)
-                        .status(UserStatus.USER)
+                        .id(1L)
+                        .status(UserStatus.ADMIN)
                         .build();
         log.info("controller ConfirmRequest={}",body);
         checkoutService.processOrderAndPayment(currentUser, body);

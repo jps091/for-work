@@ -1,6 +1,7 @@
 package project.forwork.api.domain.cartresume.infrastructure;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import project.forwork.api.common.error.CartResumeErrorCode;
 import project.forwork.api.common.exception.ApiException;
@@ -32,6 +33,11 @@ public class CartResumeRepositoryImpl implements CartResumeRepository {
     }
 
     @Override
+    public void deleteByIds(Long cartId, List<Long> cartResumeIds) {
+        cartResumeJpaRepository.deleteByIds(cartId, cartResumeIds);
+    }
+
+    @Override
     public void deleteAllInCart(Long userId) {
         cartResumeJpaRepository.deleteAllInCart(userId);
     }
@@ -53,8 +59,8 @@ public class CartResumeRepositoryImpl implements CartResumeRepository {
     }
 
     @Override
-    public List<CartResume> findByConfirmedResumes(Long userId, List<Long> resumeIds) {
-        return cartResumeJpaRepository.findByConfirmedResumes(userId, resumeIds).stream()
+    public List<CartResume> findByIds(List<Long> cartResumeIds) {
+        return cartResumeJpaRepository.findByConfirmedResumes(cartResumeIds).stream()
                 .map(CartResumeEntity::toModel)
                 .toList();
     }

@@ -9,6 +9,7 @@ import project.forwork.api.common.domain.CurrentUser;
 import project.forwork.api.common.error.TransactionErrorCode;
 import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.domain.cartresume.service.CartResumeService;
+import project.forwork.api.domain.cartresume.service.port.CartResumeRepository;
 import project.forwork.api.domain.order.controller.model.*;
 import project.forwork.api.domain.order.infrastructure.model.ConfirmPaymentDto;
 import project.forwork.api.domain.order.infrastructure.model.PaymentFullCancelDto;
@@ -39,27 +40,22 @@ public class CheckoutService {
 
     @Transactional
     public ConfirmResponse processOrderAndPayment(CurrentUser currentUser, ConfirmPaymentRequest body){
-        // 멱등성 확인 후 주문 생성
-        validRequestId(body);
-        Order order = orderService.create(currentUser, body);
+        validRequestId(body); // 멱등성 확인 후 주문 생성
         try{
             // 결체 요청
             ConfirmPaymentDto confirmPaymentDto = ConfirmPaymentDto.from(body);
             pgService.confirm(confirmPaymentDto);
 
-            order = orderService.updateOrderPaid(order);
-            cartResumeService.deleteByConfirmed(currentUser, body.getResumeIds());
+            Order order = orderService.create(currentUser, body);
+            cartResumeService.deleteByIds(currentUser, body.getCartResumeIds());
 
             Transaction tx = Transaction.create(currentUser, body.getRequestId(), body.getPaymentKey(), body.getAmount(), TransactionType.PAYMENT);
             transactionRepository.save(tx);
 
-            return ConfirmResponse.from(order, body.getResumeIds());
+            return ConfirmResponse.from(order, body.getCartResumeIds());
         }catch (Exception e){
-            // 결제 실패 시 주문 상태 업데이트
-            orderService.updateOrderConfirmFailure(order);
-
             log.error("caught process order-payment", e);
-            throwApiExceptionIfStatusCode500(e, order.getRequestId(), RetryType.CONFIRM);
+            throwApiExceptionIfStatusCode500(e, body.getRequestId(), RetryType.CONFIRM);
             throw e;  // 예외를 다시 던져서 상위 로직에서 처리할 수 있게 함
         }
     }

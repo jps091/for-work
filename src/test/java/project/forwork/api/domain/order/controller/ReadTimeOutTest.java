@@ -8,7 +8,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import project.forwork.api.common.domain.CurrentUser;
-import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.domain.order.controller.model.ConfirmPaymentRequest;
 import project.forwork.api.domain.order.service.CheckoutService;
 import project.forwork.api.domain.user.infrastructure.enums.UserStatus;
@@ -33,7 +32,7 @@ class ReadTimeOutTest {
                 .status(UserStatus.USER)
                 .build();
         ConfirmPaymentRequest body = ConfirmPaymentRequest.builder()
-                .resumeIds(List.of(1L))
+                .cartResumeIds(List.of(1L))
                 .paymentKey("test-key")
                 .requestId("345636546-a1d658e3-4")
                 .amount(new BigDecimal("99000"))

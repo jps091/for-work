@@ -2,7 +2,6 @@ package project.forwork.api.domain.order.service;
 
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,7 +19,6 @@ import project.forwork.api.domain.orderresume.controller.model.OrderTitleRespons
 import project.forwork.api.domain.orderresume.model.OrderResume;
 import project.forwork.api.domain.orderresume.service.OrderResumeService;
 import project.forwork.api.domain.orderresume.service.port.OrderResumeRepositoryCustom;
-import project.forwork.api.domain.resume.model.Resume;
 import project.forwork.api.domain.resume.service.port.ResumeRepository;
 import project.forwork.api.domain.user.model.User;
 import project.forwork.api.domain.user.service.port.UserRepository;
@@ -31,7 +29,6 @@ import java.util.List;
 @Builder
 @Transactional
 @RequiredArgsConstructor
-@Slf4j
 public class OrderService {
 
     private final OrderRepository orderRepository;
@@ -42,16 +39,13 @@ public class OrderService {
     private final ClockHolder clockHolder;
     private final UuidHolder uuidHolder;
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public Order create(CurrentUser currentUser, ConfirmPaymentRequest body){
         User user = userRepository.getByIdWithThrow(currentUser.getId());
 
-        List<Resume> resumes = resumeRepository.findByIds(body.getResumeIds());
-
-        Order order = Order.create(user, body.getRequestId(), body.getAmount());
+        Order order = Order.create(user, body.getRequestId(), body.getAmount(), clockHolder);
         order = orderRepository.save(order);
 
-        orderResumeService.createByResumes(order, resumes);
+        orderResumeService.createByResumes(order, body.getCartResumeIds());
         return order;
     }
 
@@ -83,20 +77,7 @@ public class OrderService {
         return orderRepository.saveAll(updatedOrders);
     }
 
-    public Order updateOrderPaid(Order order) {
-        Order paidOrder = order.updatePaid(clockHolder);
-        return orderRepository.save(paidOrder);
-    }
-
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void updateOrderConfirmFailure(Order order) {
-        Order failedOrder = order.updateStatus(OrderStatus.PAYMENT_FAILED);
-        orderRepository.save(failedOrder);
-        orderResumeService.updateFailByOrder(failedOrder);
-    }
-
-
-    // requestId = 현재 시간 (millis) / 5000 + "#" + userId + "-" + uuid 5자리
+    // requestId = 현재 시간 (millis) / 5000 + "_" + userId + "-" + uuid 5자리
     // 동일 유저가 5초 이내에 재 요청을 할 경우 예외 발생
     @Transactional(readOnly = true)
     public void validRequestId(String requestId) {

@@ -14,7 +14,7 @@ import java.util.List;
 @Data
 public class ConfirmPaymentRequest {
     @NotNull
-    private List<Long> resumeIds;
+    private List<Long> cartResumeIds;
     @NotNull
     private String paymentKey;
     @NotNull
