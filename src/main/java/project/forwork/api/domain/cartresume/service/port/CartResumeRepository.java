@@ -11,13 +11,13 @@ public interface CartResumeRepository {
 
     CartResume save(CartResume cartResume);
     void deleteAll(List<CartResume> cartResumeList);
+    void deleteByIds(Long cartId, List<Long> cartResumeIds);
     void deleteAllInCart(Long userId);
     Optional<CartResume> findById(Long cartResumeId);
     boolean existsByCartAndResume(Cart cart, Resume resume);
     CartResume getByIdWithThrow(Long cartResumeId);
+    List<CartResume> findByIds(List<Long> cartResumeIds);
     List<CartResume> findByUserAndSelected(Long userId, List<Long> cartResumeIds);
-    List<CartResume> findByConfirmedResumes(Long userId, List<Long> resumeIds);
     List<CartResume> findAllInCart(Long userId);
-
     void deleteAllByResumeId(Long resumeId);
 }

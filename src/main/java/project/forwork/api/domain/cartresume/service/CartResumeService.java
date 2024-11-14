@@ -2,6 +2,7 @@ package project.forwork.api.domain.cartresume.service;
 
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.forwork.api.common.domain.CurrentUser;
@@ -23,6 +24,7 @@ import java.util.List;
 @Service
 @Builder
 @Transactional
+@Slf4j
 @RequiredArgsConstructor
 public class CartResumeService {
 
@@ -49,9 +51,9 @@ public class CartResumeService {
         cartResumeRepository.deleteAll(cartResumes);
     }
 
-    public void deleteByConfirmed(CurrentUser currentUser, List<Long> resumeIds){
-        List<CartResume> cartResumes = cartResumeRepository.findByConfirmedResumes(currentUser.getId(), resumeIds);
-        cartResumeRepository.deleteAll(cartResumes);
+    public void deleteByIds(CurrentUser currentUser, List<Long> cartResumeIds){
+        Cart cart = cartRepository.getByUserIdWithThrow(currentUser.getId());
+        cartResumeRepository.deleteByIds(cart.getId(), cartResumeIds);
     }
 
     public void deleteAllInCart(CurrentUser currentUser){

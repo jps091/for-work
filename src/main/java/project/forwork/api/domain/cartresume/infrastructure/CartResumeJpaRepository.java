@@ -23,18 +23,18 @@ public interface CartResumeJpaRepository extends JpaRepository<CartResumeEntity,
             " where cr.cartEntity.userEntity.id = :userId")
     void deleteAllInCart(@Param("userId") Long userId);
 
+    @Modifying
+    @Query("DELETE FROM CartResumeEntity c WHERE c.cartEntity.id = :cartId and c.id IN :ids")
+    void deleteByIds(@Param("cartId") Long cartId, @Param("ids") List<Long> ids);
+
     @Query("select cr from CartResumeEntity cr" +
             " join fetch cr.resumeEntity" +
             " where cr.id IN (:cartResumeIds)")
     List<CartResumeEntity> findBySelected(@Param("cartResumeIds") List<Long> cartResumeIds);
 
     @Query("select cr from CartResumeEntity cr" +
-            " join fetch cr.resumeEntity r" +
-            " join fetch cr.cartEntity c" +
-            " join fetch c.userEntity u" +
-            " where u.id = :userId" +
-            " and r.id IN :resumeIds")
-    List<CartResumeEntity> findByConfirmedResumes(@Param("userId") Long userId, @Param("resumeIds") List<Long> resumeIds);
+            " where cr.id IN :cartResumeIds")
+    List<CartResumeEntity> findByConfirmedResumes(@Param("cartResumeIds") List<Long> cartResumeIds);
 
     @Query("select cr from CartResumeEntity cr" +
             " join fetch cr.cartEntity c" +

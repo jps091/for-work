@@ -8,6 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 import project.forwork.api.common.error.OrderResumeErrorCode;
 import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.common.service.port.ClockHolder;
+import project.forwork.api.domain.cartresume.model.CartResume;
+import project.forwork.api.domain.cartresume.service.port.CartResumeRepository;
 import project.forwork.api.domain.order.infrastructure.enums.OrderStatus;
 import project.forwork.api.domain.order.model.Order;
 import project.forwork.api.domain.orderresume.infrastructure.enums.OrderResumeStatus;
@@ -20,25 +22,21 @@ import java.util.List;
 @Service
 @Builder
 @Transactional
-@Slf4j
 @RequiredArgsConstructor
 public class OrderResumeService {
 
     private final OrderResumeRepository orderResumeRepository;
     private final OrderResumeMailService orderResumeMailService;
+    private final CartResumeRepository cartResumeRepository;
     private final ClockHolder clockHolder;
 
-    public void createByResumes(Order order, List<Resume> resumes){
+    public void createByResumes(Order order, List<Long> cartResumeIds){
+        List<Resume> resumes = cartResumeRepository.findByIds(cartResumeIds).stream()
+                .map(CartResume::getResume)
+                .toList();
+
         List<OrderResume> orderResumes = resumes.stream()
                 .map(resume -> OrderResume.create(order, resume))
-                .toList();
-        orderResumeRepository.saveAll(orderResumes);
-    }
-
-    public void updateFailByOrder(Order order){
-        List<OrderResume> orderResumes = orderResumeRepository.findByOrderId(order.getId())
-                .stream()
-                .map(OrderResume::updateStatusPaymentFail)
                 .toList();
         orderResumeRepository.saveAll(orderResumes);
     }

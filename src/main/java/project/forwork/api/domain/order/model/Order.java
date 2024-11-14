@@ -30,18 +30,8 @@ public class Order {
     private final OrderStatus status;
     private final LocalDateTime paidAt;
 
-    public static Order create(User user, String requestId, BigDecimal totalAmount){
+    public static Order create(User user, String requestId, BigDecimal totalAmount, ClockHolder clockHolder){
         return Order.builder()
-                .user(user)
-                .requestId(requestId)
-                .totalAmount(totalAmount)
-                .status(OrderStatus.ORDERED)
-                .build();
-    }
-
-    public Order updatePaid(ClockHolder clockHolder){
-        return Order.builder()
-                .id(id)
                 .user(user)
                 .requestId(requestId)
                 .totalAmount(totalAmount)

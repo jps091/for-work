@@ -8,6 +8,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import project.forwork.api.domain.cartresume.model.CartResume;
 import project.forwork.api.domain.order.infrastructure.enums.OrderStatus;
 import project.forwork.api.domain.order.model.Order;
 import project.forwork.api.domain.orderresume.infrastructure.enums.OrderResumeStatus;
@@ -34,15 +35,18 @@ class OrderResumeServiceTest {
     private OrderResumeMailService orderResumeMailService;
     private FakeOrderResumeRepository fakeOrderResumeRepository;
     private OrderResumeService orderResumeService;
+    private FakeCartResumeRepository fakeCartResumeRepository;
 
     @BeforeEach
     void init(){
         TestClockHolder testClockHolder = new TestClockHolder(LocalDateTime.of(2024, 8, 8, 12, 0, 0));
         fakeOrderResumeRepository = new FakeOrderResumeRepository();
+        fakeCartResumeRepository = new FakeCartResumeRepository();
         FakeUserRepository fakeUserRepository = new FakeUserRepository();
         this.orderResumeService = OrderResumeService.builder()
                 .orderResumeRepository(fakeOrderResumeRepository)
                 .clockHolder(testClockHolder)
+                .cartResumeRepository(fakeCartResumeRepository)
                 .orderResumeMailService(orderResumeMailService)
                 .build();
 
@@ -170,13 +174,19 @@ class OrderResumeServiceTest {
                 .id(1L)
                 .build();
         Order order = Order.builder()
+                .id(5L)
+                .build();
+        CartResume cartResume = CartResume.builder()
                 .id(1L)
+                .resume(resume)
                 .build();
 
         //when(상황발생)
+        orderResumeService.createByResumes(order, List.of(cartResume.getId()));
+
         //then(검증)
-        assertThatCode(() -> orderResumeService.createByResumes(order, List.of(resume)))
-                .doesNotThrowAnyException();
+        OrderResume orderResumes = fakeOrderResumeRepository.getByIdWithThrow(1L);
+        assertThat(orderResumes.getResumeId()).isEqualTo(1);
     }
 
     @ParameterizedTest
@@ -222,44 +232,6 @@ class OrderResumeServiceTest {
         //then(검증)
         assertThat(orderResume.getStatus()).isEqualTo(OrderResumeStatus.CONFIRM);
     }
-
-/*    @Test
-    void 선택한_orderResumeIds_로_updateSelectedOrderResume_를_호출하면_상태가_confirm_으로_변경된다(){
-        //given(상황환경 세팅)
-        OrderResume orderResume5 = fakeOrderResumeRepository.getByIdWithThrow(5);
-        OrderResume orderResume6 = fakeOrderResumeRepository.getByIdWithThrow(6);
-        OrderResume orderResume7 = fakeOrderResumeRepository.getByIdWithThrow(7);
-
-        List<OrderResume> orderResumes = List.of(orderResume5, orderResume6, orderResume7);
-        List<Long> selectedIds = List.of(5L, 6L);
-
-        //when(상황발생)
-        List<OrderResume> newOrderResumes = orderResumeService.updateSelectedOrderResumes(orderResumes, selectedIds);
-
-        //then(검증)
-        assertThat(newOrderResumes).allMatch(orderResume -> orderResume.getStatus().equals(OrderResumeStatus.CONFIRM));
-        assertThat(orderResume7.getStatus()).isEqualTo(OrderResumeStatus.ORDERED);
-    }
-
-    @ParameterizedTest
-    @ValueSource(longs = {5L, 6L, 7L})
-    void order_에_속한_orderResume_을_confirmNowSendMail_로_상태를_SENT_로_변경_할_수_있다(long orderResumeId){
-        //given(상황환경 세팅)
-        Order order3 = Order.builder()
-                .id(3L)
-                .build();
-        OrderResume orderResume5 = fakeOrderResumeRepository.getByIdWithThrow(5);
-        OrderResume orderResume6 = fakeOrderResumeRepository.getByIdWithThrow(6);
-        OrderResume orderResume7 = fakeOrderResumeRepository.getByIdWithThrow(7);
-        List<OrderResume> orderResumes = List.of(orderResume5, orderResume6, orderResume7);
-        //when(상황발생)
-        orderResumeService.confirmNowSendMail(orderResumes);
-
-        //then(검증)
-        OrderResume newOrderResume = fakeOrderResumeRepository.getByIdWithThrow(orderResumeId);
-        assertThat(newOrderResume.getStatus()).isEqualTo(OrderResumeStatus.SENT);
-    }*/ // TODO 확인필요
-
 
     @Test
     void 주문에_속해_있는_orderResume_을_전부_구매확정_하면_주문은_CONFRIM_으로_변경_된다(){

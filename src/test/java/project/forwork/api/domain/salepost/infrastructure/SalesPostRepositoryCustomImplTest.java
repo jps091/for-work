@@ -113,7 +113,7 @@ class SalesPostRepositoryCustomImplTest {
         assertThat(result).hasSize(3);
         assertThat(result.get(0).getResumeId()).isEqualTo(3L);
         assertThat(result.get(1).getResumeId()).isEqualTo(7L);
-        assertThat(result.get(2).getResumeId()).isEqualTo(4L);
+        assertThat(result.get(2).getResumeId()).isEqualTo(1L);
     }
     @Test
     void 조건_BACKEND_가격_범위_판매순_첫_페이지_검색(){
@@ -127,8 +127,8 @@ class SalesPostRepositoryCustomImplTest {
         //then(검증)
         assertThat(result).hasSize(3);
         assertThat(result.get(0).getResumeId()).isEqualTo(3L);
-        assertThat(result.get(1).getResumeId()).isEqualTo(4L);
-        assertThat(result.get(2).getResumeId()).isEqualTo(1L);
+        assertThat(result.get(1).getResumeId()).isEqualTo(1L);
+        assertThat(result.get(2).getResumeId()).isEqualTo(5L);
     }
 
     @Test
@@ -169,8 +169,8 @@ class SalesPostRepositoryCustomImplTest {
 
         //then(검증)
         assertThat(result).hasSize(2);
-        assertThat(result.get(0).getResumeId()).isEqualTo(4L);
-        assertThat(result.get(1).getResumeId()).isEqualTo(3L);
+        assertThat(result.get(0).getResumeId()).isEqualTo(3L);
+        assertThat(result.get(1).getResumeId()).isEqualTo(2L);
     }
 
     @Test
@@ -201,7 +201,7 @@ class SalesPostRepositoryCustomImplTest {
         assertThat(result).hasSize(3);
         assertThat(result.get(0).getResumeId()).isEqualTo(6L);
         assertThat(result.get(1).getResumeId()).isEqualTo(3L);
-        assertThat(result.get(2).getResumeId()).isEqualTo(4L);
+        assertThat(result.get(2).getResumeId()).isEqualTo(5L);
     }
 
     //3 6 7 2 8 1 5
@@ -215,9 +215,9 @@ class SalesPostRepositoryCustomImplTest {
 
         //then(검증)
         assertThat(result).hasSize(3);
-        assertThat(result.get(0).getResumeId()).isEqualTo(4L);
-        assertThat(result.get(1).getResumeId()).isEqualTo(8L);
-        assertThat(result.get(2).getResumeId()).isEqualTo(1L);
+        assertThat(result.get(0).getResumeId()).isEqualTo(8L);
+        assertThat(result.get(1).getResumeId()).isEqualTo(1L);
+        assertThat(result.get(2).getResumeId()).isEqualTo(5L);
     }
 
     @Test
@@ -244,7 +244,7 @@ class SalesPostRepositoryCustomImplTest {
         //then(검증)
         assertThat(result).hasSize(2);
         assertThat(result.get(0).getResumeId()).isEqualTo(3L);
-        assertThat(result.get(1).getResumeId()).isEqualTo(4L);
+        assertThat(result.get(1).getResumeId()).isEqualTo(5L);
     }
 
     @Test
@@ -285,8 +285,8 @@ class SalesPostRepositoryCustomImplTest {
 
         //then(검증)
         assertThat(result).hasSize(2);
-        assertThat(result.get(0).getResumeId()).isEqualTo(3L);
-        assertThat(result.get(1).getResumeId()).isEqualTo(4L);
+        assertThat(result.get(0).getResumeId()).isEqualTo(2L);
+        assertThat(result.get(1).getResumeId()).isEqualTo(3L);
     }
 
     @Test
@@ -315,9 +315,9 @@ class SalesPostRepositoryCustomImplTest {
 
         //then(검증)
         assertThat(result).hasSize(3);
-        assertThat(result.get(0).getResumeId()).isEqualTo(6L);
-        assertThat(result.get(1).getResumeId()).isEqualTo(3L);
-        assertThat(result.get(2).getResumeId()).isEqualTo(4L);
+        assertThat(result.get(0).getResumeId()).isEqualTo(7L);
+        assertThat(result.get(1).getResumeId()).isEqualTo(6L);
+        assertThat(result.get(2).getResumeId()).isEqualTo(3L);
     }
 
     ///3 6 7 2 8 1 5
@@ -331,7 +331,7 @@ class SalesPostRepositoryCustomImplTest {
 
         //then(검증)
         assertThat(result).hasSize(3);
-        assertThat(result.get(0).getResumeId()).isEqualTo(4L);
+        assertThat(result.get(0).getResumeId()).isEqualTo(2L);
         assertThat(result.get(1).getResumeId()).isEqualTo(8L);
         assertThat(result.get(2).getResumeId()).isEqualTo(1L);
     }

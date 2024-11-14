@@ -2,7 +2,7 @@
 
 -- 4 결제완료
 INSERT INTO `orders` (`registered_at`, `order_id`, `user_id`, `status`, `total_amount`, `request_id`)
-VALUES ('2024-09-04 00:18:39', '1', '1', 'ORDERED', '70000', 'test-request-id-1');
+VALUES ('2024-09-04 00:18:39', '1', '1', 'PAID', '70000', 'test-request-id-1');
 
 -- 6결제완료 7
 INSERT INTO `orders` (`registered_at`, `paid_at`, `order_id`, `user_id`, `status`, `total_amount`, `request_id`)
