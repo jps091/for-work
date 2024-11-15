@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.MailException;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.forwork.api.common.service.port.ClockHolder;
@@ -64,6 +65,15 @@ public class OrderResumeMailService {
             log.error("send email fail orderId={}", orderResumePurchaseInfo.getOrderId(), e);
             mailLogService.registerFailLog(orderResumePurchaseInfo, e);
             throw e;
+        }
+    }
+    @Async("emailTaskExecutor")
+    public void sendLog(String message) {
+        try {
+            Thread.sleep(1); // (1 ms) 각 작업에 소요시간을 Thread.sleep(1)로 대체
+            log.info("message : {}", message);
+        }catch (Exception e) {
+            log.error("[Error] : {} ",e.getMessage());
         }
     }
 }

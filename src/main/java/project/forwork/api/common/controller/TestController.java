@@ -12,6 +12,7 @@ import project.forwork.api.common.domain.CurrentUser;
 import project.forwork.api.common.service.port.MailSender;
 import project.forwork.api.domain.order.controller.model.ConfirmPaymentRequest;
 import project.forwork.api.domain.order.service.CheckoutService;
+import project.forwork.api.domain.orderresume.service.OrderResumeMailService;
 import project.forwork.api.domain.resume.model.Resume;
 import project.forwork.api.domain.resume.service.ResumeQuantityService;
 import project.forwork.api.domain.resume.service.port.ResumeRepository;
@@ -27,6 +28,7 @@ public class TestController {
     private final CheckoutService checkoutService;
     private final ResumeRepository resumeRepository;
     private final ResumeQuantityService resumeQuantityService;
+    private final OrderResumeMailService orderResumeMailService;
     private final MailSender mailSender;
 
     @GetMapping("/open-api/order")
@@ -88,30 +90,10 @@ public class TestController {
         return new ResponseEntity<>("confirm", HttpStatus.OK);
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/test/async-mail")
-    public ResponseEntity<Integer> asyncMail(
+    @RequestMapping(method = RequestMethod.GET, value = "/test/async")
+    public ResponseEntity<String> asyncMail(
     ){
-        int count = Runtime.getRuntime().availableProcessors();
-        mailSender.send("seokin23@naver.com", "e","e");
-        return new ResponseEntity<>(count, HttpStatus.OK);
-    }
-    
-    @RequestMapping(method = RequestMethod.GET, value = "/test/sql")
-    @Transactional
-    public ResponseEntity<String> sqlOnce(
-    ){
-        Resume resume = resumeRepository.getByIdWithThrow(2L);
-        return new ResponseEntity<>(resume.getLevel().toString(), HttpStatus.OK);
-    }
-
-    @RequestMapping(method = RequestMethod.GET, value = "/test/loop")
-    public ResponseEntity<String> loop(
-    ){
-        int count = 30;
-        for(int i = 0; i < count; i++){
-            if(i == count -1)
-                System.out.println("i = " + i);
-        }
-        return new ResponseEntity<>("loop end: "+ count, HttpStatus.OK);
+        orderResumeMailService.sendLog("test");
+        return new ResponseEntity<>("send", HttpStatus.OK);
     }
 }

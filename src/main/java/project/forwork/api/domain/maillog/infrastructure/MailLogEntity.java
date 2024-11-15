@@ -27,26 +27,22 @@ public class MailLogEntity extends BaseTimeEntity {
     @Column(length = 50, name = "email") @NotNull
     private String email;
 
-    @Column(length = 25, name = "request_id")
-    private String requestId;
-
-    @Column(name = "resume_id")
-    private Long resumeId;
-
     @Enumerated(EnumType.STRING)
     @NotNull
     @Column(name = "type")
     private EmailType emailType;
 
-    @Column(length = 255, name = "error_response") // char
+    @Column(length = 255, name = "error_response")
     private String errorResponse;
+
+    @Column(length = 300, name = "message_content")
+    private String messageContent;
 
     public static MailLogEntity from(MailLog mailLog){
         MailLogEntity mailLogEntity = new MailLogEntity();
         mailLogEntity.id = mailLog.getId();
         mailLogEntity.email = mailLog.getEmail();
-        mailLogEntity.requestId = mailLog.getRequestId();
-        mailLogEntity.resumeId = mailLog.getResumeId();
+        mailLogEntity.messageContent = mailLog.getMessageContent();
         mailLogEntity.emailType = mailLog.getEmailType();
         mailLogEntity.errorResponse = mailLog.getErrorResponse();
         return  mailLogEntity;
@@ -56,8 +52,7 @@ public class MailLogEntity extends BaseTimeEntity {
         return MailLog.builder()
                 .id(id)
                 .email(email)
-                .requestId(requestId)
-                .resumeId(resumeId)
+                .messageContent(messageContent)
                 .emailType(emailType)
                 .errorResponse(errorResponse)
                 .build();

@@ -4,12 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Component;
-import project.forwork.api.common.infrastructure.model.NoticeMessage;
-import project.forwork.api.common.infrastructure.model.SalesRequestResultMessage;
-import project.forwork.api.common.infrastructure.model.SellerMessage;
-import project.forwork.api.common.infrastructure.model.BuyerMessage;
-
-import static project.forwork.api.common.config.rabbitmq.RabbitMqConfig.*;
+import project.forwork.api.common.config.rabbitmq.enums.ExchangeType;
+import project.forwork.api.common.config.rabbitmq.enums.RoutingKey;
+import project.forwork.api.common.infrastructure.message.*;
 
 @Component
 @Slf4j
@@ -19,28 +16,29 @@ public class Producer {
     private final RabbitTemplate rabbitTemplate;
 
     // 인증 메일 전송
-    public void sendAuthMail(String message) {
-        sendMail(AUTH_EXCHANGE, AUTH_VERIFY_KEY, message);
+    public void sendAutCodeMail(String message) {
+        sendMail(ExchangeType.AUTH.getExchange(), RoutingKey.AUTH_VERIFY.getKey(), message);
     }
-
+    public void sendTempPasswordMail(TempPasswordMessage message) {
+        sendMail(ExchangeType.USER.getExchange(), RoutingKey.USER_TEMP_PASSWORD.getKey(), message);
+    }
     // 회원 - 구매자 메일 전송
     public void sendBuyerMail(BuyerMessage message) {
-        sendMail(USER_EXCHANGE, USER_BUYER_KEY, message);
+        sendMail(ExchangeType.USER.getExchange(), RoutingKey.USER_BUYER.getKey(), message);
     }
 
     // 회원 - 판매자 메일 전송
     public void sendSellingMail(SellerMessage message) {
-        sendMail(USER_EXCHANGE, USER_SELLER_KEY, message);
+        sendMail(ExchangeType.USER.getExchange(), RoutingKey.USER_SELLER.getKey(), message);
     }
 
     public void sendSalesRequestResultMail(SalesRequestResultMessage message) {
-        log.info("sendSalesRequestResultMail={}", message);
-        sendMail(USER_EXCHANGE, USER_SELLER_KEY, message);
+        sendMail(ExchangeType.USER.getExchange(), RoutingKey.USER_SELLER.getKey(), message);
     }
 
     // 회원 공통 공지 메일 전송
     public void sendNotice(NoticeMessage message) {
-        sendMail(USER_NOTICE_KEY, USER_EXCHANGE, message);
+        sendMail(ExchangeType.USER.getExchange(), RoutingKey.USER_NOTICE.getKey(), message);
     }
 
     private void sendMail(String exchange, String routingKey, Object message) {

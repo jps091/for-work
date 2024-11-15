@@ -15,6 +15,7 @@ public class MailLog {
     private final Long resumeId;
     private final EmailType emailType;
     private final String errorResponse;
+    private final String messageContent;
 
     public static MailLog create(String email, String requestId, Long resumeId, Exception e){
         return MailLog.builder()

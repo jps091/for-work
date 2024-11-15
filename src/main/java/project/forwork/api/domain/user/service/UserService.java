@@ -10,7 +10,7 @@ import project.forwork.api.common.domain.CurrentUser;
 import project.forwork.api.common.error.UserErrorCode;
 import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.common.infrastructure.Producer;
-import project.forwork.api.common.infrastructure.model.NoticeMessage;
+import project.forwork.api.common.infrastructure.message.NoticeMessage;
 import project.forwork.api.common.service.port.MailSender;
 import project.forwork.api.common.service.port.RedisUtils;
 import project.forwork.api.common.service.port.UuidHolder;
@@ -102,7 +102,7 @@ public class UserService {
     }
 
     public void produceVerifyEmail(String email){
-        producer.sendAuthMail(email);
+        producer.sendAutCodeMail(email);
     }
 
     public void verifyEmail(EmailVerifyRequest body){
