@@ -1,4 +1,4 @@
-package project.forwork.api.common.infrastructure.message;
+package project.forwork.api.common.message;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

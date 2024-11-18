@@ -6,7 +6,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Component;
 import project.forwork.api.common.config.rabbitmq.enums.ExchangeType;
 import project.forwork.api.common.config.rabbitmq.enums.RoutingKey;
-import project.forwork.api.common.infrastructure.message.*;
+import project.forwork.api.common.message.*;
 
 @Component
 @Slf4j
