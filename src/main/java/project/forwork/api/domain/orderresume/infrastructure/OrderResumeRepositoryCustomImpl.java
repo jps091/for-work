@@ -10,9 +10,10 @@ import project.forwork.api.domain.order.model.Order;
 import project.forwork.api.domain.orderresume.controller.model.OrderResumeResponse;
 import project.forwork.api.domain.orderresume.controller.model.OrderTitleResponse;
 import project.forwork.api.domain.orderresume.infrastructure.enums.OrderResumeStatus;
-import project.forwork.api.domain.orderresume.controller.model.PurchaseResponse;
+import project.forwork.api.domain.orderresume.controller.model.OrderResumePurchaseInfo;
 import project.forwork.api.domain.orderresume.model.OrderResume;
 import project.forwork.api.domain.orderresume.service.port.OrderResumeRepositoryCustom;
+import project.forwork.api.domain.user.infrastructure.QUserEntity;
 
 import java.util.List;
 
@@ -31,9 +32,9 @@ public class OrderResumeRepositoryCustomImpl implements OrderResumeRepositoryCus
     }
 
     @Override
-    public List<PurchaseResponse> findPurchaseResume(Order order) {
+    public List<OrderResumePurchaseInfo> findPurchaseResume(Order order) {
         return queryFactory
-                .select(Projections.fields(PurchaseResponse.class,
+                .select(Projections.fields(OrderResumePurchaseInfo.class,
                         orderEntity.id.as("orderId"),
                         userEntity.email.as("email"),
                         resumeEntity.resumeUrl.as("resumeUrl"),
@@ -50,23 +51,25 @@ public class OrderResumeRepositoryCustomImpl implements OrderResumeRepositoryCus
                 .fetch();
     }
 
-    public List<PurchaseResponse> findAllPurchaseResume(List<OrderResume> orderResumes) {
-
+    public List<OrderResumePurchaseInfo> findAllPurchaseResume(List<OrderResume> orderResumes) {
         List<Long> orderResumeIds = orderResumes.stream().map(OrderResume::getId).toList();
+        QUserEntity sellerUser = new QUserEntity("sellerUser");
 
         return queryFactory
-                .select(Projections.fields(PurchaseResponse.class,
+                .select(Projections.fields(OrderResumePurchaseInfo.class,
                         orderEntity.id.as("orderId"),
-                        userEntity.email.as("email"),
+                        userEntity.email.as("buyerEmail"),
                         resumeEntity.resumeUrl.as("resumeUrl"),
                         resumeEntity.id.as("resumeId"),
                         resumeEntity.fieldType.as("field"),
-                        resumeEntity.levelType.as("level")
+                        resumeEntity.levelType.as("level"),
+                        sellerUser.email.as("sellerEmail")
                         ))
                 .from(orderResumeEntity)
                 .join(orderResumeEntity.orderEntity, orderEntity)
                 .join(orderResumeEntity.resumeEntity, resumeEntity)
                 .join(orderEntity.userEntity, userEntity)
+                .join(resumeEntity.sellerEntity, sellerUser)
                 .where(orderResumeEntity.id.in(orderResumeIds))
                 .fetch();
     }

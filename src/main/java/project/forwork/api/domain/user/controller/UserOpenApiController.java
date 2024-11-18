@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -37,9 +38,11 @@ public class UserOpenApiController {
     @Operation(summary = "이메일 인증코드 발송 API", description = "이메일 입력")
     @PostMapping("/code/send")
     public Api<String> sendCertificationCode(
-            @RequestParam String email
+            @RequestParam @Email(message = "유효한 이메일 주소를 입력해주세요.")
+            String email
     ){
-        userService.sendCode(email);
+        //userService.sendCode(email);
+        userService.produceVerifyEmail(email);
         return Api.OK("인증 코드 이메일 전송 완료");
     }
 

@@ -39,15 +39,14 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
                 .select(Projections.fields(SalesPostDetailResponse.class,
                         ExpressionUtils.as(createTitleExpression(), "title"),
                         resumeEntity.id.as("resumeId"),
+                        salesPostEntity.salesStatus.as("status"),
                         resumeEntity.salesQuantity.as("salesQuantity"),
                         thumbnailImageEntity.url.as("thumbnailImageUrl"),
                         resumeEntity.price.as("price"),
                         resumeEntity.descriptionImageUrl.as("descriptionImageUrl"),
                         resumeEntity.description.as("description"),
                         resumeEntity.fieldType.as("field"),
-                        resumeEntity.levelType.as("level"),
-                        salesPostEntity.salesStatus.as("status"),
-                        salesPostEntity.registeredAt.as("registeredAt")))
+                        resumeEntity.levelType.as("level")))
                 .from(salesPostEntity)
                 .join(salesPostEntity.resumeEntity, resumeEntity)
                 .join(salesPostEntity.thumbnailImageEntity, thumbnailImageEntity)

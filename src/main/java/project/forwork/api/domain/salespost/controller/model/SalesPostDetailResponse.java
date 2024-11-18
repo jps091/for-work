@@ -24,5 +24,4 @@ public class SalesPostDetailResponse {
     private FieldType field;
     private LevelType level;
     private SalesStatus status;
-    private LocalDateTime registeredAt;
 }

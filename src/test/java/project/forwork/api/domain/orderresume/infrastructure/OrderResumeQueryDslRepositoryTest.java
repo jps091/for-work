@@ -10,7 +10,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlGroup;
 import project.forwork.api.domain.orderresume.controller.model.OrderResumeResponse;
-import project.forwork.api.domain.orderresume.controller.model.PurchaseResponse;
+import project.forwork.api.domain.orderresume.controller.model.OrderResumePurchaseInfo;
 import project.forwork.api.domain.orderresume.model.OrderResume;
 
 import java.util.List;
@@ -46,7 +46,7 @@ class OrderResumeQueryDslRepositoryTest {
         List<OrderResume> orderResumes = List.of(orderResume1, orderResume2, orderResume3);
 
         //when(상황발생)
-        List<PurchaseResponse> content = orderResumeRepositoryCustom.findAllPurchaseResume(orderResumes);
+        List<OrderResumePurchaseInfo> content = orderResumeRepositoryCustom.findAllPurchaseResume(orderResumes);
 
         //then(검증)
         assertThat(content.size()).isEqualTo(3);

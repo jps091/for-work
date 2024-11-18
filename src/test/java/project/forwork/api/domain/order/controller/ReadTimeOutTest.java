@@ -32,7 +32,7 @@ class ReadTimeOutTest {
                 .status(UserStatus.USER)
                 .build();
         ConfirmPaymentRequest body = ConfirmPaymentRequest.builder()
-                .cartResumeIds(List.of(1L))
+                .resumeIds(List.of(1L))
                 .paymentKey("test-key")
                 .requestId("345636546-a1d658e3-4")
                 .amount(new BigDecimal("99000"))

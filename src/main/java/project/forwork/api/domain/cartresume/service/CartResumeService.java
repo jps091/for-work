@@ -51,9 +51,9 @@ public class CartResumeService {
         cartResumeRepository.deleteAll(cartResumes);
     }
 
-    public void deleteByIds(CurrentUser currentUser, List<Long> cartResumeIds){
-        Cart cart = cartRepository.getByUserIdWithThrow(currentUser.getId());
-        cartResumeRepository.deleteByIds(cart.getId(), cartResumeIds);
+    public void deleteByPaidResumeIds(CurrentUser currentUser, List<Long> resumeIds){
+        List<CartResume> cartResumes = cartResumeRepository.findByConfirmedResumes(currentUser.getId(), resumeIds);
+        cartResumeRepository.deleteAll(cartResumes);
     }
 
     public void deleteAllInCart(CurrentUser currentUser){

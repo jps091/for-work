@@ -139,4 +139,7 @@ public class Resume {
         }
         return description.substring(0, 15) + "...";
     }
+    public String getSellerEmail(){
+        return seller.getEmail();
+    }
 }

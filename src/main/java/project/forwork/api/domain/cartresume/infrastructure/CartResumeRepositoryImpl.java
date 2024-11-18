@@ -58,16 +58,23 @@ public class CartResumeRepositoryImpl implements CartResumeRepository {
                 .orElseThrow(() -> new ApiException(CartResumeErrorCode.CART_RESUME_NOT_FOUND, cartResumeId));
     }
 
+//    @Override
+//    public List<CartResume> findByIds(List<Long> cartResumeIds) {
+//        return cartResumeJpaRepository.findByConfirmedResumes(cartResumeIds).stream()
+//                .map(CartResumeEntity::toModel)
+//                .toList();
+//    }
+
     @Override
-    public List<CartResume> findByIds(List<Long> cartResumeIds) {
-        return cartResumeJpaRepository.findByConfirmedResumes(cartResumeIds).stream()
+    public List<CartResume> findByUserAndSelected(Long userId, List<Long> cartResumeIds) {
+        return cartResumeJpaRepository.findByUserAndSelected(userId, cartResumeIds).stream()
                 .map(CartResumeEntity::toModel)
                 .toList();
     }
 
     @Override
-    public List<CartResume> findByUserAndSelected(Long userId, List<Long> cartResumeIds) {
-        return cartResumeJpaRepository.findByUserAndSelected(userId, cartResumeIds).stream()
+    public List<CartResume> findByConfirmedResumes(Long userId, List<Long> resumeIds) {
+        return cartResumeJpaRepository.findByConfirmedResumes(userId, resumeIds).stream()
                 .map(CartResumeEntity::toModel)
                 .toList();
     }
