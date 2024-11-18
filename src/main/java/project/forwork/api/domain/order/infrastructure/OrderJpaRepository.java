@@ -10,6 +10,6 @@ import java.util.Optional;
 public interface OrderJpaRepository extends JpaRepository<OrderEntity, Long> {
     Optional<OrderEntity> findByRequestId(String requestId);
     Optional<OrderEntity> findByUserEntity_IdAndId(Long userId, Long orderId);
-    List<OrderEntity> findByUserEntity_Id(Long userId);
+    List<OrderEntity> findByUserEntity_IdOrderByIdDesc(Long userId);
     List<OrderEntity> findByStatus(OrderStatus status, Limit limit);
 }

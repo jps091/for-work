@@ -13,7 +13,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class ForworkApplication {
 	public static void main(String[] args) {
 		new SpringApplicationBuilder(ForworkApplication.class)
-				.profiles("prod")
+				.profiles("local")
 				.run(args);
 	}
 }

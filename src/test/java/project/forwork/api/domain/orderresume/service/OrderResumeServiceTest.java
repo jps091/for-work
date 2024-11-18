@@ -8,7 +8,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import project.forwork.api.domain.cartresume.model.CartResume;
 import project.forwork.api.domain.order.infrastructure.enums.OrderStatus;
 import project.forwork.api.domain.order.model.Order;
 import project.forwork.api.domain.orderresume.infrastructure.enums.OrderResumeStatus;
@@ -32,10 +31,11 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 class OrderResumeServiceTest {
 
     @Mock
-    private OrderResumeMailService orderResumeMailService;
     private FakeOrderResumeRepository fakeOrderResumeRepository;
     private OrderResumeService orderResumeService;
     private FakeCartResumeRepository fakeCartResumeRepository;
+    @Mock
+    private OrderResumeProducer orderResumeProducer;
 
     @BeforeEach
     void init(){
@@ -47,7 +47,7 @@ class OrderResumeServiceTest {
                 .orderResumeRepository(fakeOrderResumeRepository)
                 .clockHolder(testClockHolder)
                 .cartResumeRepository(fakeCartResumeRepository)
-                .orderResumeMailService(orderResumeMailService)
+                .orderResumeProducer(orderResumeProducer)
                 .build();
 
         User user1 = User.builder()
@@ -113,14 +113,14 @@ class OrderResumeServiceTest {
                 .id(1L)
                 .order(order1)
                 .resume(resume1)
-                .status(OrderResumeStatus.ORDERED)
+                .status(OrderResumeStatus.PAID)
                 .build();
 
         OrderResume orderResume2 = OrderResume.builder()
                 .id(2L)
                 .order(order1)
                 .resume(resume1)
-                .status(OrderResumeStatus.ORDERED)
+                .status(OrderResumeStatus.PAID)
                 .build();
 
         OrderResume orderResume3 = OrderResume.builder()
@@ -141,7 +141,7 @@ class OrderResumeServiceTest {
                 .id(5L)
                 .order(order3)
                 .resume(resume1)
-                .status(OrderResumeStatus.ORDERED)
+                .status(OrderResumeStatus.PAID)
                 .build();
 
         OrderResume orderResume6 = OrderResume.builder()
@@ -155,7 +155,7 @@ class OrderResumeServiceTest {
                 .id(7L)
                 .order(order3)
                 .resume(resume3)
-                .status(OrderResumeStatus.ORDERED)
+                .status(OrderResumeStatus.PAID)
                 .build();
 
         fakeOrderResumeRepository.save(orderResume1);

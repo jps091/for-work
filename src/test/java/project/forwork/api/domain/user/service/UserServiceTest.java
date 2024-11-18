@@ -9,6 +9,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import project.forwork.api.common.domain.CurrentUser;
 import project.forwork.api.common.exception.ApiException;
+import project.forwork.api.common.infrastructure.Producer;
 import project.forwork.api.common.service.port.RedisUtils;
 import project.forwork.api.domain.cart.infrastructure.enums.CartStatus;
 import project.forwork.api.domain.cart.model.Cart;
@@ -35,25 +36,25 @@ class UserServiceTest {
     private FakeUserRepository fakeUserRepository;
     private FakeCartRepository fakeCartRepository;
     private TestUuidHolder testUuidHolder;
-    private FakeMailSender fakeMailSender;
     @Mock
     private ResumeService resumeService;
     @Mock
     private TokenHeaderService tokenHeaderService;
     @Mock
     private RedisUtils redisUtils;
+    @Mock
+    private Producer producer;
     @BeforeEach
     void init(){
         fakeUserRepository = new FakeUserRepository();
         testUuidHolder = new TestUuidHolder("aaaaa-111111-eeeee");
-        fakeMailSender = new FakeMailSender();
         fakeCartRepository = new FakeCartRepository();
         userService = UserService.builder()
-                .mailSender(fakeMailSender)
                 .userRepository(fakeUserRepository)
                 .cartRepository(fakeCartRepository)
                 .resumeService(resumeService)
                 .redisUtils(redisUtils)
+                .producer(producer)
                 .cartRepository(fakeCartRepository)
                 .uuidHolder(testUuidHolder)
                 .tokenHeaderService(tokenHeaderService)
@@ -210,27 +211,6 @@ class UserServiceTest {
         //then(검증)
         assertThatThrownBy(() -> fakeCartRepository.getByUserIdWithThrow(1L))
                 .isInstanceOf(ApiException.class);
-    }
-
-    @Test
-    void 해당_이메일에_인증코드를_전송할_수_있다(){
-        //given(상황환경 세팅)
-        String email = "test@naver.com";
-        String expectedCertificationCode = "aaaaa-111111-eeeee";
-        String expectedKey = "email:test@naver.com";
-        String emailPrefix = "email:";
-
-        //when(상황발생)
-        Mockito.when(redisUtils.createKeyForm(anyString(), anyString())).thenReturn(expectedKey);
-        userService.sendCode(email);
-
-        //then(검증)
-        verify(redisUtils).setDataWithTimeout(eq(expectedKey), eq(expectedCertificationCode), eq(300L));
-        verify(redisUtils).createKeyForm(eq(emailPrefix), eq(email));
-
-        assertThat(fakeMailSender.getEmail()).isEqualTo(email);
-        assertThat(fakeMailSender.getTitle()).isEqualTo("for-work 인증 코드 발송");
-        assertThat(fakeMailSender.getContent()).contains("인증코드 : " + expectedCertificationCode);
     }
 
     @Test

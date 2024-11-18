@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 public enum OrderStatus {
-    PAYMENT_FAILED("결제 실패"),
     PAID("결제 완료"),
     WAIT("발송 대기"),
     PARTIAL_WAIT("발송 부분 대기"),

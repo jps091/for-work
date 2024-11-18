@@ -6,10 +6,8 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import project.forwork.api.domain.order.model.Order;
 import project.forwork.api.domain.orderresume.controller.model.OrderResumeResponse;
 import project.forwork.api.domain.orderresume.controller.model.OrderTitleResponse;
-import project.forwork.api.domain.orderresume.infrastructure.enums.OrderResumeStatus;
 import project.forwork.api.domain.orderresume.controller.model.OrderResumePurchaseInfo;
 import project.forwork.api.domain.orderresume.model.OrderResume;
 import project.forwork.api.domain.orderresume.service.port.OrderResumeRepositoryCustom;
@@ -32,25 +30,6 @@ public class OrderResumeRepositoryCustomImpl implements OrderResumeRepositoryCus
     }
 
     @Override
-    public List<OrderResumePurchaseInfo> findPurchaseResume(Order order) {
-        return queryFactory
-                .select(Projections.fields(OrderResumePurchaseInfo.class,
-                        orderEntity.id.as("orderId"),
-                        userEntity.email.as("email"),
-                        resumeEntity.resumeUrl.as("resumeUrl"),
-                        resumeEntity.id.as("resumeId"),
-                        resumeEntity.fieldType.as("field"),
-                        resumeEntity.levelType.as("level")
-                ))
-                .from(orderResumeEntity)
-                .join(orderResumeEntity.orderEntity, orderEntity)
-                .join(orderResumeEntity.resumeEntity, resumeEntity)
-                .join(orderEntity.userEntity, userEntity)
-                .where(orderResumeEntity.status.eq(OrderResumeStatus.CONFIRM)
-                        .and(orderEntity.id.eq(order.getId())))
-                .fetch();
-    }
-
     public List<OrderResumePurchaseInfo> findAllPurchaseResume(List<OrderResume> orderResumes) {
         List<Long> orderResumeIds = orderResumes.stream().map(OrderResume::getId).toList();
         QUserEntity sellerUser = new QUserEntity("sellerUser");
@@ -92,6 +71,7 @@ public class OrderResumeRepositoryCustomImpl implements OrderResumeRepositoryCus
                 .fetch();
     }
 
+    @Override
     public List<OrderResumeResponse> findByOrderId(Long orderId){
         return queryFactory
                 .select(Projections.fields(OrderResumeResponse.class,

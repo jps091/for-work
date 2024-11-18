@@ -39,4 +39,6 @@ public class CartResume {
     public String getTitle(){
         return resume.createTitle();
     }
+
+    public Long getResumeId(){ return resume.getId(); }
 }

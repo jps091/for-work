@@ -28,7 +28,7 @@ public class OrderResume {
         return OrderResume.builder()
                 .order(order)
                 .resume(resume)
-                .status(OrderResumeStatus.ORDERED)
+                .status(OrderResumeStatus.PAID)
                 .build();
     }
     public OrderResume updateStatusSent(ClockHolder clockHolder){

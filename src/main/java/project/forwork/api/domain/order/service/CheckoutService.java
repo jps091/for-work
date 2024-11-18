@@ -8,7 +8,7 @@ import org.springframework.web.client.RestClientResponseException;
 import project.forwork.api.common.domain.CurrentUser;
 import project.forwork.api.common.error.TransactionErrorCode;
 import project.forwork.api.common.exception.ApiException;
-import project.forwork.api.common.infrastructure.message.SellerMessage;
+import project.forwork.api.common.message.SellerMessage;
 import project.forwork.api.domain.cartresume.service.CartResumeService;
 import project.forwork.api.domain.order.controller.model.*;
 import project.forwork.api.domain.order.infrastructure.model.ConfirmPaymentDto;
@@ -60,7 +60,7 @@ public class CheckoutService {
         }
     }
     @Transactional
-    public void cancelPayment(CurrentUser currentUser, Long orderId){
+    public CancelResponse cancelPayment(CurrentUser currentUser, Long orderId){
         String requestId = orderService.getRequestIdByOrderId(orderId);
 
         try{
@@ -72,6 +72,7 @@ public class CheckoutService {
             Transaction tx = Transaction.create(currentUser, requestId, transaction.getPaymentKey(), order.getTotalAmount(), TransactionType.REFUND);
             transactionRepository.save(tx);
 
+            return CancelResponse.fromAllCancel(order.getTotalAmount());
         }catch (Exception e){
             log.error("caught process cancel-payment", e);
             throwApiExceptionIfStatusCode500(e, requestId, RetryType.CANCEL);
@@ -80,7 +81,7 @@ public class CheckoutService {
     }
 
     @Transactional
-    public void cancelPartialPayment(CurrentUser currentUser, Long orderId, PartialCancelRequest body){
+    public CancelResponse cancelPartialPayment(CurrentUser currentUser, Long orderId, PartialCancelRequest body){
         String requestId = orderService.getRequestIdByOrderId(orderId);
 
         try{
@@ -93,6 +94,8 @@ public class CheckoutService {
 
             Transaction tx = Transaction.create(currentUser, requestId, transaction.getPaymentKey(), paymentBody.getCancelAmount(), TransactionType.PARTIAL_REFUND);
             transactionRepository.save(tx);
+
+            return CancelResponse.fromPartCancel(paymentBody.getCancelAmount());
 
         }catch (Exception e){
             log.error("caught process partial-cancel-payment", e);

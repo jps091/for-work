@@ -13,7 +13,7 @@ import project.forwork.api.domain.token.service.TokenHeaderService;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/token")
+@RequestMapping("/open-api/v1/token")
 @Tag(name = "TokenCookiesController")
 public class TokenAuthController {
 
