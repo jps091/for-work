@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import project.forwork.api.common.domain.CurrentUser;
 import project.forwork.api.common.exception.ApiException;
+import project.forwork.api.common.infrastructure.Producer;
 import project.forwork.api.common.infrastructure.enums.FieldType;
 import project.forwork.api.common.infrastructure.enums.LevelType;
 import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
@@ -32,6 +33,8 @@ class ResumeDecisionServiceTest {
     private  FakeResumeDecisionRepository fakeResumeDecisionRepository;
     @Mock
     private SalesPostService salesPostService;
+    @Mock
+    private Producer producer;
 
     @BeforeEach
     void init(){
@@ -42,6 +45,7 @@ class ResumeDecisionServiceTest {
                 .resumeRepository(fakeResumeRepository)
                 .userRepository(fakeUserRepository)
                 .salesPostService(salesPostService)
+                .producer(producer)
                 .resumeDecisionRepository(fakeResumeDecisionRepository)
                 .build();
 

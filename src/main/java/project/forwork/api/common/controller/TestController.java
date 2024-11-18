@@ -9,10 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import project.forwork.api.common.domain.CurrentUser;
-import project.forwork.api.common.service.port.MailSender;
 import project.forwork.api.domain.order.controller.model.ConfirmPaymentRequest;
 import project.forwork.api.domain.order.service.CheckoutService;
-import project.forwork.api.domain.orderresume.service.OrderResumeMailService;
 import project.forwork.api.domain.resume.model.Resume;
 import project.forwork.api.domain.resume.service.ResumeQuantityService;
 import project.forwork.api.domain.resume.service.port.ResumeRepository;
@@ -28,8 +26,6 @@ public class TestController {
     private final CheckoutService checkoutService;
     private final ResumeRepository resumeRepository;
     private final ResumeQuantityService resumeQuantityService;
-    private final OrderResumeMailService orderResumeMailService;
-    private final MailSender mailSender;
 
     @GetMapping("/open-api/order")
     @Transactional
@@ -88,12 +84,5 @@ public class TestController {
     ){
         resumeQuantityService.addSalesQuantityWithAllPessimistic(List.of(149L, 150L));
         return new ResponseEntity<>("confirm", HttpStatus.OK);
-    }
-
-    @RequestMapping(method = RequestMethod.GET, value = "/test/async")
-    public ResponseEntity<String> asyncMail(
-    ){
-        orderResumeMailService.sendLog("test");
-        return new ResponseEntity<>("send", HttpStatus.OK);
     }
 }

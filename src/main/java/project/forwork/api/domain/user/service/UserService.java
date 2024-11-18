@@ -10,8 +10,7 @@ import project.forwork.api.common.domain.CurrentUser;
 import project.forwork.api.common.error.UserErrorCode;
 import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.common.infrastructure.Producer;
-import project.forwork.api.common.infrastructure.message.NoticeMessage;
-import project.forwork.api.common.service.port.MailSender;
+import project.forwork.api.common.message.NoticeMessage;
 import project.forwork.api.common.service.port.RedisUtils;
 import project.forwork.api.common.service.port.UuidHolder;
 import project.forwork.api.domain.cart.model.Cart;
@@ -35,7 +34,6 @@ public class UserService {
     private final TokenHeaderService tokenHeaderService;
     private final ResumeService resumeService;
     private final CartRepository cartRepository;
-    private final MailSender mailSender;
     private final UuidHolder uuidHolder;
     private final RedisUtils redisUtils;
     private final Producer producer;
@@ -94,13 +92,6 @@ public class UserService {
                 .orElseThrow(() -> new ApiException(UserErrorCode.USER_NOT_FOUND, id));
     }
 
-    public void sendCode(String email){
-        String certificationCode = issueCertificationCode(email);
-        String title = "for-work 인증 코드 발송";
-        String content = "인증코드 : " + certificationCode;
-        mailSender.send(email, title, content);
-    }
-
     public void produceVerifyEmail(String email){
         producer.sendAutCodeMail(email);
     }
@@ -113,14 +104,6 @@ public class UserService {
         }
 
         deleteCertificationCode(body.getEmail());
-    }
-
-    private String issueCertificationCode(String email){
-        String certificationCode = uuidHolder.random();
-        String key = getKeyByEmail(email);
-        redisUtils.setDataWithTimeout(key, certificationCode, 300L);
-
-        return certificationCode;
     }
 
     private String getKeyByEmail(String email) {

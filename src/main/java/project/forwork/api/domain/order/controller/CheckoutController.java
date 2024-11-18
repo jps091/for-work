@@ -34,23 +34,23 @@ public class CheckoutController {
     @Operation(summary = "주문 전체 취소 및 전액 환불 api",
             description = "OrderId 에 해당 하는 이력서 주문을 전체 취소하고 전액 환불 합니다.")
     @PostMapping("/cancel/{orderId}")
-    public Api<String> cancelOrder(
+    public Api<CancelResponse> cancelOrder(
             @Parameter(hidden = true) @Current CurrentUser currentUser,
             @PathVariable Long orderId
     ){
-        checkoutService.cancelPayment(currentUser, orderId);
-        return Api.OK("주문 전체 취소 되었습니다.");
+        CancelResponse cancelResponse = checkoutService.cancelPayment(currentUser, orderId);
+        return Api.OK(cancelResponse);
     }
 
     @Operation(summary = "주문 중 부분 취소 및 부분 환불 api",
             description = "OrderId 에 해당 하는 이력서 주문중 선택한 것만 부분 취소하고 해당 금액을 환불 합니다.")
     @PostMapping("/partial-cancel/{orderId}")
-    public Api<String> cancelPartialOrder(
+    public Api<CancelResponse> cancelPartialOrder(
             @Parameter(hidden = true) @Current CurrentUser currentUser,
             @PathVariable Long orderId,
             @Valid @RequestBody PartialCancelRequest body
     ){
-        checkoutService.cancelPartialPayment(currentUser, orderId, body);
-        return Api.OK("선택한 이력서 부분 취소 되었습니다.");
+        CancelResponse cancelResponse = checkoutService.cancelPartialPayment(currentUser, orderId, body);
+        return Api.OK(cancelResponse);
     }
 }

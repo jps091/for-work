@@ -20,7 +20,6 @@ public class OrderDetailResponse {
     private String email;
     private List<OrderResumeResponse> orderResumeResponses;
     private BigDecimal totalAmount;
-    private OrderStatus orderStatus;
 
     public static OrderDetailResponse from(Order order, List<OrderResumeResponse> orderResumes){
         return OrderDetailResponse.builder()
@@ -28,7 +27,6 @@ public class OrderDetailResponse {
                 .totalAmount(order.getTotalAmount())
                 .paidAt(order.getPaidAt())
                 .orderId(order.getId())
-                .orderStatus(order.getStatus())
                 .orderResumeResponses(orderResumes)
                 .build();
     }

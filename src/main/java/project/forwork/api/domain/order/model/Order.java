@@ -7,10 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import project.forwork.api.common.error.OrderErrorCode;
 import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.common.service.port.ClockHolder;
-import project.forwork.api.domain.cartresume.model.CartResume;
 import project.forwork.api.domain.order.infrastructure.enums.OrderStatus;
 import project.forwork.api.domain.orderresume.model.OrderResume;
-import project.forwork.api.domain.resume.model.Resume;
 import project.forwork.api.domain.user.model.User;
 
 import java.math.BigDecimal;
@@ -71,7 +69,7 @@ public class Order {
         }
 
         if(status.equals(OrderStatus.CONFIRM)){
-            throw new ApiException(OrderErrorCode.RESUME_ALREADY_SEND);
+            throw new ApiException(OrderErrorCode.RESUME_ALREADY_CONFIRM);
         }
 
         return Order.builder()
@@ -90,7 +88,7 @@ public class Order {
         }
 
         if(status.equals(OrderStatus.CONFIRM)){
-            throw new ApiException(OrderErrorCode.RESUME_ALREADY_SEND);
+            throw new ApiException(OrderErrorCode.RESUME_ALREADY_CONFIRM);
         }
 
         BigDecimal canceledPrice = orderResumes.stream()

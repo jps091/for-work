@@ -63,11 +63,11 @@ public class OrderService {
         return orderRepository.save(order);
     }
 
-    public Order cancelPartialOrder(CurrentUser currentUser, Long orderId, List<OrderResume> orderResumes){
+    public void cancelPartialOrder(CurrentUser currentUser, Long orderId, List<OrderResume> orderResumes){
         Order order = orderRepository.getByIdWithThrow(orderId);
         order = order.cancelPartialOrder(currentUser.getId(), orderResumes);
         orderResumeService.cancelByOrderResumes(orderResumes);
-        return orderRepository.save(order);
+        orderRepository.save(order);
     }
 
     public List<Order> updateOrdersByStatus(List<Order> orders, OrderStatus status) {
@@ -103,20 +103,10 @@ public class OrderService {
             throw new ApiException(OrderErrorCode.ORDER_NO_CONTENT);
         }
 
-//        return orders.stream()
-//                .map(order -> {
-//                    List<OrderTitleResponse> orderTitles = orderResumeRepositoryCustom.findOrderTitleByOrderId(order.getId());
-//                    String orderResumeTitle = orderTitles.get(0).getTitle();
-//                    String orderTitle = createOrderTitle(orderTitles, orderResumeTitle);
-//                    return OrderResponse.from(order, orderTitle);
-//                }).toList();
-
         return orders.stream()
                 .map(order -> {
                     List<OrderTitleResponse> orderTitles = orderResumeRepositoryCustom.findOrderTitleByOrderId(order.getId());
-                    String orderResumeTitle = orderTitles.isEmpty()
-                            ? ("주문" + " #" + order.getId() + " 내역")
-                            : orderTitles.get(0).getTitle();
+                    String orderResumeTitle = orderTitles.get(0).getTitle();
                     String orderTitle = createOrderTitle(orderTitles, orderResumeTitle);
                     return OrderResponse.from(order, orderTitle);
                 }).toList();
