@@ -52,13 +52,14 @@ public class OrderService {
 
     public void orderConfirmNow(CurrentUser currentUser, Long orderId, ConfirmOrderRequest body){
         Order order = orderRepository.getByIdWithThrow(orderId);
+        order.verifyPaidOrder(currentUser.getId());
         order = orderResumeService.sendMailForNowConfirmedOrder(currentUser.getId(), order, body.getOrderResumeIds());
         orderRepository.save(order);
     }
 
     public Order cancelOrder(CurrentUser currentUser, Long orderId){
         Order order = orderRepository.getByIdWithThrow(orderId);
-        order = order.cancelOrder(currentUser.getId());
+        order = order.cancelOrderWithThrow(currentUser.getId());
         orderResumeService.cancelByOrder(order);
         return orderRepository.save(order);
     }
@@ -77,6 +78,7 @@ public class OrderService {
 
         return orderRepository.saveAll(updatedOrders);
     }
+
 
     // requestId = 현재 시간 (millis) / 5000 + "_" + userId + "-" + uuid 5자리
     // 동일 유저가 5초 이내에 재 요청을 할 경우 예외 발생
@@ -125,10 +127,28 @@ public class OrderService {
     }
 
     private boolean isRequestIdEqual(String source, String target){
-        return source.split("-")[0].equals(target.split("-")[0]);
+        try {
+            // "_" 밀리초 값, 사용자 ID 추출
+            String[] sourceParts = source.split("_");
+            String[] targetParts = target.split("_");
+
+            // 밀리초 값 추출
+            long sourceMillis = Long.parseLong(sourceParts[0]);
+            long targetMillis = Long.parseLong(targetParts[0]);
+
+            // 사용자 ID 추출
+            String sourceUserId = sourceParts[1].split("-")[0];
+            String targetUserId = targetParts[1].split("-")[0];
+
+            // 사용자 ID와 "Millis / 5000" 값 비교
+            return sourceUserId.equals(targetUserId) && (sourceMillis / 5000 == targetMillis / 5000);
+        } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+            return false;
+        }
     }
 
     private static String createOrderTitle(List<OrderTitleResponse> orderTitles, String orderResumeTitle) {
-        return orderTitles.size() == 1 ? orderResumeTitle : orderResumeTitle + " 외 " + orderTitles.size() + "건";
+        int rest = orderTitles.size() - 1;
+        return orderTitles.size() == 1 ? orderResumeTitle : orderResumeTitle + " 외 " + rest + "건";
     }
 }

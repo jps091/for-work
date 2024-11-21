@@ -63,12 +63,12 @@ public class Order {
                 .paidAt(paidAt)
                 .build();
     }
-    public Order cancelOrder(Long userId){
+    public Order cancelOrderWithThrow(Long userId){
         if(!Objects.equals(user.getId(), userId)){
             throw new ApiException(OrderErrorCode.ORDER_NOT_PERMISSION, userId);
         }
 
-        if(status.equals(OrderStatus.CONFIRM)){
+        if(OrderStatus.CONFIRM.equals(status)){
             throw new ApiException(OrderErrorCode.RESUME_ALREADY_CONFIRM);
         }
 
@@ -113,5 +113,15 @@ public class Order {
 
     public String getBuyerEmail(){
         return user.getEmail();
+    }
+
+    public void verifyPaidOrder(Long userId){
+        if(!Objects.equals(user.getId(), userId)){
+            throw new ApiException(OrderErrorCode.ORDER_NOT_PERMISSION, userId);
+        }
+
+        if(!OrderStatus.PAID.equals(status)){
+            throw new ApiException(OrderErrorCode.ORDER_NOT_PAID);
+        }
     }
 }
