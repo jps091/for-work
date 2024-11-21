@@ -12,7 +12,8 @@ public enum OrderErrorCode implements ErrorCodeIfs{
     RESUME_ALREADY_CONFIRM(400, 8403, "이미 구매 확정인 주문입니다."),
     ORDER_ALREADY_REQUEST(409, 8404, "이미 요청한 주문 입니다."),
     ORDER_ABNORMAL(400, 8405, "비정상 주문 입니다. 다시 시도 해주세요."),
-    ORDER_NO_CONTENT(404, 8406, "주문 내역이 0건 입니다."), // TODO API 추가
+    ORDER_NO_CONTENT(404, 8406, "주문 내역이 0건 입니다."),
+    ORDER_NOT_PAID(400, 8407, "결제완료 주문이 아니라 즉시 주문 확정을 할 수 없습니다"),
     ;
 
     private final Integer httpStatusCode;

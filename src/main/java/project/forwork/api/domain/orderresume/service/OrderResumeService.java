@@ -37,18 +37,15 @@ public class OrderResumeService {
 
     // 즉시 구매 확정
     public Order sendMailForNowConfirmedOrder(Long userId, Order order, List<Long> orderResumeIds){
-        int totalOrderSize = orderResumeRepository.findByStatusAndOrder(OrderResumeStatus.PAID, order).size();
         List<OrderResume> orderedResumes = orderResumeRepository.findByStatusAndOrder(OrderResumeStatus.PAID, order)
                 .stream()
                 .filter(orderResume -> orderResumeIds.contains(orderResume.getId()))
                 .map(OrderResume::updateStatusConfirm)
                 .toList();
 
+        OrderStatus updateOrderStatus = checkOrderConfirmation(order, orderedResumes);
         List<OrderResume> confirmedResumes = orderResumeRepository.saveAll(orderedResumes);
         orderResumeProducer.setupConfirmedResumesAndSendEmail(confirmedResumes);
-
-        int confirmOrderSize = confirmedResumes.size();
-        OrderStatus updateOrderStatus = getOrderStatusCheckConfirm(totalOrderSize, confirmOrderSize);
 
         return order.confirmOrderNow(userId, updateOrderStatus);
     }
@@ -85,17 +82,20 @@ public class OrderResumeService {
         return orderResumes;
     }
 
+    @Transactional(readOnly = true)
+    public OrderStatus checkOrderConfirmation(Order order, List<OrderResume> selectOrder) {
+        int totalOrderSize = orderResumeRepository.findByStatusAndOrder(OrderResumeStatus.PAID, order).size();
+        int confirmOrderSize = selectOrder.size();
+        if(totalOrderSize != confirmOrderSize){ // 같지 않으면 주문내 개별로 주문확정
+            return OrderStatus.PARTIAL_CONFIRM;
+        }
+
+        return OrderStatus.CONFIRM; // 요청 ids 갯수와 쿼리 결과 갯수가 일치 하면 전체 주무확정
+    }
+
     private void validSelected(List<Long> orderResumeIds, List<OrderResume> orderResumes) {
         if(orderResumes.size() != orderResumeIds.size()){
             throw new ApiException(OrderResumeErrorCode.NOT_SELECTED);
-        }
-    }
-
-    private OrderStatus getOrderStatusCheckConfirm(int totalOrderSize, int confirmOrderSize) {
-        if(totalOrderSize != confirmOrderSize){ // 같지 않으면 주문내 개별로 주문확정
-            return OrderStatus.PARTIAL_CONFIRM;
-        }else{
-            return OrderStatus.CONFIRM; // 요청 ids 갯수와 쿼리 결과 갯수가 일칠하면 전체 주무확정
         }
     }
 }
