@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import project.forwork.api.common.infrastructure.Producer;
+import project.forwork.api.common.producer.Producer;
 import project.forwork.api.domain.user.infrastructure.enums.UserStatus;
 import project.forwork.api.domain.user.model.User;
 import project.forwork.api.mock.FakeUserRepository;

@@ -5,9 +5,10 @@ import org.springframework.context.MessageSourceResolvable;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.method.ParameterValidationResult;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import project.forwork.api.common.api.Api;
@@ -19,12 +20,10 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 @Slf4j
 @Order(value = Integer.MIN_VALUE + 1)
-public class MethodArgumentNotValidExceptionHandler {
+public class RequestValidExceptionHandler {
 
     @ExceptionHandler({HandlerMethodValidationException.class})
     public ResponseEntity<Api<Object>> handleValidationExceptions(HandlerMethodValidationException ex){
-        log.error("MethodArgumentNotValidExceptionHandler", ex);
-
         String message = ex.getAllValidationResults().stream()
                 .map(ParameterValidationResult::getResolvableErrors)
                 .flatMap(List::stream)
@@ -32,6 +31,21 @@ public class MethodArgumentNotValidExceptionHandler {
                 .collect(Collectors.joining(", "));
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Api.ERROR(ErrorCode.BAD_REQUEST, message));
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Api<Object>> methodArgumentNotValidExceptions(MethodArgumentNotValidException ex){
+        String message = ex.getBindingResult().getFieldErrors().stream()
+                .map(error -> error.getField() + ": " + error.getDefaultMessage())
+                .collect(Collectors.joining(", "));
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Api.ERROR(ErrorCode.BAD_REQUEST, message));
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<Api<Object>> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
+        String message = "JSON 요청이 잘못되었습니다. Enum 값이 유효하지 않습니다.";
+        return ResponseEntity.badRequest().body(Api.ERROR(ErrorCode.BAD_REQUEST, message));
     }
 }
 

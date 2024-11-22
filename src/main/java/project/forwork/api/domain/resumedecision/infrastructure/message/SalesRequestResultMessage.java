@@ -1,4 +1,4 @@
-package project.forwork.api.common.message;
+package project.forwork.api.domain.resumedecision.infrastructure.message;
 
 import lombok.*;
 

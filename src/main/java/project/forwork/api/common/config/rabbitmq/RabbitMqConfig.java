@@ -9,9 +9,9 @@ import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import project.forwork.api.common.config.rabbitmq.enums.ExchangeType;
-import project.forwork.api.common.config.rabbitmq.enums.QueueType;
-import project.forwork.api.common.config.rabbitmq.enums.RoutingKey;
+import project.forwork.api.common.producer.enums.Exchange;
+import project.forwork.api.common.producer.enums.QueueType;
+import project.forwork.api.common.producer.enums.RoutingKey;
 
 @Configuration
 @Slf4j
@@ -20,51 +20,65 @@ public class RabbitMqConfig {
 
     @Bean
     public DirectExchange authExchange() {
-        return new DirectExchange(ExchangeType.AUTH.getExchange());
+        return new DirectExchange(Exchange.AUTH.getExchange());
     }
 
     @Bean
     public TopicExchange userExchange() {
-        return new TopicExchange(ExchangeType.USER.getExchange());
+        return new TopicExchange(Exchange.USER.getExchange());
     }
 
     @Bean
     public FanoutExchange retryExchange() {
-        return new FanoutExchange(ExchangeType.RETRY.getExchange());
+        return new FanoutExchange(Exchange.RETRY.getExchange());
     }
 
     // 큐 설정에 x-dead-letter-exchange 추가 -> 실패 시 RETRY_EXCHANGE 메시지 전달
     @Bean
     public Queue verifyQueue() {
         return QueueBuilder.durable(QueueType.VERIFY.getQueue())
-                .withArgument(X_DEAD_LETTER_EXCHANGE, ExchangeType.RETRY.getExchange())
+                .withArgument(X_DEAD_LETTER_EXCHANGE, Exchange.RETRY.getExchange())
                 .build();
     }
     @Bean
     public Queue userBuyerQueue() {
         return QueueBuilder.durable(QueueType.USER_BUYER.getQueue())
-                .withArgument(X_DEAD_LETTER_EXCHANGE, ExchangeType.RETRY.getExchange())
+                .withArgument(X_DEAD_LETTER_EXCHANGE, Exchange.RETRY.getExchange())
                 .build();
     }
 
     @Bean
-    public Queue userSellerQueue() {
-        return QueueBuilder.durable(QueueType.USER_SELLER.getQueue())
-                .withArgument(X_DEAD_LETTER_EXCHANGE, ExchangeType.RETRY.getExchange())
+    public Queue userSellerSellingQueue() {
+        return QueueBuilder.durable(QueueType.USER_SELLER_SELLING.getQueue())
+                .withArgument(X_DEAD_LETTER_EXCHANGE, Exchange.RETRY.getExchange())
+                .build();
+    }
+
+    @Bean
+    public Queue userSellerResultQueue() {
+        return QueueBuilder.durable(QueueType.USER_SELLER_RESULT.getQueue())
+                .withArgument(X_DEAD_LETTER_EXCHANGE, Exchange.RETRY.getExchange())
                 .build();
     }
 
     @Bean
     public Queue userNoticeQueue() {
         return QueueBuilder.durable(QueueType.USER_NOTICE.getQueue())
-                .withArgument(X_DEAD_LETTER_EXCHANGE, ExchangeType.RETRY.getExchange())
+                .withArgument(X_DEAD_LETTER_EXCHANGE, Exchange.RETRY.getExchange())
                 .build();
     }
 
     @Bean
-    public Queue userTempPasswordQueue() {
-        return QueueBuilder.durable(QueueType.USER_TEMP_PASSWORD.getQueue())
-                .withArgument(X_DEAD_LETTER_EXCHANGE, ExchangeType.RETRY.getExchange())
+    public Queue userAdminInquiryQueue() {
+        return QueueBuilder.durable(QueueType.USER_ADMIN_INQUIRY.getQueue())
+                .withArgument(X_DEAD_LETTER_EXCHANGE, Exchange.RETRY.getExchange())
+                .build();
+    }
+
+    @Bean
+    public Queue userPasswordQueue() {
+        return QueueBuilder.durable(QueueType.USER_PASSWORD.getQueue())
+                .withArgument(X_DEAD_LETTER_EXCHANGE, Exchange.RETRY.getExchange())
                 .build();
     }
 
@@ -79,8 +93,8 @@ public class RabbitMqConfig {
     }
 
     @Bean
-    public Binding tempPasswordBinding(TopicExchange userExchange, Queue userTempPasswordQueue) {
-        return BindingBuilder.bind(userTempPasswordQueue).to(userExchange).with(RoutingKey.USER_TEMP_PASSWORD.getKey());
+    public Binding passwordBinding(TopicExchange userExchange, Queue userPasswordQueue) {
+        return BindingBuilder.bind(userPasswordQueue).to(userExchange).with(RoutingKey.USER_PASSWORD.getKey());
     }
 
     @Bean
@@ -89,13 +103,23 @@ public class RabbitMqConfig {
     }
 
     @Bean
-    public Binding userSellerBinding(TopicExchange userExchange, Queue userSellerQueue) {
-        return BindingBuilder.bind(userSellerQueue).to(userExchange).with(RoutingKey.USER_SELLER.getKey());
+    public Binding userSellerSellingBinding(TopicExchange userExchange, Queue userSellerSellingQueue) {
+        return BindingBuilder.bind(userSellerSellingQueue).to(userExchange).with(RoutingKey.USER_SELLER_SELLING.getKey());
+    }
+
+    @Bean
+    public Binding userSellerResultBinding(TopicExchange userExchange, Queue userSellerResultQueue) {
+        return BindingBuilder.bind(userSellerResultQueue).to(userExchange).with(RoutingKey.USER_SELLER_RESULT.getKey());
     }
 
     @Bean
     public Binding userNoticeBinding(TopicExchange userExchange, Queue userNoticeQueue) {
         return BindingBuilder.bind(userNoticeQueue).to(userExchange).with(RoutingKey.USER_NOTICE.getKey());
+    }
+
+    @Bean
+    public Binding userAminInquiry(TopicExchange userExchange, Queue userAdminInquiryQueue) {
+        return BindingBuilder.bind(userAdminInquiryQueue).to(userExchange).with(RoutingKey.USER_ADMIN_INQUIRY.getKey());
     }
 
     @Bean

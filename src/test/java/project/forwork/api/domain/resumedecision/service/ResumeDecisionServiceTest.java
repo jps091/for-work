@@ -7,21 +7,17 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import project.forwork.api.common.domain.CurrentUser;
 import project.forwork.api.common.exception.ApiException;
-import project.forwork.api.common.infrastructure.Producer;
+import project.forwork.api.common.producer.Producer;
 import project.forwork.api.common.infrastructure.enums.FieldType;
 import project.forwork.api.common.infrastructure.enums.LevelType;
 import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
 import project.forwork.api.domain.resume.model.Resume;
-import project.forwork.api.domain.salespost.infrastructure.enums.SalesStatus;
-import project.forwork.api.domain.salespost.model.SalesPost;
 import project.forwork.api.domain.salespost.service.SalesPostService;
-import project.forwork.api.domain.thumbnailimage.model.ThumbnailImage;
 import project.forwork.api.domain.user.infrastructure.enums.UserStatus;
 import project.forwork.api.domain.user.model.User;
 import project.forwork.api.mock.*;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
 @ExtendWith(MockitoExtension.class)

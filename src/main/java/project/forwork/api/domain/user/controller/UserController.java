@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import project.forwork.api.common.annotation.Current;
 import project.forwork.api.common.api.Api;
 import project.forwork.api.common.domain.CurrentUser;
+import project.forwork.api.domain.user.controller.model.InquiryRequest;
 import project.forwork.api.domain.user.controller.model.PasswordModifyRequest;
 import project.forwork.api.domain.user.controller.model.PasswordVerifyRequest;
 import project.forwork.api.domain.user.controller.model.UserResponse;
@@ -75,5 +76,15 @@ public class UserController {
     ){
         userService.delete(currentUser, response);
         return Api.OK("회원 탈퇴 성공");
+    }
+
+    @Operation(summary = "관리자에게 이메일 보내는 API", description = "제목, 내용, 문의 종류 필요")
+    @PostMapping
+    public Api<String> inquire(
+            @Parameter(hidden = true) @Current CurrentUser currentUser,
+            @Valid @RequestBody InquiryRequest body
+    ){
+        userService.produceInquiryEmail(currentUser, body);
+        return Api.OK("답변은 1일 정도 소요 되며 가입 하신 이메일을 확인 해주세요.");
     }
 }
