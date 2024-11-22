@@ -1,4 +1,4 @@
-package project.forwork.api.common.message;
+package project.forwork.api.domain.order.infrastructure.message;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,13 +9,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class SellerMessage {
+public class SellingMessage {
     private String email;
     private String title;
     private String content;
 
-    public static SellerMessage from(String email, String title, String content){
-        return SellerMessage.builder()
+    public static SellingMessage from(String email, String title, String content){
+        return SellingMessage.builder()
                 .email(email)
                 .title(title)
                 .content(content)

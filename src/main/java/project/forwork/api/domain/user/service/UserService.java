@@ -9,8 +9,9 @@ import project.forwork.api.common.annotation.Current;
 import project.forwork.api.common.domain.CurrentUser;
 import project.forwork.api.common.error.UserErrorCode;
 import project.forwork.api.common.exception.ApiException;
-import project.forwork.api.common.infrastructure.Producer;
-import project.forwork.api.common.message.NoticeMessage;
+import project.forwork.api.domain.user.infrastructure.message.AdminInquiryMessage;
+import project.forwork.api.common.producer.Producer;
+import project.forwork.api.domain.user.infrastructure.message.NoticeMessage;
 import project.forwork.api.common.service.port.RedisUtils;
 import project.forwork.api.common.service.port.UuidHolder;
 import project.forwork.api.domain.cart.model.Cart;
@@ -104,6 +105,11 @@ public class UserService {
         }
 
         deleteCertificationCode(body.getEmail());
+    }
+
+    public void produceInquiryEmail(CurrentUser currentUser, InquiryRequest body){
+        AdminInquiryMessage message = AdminInquiryMessage.from(currentUser.getEmail(), body);
+        producer.sendAdminInquiry(message);
     }
 
     private String getKeyByEmail(String email) {

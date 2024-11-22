@@ -9,7 +9,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import project.forwork.api.common.domain.CurrentUser;
 import project.forwork.api.common.exception.ApiException;
-import project.forwork.api.common.infrastructure.Producer;
+import project.forwork.api.common.producer.Producer;
 import project.forwork.api.common.service.port.RedisUtils;
 import project.forwork.api.domain.cart.infrastructure.enums.CartStatus;
 import project.forwork.api.domain.cart.model.Cart;

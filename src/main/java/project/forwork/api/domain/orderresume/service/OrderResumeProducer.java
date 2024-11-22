@@ -5,11 +5,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import project.forwork.api.common.infrastructure.Producer;
+import project.forwork.api.common.producer.Producer;
 import project.forwork.api.common.infrastructure.enums.FieldType;
 import project.forwork.api.common.infrastructure.enums.LevelType;
-import project.forwork.api.common.message.BuyerMessage;
-import project.forwork.api.common.message.SellerMessage;
+import project.forwork.api.domain.orderresume.infrastructure.message.BuyerMessage;
+import project.forwork.api.domain.order.infrastructure.message.SellingMessage;
 import project.forwork.api.domain.orderresume.controller.model.OrderResumePurchaseInfo;
 import project.forwork.api.domain.orderresume.model.OrderResume;
 import project.forwork.api.domain.orderresume.service.port.OrderResumeRepositoryCustom;
@@ -42,7 +42,7 @@ public class OrderResumeProducer {
         String email = info.getSellerEmail();
         String title = "for-work #" + info.getResumeId() + " 이력서 판매 내역";
         String content = "해당 #" + info.getResumeId() + " 이력서가 판매 되었습니다.";
-        SellerMessage message = SellerMessage.from(email, title, content);
+        SellingMessage message = SellingMessage.from(email, title, content);
         producer.sendSellingMail(message);
     }
 
