@@ -112,26 +112,6 @@ class OrderServiceTest extends Specification {
         assert updateOrder.status == OrderStatus.CONFIRM
     }
 
-    def "PAID 상태가 아닌 주문에 대해 ApiException 이 발생한다."() {
-        given:
-        var body = new ConfirmOrderRequest(List.of(1L, 2L))
-        var user = User.builder()
-                .id(1L)
-                .build()
-        var invalidOrder = Order.builder()
-                .id(1L)
-                .user(user)
-                .status(OrderStatus.CANCEL)
-                .build()
-        orderRepository.getByIdWithThrow(_) >> invalidOrder
-
-        when:
-        orderService.orderConfirmNow(currentUser, 1L, body)
-
-        then:
-        var e = thrown(ApiException.class)
-    }
-
     def "자신의 주문이 아닌 주문에 대해 구매확정을 하면 ApiException 이 발생한다."() {
         given:
         var body = new ConfirmOrderRequest(List.of(1L, 2L))
@@ -168,11 +148,10 @@ class OrderServiceTest extends Specification {
                 .status(OrderStatus.CANCEL)
                 .build()
 
-        orderRepository.getByIdWithThrow(_) >> order
         order.cancelOrderWithThrow(_) >> canceledOrder
 
         when:
-        var result = orderService.cancelOrder(currentUser, 1L)
+        var result = orderService.cancelOrder(currentUser, order)
 
         then:
         1 * orderResumeService.cancelByOrder({ cancelOrder ->

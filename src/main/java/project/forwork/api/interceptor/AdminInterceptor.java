@@ -26,8 +26,6 @@ public class AdminInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
-        // 웹 리소스 및 옵션 요청은 통과
-        // Preflight 요청으로, 브라우저가 실제 요청 전에 서버가 해당 요청을 허용하는지 확인하는 과정입니다.
         if (HttpMethod.OPTIONS.matches(request.getMethod()) || handler instanceof ResourceHttpRequestHandler) {
             return true;
         }

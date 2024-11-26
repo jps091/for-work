@@ -26,9 +26,9 @@ public class OrderResumeProducer {
 
     @Transactional
     public void setupConfirmedResumesAndSendEmail(List<OrderResume> orderResumes) {
-        List<OrderResumePurchaseInfo> messages = orderResumeRepositoryCustom.findAllPurchaseResume(orderResumes);
-        messages.forEach(this::produceBuyerMail);
-        messages.forEach(this::produceSellerMail);
+        List<OrderResumePurchaseInfo> infoList = orderResumeRepositoryCustom.findAllPurchaseResume(orderResumes);
+        infoList.forEach(this::produceBuyerMail);
+        infoList.forEach(this::produceSellerMail);
     }
 
     public void produceBuyerMail(OrderResumePurchaseInfo info) {

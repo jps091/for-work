@@ -17,7 +17,7 @@ public class LocalCacheConfig {
     @Bean
     public Caffeine<Object, Object> caffeineConfig() {
         return Caffeine.newBuilder()
-                .expireAfterWrite(10, TimeUnit.MINUTES)  // 마지막 접근 기준 10분 후 만료 -> LRU
+                .expireAfterWrite(10, TimeUnit.MINUTES)
                 .maximumSize(100);
     }
 
