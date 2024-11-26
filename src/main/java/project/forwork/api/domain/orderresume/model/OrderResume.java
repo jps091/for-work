@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import project.forwork.api.common.error.OrderResumeErrorCode;
+import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.common.service.port.ClockHolder;
 import project.forwork.api.domain.order.model.Order;
 import project.forwork.api.domain.orderresume.infrastructure.enums.OrderResumeStatus;
@@ -31,17 +33,12 @@ public class OrderResume {
                 .status(OrderResumeStatus.PAID)
                 .build();
     }
-    public OrderResume updateStatusSent(ClockHolder clockHolder){
-        return OrderResume.builder()
-                .id(id)
-                .order(order)
-                .resume(resume)
-                .status(OrderResumeStatus.SENT)
-                .sentAt(clockHolder.now())
-                .build();
-    }
 
     public OrderResume updateStatusCancel(ClockHolder clockHolder){
+        if(!OrderResumeStatus.PAID.equals(status)){
+            throw new ApiException(OrderResumeErrorCode.CANCEL_FAIL);
+        }
+
         return OrderResume.builder()
                 .id(id)
                 .order(order)

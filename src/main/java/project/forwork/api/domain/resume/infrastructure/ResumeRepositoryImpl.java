@@ -82,9 +82,4 @@ public class ResumeRepositoryImpl implements ResumeRepository {
         return resumeJpaRepository.saveAll(resumeEntities).stream()
                 .map(ResumeEntity::toModel).toList();
     }
-
-    @Override
-    public void increaseQuantity(Long resumeId) {
-        resumeJpaRepository.increaseQuantity(resumeId);
-    }
 }

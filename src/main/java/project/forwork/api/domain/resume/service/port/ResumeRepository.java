@@ -28,6 +28,4 @@ public interface ResumeRepository {
     Resume getByIdWithOptimisticLock(Long resumeId);
 
     List<Resume> saveAll(List<Resume> resumes);
-
-    void increaseQuantity(Long resumeId);
 }

@@ -95,11 +95,4 @@ public class FakeResumeRepository implements ResumeRepository {
         return data.stream()
                 .filter(resume -> resumeIds.contains(resume.getId())).toList();
     }
-
-    @Override
-    public void increaseQuantity(Long resumeId) {
-        Resume resume = getByIdWithThrow(resumeId);
-        Resume newResume = resume.increaseSalesQuantity();
-        save(newResume);
-    }
 }

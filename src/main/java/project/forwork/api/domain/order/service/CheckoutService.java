@@ -10,6 +10,7 @@ import project.forwork.api.common.error.TransactionErrorCode;
 import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.domain.cartresume.service.CartResumeService;
 import project.forwork.api.domain.order.controller.model.*;
+import project.forwork.api.domain.order.infrastructure.enums.OrderStatus;
 import project.forwork.api.domain.order.infrastructure.model.ConfirmPaymentDto;
 import project.forwork.api.domain.order.infrastructure.model.PaymentFullCancelDto;
 import project.forwork.api.domain.order.infrastructure.model.PaymentPartialCancelDto;
@@ -33,7 +34,6 @@ public class CheckoutService {
     private final PaymentGatewayService pgService;
     private final TransactionRepository transactionRepository;
     private final OrderService orderService;
-    private final OrderResumeService orderResumeService;
     private final RetryLogService retryLogService;
     private final CartResumeService cartResumeService;
 
@@ -58,20 +58,19 @@ public class CheckoutService {
             throw e;  // 예외를 다시 던져서 상위 로직에서 처리할 수 있게 함
         }
     }
-    @Transactional
-    public CancelResponse cancelPayment(CurrentUser currentUser, Long orderId){
-        String requestId = orderService.getRequestIdByOrderId(orderId);
 
+    @Transactional
+    public void cancelPayment(CurrentUser currentUser, Order order){
+        String requestId = orderService.getRequestIdByOrderId(order.getId());
+        log.info("cancelPayment order={}", order.getTotalAmount());
         try{
             PaymentFullCancelDto body = createCancelBody();
             Transaction transaction = transactionRepository.getByRequestIdAndEmail(requestId, currentUser.getEmail());
             pgService.cancelFullPayment(transaction.getPaymentKey(), body);
-            Order order = orderService.cancelOrder(currentUser, orderId);
+            orderService.cancelOrder(currentUser, order);
 
             Transaction tx = Transaction.create(currentUser, requestId, transaction.getPaymentKey(), order.getTotalAmount(), TransactionType.REFUND);
             transactionRepository.save(tx);
-
-            return CancelResponse.fromAllCancel(order.getTotalAmount());
         }catch (Exception e){
             log.error("caught process cancel-payment", e);
             throwApiExceptionIfStatusCode500(e, requestId, RetryType.CANCEL);
@@ -80,22 +79,18 @@ public class CheckoutService {
     }
 
     @Transactional
-    public CancelResponse cancelPartialPayment(CurrentUser currentUser, Long orderId, PartialCancelRequest body){
-        String requestId = orderService.getRequestIdByOrderId(orderId);
+    public void cancelPartialPayment(CurrentUser currentUser, Order order, List<OrderResume> orderResumes){
+        String requestId = orderService.getRequestIdByOrderId(order.getId());
 
         try{
             Transaction transaction = transactionRepository.getByRequestIdAndEmail(requestId, currentUser.getEmail());
-            List<OrderResume> orderResumes = orderResumeService.getCancelRequestOrderResumes(body.getOrderResumeIds(), orderId);
             PaymentPartialCancelDto paymentBody = createPartialCancelBody(orderResumes);
-
+            log.info("cancelPartialPayment order={} cancel={}", order.getTotalAmount(), paymentBody.getCancelAmount());
             pgService.cancelPartialPayment(transaction.getPaymentKey(), paymentBody);
-            orderService.cancelPartialOrder(currentUser, orderId, orderResumes);
+            orderService.cancelPartialOrder(currentUser, order, orderResumes);
 
             Transaction tx = Transaction.create(currentUser, requestId, transaction.getPaymentKey(), paymentBody.getCancelAmount(), TransactionType.PARTIAL_REFUND);
             transactionRepository.save(tx);
-
-            return CancelResponse.fromPartCancel(paymentBody.getCancelAmount());
-
         }catch (Exception e){
             log.error("caught process partial-cancel-payment", e);
             throwApiExceptionIfStatusCode500(e, requestId, RetryType.PARTIAL_CANCEL);

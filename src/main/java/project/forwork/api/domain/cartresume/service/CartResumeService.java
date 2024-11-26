@@ -70,7 +70,6 @@ public class CartResumeService {
     }
 
     private static CartResumeDetailResponse createCartResumeDetailResponse(List<CartResumeResponse> cartResumeResponses) {
-        //TODO 불변객체 cartResumeList.forEach(cartResume -> totalPrice.add(cartResume.getPrice()));
         BigDecimal totalPrice = cartResumeResponses.stream()
                 .map(CartResumeResponse::getPrice)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
