@@ -79,7 +79,7 @@ public class UserController {
     }
 
     @Operation(summary = "관리자에게 이메일 보내는 API", description = "제목, 내용, 문의 종류 필요")
-    @PostMapping
+    @PostMapping("/inquiry")
     public Api<String> inquire(
             @Parameter(hidden = true) @Current CurrentUser currentUser,
             @Valid @RequestBody InquiryRequest body

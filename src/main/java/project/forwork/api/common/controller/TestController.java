@@ -9,10 +9,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import project.forwork.api.common.domain.CurrentUser;
+import project.forwork.api.common.producer.Producer;
 import project.forwork.api.domain.order.controller.model.ConfirmPaymentRequest;
 import project.forwork.api.domain.order.service.CheckoutService;
+import project.forwork.api.domain.orderresume.infrastructure.message.BuyerMessage;
 import project.forwork.api.domain.resume.model.Resume;
-import project.forwork.api.domain.resume.service.ResumeQuantityService;
 import project.forwork.api.domain.resume.service.port.ResumeRepository;
 import project.forwork.api.domain.user.infrastructure.enums.UserStatus;
 
@@ -25,7 +26,7 @@ import java.util.UUID;
 public class TestController {
     private final CheckoutService checkoutService;
     private final ResumeRepository resumeRepository;
-    private final ResumeQuantityService resumeQuantityService;
+    private final Producer producer;
 
     @GetMapping("/open-api/order")
     @Transactional
@@ -72,17 +73,38 @@ public class TestController {
         return new ResponseEntity<>("confirm#@", HttpStatus.OK);
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/test/pess")
-    public ResponseEntity<String> oncePessimistic(
+    @RequestMapping(method = RequestMethod.POST, value = "/test/pess3")
+    @Transactional
+    public ResponseEntity<String> oncePessimistic1(
     ){
-        resumeQuantityService.addSalesQuantityWithOnePessimistic(List.of(3L, 4L));
+        List<Long> resumeIds = List.of(3L);
+        for (Long resumeId : resumeIds) {
+            Resume resume = resumeRepository.getByIdWithPessimisticLock(resumeId);
+            resume = resume.increaseSalesQuantity();
+            resumeRepository.save(resume);
+        }
         return new ResponseEntity<>("confirm", HttpStatus.OK);
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/test/opt")
-    public ResponseEntity<String> allPessimistic(
+    @RequestMapping(method = RequestMethod.POST, value = "/test/pess4")
+    @Transactional
+    public ResponseEntity<String> oncePessimistic2(
     ){
-        resumeQuantityService.addSalesQuantityWithAllPessimistic(List.of(149L, 150L));
+        List<Long> resumeIds = List.of(4L);
+        for (Long resumeId : resumeIds) {
+            Resume resume = resumeRepository.getByIdWithPessimisticLock(resumeId);
+            resume = resume.increaseSalesQuantity();
+            resumeRepository.save(resume);
+        }
         return new ResponseEntity<>("confirm", HttpStatus.OK);
+    }
+
+    @RequestMapping(method = RequestMethod.POST, value = "/test/pro/{resumeId}")
+    public ResponseEntity<String> produceMsg(
+            @PathVariable Long resumeId
+    ){
+        BuyerMessage message = new BuyerMessage("seokin23@naver.com", "title", "content", 1L, resumeId);
+        producer.sendBuyerMail(message);
+        return new ResponseEntity<>("testBuyerMail", HttpStatus.OK);
     }
 }

@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @MappedSuperclass
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Getter @Setter
+@Getter
 public class BaseTimeEntity {
 
     @Column(updatable = false, name = "registered_at", columnDefinition = "TIMESTAMP")

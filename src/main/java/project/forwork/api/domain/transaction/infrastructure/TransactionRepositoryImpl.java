@@ -21,8 +21,15 @@ public class TransactionRepositoryImpl implements TransactionRepository {
     }
 
     @Override
-    public Transaction getByRequestIdAndEmail(String requestId, String email) {
+    public Transaction getByRequestIdAndEmail2(String requestId, String email) {
         return transactionJpaRepository.findByRequestIdAndUserEmail(requestId, email)
+                .orElseThrow(() -> new ApiException(TransactionErrorCode.TX_NOT_FOUND))
+                .toModel();
+    }
+
+    @Override
+    public Transaction getByRequestIdAndEmail(String requestId, String email) {
+        return transactionJpaRepository.findByRequestIdAndTransactionTypeAndUserEmail(requestId, TransactionType.PAYMENT, email)
                 .orElseThrow(() -> new ApiException(TransactionErrorCode.TX_NOT_FOUND))
                 .toModel();
     }
