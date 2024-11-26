@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import project.forwork.api.common.domain.CurrentUser;
 import project.forwork.api.common.error.OrderErrorCode;
 import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.common.service.port.ClockHolder;
@@ -87,26 +88,21 @@ public class Order {
             throw new ApiException(OrderErrorCode.ORDER_NOT_PERMISSION, userId);
         }
 
-        if(status.equals(OrderStatus.CONFIRM)){
+        if(OrderStatus.CONFIRM.equals(status)){
             throw new ApiException(OrderErrorCode.RESUME_ALREADY_CONFIRM);
         }
 
         BigDecimal canceledPrice = orderResumes.stream()
                 .map(OrderResume::getPrice)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-        OrderStatus updateStatus = OrderStatus.PARTIAL_CANCEL;
         BigDecimal resultAmount = totalAmount.subtract(canceledPrice);
-        if(resultAmount.compareTo(BigDecimal.ZERO) == 0){
-            updateStatus = OrderStatus.CANCEL;
-        }
 
         return Order.builder()
                 .id(id)
                 .user(user)
                 .requestId(requestId)
                 .totalAmount(resultAmount)
-                .status(updateStatus)
+                .status(OrderStatus.PARTIAL_CANCEL)
                 .paidAt(paidAt)
                 .build();
     }
@@ -115,13 +111,13 @@ public class Order {
         return user.getEmail();
     }
 
-    public void verifyPaidOrder(Long userId){
-        if(!Objects.equals(user.getId(), userId)){
-            throw new ApiException(OrderErrorCode.ORDER_NOT_PERMISSION, userId);
-        }
+    public boolean isAllCancel(BigDecimal cancelAmount){
+        return cancelAmount.compareTo(totalAmount) == 0;
+    }
 
-        if(!OrderStatus.PAID.equals(status)){
-            throw new ApiException(OrderErrorCode.ORDER_NOT_PAID);
+    public void validBuyer(CurrentUser currentUser){
+        if(!user.getId().equals(currentUser.getId())){
+            throw new ApiException(OrderErrorCode.ORDER_NOT_PERMISSION);
         }
     }
 }

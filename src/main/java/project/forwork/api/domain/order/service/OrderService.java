@@ -52,23 +52,23 @@ public class OrderService {
 
     public void orderConfirmNow(CurrentUser currentUser, Long orderId, ConfirmOrderRequest body){
         Order order = orderRepository.getByIdWithThrow(orderId);
-        order.verifyPaidOrder(currentUser.getId());
+        order.validBuyer(currentUser);
         order = orderResumeService.sendMailForNowConfirmedOrder(currentUser.getId(), order, body.getOrderResumeIds());
         orderRepository.save(order);
     }
 
-    public Order cancelOrder(CurrentUser currentUser, Long orderId){
-        Order order = orderRepository.getByIdWithThrow(orderId);
-        order = order.cancelOrderWithThrow(currentUser.getId());
-        orderResumeService.cancelByOrder(order);
-        return orderRepository.save(order);
+    public void cancelOrder(CurrentUser currentUser, Order order){
+        order.validBuyer(currentUser);
+        Order cancelOrder = order.cancelOrderWithThrow(currentUser.getId());
+        orderResumeService.cancelByOrder(cancelOrder);
+        orderRepository.save(cancelOrder);
     }
 
-    public void cancelPartialOrder(CurrentUser currentUser, Long orderId, List<OrderResume> orderResumes){
-        Order order = orderRepository.getByIdWithThrow(orderId);
-        order = order.cancelPartialOrder(currentUser.getId(), orderResumes);
+    public void cancelPartialOrder(CurrentUser currentUser, Order order, List<OrderResume> orderResumes){
+        order.validBuyer(currentUser);
+        Order cancelOrder = order.cancelPartialOrder(currentUser.getId(), orderResumes);
         orderResumeService.cancelByOrderResumes(orderResumes);
-        orderRepository.save(order);
+        orderRepository.save(cancelOrder);
     }
 
     public List<Order> updateOrdersByStatus(List<Order> orders, OrderStatus status) {

@@ -38,6 +38,7 @@ public class ResumeAutoConfirmService {
         updatedOrderStatus(OrderStatus.PARTIAL_WAIT, OrderStatus.PARTIAL_CONFIRM);
     }
 
+
     public void updatedOrderStatus(OrderStatus oldStatus, OrderStatus updatedStatus) {
         int limit = 10;
         while (true) {
@@ -52,6 +53,20 @@ public class ResumeAutoConfirmService {
             sendMailByOrderConfirm(orders, updatedStatus);
         }
     }
+
+    public void sendMailRestOrderResumes(OrderStatus oldStatus) {
+        int limit = 10;
+        while (true) {
+            List<Order> orders = orderService.findOrdersByStatus(oldStatus, limit);
+
+            // 더 이상 처리할 주문이 없으면 반복 종료
+            if (orders.isEmpty()) {
+                break;
+            }
+            sendMailByOrderConfirm(orders, OrderStatus.PARTIAL_CONFIRM);
+        }
+    }
+
 
     private void sendMailByOrderConfirm(List<Order> orders, OrderStatus updatedStatus) {
         if (OrderStatus.PARTIAL_CONFIRM.equals(updatedStatus) || OrderStatus.CONFIRM.equals(updatedStatus)) {

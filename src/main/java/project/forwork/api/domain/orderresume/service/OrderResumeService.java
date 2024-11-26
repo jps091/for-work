@@ -52,11 +52,14 @@ public class OrderResumeService {
 
     // 자동 주문 확정
     public void sendMailForAutoConfirmedOrder(List<Order> orders){
-        List<OrderResume> orderedResumes = orderResumeRepository.findByStatusAndOrders(OrderResumeStatus.PAID, orders)
-                .stream()
+        List<OrderResume> orderedResumes = orderResumeRepository.findByStatusAndOrders(OrderResumeStatus.PAID, orders);
+        if(orderedResumes.isEmpty()){
+            return;
+        }
+        List<OrderResume> updatedOrderedResumes = orderedResumes.stream()
                 .map(OrderResume::updateStatusConfirm)
                 .toList();
-        List<OrderResume> confirmedResumes = orderResumeRepository.saveAll(orderedResumes);
+        List<OrderResume> confirmedResumes = orderResumeRepository.saveAll(updatedOrderedResumes);
         orderResumeProducer.setupConfirmedResumesAndSendEmail(confirmedResumes);
     }
 
@@ -95,7 +98,7 @@ public class OrderResumeService {
 
     private void validSelected(List<Long> orderResumeIds, List<OrderResume> orderResumes) {
         if(orderResumes.size() != orderResumeIds.size()){
-            throw new ApiException(OrderResumeErrorCode.NOT_SELECTED);
+            throw new ApiException(OrderResumeErrorCode.CANCEL_FAIL);
         }
     }
 }

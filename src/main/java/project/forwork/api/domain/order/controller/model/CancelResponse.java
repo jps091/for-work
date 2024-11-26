@@ -25,7 +25,7 @@ public class CancelResponse {
     public static CancelResponse fromPartCancel(BigDecimal cancelAmount){
         return CancelResponse.builder()
                 .cancelAmount(cancelAmount)
-                .message("선택 하신 이력서 부분 환불을 완료 했습니다.")
+                .message("선택 하신 이력서 환불을 완료 했습니다.")
                 .build();
     }
 }
