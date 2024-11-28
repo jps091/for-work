@@ -60,7 +60,8 @@ class OrderServiceTest extends Specification {
 
     def "resume_id 로 주문 생성 요청시 order-resume 이 생성되고 주문이 생성된다."(){
         given:
-        var request = new ConfirmPaymentRequest(List.of(1L, 2L), "paymentKey", "requestId", new BigDecimal(1_0000));
+        var request = new ConfirmPaymentRequest(List.of(1L, 2L), "paymentKey",
+                "requestId", new BigDecimal(10_000));
         var user = User.builder().id(currentUser.getId()).build()
         var resumes = List.of(Resume.builder().id(1L).build(),
                 Resume.builder().id(2L).build())
