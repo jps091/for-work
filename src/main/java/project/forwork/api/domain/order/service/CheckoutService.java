@@ -1,6 +1,7 @@
 package project.forwork.api.domain.order.service;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +29,7 @@ import java.util.List;
 
 @Slf4j
 @Service
+@Builder
 @AllArgsConstructor
 public class CheckoutService {
 
@@ -62,10 +64,11 @@ public class CheckoutService {
     @Transactional
     public void cancelPayment(CurrentUser currentUser, Order order){
         String requestId = orderService.getRequestIdByOrderId(order.getId());
-        log.info("cancelPayment order={}", order.getTotalAmount());
+
         try{
             PaymentFullCancelDto body = createCancelBody();
             Transaction transaction = transactionRepository.getByRequestIdAndEmail(requestId, currentUser.getEmail());
+
             pgService.cancelFullPayment(transaction.getPaymentKey(), body);
             orderService.cancelOrder(currentUser, order);
 
@@ -85,7 +88,7 @@ public class CheckoutService {
         try{
             Transaction transaction = transactionRepository.getByRequestIdAndEmail(requestId, currentUser.getEmail());
             PaymentPartialCancelDto paymentBody = createPartialCancelBody(orderResumes);
-            log.info("cancelPartialPayment order={} cancel={}", order.getTotalAmount(), paymentBody.getCancelAmount());
+
             pgService.cancelPartialPayment(transaction.getPaymentKey(), paymentBody);
             orderService.cancelPartialOrder(currentUser, order, orderResumes);
 
