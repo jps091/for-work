@@ -54,20 +54,6 @@ public class ResumeAutoConfirmService {
         }
     }
 
-    public void sendMailRestOrderResumes(OrderStatus oldStatus) {
-        int limit = 10;
-        while (true) {
-            List<Order> orders = orderService.findOrdersByStatus(oldStatus, limit);
-
-            // 더 이상 처리할 주문이 없으면 반복 종료
-            if (orders.isEmpty()) {
-                break;
-            }
-            sendMailByOrderConfirm(orders, OrderStatus.PARTIAL_CONFIRM);
-        }
-    }
-
-
     private void sendMailByOrderConfirm(List<Order> orders, OrderStatus updatedStatus) {
         if (OrderStatus.PARTIAL_CONFIRM.equals(updatedStatus) || OrderStatus.CONFIRM.equals(updatedStatus)) {
             orderResumeService.sendMailForAutoConfirmedOrder(orders); // 주문 확정일 경우 메일 전송
