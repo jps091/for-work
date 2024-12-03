@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="project.forwork.api.domain.salespost.infrastructure.SalesPostMapper">
+    <select id="searchByText" resultType="SalesPostSearchDto">
+        SELECT resume_id, field, level, price
+        FROM resumes
+        <where>
+        <if test="textCond != null and textCond != ''">
+            MATCH(description) AGAINST(CONCAT(#{textCond}, '*') IN BOOLEAN MODE)
+        </if>
+        </where>
+        ORDER BY resume_id DESC
+        LIMIT #{pageSize} OFFSET #{offset}
+    </select>
+
+    <select id="searchByTextWithLike" resultType="SalesPostSearchDto">
+        SELECT resume_id, field, level, price
+        FROM resumes
+        <where>
+            <if test="textCond != null and textCond != ''">
+                description LIKE CONCAT('%', #{textCond}, '%')
+            </if>
+        </where>
+        ORDER BY resume_id DESC
+        LIMIT #{pageSize} OFFSET #{offset}
+    </select>
+</mapper>
+
+
+

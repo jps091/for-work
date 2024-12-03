@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import project.forwork.api.common.api.Api;
 import project.forwork.api.common.domain.CurrentUser;
 import project.forwork.api.common.producer.Producer;
 import project.forwork.api.domain.order.controller.model.ConfirmPaymentRequest;
@@ -15,6 +16,8 @@ import project.forwork.api.domain.order.service.CheckoutService;
 import project.forwork.api.domain.orderresume.infrastructure.message.BuyerMessage;
 import project.forwork.api.domain.resume.model.Resume;
 import project.forwork.api.domain.resume.service.port.ResumeRepository;
+import project.forwork.api.domain.salespost.infrastructure.model.SalesPostSearchDto;
+import project.forwork.api.domain.salespost.service.SalesPostService;
 import project.forwork.api.domain.user.infrastructure.enums.UserStatus;
 
 import java.util.List;
@@ -27,6 +30,7 @@ public class TestController {
     private final CheckoutService checkoutService;
     private final ResumeRepository resumeRepository;
     private final Producer producer;
+    private final SalesPostService salesPostService;
 
     @GetMapping("/open-api/order")
     @Transactional
@@ -106,5 +110,15 @@ public class TestController {
         BuyerMessage message = new BuyerMessage("seokin23@naver.com", "title", "content", 1L, resumeId);
         producer.sendBuyerMail(message);
         return new ResponseEntity<>("testBuyerMail", HttpStatus.OK);
+    }
+
+    @RequestMapping(method = RequestMethod.POST, value = "/test/like")
+    public Api<List<SalesPostSearchDto>> searchByTextWithLike(
+            @RequestParam(required = false) String text,
+            @RequestParam(defaultValue = "1") int pageNumber,
+            @RequestParam(defaultValue = "10") int pageSize
+    ){
+        List<SalesPostSearchDto> salesPostSearchDtos = salesPostService.searchByTextWithLike(text, pageNumber, pageSize);
+        return Api.OK(salesPostSearchDtos);
     }
 }
