@@ -7,11 +7,11 @@ import org.springframework.web.bind.annotation.*;
 import project.forwork.api.common.api.Api;
 import project.forwork.api.domain.salespost.controller.model.SalesPostDetailResponse;
 import project.forwork.api.domain.salespost.controller.model.SalesPostPage;
-import project.forwork.api.domain.salespost.controller.model.SalesPostSearchResponse;
 import project.forwork.api.domain.salespost.infrastructure.enums.FieldCond;
 import project.forwork.api.domain.salespost.infrastructure.enums.LevelCond;
 import project.forwork.api.common.infrastructure.enums.PageStep;
 import project.forwork.api.domain.salespost.infrastructure.enums.SalesPostSortType;
+import project.forwork.api.domain.salespost.infrastructure.model.SalesPostSearchDto;
 import project.forwork.api.domain.salespost.service.SalesPostService;
 
 import java.math.BigDecimal;
@@ -59,5 +59,15 @@ public class SalesPostOpenController {
         SalesPostPage result = salesPostService
                 .searchFilteredResults(sortType, minPrice, maxPrice, field, level, pageStep, lastId, limit);
         return Api.OK(result);
+    }
+    @Operation(summary = "sale-post 내용 키워드 기반 조회 API", description = "찾고 싶은 키워드 입력")
+    @GetMapping("/text")
+    public Api<List<SalesPostSearchDto>> searchByText(
+            @RequestParam(required = false) String text,
+            @RequestParam(defaultValue = "1") int pageNumber,
+            @RequestParam(defaultValue = "10") int pageSize
+    ){
+        List<SalesPostSearchDto> salesPostSearchDtos = salesPostService.searchByText(text, pageNumber, pageSize);
+        return Api.OK(salesPostSearchDtos);
     }
 }

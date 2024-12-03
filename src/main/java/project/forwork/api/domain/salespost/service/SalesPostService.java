@@ -10,12 +10,13 @@ import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.common.infrastructure.enums.PageStep;
 import project.forwork.api.domain.resume.model.Resume;
 import project.forwork.api.domain.salespost.controller.model.*;
+import project.forwork.api.domain.salespost.infrastructure.SalesPostMapper;
 import project.forwork.api.domain.salespost.infrastructure.enums.*;
+import project.forwork.api.domain.salespost.infrastructure.model.SalesPostSearchDto;
 import project.forwork.api.domain.salespost.model.SalesPost;
 import project.forwork.api.domain.salespost.service.port.SalesPostRepository;
 import project.forwork.api.domain.salespost.service.port.SalesPostRepositoryCustom;
 import project.forwork.api.domain.thumbnailimage.model.ThumbnailImage;
-import project.forwork.api.domain.thumbnailimage.service.ThumbnailImageService;
 import project.forwork.api.domain.thumbnailimage.service.port.ThumbnailImageRepository;
 import project.forwork.api.domain.user.model.User;
 import project.forwork.api.domain.user.service.port.UserRepository;
@@ -33,6 +34,7 @@ public class SalesPostService {
     private final SalesPostPageService salesPostPageService;
     private final UserRepository userRepository;
     private final ThumbnailImageRepository thumbnailImageRepository;
+    private final SalesPostMapper salesPostMapper;
 
     @Transactional
     public void registerSalesPost(Resume newResume) {
@@ -95,6 +97,18 @@ public class SalesPostService {
             throw new ApiException(SalesPostErrorCode.NOT_SELLING);
         }
         return salesPostDetailResponse;
+    }
+
+    @Transactional(readOnly = true)
+    public List<SalesPostSearchDto> searchByText(String text, int pageNumber, int pageSize){
+        int offset = (pageNumber - 1) * pageSize;
+        return salesPostMapper.searchByText(text, pageNumber, offset);
+    }
+
+    @Transactional(readOnly = true)
+    public List<SalesPostSearchDto> searchByTextWithLike(String text, int pageNumber, int pageSize){
+        int offset = (pageNumber - 1) * pageSize;
+        return salesPostMapper.searchByTextWithLike(text, pageNumber, offset);
     }
 
     public SalesPostPage searchFilteredResults(
