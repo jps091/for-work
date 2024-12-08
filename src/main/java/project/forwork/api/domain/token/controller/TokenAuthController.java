@@ -25,7 +25,7 @@ public class TokenAuthController {
             HttpServletRequest request,
             HttpServletResponse response
     ){
-        String accessToken = tokenHeaderService.reissueToken(request, response);
-        return Api.OK(accessToken);
+        tokenHeaderService.reissueToken(request, response);
+        return Api.OK("토큰 재발급 성공");
     }
 }
