@@ -17,11 +17,10 @@ public class LoginResponse {
     private UserStatus status;
     private String accessToken;
 
-    public static LoginResponse from(User user, TokenResponse tokenResponse){
+    public static LoginResponse from(User user){
         return LoginResponse.builder()
                 .userId(user.getId())
                 .status(user.getStatus())
-                .accessToken(tokenResponse.getAccessToken())
                 .build();
     }
 }

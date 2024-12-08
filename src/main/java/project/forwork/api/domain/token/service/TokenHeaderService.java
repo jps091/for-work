@@ -17,17 +17,15 @@ public class TokenHeaderService {
 
     private final TokenService tokenService;
 
-    public TokenResponse addTokenToHeaders(HttpServletResponse response, User loginUser) {
+    public void addTokenToHeaders(HttpServletResponse response, User loginUser) {
         TokenResponse tokenResponse = tokenService.issueTokenResponse(loginUser.getId());
         setHeaderByTokenResponse(response, tokenResponse);
-        return tokenResponse;
     }
 
-    public String reissueToken(HttpServletRequest request, HttpServletResponse response) {
+    public void reissueToken(HttpServletRequest request, HttpServletResponse response) {
         String refreshToken = extractRefreshTokenFromHeader(request);
         TokenResponse tokenResponse = tokenService.reissueTokenResponse(refreshToken);
         setHeaderByTokenResponse(response, tokenResponse);
-        return tokenResponse.getAccessToken();
     }
 
     public void expiredRefreshTokenAndHeaders(
@@ -60,6 +58,7 @@ public class TokenHeaderService {
     }
 
     private void setHeaderByTokenResponse(HttpServletResponse response, TokenResponse tokenResponse) {
+        response.setHeader(ACCESS_TOKEN_HEADER, "Bearer "+ tokenResponse.getAccessToken());
         response.setHeader(REFRESH_TOKEN_HEADER, tokenResponse.getRefreshToken());
     }
 }

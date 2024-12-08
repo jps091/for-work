@@ -43,12 +43,12 @@ public class LoginService {
         user = user.login(clockHolder, loginUser.getPassword());
         userRepository.save(user);
 
-        TokenResponse tokenResponse = tokenHeaderService.addTokenToHeaders(response, user);
+        tokenHeaderService.addTokenToHeaders(response, user);
 
         String key = getKeyByLoginAttempt(user);
         initLoginAttemptCount(key);
 
-        return LoginResponse.from(user, tokenResponse);
+        return LoginResponse.from(user);
     }
 
     public void logout(HttpServletResponse response){
