@@ -12,6 +12,7 @@ import project.forwork.api.resolver.CurrentUserResolver;
 
 import java.util.List;
 
+import static project.forwork.api.domain.token.service.TokenHeaderService.ACCESS_TOKEN_HEADER;
 import static project.forwork.api.domain.token.service.TokenHeaderService.REFRESH_TOKEN_HEADER;
 
 @RequiredArgsConstructor
@@ -75,10 +76,10 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOriginPatterns("*")
+                .allowedOriginPatterns("http://localhost:5173")
                 .allowedMethods("GET", "POST", "PUT", "DELETE")
-                .allowedHeaders("Authorization", "Content-Type", REFRESH_TOKEN_HEADER)
-                .exposedHeaders(REFRESH_TOKEN_HEADER)
+                .allowedHeaders("Content-Type",ACCESS_TOKEN_HEADER, REFRESH_TOKEN_HEADER)
+                .exposedHeaders(ACCESS_TOKEN_HEADER, REFRESH_TOKEN_HEADER)
                 .allowCredentials(true)
                 .maxAge(3600);
     }

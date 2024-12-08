@@ -54,6 +54,38 @@ public class Resume {
                 .build();
     }
 
+    public static Resume from(User user, ResumeRegisterRequest body){
+        if(body.getPrice().compareTo(new BigDecimal("100000")) > 0 ||
+                body.getPrice().compareTo(new BigDecimal("10000")) < 0){
+            throw new ApiException(ResumeErrorCode.PRICE_NOT_VALID);
+        }
+        return Resume.builder()
+                .seller(user)
+                .field(body.getField())
+                .level(body.getLevel())
+                .resumeUrl(body.getResumeUrl())
+                .salesQuantity(0)
+                .price(body.getPrice())
+                .description(body.getDescription())
+                .status(ResumeStatus.PENDING)
+                .build();
+    }
+
+    public Resume callbackDescriptionImageUrl(String filePath){
+        return Resume.builder()
+                .id(id)
+                .seller(seller)
+                .field(field)
+                .level(level)
+                .resumeUrl(resumeUrl)
+                .descriptionImageUrl(filePath)
+                .price(price)
+                .salesQuantity(salesQuantity)
+                .description(description)
+                .status(status)
+                .build();
+    }
+
     public Resume modify(ResumeModifyRequest body, String newUrl){
         if(body.getPrice().compareTo(new BigDecimal("100000")) > 0 ||
                 body.getPrice().compareTo(new BigDecimal("10000")) < 0){

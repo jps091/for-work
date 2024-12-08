@@ -39,6 +39,29 @@ public class ResumeController {
         return Api.CREATED(resume.createTitle() +" 등록 완료");
     }
 
+    @Operation(summary = "Resume presigned-url 방식 생성", description = "파일 업로드 대신 저장할 파일 이름 전달")
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping(value = "/register/presigned-url")
+    public Api<ResumeRegisterResponse > register(
+            @Parameter(hidden = true) @Current CurrentUser currentUser,
+            @RequestPart("resumeData") @Valid ResumeRegisterRequest body,
+            @RequestParam("filename") String filename
+    ){
+        ResumeRegisterResponse response = resumeService.registerByPresignedUrl(currentUser, body, filename);
+        return Api.CREATED(response);
+    }
+
+    @Operation(summary = "Resume 업로드 Callback", description = "Resume 업로드 완료 후 호출")
+    @PostMapping(value = "/register/callback")
+    public Api<String> registerCallback(
+            @Parameter(hidden = true) @Current CurrentUser currentUser,
+            @RequestParam("filePath") String filePath,
+            @RequestParam("resumeId") Long resumeId
+    ){
+        resumeService.resumeCallback(filePath, resumeId);
+        return Api.OK("이미지 동기화 성공");
+    }
+
 
     @Operation(summary = "Resume 삭제 API", description = "ResumeId 입력")
     @DeleteMapping("/{resumeId}")

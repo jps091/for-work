@@ -1,5 +1,7 @@
 package project.forwork.api.common.controller;
 
+import jakarta.servlet.ServletInputStream;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -8,9 +10,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import project.forwork.api.common.api.Api;
 import project.forwork.api.common.domain.CurrentUser;
 import project.forwork.api.common.producer.Producer;
+import project.forwork.api.common.service.S3ServiceImpl;
 import project.forwork.api.domain.order.controller.model.ConfirmPaymentRequest;
 import project.forwork.api.domain.order.service.CheckoutService;
 import project.forwork.api.domain.orderresume.infrastructure.message.BuyerMessage;
@@ -31,6 +35,7 @@ public class TestController {
     private final ResumeRepository resumeRepository;
     private final Producer producer;
     private final SalesPostService salesPostService;
+    private final S3ServiceImpl s3Service;
 
     @GetMapping("/open-api/order")
     @Transactional
@@ -117,8 +122,39 @@ public class TestController {
             @RequestParam(required = false) String text,
             @RequestParam(defaultValue = "1") int pageNumber,
             @RequestParam(defaultValue = "10") int pageSize
-    ){
+    ) {
         List<SalesPostSearchDto> salesPostSearchDtos = salesPostService.searchByTextWithLike(text, pageNumber, pageSize);
         return Api.OK(salesPostSearchDtos);
+    }
+
+    @RequestMapping(method = RequestMethod.POST, value = "/test/presigned-url")
+    public ResponseEntity<String> getPresignedUrl(@RequestParam("filename") String filename) {
+        String presignedUrl = s3Service.generatePresignedUrl(filename);
+        return ResponseEntity.ok(presignedUrl); // URL 반환
+    }
+
+    @RequestMapping(method = RequestMethod.POST, value = "/test/upload")
+    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
+        try {
+            // S3에 파일 저장
+            String fileUrl = s3Service.saveFile(file);
+            return ResponseEntity.ok(fileUrl); // 업로드된 파일 URL 반환
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @RequestMapping(method = RequestMethod.POST, value = "/test/stream")
+    public ResponseEntity<String> uploadFile(HttpServletRequest request) {
+        try(ServletInputStream inputStream = request.getInputStream()) {
+            // S3에 파일 저장
+            String fileName = request.getHeader("file-name");
+            long contentLength = request.getContentLengthLong();
+
+            s3Service.saveFileByStream(fileName, inputStream, contentLength);
+            return new ResponseEntity<>("success", HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>("fail", HttpStatus.BAD_REQUEST);
+        }
     }
 }

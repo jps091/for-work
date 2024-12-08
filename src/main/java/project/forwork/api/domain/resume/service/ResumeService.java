@@ -44,6 +44,24 @@ public class ResumeService {
         resume =  resumeRepository.save(resume);
         return resume;
     }
+
+    @Transactional
+    public ResumeRegisterResponse registerByPresignedUrl(CurrentUser currentUser, ResumeRegisterRequest body, String fileName){
+        User user = userRepository.getByIdWithThrow(currentUser.getId());
+        String presignedUrl = s3Service.generatePresignedUrl(fileName);
+
+        Resume resume = Resume.from(user, body);
+        Resume saved = resumeRepository.save(resume);
+        return new ResumeRegisterResponse(saved.getId(), presignedUrl);
+    }
+
+    @Transactional
+    public void resumeCallback(String filePath, Long resumeId){
+        Resume resume = resumeRepository.getByIdWithThrow(resumeId);
+        resume = resume.callbackDescriptionImageUrl(filePath);
+        resumeRepository.save(resume);
+    }
+
     @Transactional
     public void modify(
             Long resumeId, CurrentUser currentUser,
