@@ -24,6 +24,11 @@ public class FakeS3Service implements S3Service {
     }
 
     @Override
+    public String generatePresignedUrl(String originalFilename) {
+        return "www.test-pre-url.com";
+    }
+
+    @Override
     public void deleteFile(String fileUrl) {
         String fileName = fileUrl.substring(fileUrl.lastIndexOf('/') + 1);
         storage.remove(fileName);

@@ -40,7 +40,11 @@ public class TokenService {
         String key = getRefreshTokenKeyFrom(userId);
         long remainingTtl = redisUtils.getExpirationTime(key);
 
-        if (isTokenValueMismatch(refreshTokenValue, storedToken) || isTimeOutRefreshToken(remainingTtl)) {
+        if (isTokenValueMismatch(refreshTokenValue, storedToken)) {
+            throw new ApiException(TokenErrorCode.INVALID_TOKEN);
+        }
+
+        if (isTimeOutRefreshToken(remainingTtl)) {
             throw new ApiException(TokenErrorCode.EXPIRED_TOKEN);
         }
 
