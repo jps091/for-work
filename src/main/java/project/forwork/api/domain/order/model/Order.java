@@ -97,12 +97,17 @@ public class Order {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         BigDecimal resultAmount = totalAmount.subtract(canceledPrice);
 
+        OrderStatus newStatus = OrderStatus.PARTIAL_CANCEL;
+        if(status.equals(OrderStatus.PARTIAL_WAIT)){
+            newStatus = OrderStatus.PARTIAL_WAIT;
+        }
+
         return Order.builder()
                 .id(id)
                 .user(user)
                 .requestId(requestId)
                 .totalAmount(resultAmount)
-                .status(OrderStatus.PARTIAL_CANCEL)
+                .status(newStatus)
                 .paidAt(paidAt)
                 .build();
     }
