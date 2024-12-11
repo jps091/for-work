@@ -1,6 +1,6 @@
 package project.forwork.api.domain.order.service
 
-import org.slf4j.Logger
+
 import project.forwork.api.common.domain.CurrentUser
 import project.forwork.api.common.error.TransactionErrorCode
 import project.forwork.api.common.exception.ApiException
@@ -12,13 +12,11 @@ import project.forwork.api.domain.order.infrastructure.model.PaymentPartialCance
 import project.forwork.api.domain.order.model.Order
 import project.forwork.api.domain.orderresume.model.OrderResume
 import project.forwork.api.domain.resume.model.Resume
-import project.forwork.api.domain.retrylog.infrastructure.enums.RetryType
 import project.forwork.api.domain.retrylog.service.RetryLogService
 import project.forwork.api.domain.transaction.infrastructure.enums.TransactionType
 import project.forwork.api.domain.transaction.model.Transaction
 import project.forwork.api.domain.transaction.service.port.TransactionRepository
 import project.forwork.api.domain.user.infrastructure.enums.UserStatus
-import project.forwork.api.domain.user.model.User
 import spock.lang.Specification
 
 class CheckoutServiceTest extends Specification {
@@ -229,7 +227,7 @@ class CheckoutServiceTest extends Specification {
                 .id(1L)
                 .build()
 
-        var ex = new ApiException(TransactionErrorCode.SERVER_ERROR)
+        var ex = new ApiException(TransactionErrorCode.TX_SERVER_ERROR)
 
         orderService.create(currentUser, body) >> order
         pgService.confirm(_  as ConfirmPaymentDto) >> {throw ex}
@@ -314,7 +312,7 @@ class CheckoutServiceTest extends Specification {
         var tx = Transaction.builder()
                 .paymentKey("paymentKey")
                 .build()
-        var ex = new ApiException(TransactionErrorCode.SERVER_ERROR)
+        var ex = new ApiException(TransactionErrorCode.TX_SERVER_ERROR)
 
         pgService.cancelFullPayment(tx.getPaymentKey(), _ as PaymentFullCancelDto ) >> {throw ex}
         orderService.getRequestIdByOrderId(order.getId()) >> requestId
@@ -436,7 +434,7 @@ class CheckoutServiceTest extends Specification {
                 .userEmail(currentUser.getEmail())
                 .paymentKey("paymentKey")
                 .build();
-        var ex = new ApiException(TransactionErrorCode.SERVER_ERROR)
+        var ex = new ApiException(TransactionErrorCode.TX_SERVER_ERROR)
 
         pgService.cancelPartialPayment(tx.getPaymentKey(), _ as PaymentPartialCancelDto ) >> {throw ex}
         orderService.getRequestIdByOrderId(order.getId()) >> requestId

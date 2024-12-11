@@ -42,15 +42,9 @@ public class PaymentGatewayService {
         String authorizations = getAuthorizations();
         String confirmURL = URL +"confirm";
 
-        ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.DEFAULTS
-                .withReadTimeout(Duration.ofSeconds(3));
+        RestClient defaultClient = createRestClient();
 
-        ClientHttpRequestFactory factory = ClientHttpRequestFactories.get(settings);
-        RestClient defaultClient = RestClient.builder()
-                .requestFactory(factory)
-                .build();
-
-        ResponseEntity<Object> object = defaultClient.post()
+        defaultClient.post()
                 .uri(confirmURL)
                 .headers(httpHeaders -> {
                     httpHeaders.add("Authorization", authorizations);
@@ -60,10 +54,6 @@ public class PaymentGatewayService {
                 .body(body)
                 .retrieve()
                 .toEntity(Object.class);
-        // 타임아웃 같은 케이스는 바로 exception 이 throw 됨
-        if (object.getStatusCode().isError()) {
-            throw new IllegalStateException("결제 요청이 실패했습니다.");
-        }
     }
 
     public void cancelFullPayment(String paymentKey, PaymentFullCancelDto body) {
@@ -83,8 +73,9 @@ public class PaymentGatewayService {
         String authorizations = getAuthorizations();
         String cancelURL = cancelUrl(paymentKey);
 
-        RestClient defaultClient = RestClient.builder().build();
-        ResponseEntity<Object> response = defaultClient.post()
+        RestClient defaultClient = createRestClient();
+
+        defaultClient.post()
                 .uri(cancelURL)
                 .headers(httpHeaders -> {
                     httpHeaders.add("Authorization", authorizations);
@@ -95,11 +86,18 @@ public class PaymentGatewayService {
                 .retrieve()
                 .toEntity(Object.class);
 
-        if (response.getStatusCode().isError()) {
-            throw new IllegalStateException(cancelType + " 결제 취소 요청이 실패했습니다.");
-        }
-
         log.info("{} 결제 취소 성공: paymentKey = {}", cancelType, paymentKey);
+    }
+
+    private static RestClient createRestClient() {
+        ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.DEFAULTS
+                .withReadTimeout(Duration.ofSeconds(3))
+                .withConnectTimeout(Duration.ofSeconds(3));
+
+        ClientHttpRequestFactory factory = ClientHttpRequestFactories.get(settings);
+        return RestClient.builder()
+                .requestFactory(factory)
+                .build();
     }
 
     private String getAuthorizations() {

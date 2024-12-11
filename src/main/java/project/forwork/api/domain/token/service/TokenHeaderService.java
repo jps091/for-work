@@ -60,6 +60,5 @@ public class TokenHeaderService {
     private void setHeaderByTokenResponse(HttpServletResponse response, TokenResponse tokenResponse) {
         response.setHeader(ACCESS_TOKEN_HEADER, "Bearer "+ tokenResponse.getAccessToken());
         response.setHeader(REFRESH_TOKEN_HEADER, tokenResponse.getRefreshToken());
-        response.setHeader(ACCESS_TOKEN_HEADER, tokenResponse.getAccessToken());
     }
 }

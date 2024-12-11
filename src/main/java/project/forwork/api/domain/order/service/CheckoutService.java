@@ -11,13 +11,11 @@ import project.forwork.api.common.error.TransactionErrorCode;
 import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.domain.cartresume.service.CartResumeService;
 import project.forwork.api.domain.order.controller.model.*;
-import project.forwork.api.domain.order.infrastructure.enums.OrderStatus;
 import project.forwork.api.domain.order.infrastructure.model.ConfirmPaymentDto;
 import project.forwork.api.domain.order.infrastructure.model.PaymentFullCancelDto;
 import project.forwork.api.domain.order.infrastructure.model.PaymentPartialCancelDto;
 import project.forwork.api.domain.order.model.Order;
 import project.forwork.api.domain.orderresume.model.OrderResume;
-import project.forwork.api.domain.orderresume.service.OrderResumeService;
 import project.forwork.api.domain.retrylog.service.RetryLogService;
 import project.forwork.api.domain.transaction.infrastructure.enums.TransactionType;
 import project.forwork.api.domain.transaction.model.Transaction;
@@ -54,10 +52,10 @@ public class CheckoutService {
             transactionRepository.save(tx);
 
             return ConfirmResponse.from(order, body.getResumeIds());
-        }catch (Exception e){
+        }catch (RestClientResponseException e){
             log.error("caught process order-payment", e);
-            throwApiExceptionIfStatusCode500(e, body.getRequestId(), RetryType.CONFIRM);
-            throw e;  // 예외를 다시 던져서 상위 로직에서 처리할 수 있게 함
+            throwApiExceptionIfStatusCode5xx(e, body.getRequestId(), RetryType.CONFIRM);
+            throw new ApiException(TransactionErrorCode.TX_CLIENT_ERROR);
         }
     }
 
@@ -74,10 +72,10 @@ public class CheckoutService {
 
             Transaction tx = Transaction.create(currentUser, requestId, transaction.getPaymentKey(), order.getTotalAmount(), TransactionType.REFUND);
             transactionRepository.save(tx);
-        }catch (Exception e){
+        }catch (RestClientResponseException e){
             log.error("caught process cancel-payment", e);
-            throwApiExceptionIfStatusCode500(e, requestId, RetryType.CANCEL);
-            throw e;
+            throwApiExceptionIfStatusCode5xx(e, requestId, RetryType.CANCEL);
+            throw new ApiException(TransactionErrorCode.TX_CLIENT_ERROR);
         }
     }
 
@@ -94,19 +92,17 @@ public class CheckoutService {
 
             Transaction tx = Transaction.create(currentUser, requestId, transaction.getPaymentKey(), paymentBody.getCancelAmount(), TransactionType.PARTIAL_REFUND);
             transactionRepository.save(tx);
-        }catch (Exception e){
+        }catch (RestClientResponseException e){
             log.error("caught process partial-cancel-payment", e);
-            throwApiExceptionIfStatusCode500(e, requestId, RetryType.PARTIAL_CANCEL);
-            throw e;
+            throwApiExceptionIfStatusCode5xx(e, requestId, RetryType.PARTIAL_CANCEL);
+            throw new ApiException(TransactionErrorCode.TX_CLIENT_ERROR);
         }
     }
 
-    private void throwApiExceptionIfStatusCode500(Exception e, String requestId, RetryType confirm) {
-        if (e instanceof RestClientResponseException restException) {
-            if (restException.getStatusCode().value() == 500) {
-                retryLogService.register(requestId, confirm, e);
-                throw new ApiException(TransactionErrorCode.SERVER_ERROR);
-            }
+    private void throwApiExceptionIfStatusCode5xx(RestClientResponseException restException, String requestId, RetryType confirm) {
+        if (restException.getStatusCode().is5xxServerError()) {
+            retryLogService.register(requestId, confirm, restException);
+            throw new ApiException(TransactionErrorCode.TX_SERVER_ERROR);
         }
     }
 
