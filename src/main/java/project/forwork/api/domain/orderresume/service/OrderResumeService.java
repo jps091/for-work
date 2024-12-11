@@ -89,11 +89,11 @@ public class OrderResumeService {
     public OrderStatus checkOrderConfirmation(Order order, List<OrderResume> selectOrder) {
         int totalOrderSize = orderResumeRepository.findByStatusAndOrder(OrderResumeStatus.PAID, order).size();
         int confirmOrderSize = selectOrder.size();
-        if(totalOrderSize != confirmOrderSize){ // 같지 않으면 주문내 개별로 주문확정
-            return OrderStatus.PARTIAL_CONFIRM;
+        if(totalOrderSize != confirmOrderSize){
+            return order.getStatus();
         }
 
-        return OrderStatus.CONFIRM; // 요청 ids 갯수와 쿼리 결과 갯수가 일치 하면 전체 주무확정
+        return OrderStatus.CONFIRM;
     }
 
     private void validSelected(List<Long> orderResumeIds, List<OrderResume> orderResumes) {
