@@ -39,14 +39,11 @@ public class LoginService {
                 .orElseThrow(() -> new ApiException(UserErrorCode.EMAIL_NOT_FOUND));
 
         loginAttempt(user);
-
         user = user.login(clockHolder, loginUser.getPassword());
         userRepository.save(user);
 
         tokenHeaderService.addTokenToHeaders(response, user);
-
-        String key = getKeyByLoginAttempt(user);
-        initLoginAttemptCount(key);
+        initAttemptLoginCountByUser(user);
 
         return LoginResponse.from(user);
     }
@@ -77,6 +74,11 @@ public class LoginService {
             initLoginAttemptCount(key);
             throw new ApiException(UserErrorCode.PASSWORD_ISSUE);
         }
+    }
+
+    private void initAttemptLoginCountByUser(User user) {
+        String key = getKeyByLoginAttempt(user);
+        initLoginAttemptCount(key);
     }
 
     private void initLoginAttemptCount(String key) {

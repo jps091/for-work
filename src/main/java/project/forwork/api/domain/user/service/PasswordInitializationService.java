@@ -23,9 +23,9 @@ public class PasswordInitializationService {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void issueTemporaryPassword(User user) {
-        user = user.initTemporaryPassword(uuidHolder.random());
-        userRepository.save(user);
-        TempPasswordMessage message = TempPasswordMessage.from(user.getEmail(), user.getPassword());
+        User tempUser = user.initTemporaryPassword(uuidHolder.random());
+        userRepository.save(tempUser);
+        TempPasswordMessage message = TempPasswordMessage.from(tempUser.getEmail(), tempUser.getPassword());
         producer.sendPasswordMail(message);
     }
 }
