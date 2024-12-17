@@ -42,7 +42,7 @@ public class UserService {
     @Transactional
     public User register(UserCreateRequest body){
 
-        if(userRepository.findByEmail(body.getEmail()).isPresent()){
+        if(userRepository.existsByEmail(body.getEmail())){
             throw new ApiException(UserErrorCode.EMAIL_DUPLICATION);
         }
 
