@@ -6,6 +6,7 @@ import project.forwork.api.common.error.OrderResumeErrorCode;
 import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.domain.order.infrastructure.OrderEntity;
 import project.forwork.api.domain.order.model.Order;
+import project.forwork.api.domain.order.model.Orders;
 import project.forwork.api.domain.orderresume.infrastructure.enums.OrderResumeStatus;
 import project.forwork.api.domain.orderresume.model.OrderResume;
 import project.forwork.api.domain.orderresume.service.port.OrderResumeRepository;
@@ -61,8 +62,8 @@ public class OrderResumeRepositoryImpl implements OrderResumeRepository {
                 .toList();
     }
     @Override
-    public List<OrderResume> findByStatusAndOrders(OrderResumeStatus status, List<Order> orders) {
-        List<OrderEntity> orderEntities = orders.stream().map(OrderEntity::from).toList();
+    public List<OrderResume> findByStatusAndOrders(OrderResumeStatus status, Orders orders) {
+        List<OrderEntity> orderEntities = orders.convertToEntity();
         return orderResumeJpaRepository.findByStatusAndOrder(status, orderEntities).stream()
                 .map(OrderResumeEntity::toModel)
                 .toList();

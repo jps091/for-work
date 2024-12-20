@@ -10,6 +10,7 @@ import project.forwork.api.common.service.port.ClockHolder;
 import project.forwork.api.domain.cartresume.service.port.CartResumeRepository;
 import project.forwork.api.domain.order.infrastructure.enums.OrderStatus;
 import project.forwork.api.domain.order.model.Order;
+import project.forwork.api.domain.order.model.Orders;
 import project.forwork.api.domain.orderresume.infrastructure.enums.OrderResumeStatus;
 import project.forwork.api.domain.orderresume.model.OrderResume;
 import project.forwork.api.domain.orderresume.service.port.OrderResumeRepository;
@@ -51,7 +52,7 @@ public class OrderResumeService {
     }
 
     // 자동 주문 확정
-    public void sendMailForAutoConfirmedOrder(List<Order> orders){
+    public void sendMailForAutoConfirmedOrder(Orders orders){
         List<OrderResume> orderedResumes = orderResumeRepository.findByStatusAndOrders(OrderResumeStatus.PAID, orders);
         if(orderedResumes.isEmpty()){
             return;
@@ -156,5 +157,31 @@ public class OrderResumeService {
         }
         return order.getStatus();
         // 요청 ids 갯수와 쿼리 결과 갯수가 일치 하면 전체 주무확정
+    }
+
+    @Transactional(readOnly = true)
+    public OrderStatus checkOrderConfirmation3(Order order, List<OrderResume> selectOrder) {
+        List<OrderResume> orderResumes = orderResumeRepository.findByOrderId(order.getId());
+
+        // Calculate counts
+        int totalSize = orderResumes.size();
+        long confirmSize = orderResumes.stream()
+                .filter(resume -> resume.getStatus() == OrderResumeStatus.CONFIRM)
+                .count();
+        long cancelSize = orderResumes.stream()
+                .filter(resume -> resume.getStatus() == OrderResumeStatus.CANCEL)
+                .count();
+        int confirmOrderSize = selectOrder.size();
+
+        // Determine the order status
+        if (cancelSize > 0 && (cancelSize + confirmOrderSize + confirmSize == totalSize)) {
+            return OrderStatus.PARTIAL_CONFIRM;
+        }
+
+        if (confirmSize + confirmOrderSize == totalSize) {
+            return OrderStatus.CONFIRM;
+        }
+
+        return order.getStatus();
     }
 }

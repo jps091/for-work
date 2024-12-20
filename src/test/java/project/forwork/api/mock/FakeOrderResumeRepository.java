@@ -3,6 +3,7 @@ package project.forwork.api.mock;
 import project.forwork.api.common.error.OrderResumeErrorCode;
 import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.domain.order.model.Order;
+import project.forwork.api.domain.order.model.Orders;
 import project.forwork.api.domain.orderresume.infrastructure.enums.OrderResumeStatus;
 import project.forwork.api.domain.orderresume.model.OrderResume;
 import project.forwork.api.domain.orderresume.service.port.OrderResumeRepository;
@@ -59,16 +60,18 @@ public class FakeOrderResumeRepository implements OrderResumeRepository {
     }
 
     @Override
-    public List<OrderResume> findByStatusAndOrders(OrderResumeStatus status, List<Order> orders) {
-        List<Long> orderIds = orders.stream()
-                .map(Order::getId)  // Order 객체에서 ID 추출
-                .toList();
-
-        return data.stream()
-                .filter(orderResume -> orderIds.contains(orderResume.getOrder().getId()) &&
-                        Objects.equals(orderResume.getStatus(), status))
-                .toList();
-    }
+    public List<OrderResume> findByStatusAndOrders(OrderResumeStatus status, Orders orders) {
+//        orders.
+//        List<Long> orderIds = orders.stream()
+//                .map(Order::getId)  // Order 객체에서 ID 추출
+//                .toList();
+//
+//        return data.stream()
+//                .filter(orderResume -> orderIds.contains(orderResume.getOrder().getId()) &&
+//                        Objects.equals(orderResume.getStatus(), status))
+//                .toList();
+        return null;
+   }
 
     @Override
     public List<OrderResume> findByOrderIdAndStatus(List<Long> orderResumeIds, Long orderId, OrderResumeStatus status) {

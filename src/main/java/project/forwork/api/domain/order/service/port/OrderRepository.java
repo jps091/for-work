@@ -2,6 +2,7 @@ package project.forwork.api.domain.order.service.port;
 
 import project.forwork.api.domain.order.infrastructure.enums.OrderStatus;
 import project.forwork.api.domain.order.model.Order;
+import project.forwork.api.domain.order.model.Orders;
 
 import java.util.List;
 import java.util.Optional;
@@ -11,11 +12,11 @@ import java.util.Optional;
  */
 public interface OrderRepository {
     Order save(Order order);
-    List<Order> saveAll(List<Order> orders);
+    Orders saveAll(Orders orders);
     Order getByIdWithThrow(Long orderId);
     Order getOrderWithThrow(Long userId, Long orderId);
     Optional<Order> findByRequestId(String requestId);
     Optional<Order> findById(Long orderId);
     List<Order> findByUserId(Long userId);
-    List<Order> findByStatus(OrderStatus status, int limit);
+    Orders findByStatus(OrderStatus status, int limit);
 }
