@@ -87,6 +87,48 @@ public class OrderResumeService {
 
     @Transactional(readOnly = true)
     public OrderStatus checkOrderConfirmation(Order order, List<OrderResume> selectOrder) {
+        List<OrderResume> orderResumes = orderResumeRepository.findByOrderId(order.getId());
+
+        if (isPartialConfirmStatus(orderResumes, selectOrder)) {
+            return OrderStatus.PARTIAL_CONFIRM;
+        }
+        if (isFullConfirmStatus(orderResumes, selectOrder)) {
+            return OrderStatus.CONFIRM;
+        }
+
+        return order.getStatus();
+    }
+
+    private boolean isPartialConfirmStatus(List<OrderResume> orderResumes, List<OrderResume> selectOrder){
+        int totalSize = orderResumes.size();
+        long confirmedSize = getListSizeByOrderResumeStatus(orderResumes, OrderResumeStatus.CONFIRM);
+        long canceledSize = getListSizeByOrderResumeStatus(orderResumes, OrderResumeStatus.CANCEL);
+        int confirmNowSize = selectOrder.size();
+
+        return canceledSize > 0 && (canceledSize + confirmNowSize + confirmedSize == totalSize);
+    }
+
+    private boolean isFullConfirmStatus(List<OrderResume> orderResumes, List<OrderResume> selectOrder){
+        int totalSize = orderResumes.size();
+        long confirmedSize = getListSizeByOrderResumeStatus(orderResumes, OrderResumeStatus.CONFIRM);
+        int confirmNowSize = selectOrder.size();
+
+        return confirmedSize + confirmNowSize == totalSize;
+    }
+    private static long getListSizeByOrderResumeStatus(List<OrderResume> orderResumes, OrderResumeStatus status) {
+        return orderResumes.stream()
+                .filter(resume -> resume.getStatus() == status)
+                .count();
+    }
+
+    private void validSelected(List<Long> orderResumeIds, List<OrderResume> orderResumes) {
+        if(orderResumes.size() != orderResumeIds.size()){
+            throw new ApiException(OrderResumeErrorCode.CANCEL_FAIL);
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public OrderStatus checkOrderConfirmation1(Order order, List<OrderResume> selectOrder) {
         int totalOrderSize = orderResumeRepository.findByStatusAndOrder(OrderResumeStatus.PAID, order).size();
         int confirmOrderSize = selectOrder.size();
         if(totalOrderSize != confirmOrderSize){
@@ -96,9 +138,23 @@ public class OrderResumeService {
         return OrderStatus.CONFIRM;
     }
 
-    private void validSelected(List<Long> orderResumeIds, List<OrderResume> orderResumes) {
-        if(orderResumes.size() != orderResumeIds.size()){
-            throw new ApiException(OrderResumeErrorCode.CANCEL_FAIL);
+    @Transactional(readOnly = true)
+    public OrderStatus checkOrderConfirmation2(Order order, List<OrderResume> selectOrder) {
+        int totalSize = orderResumeRepository.findByOrderId(order.getId()).size();
+        int confirmSize = orderResumeRepository.findByStatusAndOrder(OrderResumeStatus.CONFIRM, order).size();
+        int cancelSize = orderResumeRepository.findByStatusAndOrder(OrderResumeStatus.CANCEL, order).size();
+        int confirmOrderSize = selectOrder.size();
+
+        if(cancelSize != 0){
+            if(cancelSize + confirmOrderSize + confirmSize == totalSize){
+                return OrderStatus.PARTIAL_CONFIRM;
+            }
         }
+
+        if(confirmSize + confirmOrderSize == totalSize){
+            return OrderStatus.CONFIRM;
+        }
+        return order.getStatus();
+        // 요청 ids 갯수와 쿼리 결과 갯수가 일치 하면 전체 주무확정
     }
 }
