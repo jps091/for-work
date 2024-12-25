@@ -248,7 +248,7 @@ class OrderResumeServiceTest {
         assertThat(newOrder.getStatus()).isEqualTo(OrderStatus.CONFIRM);
     }
     @Test
-    void 주문에_속해_있는_orderResume_을_부분_구매확정_하면_주문은_PARTIAL_CONFRIM_으로_변경_된다(){
+    void 주문에_속해_있는_orderResume_중_일부_상품만_구매확정_하면_주문은_기존상태를_유지한다(){
         //given(상황환경 세팅)
         User user1 = User.builder()
                 .id(1L)
@@ -264,7 +264,7 @@ class OrderResumeServiceTest {
         Order newOrder = orderResumeService.sendMailForNowConfirmedOrder(1L, order1, orderResumeIds);
 
         //then(검증)
-        assertThat(newOrder.getStatus()).isEqualTo(OrderStatus.PARTIAL_CONFIRM);
+        assertThat(newOrder.getStatus()).isEqualTo(order1.getStatus());
     }
     @ParameterizedTest
     @ValueSource(longs = {1L, 2L})

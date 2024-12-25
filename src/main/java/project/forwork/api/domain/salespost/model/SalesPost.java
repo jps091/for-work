@@ -21,7 +21,6 @@ public class SalesPost {
     private final ThumbnailImage thumbnailImage;
     private final SalesStatus salesStatus;
     private final LocalDateTime registeredAt;
-    //private final Long version;
 
     public static SalesPost create(Resume resume, ThumbnailImage thumbnailImage){
 
@@ -39,7 +38,6 @@ public class SalesPost {
                 .thumbnailImage(thumbnailImage)
                 .salesStatus(status)
                 .registeredAt(registeredAt)
-                //.version(version)
                 .build();
     }
 }
