@@ -14,7 +14,4 @@ public class ThumbnailImage {
     private final String url;
     private final FieldType fieldType;
 
-    public String getFieldToString(){
-        return fieldType.toString();
-    }
 }
