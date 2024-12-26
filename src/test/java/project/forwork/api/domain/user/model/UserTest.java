@@ -90,7 +90,7 @@ class UserTest {
                 .build();
 
         //when(상황발생)
-        user = user.initTemporaryPassword("345");
+        user = user.updatePassword("345");
 
         //then(검증)
         assertThat(user.getPassword()).isEqualTo("345");

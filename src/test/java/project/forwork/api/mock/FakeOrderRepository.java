@@ -4,6 +4,7 @@ import project.forwork.api.common.error.OrderErrorCode;
 import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.domain.order.infrastructure.enums.OrderStatus;
 import project.forwork.api.domain.order.model.Order;
+import project.forwork.api.domain.order.model.Orders;
 import project.forwork.api.domain.order.service.port.OrderRepository;
 
 import java.util.ArrayList;
@@ -37,11 +38,6 @@ public class FakeOrderRepository implements OrderRepository {
     }
 
     @Override
-    public List<Order> saveAll(List<Order> orders) {
-        return orders.stream().map(this::save).toList();
-    }
-
-    @Override
     public Order getByIdWithThrow(Long orderId) {
         return findById(orderId).orElseThrow(() -> new ApiException(OrderErrorCode.ORDER_NOT_FOUND, orderId));
     }
@@ -61,17 +57,19 @@ public class FakeOrderRepository implements OrderRepository {
     }
 
     @Override
-    public List<Order> findByUserId(Long userId) {
-        return data.stream().filter(order -> Objects.equals(order.getUser().getId(), userId)).toList();
+    public Orders findByUserId(Long userId) {
+        List<Order> orders = data.stream().filter(order -> Objects.equals(order.getUser().getId(), userId)).toList();
+        return Orders.of(orders);
     }
 
 
     @Override
-    public List<Order> findByStatus(OrderStatus status, int limit) {
-        return data.stream()
+    public Orders findByStatus(OrderStatus status, int limit) {
+        List<Order> orders = data.stream()
                 .filter(order -> Objects.equals(order.getStatus(), status))
                 .limit(limit)
                 .toList();
+        return Orders.of(orders);
     }
 
     @Override
@@ -79,5 +77,10 @@ public class FakeOrderRepository implements OrderRepository {
         return data.stream()
                 .filter(o -> Objects.equals(o.getRequestId(), requestId))
                 .findAny();
+    }
+
+    @Override
+    public Orders saveAll(Orders orders) {
+        return null;
     }
 }

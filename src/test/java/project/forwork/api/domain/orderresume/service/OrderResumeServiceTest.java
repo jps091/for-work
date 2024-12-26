@@ -10,6 +10,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import project.forwork.api.domain.order.infrastructure.enums.OrderStatus;
 import project.forwork.api.domain.order.model.Order;
+import project.forwork.api.domain.order.model.Orders;
 import project.forwork.api.domain.orderresume.infrastructure.enums.OrderResumeStatus;
 import project.forwork.api.domain.orderresume.model.OrderResume;
 import project.forwork.api.common.infrastructure.enums.FieldType;
@@ -197,8 +198,11 @@ class OrderResumeServiceTest {
                 .id(3L)
                 .build();
 
+        List<Order> orderList = List.of(order1, order2, order3);
+        Orders orders = Orders.of(orderList);
+
         //when(상황발생)
-        orderResumeService.sendMailForAutoConfirmedOrder(List.of(order1, order2, order3));
+        orderResumeService.sendMailForAutoConfirmedOrder(orders);
         OrderResume orderResume = fakeOrderResumeRepository.getByIdWithThrow(orderResumeId);
 
         //then(검증)
@@ -219,8 +223,11 @@ class OrderResumeServiceTest {
                 .id(3L)
                 .build();
 
+        List<Order> orderList = List.of(order1, order2, order3);
+        Orders orders = Orders.of(orderList);
+
         //when(상황발생)
-        orderResumeService.sendMailForAutoConfirmedOrder(List.of(order1, order2, order3));
+        orderResumeService.sendMailForAutoConfirmedOrder(orders);
         OrderResume orderResume = fakeOrderResumeRepository.getByIdWithThrow(orderResumeId);
 
         //then(검증)
@@ -247,8 +254,9 @@ class OrderResumeServiceTest {
         //then(검증)
         assertThat(newOrder.getStatus()).isEqualTo(OrderStatus.CONFIRM);
     }
+
     @Test
-    void 주문에_속해_있는_orderResume_중_일부_상품만_구매확정_하면_주문은_기존상태를_유지한다(){
+    void 주문에_속해_있는_orderResume_을_부분_구매확정_하면_주문_상태는_그대로_유지_된다(){
         //given(상황환경 세팅)
         User user1 = User.builder()
                 .id(1L)
@@ -265,7 +273,9 @@ class OrderResumeServiceTest {
 
         //then(검증)
         assertThat(newOrder.getStatus()).isEqualTo(order1.getStatus());
+        assertThat(newOrder.getStatus()).isEqualTo(OrderStatus.PAID);
     }
+
     @ParameterizedTest
     @ValueSource(longs = {1L, 2L})
     void 주문취소를_하면_주문에_속한_ORDER_REUME_상태가_전부_CANCEL_변경_된다(long orderResumeId){

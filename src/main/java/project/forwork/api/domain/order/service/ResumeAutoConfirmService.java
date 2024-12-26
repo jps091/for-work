@@ -6,6 +6,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import project.forwork.api.domain.order.infrastructure.enums.OrderStatus;
 import project.forwork.api.domain.order.model.Order;
+import project.forwork.api.domain.order.model.Orders;
+import project.forwork.api.domain.order.service.port.OrderRepository;
 import project.forwork.api.domain.orderresume.service.OrderResumeService;
 
 import java.util.List;
@@ -16,7 +18,7 @@ import java.util.List;
 public class ResumeAutoConfirmService {
 
     private final OrderResumeService orderResumeService;
-    private final OrderService orderService;
+    private final OrderRepository orderRepository;
 
     @Scheduled(cron = "0 0,30 * * * *")
     public void markAsWaiting(){
@@ -42,19 +44,20 @@ public class ResumeAutoConfirmService {
     public void updatedOrderStatus(OrderStatus oldStatus, OrderStatus updatedStatus) {
         int limit = 10;
         while (true) {
-            List<Order> orders = orderService.findOrdersByStatus(oldStatus, limit);
+            Orders orders = orderRepository.findByStatus(oldStatus, limit);
 
             // 더 이상 처리할 주문이 없으면 반복 종료
             if (orders.isEmpty()) {
                 break;
             }
 
-            orders = orderService.updateOrdersByStatus(orders, updatedStatus);
-            sendMailByOrderConfirm(orders, updatedStatus);
+            orders = orders.updateStatus(updatedStatus);
+            Orders updatedOrders = orderRepository.saveAll(orders);
+            sendMailByOrderConfirm(updatedOrders, updatedStatus);
         }
     }
 
-    private void sendMailByOrderConfirm(List<Order> orders, OrderStatus updatedStatus) {
+    private void sendMailByOrderConfirm(Orders orders, OrderStatus updatedStatus) {
         if (OrderStatus.PARTIAL_CONFIRM.equals(updatedStatus) || OrderStatus.CONFIRM.equals(updatedStatus)) {
             orderResumeService.sendMailForAutoConfirmedOrder(orders); // 주문 확정일 경우 메일 전송
         }

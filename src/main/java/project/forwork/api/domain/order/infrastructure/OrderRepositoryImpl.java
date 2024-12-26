@@ -8,6 +8,7 @@ import project.forwork.api.common.error.OrderErrorCode;
 import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.domain.order.infrastructure.enums.OrderStatus;
 import project.forwork.api.domain.order.model.Order;
+import project.forwork.api.domain.order.model.Orders;
 import project.forwork.api.domain.order.service.port.OrderRepository;
 
 import java.util.List;
@@ -26,11 +27,12 @@ public class OrderRepositoryImpl implements OrderRepository {
     }
 
     @Override
-    public List<Order> saveAll(List<Order> orders) {
-        List<OrderEntity> orderEntities = orders.stream().map(OrderEntity::from).toList();
-        return orderJpaRepository.saveAll(orderEntities).stream()
+    public Orders saveAll(Orders orders) {
+        List<OrderEntity> orderEntities = orders.convertToEntity();
+        List<Order> savedOrders = orderJpaRepository.saveAll(orderEntities).stream()
                 .map(OrderEntity::toModel)
                 .toList();
+        return Orders.of(savedOrders);
     }
 
     @Override
@@ -57,12 +59,15 @@ public class OrderRepositoryImpl implements OrderRepository {
     }
 
     @Override
-    public List<Order> findByUserId(Long userId) {
-        return orderJpaRepository.findByUserEntity_IdOrderByIdDesc(userId).stream().map(OrderEntity::toModel).toList();
+    public Orders findByUserId(Long userId) {
+        List<Order> orders = orderJpaRepository.findByUserEntity_IdOrderByIdDesc(userId).stream().map(OrderEntity::toModel).toList();
+        return Orders.of(orders);
     }
 
     @Override
-    public List<Order> findByStatus(OrderStatus status, int limit) {
-        return orderJpaRepository.findByStatus(status, Limit.of(limit)).stream().map(OrderEntity::toModel).toList();
+    public Orders findByStatus(OrderStatus status, int limit) {
+        List<Order> orders = orderJpaRepository.findByStatus(status, Limit.of(limit))
+                .stream().map(OrderEntity::toModel).toList();
+        return Orders.of(orders);
     }
 }

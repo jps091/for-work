@@ -63,17 +63,6 @@ public class User {
                 .build();
     }
 
-    public User initTemporaryPassword(String tempPassword){
-        return User.builder()
-                .id(id)
-                .name(name)
-                .email(email)
-                .password(tempPassword)
-                .status(status)
-                .lastLoginAt(lastLoginAt)
-                .build();
-    }
-
     public User delete(UuidHolder uuidHolder){
         return User.builder()
                 .id(id)

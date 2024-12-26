@@ -12,6 +12,7 @@ import project.forwork.api.common.service.port.UuidHolder;
 import project.forwork.api.domain.order.controller.model.*;
 import project.forwork.api.domain.order.infrastructure.enums.OrderStatus;
 import project.forwork.api.domain.order.model.Order;
+import project.forwork.api.domain.order.model.Orders;
 import project.forwork.api.domain.order.service.port.OrderRepository;
 import project.forwork.api.domain.orderresume.controller.model.OrderResumeResponse;
 import project.forwork.api.domain.orderresume.controller.model.OrderTitleResponse;
@@ -71,15 +72,6 @@ public class OrderService {
         orderRepository.save(cancelOrder);
     }
 
-    public List<Order> updateOrdersByStatus(List<Order> orders, OrderStatus status) {
-        List<Order> updatedOrders = orders.stream()
-                .map(order -> order.updateStatus(status))
-                .toList();
-
-        return orderRepository.saveAll(updatedOrders);
-    }
-
-
     // requestId = 현재 시간 (millis) / 5000 + "_" + userId + "-" + uuid 5자리
     // 동일 유저가 5초 이내에 재 요청을 할 경우 예외 발생
     @Transactional(readOnly = true)
@@ -100,17 +92,15 @@ public class OrderService {
     @Transactional(readOnly = true)
     public List<OrderResponse> findAll(CurrentUser currentUser){
 
-        List<Order> orders = orderRepository.findByUserId(currentUser.getId());
-        if(orders.isEmpty()){
-            throw new ApiException(OrderErrorCode.ORDER_NO_CONTENT);
-        }
+        Orders orders = orderRepository.findByUserId(currentUser.getId());
+        orders.checkIsEmptyWithThrow();
 
-        return orders.stream()
-                .map(order -> {
-                    List<OrderTitleResponse> orderTitles = orderResumeRepositoryCustom.findOrderTitleByOrderId(order.getId());
+        return orders.getOrderResponses().stream()
+                .map(orderResponse -> {
+                    List<OrderTitleResponse> orderTitles = orderResumeRepositoryCustom.findOrderTitleByOrderId(orderResponse.getOrderId());
                     String orderResumeTitle = orderTitles.get(0).getTitle();
                     String orderTitle = createOrderTitle(orderTitles, orderResumeTitle);
-                    return OrderResponse.from(order, orderTitle);
+                    return OrderResponse.from(orderResponse, orderTitle);
                 }).toList();
     }
 
@@ -119,11 +109,6 @@ public class OrderService {
         Order order = orderRepository.getOrderWithThrow(currentUser.getId(), orderId);
         List<OrderResumeResponse> orderResumes = orderResumeRepositoryCustom.findByOrderId(order.getId());
         return OrderDetailResponse.from(order, orderResumes);
-    }
-
-    @Transactional(readOnly = true)
-    public List<Order> findOrdersByStatus(OrderStatus status, int limit){
-        return orderRepository.findByStatus(status, limit);
     }
 
     private boolean isRequestIdEqual(String source, String target){
