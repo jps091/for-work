@@ -59,8 +59,9 @@ public class OrderRepositoryImpl implements OrderRepository {
     }
 
     @Override
-    public List<Order> findByUserId(Long userId) {
-        return orderJpaRepository.findByUserEntity_IdOrderByIdDesc(userId).stream().map(OrderEntity::toModel).toList();
+    public Orders findByUserId(Long userId) {
+        List<Order> orders = orderJpaRepository.findByUserEntity_IdOrderByIdDesc(userId).stream().map(OrderEntity::toModel).toList();
+        return Orders.of(orders);
     }
 
     @Override

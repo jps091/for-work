@@ -61,16 +61,11 @@ public class FakeOrderResumeRepository implements OrderResumeRepository {
 
     @Override
     public List<OrderResume> findByStatusAndOrders(OrderResumeStatus status, Orders orders) {
-//        orders.
-//        List<Long> orderIds = orders.stream()
-//                .map(Order::getId)  // Order 객체에서 ID 추출
-//                .toList();
-//
-//        return data.stream()
-//                .filter(orderResume -> orderIds.contains(orderResume.getOrder().getId()) &&
-//                        Objects.equals(orderResume.getStatus(), status))
-//                .toList();
-        return null;
+        List<Long> orderIds = orders.getOrderIds();
+        return data.stream()
+                .filter(orderResume -> orderIds.contains(orderResume.getOrder().getId()) &&
+                        Objects.equals(orderResume.getStatus(), status))
+                .toList();
    }
 
     @Override

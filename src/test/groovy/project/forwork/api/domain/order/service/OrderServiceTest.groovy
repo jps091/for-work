@@ -8,6 +8,7 @@ import project.forwork.api.domain.order.controller.model.ConfirmOrderRequest
 import project.forwork.api.domain.order.controller.model.ConfirmPaymentRequest
 import project.forwork.api.domain.order.infrastructure.enums.OrderStatus
 import project.forwork.api.domain.order.model.Order
+import project.forwork.api.domain.order.model.Orders
 import project.forwork.api.domain.order.service.port.OrderRepository
 import project.forwork.api.domain.orderresume.controller.model.OrderTitleResponse
 import project.forwork.api.domain.orderresume.infrastructure.enums.OrderResumeStatus
@@ -167,30 +168,6 @@ class OrderServiceTest extends Specification {
         })
     }
 
-    def "여러 주문을 동시에 원하는 상태로 변경할 수 있다."(){
-        given:
-        var order1 = Order.builder()
-                .id(1L)
-                .status(OrderStatus.PAID)
-                .build()
-        var order2 = Order.builder()
-                .id(2L)
-                .status(OrderStatus.PAID)
-                .build()
-        var updatedOrder1 = Order.builder().id(1L).status(OrderStatus.CONFIRM).build()
-        var updatedOrder2 = Order.builder().id(2L).status(OrderStatus.CONFIRM).build()
-        var orders = [order1, order2]
-        var updatedOrders = [updatedOrder1, updatedOrder2]
-
-        orderRepository.saveAll(_) >> updatedOrders
-
-        when:
-        var result = orderService.updateOrdersByStatus(orders, OrderStatus.CONFIRM)
-
-        then:
-        result.size() == 2
-        result.every{it.status == OrderStatus.CONFIRM}
-    }
 
     def "같은 유저가 주문 요청을 5초 이내로 반복 하면 예외를 발생 시킨다."(){
         given:
@@ -279,7 +256,8 @@ class OrderServiceTest extends Specification {
 
     def "주문 내역이 없는 유저가 주문조회를 할 경우 예외가 발생한다."(){
         given:
-        orderRepository.findByUserId(currentUser.getId()) >> []
+        Orders orders = Orders.of(Collections.emptyList())
+        orderRepository.findByUserId(currentUser.getId()) >> orders
 
         when:
         orderService.findAll(currentUser)

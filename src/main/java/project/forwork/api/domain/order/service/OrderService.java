@@ -12,6 +12,7 @@ import project.forwork.api.common.service.port.UuidHolder;
 import project.forwork.api.domain.order.controller.model.*;
 import project.forwork.api.domain.order.infrastructure.enums.OrderStatus;
 import project.forwork.api.domain.order.model.Order;
+import project.forwork.api.domain.order.model.Orders;
 import project.forwork.api.domain.order.service.port.OrderRepository;
 import project.forwork.api.domain.orderresume.controller.model.OrderResumeResponse;
 import project.forwork.api.domain.orderresume.controller.model.OrderTitleResponse;
@@ -91,17 +92,15 @@ public class OrderService {
     @Transactional(readOnly = true)
     public List<OrderResponse> findAll(CurrentUser currentUser){
 
-        List<Order> orders = orderRepository.findByUserId(currentUser.getId());
-        if(orders.isEmpty()){
-            throw new ApiException(OrderErrorCode.ORDER_NO_CONTENT);
-        }
+        Orders orders = orderRepository.findByUserId(currentUser.getId());
+        orders.checkIsEmptyWithThrow();
 
-        return orders.stream()
-                .map(order -> {
-                    List<OrderTitleResponse> orderTitles = orderResumeRepositoryCustom.findOrderTitleByOrderId(order.getId());
+        return orders.getOrderResponses().stream()
+                .map(orderResponse -> {
+                    List<OrderTitleResponse> orderTitles = orderResumeRepositoryCustom.findOrderTitleByOrderId(orderResponse.getOrderId());
                     String orderResumeTitle = orderTitles.get(0).getTitle();
                     String orderTitle = createOrderTitle(orderTitles, orderResumeTitle);
-                    return OrderResponse.from(order, orderTitle);
+                    return OrderResponse.from(orderResponse, orderTitle);
                 }).toList();
     }
 

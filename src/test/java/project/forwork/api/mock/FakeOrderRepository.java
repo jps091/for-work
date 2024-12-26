@@ -57,8 +57,9 @@ public class FakeOrderRepository implements OrderRepository {
     }
 
     @Override
-    public List<Order> findByUserId(Long userId) {
-        return data.stream().filter(order -> Objects.equals(order.getUser().getId(), userId)).toList();
+    public Orders findByUserId(Long userId) {
+        List<Order> orders = data.stream().filter(order -> Objects.equals(order.getUser().getId(), userId)).toList();
+        return Orders.of(orders);
     }
 
 

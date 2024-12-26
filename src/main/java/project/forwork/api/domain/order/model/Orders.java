@@ -1,8 +1,8 @@
 package project.forwork.api.domain.order.model;
 
-import lombok.Getter;
 import project.forwork.api.common.error.OrderErrorCode;
 import project.forwork.api.common.exception.ApiException;
+import project.forwork.api.domain.order.controller.model.OrderResponse;
 import project.forwork.api.domain.order.infrastructure.OrderEntity;
 import project.forwork.api.domain.order.infrastructure.enums.OrderStatus;
 
@@ -34,7 +34,7 @@ public class Orders {
         return orders.isEmpty();
     }
 
-    public void validateNotEmpty() {
+    public void checkIsEmptyWithThrow() {
         if (orders.isEmpty()) {
             throw new ApiException(OrderErrorCode.ORDER_NO_CONTENT);
         }
@@ -42,5 +42,15 @@ public class Orders {
 
     public List<OrderEntity> convertToEntity(){
         return orders.stream().map(OrderEntity::from).toList();
+    }
+
+    public List<OrderResponse> getOrderResponses(){
+        return orders.stream().map(OrderResponse::from).toList();
+    }
+
+    public List<Long> getOrderIds(){
+        return orders.stream()
+                .map(Order::getId)  // Order 객체에서 ID 추출
+                .toList();
     }
 }

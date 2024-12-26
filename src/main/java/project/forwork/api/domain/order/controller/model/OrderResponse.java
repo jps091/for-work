@@ -20,12 +20,20 @@ public class OrderResponse {
     private OrderStatus status;
     private BigDecimal totalAmount;
 
-    public static OrderResponse from(Order order, String orderTitle){
+    public static OrderResponse from(OrderResponse orderResponse, String orderTitle){
+        return OrderResponse.builder()
+                .orderId(orderResponse.getOrderId())
+                .orderTitle(orderTitle)
+                .status(orderResponse.getStatus())
+                .totalAmount(orderResponse.getTotalAmount())
+                .build();
+    }
+
+    public static OrderResponse from(Order order){
         return OrderResponse.builder()
                 .orderId(order.getId())
-                .orderTitle(orderTitle)
-                .status(order.getStatus())
                 .totalAmount(order.getTotalAmount())
+                .status(order.getStatus())
                 .build();
     }
 }
