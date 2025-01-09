@@ -70,7 +70,7 @@
 
 ---
 ## 📝 API 명세서
-0. [스웨거 API 명세서](http://forwork.o-r.kr:8080/swagger-ui/index.html?urls.primaryName=%EC%A0%84%EC%B2%B4%20%EC%82%AC%EC%9A%A9%EC%9E%90%EB%A5%BC%20%EC%9C%84%ED%95%9C%20For-work%20Service%20%EB%8F%84%EB%A9%94%EC%9D%B8%20API)
+0. [스웨거 API 명세서](http://search-info.n-e.kr:8080/swagger-ui/index.html?urls.primaryName=%EC%A0%84%EC%B2%B4%20%EC%82%AC%EC%9A%A9%EC%9E%90%EB%A5%BC%20%EC%9C%84%ED%95%9C%20For-work%20Service%20%EB%8F%84%EB%A9%94%EC%9D%B8%20API)
 1. [노션 /open-api/v1/users (회원가입, 로그인 관련 API)](https://cuboid-sunfish-749.notion.site/1-open-api-v1-users-API-125bb83a1adf8058b761f7aea46a368d?pvs=4)
 2. [노션 /api/v1/users (회원 정보 관련 API)](https://cuboid-sunfish-749.notion.site/2-api-v1-users-API-125bb83a1adf8055b989ea3d9703127e?pvs=4)
 3. [노션 /api/v1/resumes (이력서 관리 판매자 전용 API)](https://cuboid-sunfish-749.notion.site/3-api-v1-resumes-API-125bb83a1adf802db310f1c66d3fb4ef?pvs=4)
