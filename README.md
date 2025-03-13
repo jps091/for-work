@@ -92,12 +92,16 @@
 
 **1. 이력서 판매글 등록 흐름**
 
-<img width="700" height="400" src="https://github.com/user-attachments/assets/36b4324a-afff-4a29-b320-7b2fcb7fad85"></br>
+<img width="800" height="400" src="https://github.com/user-attachments/assets/36b4324a-afff-4a29-b320-7b2fcb7fad85"></br>
 
 
 **2. 이력서 구매 흐름**
 
-<img width="900" height="450" alt="image" src="https://github.com/user-attachments/assets/2de832e6-20c2-48be-a09d-1c9f6e095261">
+<img width="1000" height="450" alt="image" src="https://github.com/user-attachments/assets/2de832e6-20c2-48be-a09d-1c9f6e095261">
+
+**3. 메일 전송 (RabbitMQ 비동기 큐 & Dead Letter 처리)**
+
+<img width="1000" height="450" src="https://github.com/user-attachments/assets/e454b6d0-0356-45fa-9e89-5bbb3a227216">
 
 ---
 
