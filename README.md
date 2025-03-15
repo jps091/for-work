@@ -30,6 +30,8 @@
 
 - [프로젝트 관련 포스팅](https://github.com/jps091/for-work/wiki)
 
+- [Github 칸반보드](https://github.com/users/jps091/projects/2/views/1)
+
 ---
 
 ### 🗂 프로젝트 구조
@@ -39,7 +41,8 @@
 3. Repository는 인터페이스로 설계 하여 서비스 계층과 결합도를 낮췄습니다.
 - 더 자세한 설명은 [4계층 프로젝트를 도입한 이유](https://github.com/jps091/for-work/wiki/%EB%8F%84%EB%A9%94%EC%9D%B8%EC%9D%84-%EB%8F%84%EC%9E%85%ED%95%9C-%EC%9D%B4%EC%9C%A0)를 확인 해주세요.
 
-<img width="800" height="600" alt="image" src="https://github.com/user-attachments/assets/3637b5b9-e100-47c6-9f78-fd6382eb6c3f" />
+<img width="850" height="600" alt="image" src="https://github.com/user-attachments/assets/15e4d5cf-1cf3-4c78-ae9b-ee64c46159b0" />
+
 
 ---
 
@@ -74,18 +77,28 @@
 
 </br>
 
-**1. 이력서 판매글 등록 흐름**
+**1. 판매자 이력서 판매글 등록 흐름**
 
-<img width="800" height="400" src="https://github.com/user-attachments/assets/36b4324a-afff-4a29-b320-7b2fcb7fad85"></br>
+<img width="800" height="400" alt="image" src="https://github.com/user-attachments/assets/f86cfc3c-2a59-4125-99c1-6174077f1fce" /></br>
 
 
-**2. 이력서 구매 흐름**
+</br>
 
-<img width="1000" height="450" alt="image" src="https://github.com/user-attachments/assets/2de832e6-20c2-48be-a09d-1c9f6e095261">
+**2. 이력서 주문 및 결제 흐름**
 
-**3. 메일 전송 (RabbitMQ 비동기 큐 & Dead Letter 처리)**
+<img width="1000" height="450" alt="image" src="https://github.com/user-attachments/assets/c20432b7-7f43-4246-b722-44b738544829" /></br>
 
-<img width="1000" height="450" src="https://github.com/user-attachments/assets/e454b6d0-0356-45fa-9e89-5bbb3a227216">
+
+
+**3. 구매자 메일 전송 흐름**
+
+<img width="800" height="400" alt="image" src="https://github.com/user-attachments/assets/35e37e05-c558-48fe-8b86-a616753e290f" /></br>
+
+
+**4. 메일 전송 (RabbitMQ 비동기 큐 & Dead Letter 처리)**
+
+<img width="1000" height="450" src="https://github.com/user-attachments/assets/e454b6d0-0356-45fa-9e89-5bbb3a227216"></br>
+
 
 **✅ 약 150개의 단위 테스트로 검증**
 
@@ -98,50 +111,40 @@
 
 </br>
 
-**판매글 조회(Pagination Key 방식)**
+**판매글 조회(Pagination Key 방식), 회원가입, 로그인, 관리자 문의**
 
-<img width="600" height="500" alt="image" src="https://github.com/user-attachments/assets/3552dae3-ef3d-44d9-b9c8-2b6b6bdeeb9e" /></br>
+<img width="800" height="600" alt="image" src="https://github.com/user-attachments/assets/478da93c-71fe-4b15-b937-f7d2f8ad7b8d" /></br>
 
-<img width="600" height="500" alt="image" src="https://github.com/user-attachments/assets/ddf4d3c3-7050-41c7-b90a-d376ed8bb143" /></br>
+**결제, 주문 전체, 상세 내역**
 
-<img width="600" height="500" alt="image" src="https://github.com/user-attachments/assets/56daa5e2-2ac8-4814-8f36-e175cc8fbf37" /></br>
-
-<img width="600" height="500" alt="image" src="https://github.com/user-attachments/assets/149828b4-e20d-4a79-ae8e-a2bd7368bb27" /></br>
-
-<img width="600" height="500" alt="image" src="https://github.com/user-attachments/assets/6b9225da-cb8f-4273-abbd-88f69dfc46ee" /></br>
+<img width="800" height="600" alt="image" src="https://github.com/user-attachments/assets/4b7a51e1-465d-460c-b88d-3c56eb5fb5da" /></br>
 
 ---
 
 ### 🌈 판매자 관련 기능 구현 화면
 
-<img width="600" height="500" alt="image" src="https://github.com/user-attachments/assets/f1b43f8d-6d5d-43be-9633-dd8b63e5aac4" /></br>
+**이력서 판매 요청 작성, 나의 이력서 상태**
 
-<img width="650" height="500" alt="image" src="https://github.com/user-attachments/assets/85806210-1f9e-4bc1-a6d5-995609486b8c" /></br>
+<img width="800" height="600" alt="image" src="https://github.com/user-attachments/assets/2833d15a-bd28-4f36-8a09-bf041a077b58" />
 
 ---
 
 ### 🔥 어드민 관련 기능 구현 화면
 
-</br>
 
-**판매 요청 이력서 전체 조회**
+**요청 온 이력서 전체 조회, 상세 조회**
 
-<img width="600" height="500" alt="image" src="https://github.com/user-attachments/assets/ac7766b8-d5fe-4c16-bab2-dde0a1966900" /></br>
-
-
-**판매 요청 이력서 상세 조회**
-
-<img width="600" height="500" alt="image" src="https://github.com/user-attachments/assets/ad91b6cb-e386-4349-881f-0ae47e5e55e0" /></br>
+<img width="800" height="600" alt="image" src="https://github.com/user-attachments/assets/c55bf273-59f2-4a33-956f-a19918e2c73f" />
 
 ---
 
 ### 📓 프로젝트 회고
 
-결제, 환불, 자동 구매 확정, 주문 상태 관리, 페이징 처리(Pagination Key)와 같은 로직을 간소화하여 구현했으며, 부하 테스트와 모니터링을 통해 성능 최적화를 경험했습니다. 또한, 약 150개의 유닛 테스트를 작성하고 검증하여 코드의 신뢰성을 높일 수 있었습니다.
+결제, 환불, 자동 구매 확정, 주문 상태 관리, 페이징 처리(Pagination Key)와 같은 복잡한 비즈니스 로직을 효율적 구현했으며, 약 150개의 유닛 테스트를 작성하고 검증하여 코드의 신뢰성을 높일 수 있었습니다. 또한 부하 테스트와 모니터링을 통해 성능 최적화를 경험했습니다.
 
 프로젝트 과정에서 API 응답에 엔티티를 직접 노출하거나, 서비스 계층의 비대화, ORM 양방향 관계와 같은 주요 안티 패턴을 식별하고, 4계층 구조, 일급 컬렉션, 디자인 패턴 등을 적용해 더 객체지향적이고 품질 높은 코드에 대해 생각할 수 있었습니다.
 
-마지막으로 CI/CD 프로세스를 설계하고, 배포하며 백엔드 서버 개발 전반뿐만 아니라 인프라 설계까지 경험할 수 있었던 의미 있는 프로젝트였습니다.
+마지막으로 CI/CD 프로세스를 설계하고, AWS를 활용해 배포하며 백엔드 서버 개발 전반뿐만 아니라 인프라 설계까지 경험할 수 있었던 의미 있는 프로젝트였습니다.
 
 ---
 
