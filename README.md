@@ -111,11 +111,11 @@
 
 </br>
 
-**판매글 조회(Pagination Key 방식), 회원가입, 로그인, 관리자 문의**
+**1. 판매글 조회(Pagination Key 방식), 회원가입, 로그인, 관리자 문의**
 
 <img width="800" height="600" alt="image" src="https://github.com/user-attachments/assets/478da93c-71fe-4b15-b937-f7d2f8ad7b8d" /></br>
 
-**결제, 주문 전체, 상세 내역**
+**2. 결제, 주문 전체, 상세 내역**
 
 <img width="800" height="600" alt="image" src="https://github.com/user-attachments/assets/4b7a51e1-465d-460c-b88d-3c56eb5fb5da" /></br>
 
@@ -123,7 +123,7 @@
 
 ### 🌈 판매자 관련 기능 구현 화면
 
-**이력서 판매 요청 작성, 나의 이력서 상태**
+**1. 이력서 판매 요청 작성, 나의 이력서 상태**
 
 <img width="800" height="600" alt="image" src="https://github.com/user-attachments/assets/2833d15a-bd28-4f36-8a09-bf041a077b58" />
 
@@ -132,7 +132,7 @@
 ### 🔥 어드민 관련 기능 구현 화면
 
 
-**요청 온 이력서 전체 조회, 상세 조회**
+**1. 요청 온 이력서 전체 조회, 상세 조회**
 
 <img width="800" height="600" alt="image" src="https://github.com/user-attachments/assets/c55bf273-59f2-4a33-956f-a19918e2c73f" />
 
@@ -150,8 +150,10 @@
 
 ### ⚒ 사용 기술 스택
 
-Java 17, Spring Boot 3.3.2, JPA, Query DSL, MyBatis
-
-MySQL 8.0.4, Redis, RabbitMQ, JWT, Swagger, Scouter
-
-EC2, S3, CDN, RDS, ElastiCache, SES, Github Actions, Docker, ECR, CodeDeploy
+- Backend: Java 17, Spring Boot 3.3.2, JPA, Query DSL, MyBatis, RabbitMQ
+- Database: MySQL 8.0.4, Redis
+- Build Tool: Gradle
+- Version Control: Git, GitHub
+- Infra: EC2, S3, CDN, RDS, ElastiCache, SES
+- Containerization: Docker
+- CI/CD: Github Actions, ECR, CodeDeploy, S3
