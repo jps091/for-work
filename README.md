@@ -1,17 +1,16 @@
 ##  📑 For-Work - 쇼핑몰
 
 ### 📖 목 차
-1. [프로젝트 개요](https://github.com/jps091/for-work#%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EA%B0%9C%EC%9A%94)
-2. [프로젝트 기여도](https://github.com/jps091/for-work#-%EA%B8%B0%EC%97%AC%EB%8F%84)
-3. [요구사항](https://github.com/jps091/search-info?tab=readme-ov-file#-%EC%9A%94%EA%B5%AC%EC%82%AC%ED%95%AD)
-4. [프로젝트 구조](https://github.com/jps091/for-work?tab=readme-ov-file#-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EA%B5%AC%EC%A1%B0)
-5. [시스템 아키텍쳐](https://github.com/jps091/for-work?tab=readme-ov-file#-%EC%95%84%ED%82%A4%ED%85%8D%EC%B2%98)
-6. [ERD](https://github.com/jps091/for-work?tab=readme-ov-file#-erd)
-7. [API 명세서](https://github.com/jps091/for-work?tab=readme-ov-file#-api-%EB%AA%85%EC%84%B8%EC%84%9C)
-9. [주요 기능 동작 흐름 및 검증](https://github.com/jps091/for-work?tab=readme-ov-file#-%EC%A3%BC%EC%9A%94-%EA%B8%B0%EB%8A%A5-%EB%8F%99%EC%9E%91-%ED%9D%90%EB%A6%84)
-10. [기능 구현 화면](https://github.com/jps091/for-work?tab=readme-ov-file#-%EA%B5%AC%EB%A7%A4%EC%9E%90-%EA%B4%80%EB%A0%A8-%EA%B8%B0%EB%8A%A5-%EA%B5%AC%ED%98%84-%ED%99%94%EB%A9%B4)
-11. [프로젝트 회고](https://github.com/jps091/for-work?tab=readme-ov-file#%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%ED%9A%8C%EA%B3%A0)
-12. [기술 스택](https://github.com/jps091/search-info?tab=readme-ov-file#-%EA%B8%B0%EC%88%A0-%EC%8A%A4%ED%83%9D)
+1. [프로젝트 개요](https://github.com/jps091/for-work/blob/dev/README.md#%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EA%B0%9C%EC%9A%94)
+2. [프로젝트 기여도](https://github.com/jps091/for-work/blob/dev/README.md#-%EA%B8%B0%EC%97%AC%EB%8F%84)
+3. [프로젝트 구조](https://github.com/jps091/for-work/blob/dev/README.md#-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EA%B5%AC%EC%A1%B0)
+4. [시스템 아키텍쳐](https://github.com/jps091/for-work/blob/dev/README.md#-%EC%95%84%ED%82%A4%ED%85%8D%EC%B2%98)
+5. [ERD](https://github.com/jps091/for-work/blob/dev/README.md#-erd)
+6. [API 명세서](https://github.com/jps091/for-work/blob/dev/README.md#-api-%EB%AA%85%EC%84%B8%EC%84%9C)
+7. [주요 기능 동작 흐름 및 검증](https://github.com/jps091/for-work/blob/dev/README.md#-%EC%A3%BC%EC%9A%94-%EA%B8%B0%EB%8A%A5-%EB%8F%99%EC%9E%91-%ED%9D%90%EB%A6%84-%EB%B0%8F-%EA%B2%80%EC%A6%9D)
+8. [기능 구현 화면](https://github.com/jps091/for-work/blob/dev/README.md#-%EA%B5%AC%EB%A7%A4%EC%9E%90-%EA%B4%80%EB%A0%A8-%EA%B8%B0%EB%8A%A5-%EA%B5%AC%ED%98%84-%ED%99%94%EB%A9%B4)
+9. [프로젝트 회고](https://github.com/jps091/for-work/blob/dev/README.md#%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%ED%9A%8C%EA%B3%A0)
+10. [기술 스택](https://github.com/jps091/for-work/blob/dev/README.md#%EC%82%AC%EC%9A%A9-%EA%B8%B0%EC%88%A0-%EC%8A%A4%ED%83%9D)
 
 ---
 
@@ -57,7 +56,7 @@
 ---
 
 ### 📝 API 명세서
-0. [스웨거 API 명세서](http://search-info.n-e.kr:8080/swagger-ui/index.html?urls.primaryName=%EC%A0%84%EC%B2%B4%20%EC%82%AC%EC%9A%A9%EC%9E%90%EB%A5%BC%20%EC%9C%84%ED%95%9C%20For-work%20Service%20%EB%8F%84%EB%A9%94%EC%9D%B8%20API)
+0. [스웨거 API 명세서 ver](http://search-info.n-e.kr:8080/swagger-ui/index.html?urls.primaryName=%EC%A0%84%EC%B2%B4%20%EC%82%AC%EC%9A%A9%EC%9E%90%EB%A5%BC%20%EC%9C%84%ED%95%9C%20For-work%20Service%20%EB%8F%84%EB%A9%94%EC%9D%B8%20API)
 1. [노션 /open-api/v1/users (회원가입, 로그인 관련 API)](https://cuboid-sunfish-749.notion.site/1-open-api-v1-users-API-125bb83a1adf8058b761f7aea46a368d?pvs=4)
 2. [노션 /api/v1/users (회원 정보 관련 API)](https://cuboid-sunfish-749.notion.site/2-api-v1-users-API-125bb83a1adf8055b989ea3d9703127e?pvs=4)
 3. [노션 /api/v1/resumes (이력서 관리 판매자 전용 API)](https://cuboid-sunfish-749.notion.site/3-api-v1-resumes-API-125bb83a1adf802db310f1c66d3fb4ef?pvs=4)
@@ -87,6 +86,11 @@
 **3. 메일 전송 (RabbitMQ 비동기 큐 & Dead Letter 처리)**
 
 <img width="1000" height="450" src="https://github.com/user-attachments/assets/e454b6d0-0356-45fa-9e89-5bbb3a227216">
+
+**✅ 약 150개의 단위 테스트로 검증**
+
+<img width="1000" height="450" alt="image" src="https://github.com/user-attachments/assets/d5a4786b-6c63-4134-bf7a-140fc53b8f3a" />
+
 
 ---
 
