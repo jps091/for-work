@@ -1,5 +1,20 @@
 ##  📑 For-Work - 쇼핑몰
 
+### 📖 목 차
+1. [프로젝트 개요](https://github.com/jps091/for-work#%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EA%B0%9C%EC%9A%94)
+2. [프로젝트 기여도](https://github.com/jps091/for-work#-%EA%B8%B0%EC%97%AC%EB%8F%84)
+3. [요구사항](https://github.com/jps091/search-info?tab=readme-ov-file#-%EC%9A%94%EA%B5%AC%EC%82%AC%ED%95%AD)
+4. [프로젝트 구조](https://github.com/jps091/for-work?tab=readme-ov-file#-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EA%B5%AC%EC%A1%B0)
+5. [시스템 아키텍쳐](https://github.com/jps091/for-work?tab=readme-ov-file#-%EC%95%84%ED%82%A4%ED%85%8D%EC%B2%98)
+6. [ERD](https://github.com/jps091/for-work?tab=readme-ov-file#-erd)
+7. [API 명세서](https://github.com/jps091/for-work?tab=readme-ov-file#-api-%EB%AA%85%EC%84%B8%EC%84%9C)
+9. [주요 기능 동작 흐름 및 검증](https://github.com/jps091/for-work?tab=readme-ov-file#-%EC%A3%BC%EC%9A%94-%EA%B8%B0%EB%8A%A5-%EB%8F%99%EC%9E%91-%ED%9D%90%EB%A6%84)
+10. [기능 구현 화면](https://github.com/jps091/for-work?tab=readme-ov-file#-%EA%B5%AC%EB%A7%A4%EC%9E%90-%EA%B4%80%EB%A0%A8-%EA%B8%B0%EB%8A%A5-%EA%B5%AC%ED%98%84-%ED%99%94%EB%A9%B4)
+11. [프로젝트 회고](https://github.com/jps091/for-work?tab=readme-ov-file#%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%ED%9A%8C%EA%B3%A0)
+12. [기술 스택](https://github.com/jps091/search-info?tab=readme-ov-file#-%EA%B8%B0%EC%88%A0-%EC%8A%A4%ED%83%9D)
+
+---
+
 ### 📁 프로젝트 개요
 판매 요청자가 관리자에게 양식에 맞게 이력서 판매 요청을 하면 관리자가 검토 후 판매 여부를 결정하여, 검증된 이력서만 판매하는 쇼핑몰입니다. 
 
@@ -25,43 +40,13 @@
 3. Repository는 인터페이스로 설계 하여 서비스 계층과 결합도를 낮췄습니다.
 - 더 자세한 설명은 [4계층 프로젝트를 도입한 이유](https://github.com/jps091/for-work/wiki/%EB%8F%84%EB%A9%94%EC%9D%B8%EC%9D%84-%EB%8F%84%EC%9E%85%ED%95%9C-%EC%9D%B4%EC%9C%A0)를 확인 해주세요.
 
-```markdown
-├── common # 공통 모듈 및 설정 파일
-│ ├── annotation # 커스텀 애노테이션
-│ ├── api # API 인터페이스
-│ ├── config # 설정 파일
-│ ├── controller # 공통 컨트롤러
-│ ├── domain # 공통 도메인 모델
-│ ├── error # 오류 처리 모듈
-│ ├── exception # 예외 처리 모듈
-│ ├── infrastructure # 인프라 관련 설정
-│ └── service # 공통 서비스
-├── domain # 주요 비즈니스 도메인
-│ └── user # 사용자 관련 도메인
-│       ├── controller
-│       ├── infrastructure
-│       ├── model
-│       └── service
-│ ├── cartresume # 장바구니 이력서 관련 도메인
-│ ├── maillog # 메일 로그 도메인
-│ ├── order # 주문 관련 도메인
-│ ├── orderresume # 주문 이력서 관련 도메인
-│ ├── resume # 이력서 관련 도메인
-│ ├── resumedecision # 이력서 결정 관련 도메인
-│ ├── retrylog # 재시도 로그 도메인
-│ ├── salespost # 판매 게시물 도메인
-│ ├── thumbnailimage # 썸네일 이미지 도메인
-│ ├── token # 토큰 관련 도메인
-│ ├── transaction # 트랜잭션 도메인
-│ └── cart # 장바구니 관련 도메인
-├── interceptor
-└── resolver
-```
+<img width="800" height="600" alt="image" src="https://github.com/user-attachments/assets/3637b5b9-e100-47c6-9f78-fd6382eb6c3f" />
+
 ---
 
 ### 🪃 아키텍처
 
-<img width="800" height="600" alt="image" src="https://github.com/user-attachments/assets/0089951e-98b2-4970-bdde-c653626484b5">
+<img width="850" height="600" alt="image" src="https://github.com/user-attachments/assets/0089951e-98b2-4970-bdde-c653626484b5">
 
 ---
 
@@ -86,7 +71,7 @@
 
 ---
 
-### 🚴 주요 기능 동작 흐름
+### 🚴 주요 기능 동작 흐름 및 검증
 
 </br>
 
@@ -156,7 +141,7 @@
 
 ---
 
-**⚒ 사용 기술 스택**
+### ⚒ 사용 기술 스택
 
 Java 17, Spring Boot 3.3.2, JPA, Query DSL, MyBatis
 
