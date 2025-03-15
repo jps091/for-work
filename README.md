@@ -21,12 +21,12 @@
 
 또한 지속 성장 가능한 소프트웨어 설계에 대해 고민하면서 아래와 같은 방식을 적용하면서 개발하였습니다.
 
-1. 4 계층 아키텍쳐
-2. OOP
-3. 디자인 패턴
-4. 일급 컬렉션
-5. 엔티티 양방향 관계 사용X
-
+- 4 계층 아키텍쳐
+- OOP
+- 디자인 패턴
+- 일급 컬렉션
+- 엔티티 양방향 관계 사용X
+- 
 ---
 
 ### 👥 기여도
@@ -96,7 +96,7 @@
 
 **3. 구매자 메일 전송 흐름**
 
-<img width="700" height="350" alt="image" src="https://github.com/user-attachments/assets/6fb5d193-c927-4717-9a1a-2b8888cbabc7" /></br>
+<img width="600" height="350" alt="image" src="https://github.com/user-attachments/assets/6fb5d193-c927-4717-9a1a-2b8888cbabc7" /></br>
 
 
 **4. 메일 전송 (RabbitMQ 비동기 큐 & Dead Letter 처리)**
@@ -127,7 +127,7 @@
 
 ### 🌈 판매자 관련 기능 구현 화면
 
-**1. 이력서 판매 요청 작성, 나의 이력서 상태**
+**이력서 판매 요청 작성, 나의 이력서 상태**
 
 <img width="800" height="600" alt="image" src="https://github.com/user-attachments/assets/2833d15a-bd28-4f36-8a09-bf041a077b58" />
 
@@ -136,7 +136,7 @@
 ### 🔥 어드민 관련 기능 구현 화면
 
 
-**1. 요청 온 이력서 전체 조회, 상세 조회**
+**요청 온 이력서 전체 조회, 상세 조회**
 
 <img width="800" height="600" alt="image" src="https://github.com/user-attachments/assets/c55bf273-59f2-4a33-956f-a19918e2c73f" />
 
