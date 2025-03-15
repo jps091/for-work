@@ -92,9 +92,7 @@
 
 **2. 이력서 주문 및 결제 흐름**
 
-<img width="1000" height="450" alt="image" src="https://github.com/user-attachments/assets/c20432b7-7f43-4246-b722-44b738544829" /></br>
-
-
+<img width="1000" height="500" alt="image" src="https://github.com/user-attachments/assets/598d9f25-bd3b-4bf2-934b-7950783da707" /></br>
 
 **3. 구매자 메일 전송 흐름**
 
