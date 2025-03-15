@@ -98,7 +98,7 @@
 
 **3. 구매자 메일 전송 흐름**
 
-<img width="800" height="400" alt="image" src="https://github.com/user-attachments/assets/35e37e05-c558-48fe-8b86-a616753e290f" /></br>
+<img width="700" height="350" alt="image" src="https://github.com/user-attachments/assets/6fb5d193-c927-4717-9a1a-2b8888cbabc7" /></br>
 
 
 **4. 메일 전송 (RabbitMQ 비동기 큐 & Dead Letter 처리)**
