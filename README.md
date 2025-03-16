@@ -4,13 +4,13 @@
 1. [프로젝트 개요](https://github.com/jps091/for-work/blob/dev/README.md#%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EA%B0%9C%EC%9A%94)
 2. [프로젝트 기여도](https://github.com/jps091/for-work/blob/dev/README.md#-%EA%B8%B0%EC%97%AC%EB%8F%84)
 3. [프로젝트 구조](https://github.com/jps091/for-work/blob/dev/README.md#-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EA%B5%AC%EC%A1%B0)
-4. [시스템 아키텍쳐](https://github.com/jps091/for-work/blob/dev/README.md#-%EC%95%84%ED%82%A4%ED%85%8D%EC%B2%98)
+4. [API 명세서](https://github.com/jps091/for-work/blob/dev/README.md#-api-%EB%AA%85%EC%84%B8%EC%84%9C)
 5. [ERD](https://github.com/jps091/for-work/blob/dev/README.md#-erd)
-6. [API 명세서](https://github.com/jps091/for-work/blob/dev/README.md#-api-%EB%AA%85%EC%84%B8%EC%84%9C)
-7. [주요 기능 동작 흐름 및 검증](https://github.com/jps091/for-work/blob/dev/README.md#-%EC%A3%BC%EC%9A%94-%EA%B8%B0%EB%8A%A5-%EB%8F%99%EC%9E%91-%ED%9D%90%EB%A6%84-%EB%B0%8F-%EA%B2%80%EC%A6%9D)
-8. [기능 구현 화면](https://github.com/jps091/for-work/blob/dev/README.md#-%EA%B5%AC%EB%A7%A4%EC%9E%90-%EA%B4%80%EB%A0%A8-%EA%B8%B0%EB%8A%A5-%EA%B5%AC%ED%98%84-%ED%99%94%EB%A9%B4)
-9. [프로젝트 회고](https://github.com/jps091/for-work/blob/dev/README.md#%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%ED%9A%8C%EA%B3%A0)
-10. [기술 스택](https://github.com/jps091/for-work/blob/dev/README.md#%EC%82%AC%EC%9A%A9-%EA%B8%B0%EC%88%A0-%EC%8A%A4%ED%83%9D)
+6. [기술 스택](https://github.com/jps091/for-work/blob/dev/README.md#%EC%82%AC%EC%9A%A9-%EA%B8%B0%EC%88%A0-%EC%8A%A4%ED%83%9D)
+7. [시스템 아키텍쳐](https://github.com/jps091/for-work/blob/dev/README.md#-%EC%95%84%ED%82%A4%ED%85%8D%EC%B2%98)
+8. [주요 기능 동작 흐름 및 검증](https://github.com/jps091/for-work/blob/dev/README.md#-%EC%A3%BC%EC%9A%94-%EA%B8%B0%EB%8A%A5-%EB%8F%99%EC%9E%91-%ED%9D%90%EB%A6%84-%EB%B0%8F-%EA%B2%80%EC%A6%9D)
+9. [기능 구현 화면](https://github.com/jps091/for-work/blob/dev/README.md#-%EA%B5%AC%EB%A7%A4%EC%9E%90-%EA%B4%80%EB%A0%A8-%EA%B8%B0%EB%8A%A5-%EA%B5%AC%ED%98%84-%ED%99%94%EB%A9%B4)
+10. [프로젝트 회고](https://github.com/jps091/for-work/blob/dev/README.md#%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%ED%9A%8C%EA%B3%A0)
 
 ---
 
@@ -19,7 +19,7 @@
 
 특히, 결제, 환불, 자동 구매 확정, 주문 상태 관리 등 쇼핑몰의 핵심 기능을 효과적으로 설계하고, 성능 최적화 및 가용성을 고려한 개발을 목표로 삼았습니다.
 
-또한, 요구사항을 분석하여 명사 테이블과 동사(비즈니스) 테이블을 분리하는 ERD 설계 방식을 적용하며, 비즈니스 로직이 데이터 구조에 적절히 반영되도록 모델링 경험을 쌓는데 목표로 하였습니다.
+또한, 요구사항을 분석하여 명사 테이블과 동사(비즈니스) 테이블을 분리하는 ERD 설계 방식을 적용하며, 비즈니스 로직이 데이터 구조에 적절히 반영되도록 테이블 모델링 경험을 쌓는데 목표로 하였습니다.
 
 ---
 
@@ -126,7 +126,7 @@
 
 <img width="800" height="600" alt="image" src="https://github.com/user-attachments/assets/478da93c-71fe-4b15-b937-f7d2f8ad7b8d" /></br>
 
-**2. 결제, 주문 전체, 상세 내역**
+**2. 결제, 주문 전체 내역, 주문 상세 내역**
 
 <img width="800" height="600" alt="image" src="https://github.com/user-attachments/assets/4b7a51e1-465d-460c-b88d-3c56eb5fb5da" /></br>
 
