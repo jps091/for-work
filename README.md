@@ -70,13 +70,14 @@
 
 ### ⚒ 사용 기술 스택
 
-- Backend: Java 17, Spring Boot 3.3.2, JPA, Query DSL, MyBatis, RabbitMQ
-- Database: MySQL 8.0.4, Redis
-- Build Tool: Gradle
-- Version Control: Git, GitHub
+- Backend: Java 17, Spring Boot, JPA, Query DSL, MyBatis, RabbitMQ, JWT, Swagger
+- Frontend: React
+- Test: JUnit5, Spock
+- Database: MySQL, Redis, Caffeine
+- Load Test & Monitoring: JMeter, PostMan, Scouter
 - Infra: EC2, S3, CDN, RDS, ElastiCache, SES
 - Containerization: Docker
-- CI/CD: Github Actions, ECR, CodeDeploy, S3
+- CI/CD: Github Actions, ECR, CodeDeploy
 
 ---
 
