@@ -3,7 +3,7 @@
 ## 📖 목 차
 1. [프로젝트 개요](https://github.com/jps091/for-work/blob/dev/README.md#%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EA%B0%9C%EC%9A%94)
 2. [프로젝트 기여도](https://github.com/jps091/for-work/blob/dev/README.md#-%EA%B8%B0%EC%97%AC%EB%8F%84)
-3. [데이터베이스 모델링]()
+3. [데이터베이스 모델링](https://github.com/jps091/for-work/tree/dev#-%EC%9A%94%EA%B5%AC%EC%82%AC%ED%95%AD-%EA%B8%B0%EB%B0%98-%EB%8D%B0%EC%9D%B4%ED%84%B0%EB%B2%A0%EC%9D%B4%EC%8A%A4-%EB%AA%A8%EB%8D%B8%EB%A7%81)
 4. [프로젝트 구조](https://github.com/jps091/for-work/blob/dev/README.md#-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EA%B5%AC%EC%A1%B0)
 5. [API 명세서](https://github.com/jps091/for-work/blob/dev/README.md#-api-%EB%AA%85%EC%84%B8%EC%84%9C)
 6. [기술 스택](https://github.com/jps091/for-work/blob/dev/README.md#%EC%82%AC%EC%9A%A9-%EA%B8%B0%EC%88%A0-%EC%8A%A4%ED%83%9D)
