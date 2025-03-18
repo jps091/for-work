@@ -1,11 +1,11 @@
-##  📑 For-Work - 쇼핑몰
+#  📑 For-Work - 쇼핑몰
 
-### 📖 목 차
+## 📖 목 차
 1. [프로젝트 개요](https://github.com/jps091/for-work/blob/dev/README.md#%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EA%B0%9C%EC%9A%94)
 2. [프로젝트 기여도](https://github.com/jps091/for-work/blob/dev/README.md#-%EA%B8%B0%EC%97%AC%EB%8F%84)
-3. [프로젝트 구조](https://github.com/jps091/for-work/blob/dev/README.md#-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EA%B5%AC%EC%A1%B0)
-4. [API 명세서](https://github.com/jps091/for-work/blob/dev/README.md#-api-%EB%AA%85%EC%84%B8%EC%84%9C)
-5. [ERD](https://github.com/jps091/for-work/blob/dev/README.md#-erd)
+3. [데이터베이스 모델링]()
+4. [프로젝트 구조](https://github.com/jps091/for-work/blob/dev/README.md#-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EA%B5%AC%EC%A1%B0)
+5. [API 명세서](https://github.com/jps091/for-work/blob/dev/README.md#-api-%EB%AA%85%EC%84%B8%EC%84%9C)
 6. [기술 스택](https://github.com/jps091/for-work/blob/dev/README.md#%EC%82%AC%EC%9A%A9-%EA%B8%B0%EC%88%A0-%EC%8A%A4%ED%83%9D)
 7. [시스템 아키텍쳐](https://github.com/jps091/for-work/blob/dev/README.md#-%EC%95%84%ED%82%A4%ED%85%8D%EC%B2%98)
 8. [주요 기능 동작 흐름 및 검증](https://github.com/jps091/for-work/blob/dev/README.md#-%EC%A3%BC%EC%9A%94-%EA%B8%B0%EB%8A%A5-%EB%8F%99%EC%9E%91-%ED%9D%90%EB%A6%84-%EB%B0%8F-%EA%B2%80%EC%A6%9D)
@@ -14,27 +14,72 @@
 
 ---
 
-### 📁 프로젝트 개요
+## 📁 프로젝트 개요
 이 프로젝트는 단순한 CRUD 구현을 넘어 복잡한 비즈니스 로직을 설계, 구현, 검증하는 경험을 쌓기 위해 기획되었습니다. 
 
 특히, 결제, 환불, 자동 구매 확정, 주문 상태 관리 등 쇼핑몰의 핵심 기능을 효과적으로 설계하고, 성능 최적화 및 가용성을 고려한 개발을 목표로 삼았습니다.
 
-또한, 요구사항을 분석하여 명사 테이블과 동사(비즈니스) 테이블을 분리하는 ERD 설계 방식을 적용하며, 비즈니스 로직이 데이터 구조에 적절히 반영되도록 테이블 모델링 경험을 쌓는데 목표로 하였습니다.
+또한, 요구사항을 분석하여 개념적, 논리적, 물리적 모델링 방식을 통해 데이터베이스 설계 경험을 통해, 비즈니스 로직이 데이터 구조에 적절히 반영되도록 경험을 쌓는데 목표로 하였습니다.
 
 ---
 
-### 👥 기여도
-**프론트엔드 개발자 1명과 협업, DB 설계 부터 백엔드 개발 및 배포 100% 기여**
+## 👥 기여도
+**팀원 총 2명(FE 개발자 1명, 본인 1명), DB 설계 부터 백엔드 개발 및 배포 100% 기여**
 
 - [서비스 배포 링크](https://main--resume-market.netlify.app/)
 
 - [프로젝트 관련 포스팅](https://github.com/jps091/for-work/wiki)
 
-- [Github 칸반보드](https://github.com/users/jps091/projects/2/views/1)
+- [Github 칸반보드](https://github.com/users/jps091/projects/2/views/1)를 통한 코드 형상 관리
+
+  <img width="600" height="400" alt="image" src="https://github.com/user-attachments/assets/6022ee5f-290d-4ea6-8f98-91384e6d7aa2" />
+
 
 ---
 
-### 🗂 프로젝트 구조
+## 💼 요구사항 기반 데이터베이스 모델링
+
+📌 **주요 요구사항**
+
+1. 판매자는 관리자에게 이력서 판매 신청을 할 수 있다.
+2. 관리자는 판매 요청을 검토하고 수락/거절할 수 있다.
+3. 판매자는 자신의 이력서 판매 상태 및 판매량을 확인할 수 있다.
+4. 구매자는 이력서를 장바구니에 담고 결제할 수 있다.
+5. 구매 확정된 이력서는 구매자 이메일로 자동 전송된다.
+6. 주문은 일부 취소가 가능하지만, 구매 확정 후 환불은 불가능하다.
+7. 주문 및 결제 내역은 사후 관리 목적으로 별도 저장해야 한다.
+
+🏗 **최종 개체 및 관계 목록**
+
+- 개체 : 사용자, 이력서, 주문내역, 판매글, 장바구니, 섬네일, 결제 내역, 매일 내역
+- 관계 : 주문,판매,결정, 담기, 관리, 전송, 판매글 등록, 섬네일 등록
+
+⚠️ **최적화**
+- `사용자` 개체에서 판매자/구매자/관리자를 구분하는 별도 테이블을 만들지 않고, **속성(Type)으로 구분**  
+- `주문내역`의 상태(결제 완료, 환불, 구매 확정 등)도 **별도 테이블 대신 속성(Status)으로 관리**  
+- 1:N 관계는 외래 키(FK)로, N:M 관계는 **중간 테이블**을 두어 연결</br> 
+</br>
+
+🚀 **ERD (Entity Relationship Diagram)**
+
+<img width="500" height="700" alt="image" src="https://github.com/user-attachments/assets/d6b7139b-d502-4523-b26e-b897ef930a1b" /></br>
+
+</br>
+
+🚀 **관계형 데이터 모델**
+
+> **1:1, 1:N은 FK로 참조, N:M 관계는 별도 테이블 구성** 
+
+<img width="800" height="600" alt="image" src="https://github.com/user-attachments/assets/fa804a6b-7a15-4e85-bab2-45bf468d67c4"></br>
+
+⚠️ **로그 테이블(메일 내역, 주문 내역, 재시도 내역) 외래 키 제거 이유**  
+- `파티셔닝(Partitioning)` 적용 시 **외래 키 제약 조건을 사용할 수 없음**  
+- 로그성 데이터는 **무결성보다 조회 성능 최적화가 중요**  
+- `파티션 프루닝(Partition Pruning)`을 통해 **불필요한 데이터 스캔 최소화** 
+
+---
+
+## 🗂 프로젝트 구조
 
 1. Presentation, Application, Domain, Persistence 4계층으로 프로젝트를 구성 하였습니다.
 2. Persistent Object와 Domain Object를 분리 하여 핵심 비지니스 로직은 Domain Object에 구현 하였습니다.
@@ -45,7 +90,7 @@
 
 ---
 
-### 📝 API 명세서
+## 📝 API 명세서
 
 **[1. 스웨거 API 명세서 ver](http://search-info.n-e.kr:8080/swagger-ui/index.html?urls.primaryName=%EC%A0%84%EC%B2%B4%20%EC%82%AC%EC%9A%A9%EC%9E%90%EB%A5%BC%20%EC%9C%84%ED%95%9C%20For-work%20Service%20%EB%8F%84%EB%A9%94%EC%9D%B8%20API)**
 
@@ -58,17 +103,7 @@
 
 ---
 
-### 💼 관계형 데이터 모델
-
-**명사 테이블(주요 엔터티)과 동사(비즈니스) 테이블(행위 및 관계를 나타내는 테이블)을 분리하는 ERD 설계 방식을 적용하였습니다.**
-
-**여기서 동사 테이블은 단순히 비즈니스 로직을 반영하는 역할뿐만 아니라, 서로 직접적인 연관이 없는 명사 테이블 간의 관계를 맺어주는 역할도 수행합니다.**
-
-<img width="800" height="600" alt="image" src="https://github.com/user-attachments/assets/fa804a6b-7a15-4e85-bab2-45bf468d67c4">
-
----
-
-### ⚒ 사용 기술 스택
+## ⚒ 사용 기술 스택
 
 - Backend: Java 17, Spring Boot, JPA, Query DSL, MyBatis, RabbitMQ, JWT, Swagger
 - Frontend: React
@@ -81,13 +116,13 @@
 
 ---
 
-### 🪃 아키텍처
+## 🪃 아키텍처
 
 <img width="850" height="600" alt="image" src="https://github.com/user-attachments/assets/0089951e-98b2-4970-bdde-c653626484b5">
 
 ---
 
-### 🚴 주요 기능 동작 흐름 및 검증
+## 🚴 주요 기능 동작 흐름 및 검증
 
 </br>
 
@@ -119,7 +154,7 @@
 
 ---
 
-### 🚀 구매자 관련 기능 구현 화면
+## 🚀 구매자 관련 기능 구현 화면
 
 </br>
 
@@ -133,7 +168,7 @@
 
 ---
 
-### 🌈 판매자 관련 기능 구현 화면
+## 🌈 판매자 관련 기능 구현 화면
 
 **이력서 판매 요청 작성, 나의 이력서 상태**
 
@@ -141,7 +176,7 @@
 
 ---
 
-### 🔥 어드민 관련 기능 구현 화면
+## 🔥 어드민 관련 기능 구현 화면
 
 
 **요청 온 이력서 전체 조회, 상세 조회**
@@ -150,7 +185,7 @@
 
 ---
 
-### 📓 프로젝트 회고
+## 📓 프로젝트 회고
 
 이번 프로젝트에서는 결제, 환불, 자동 구매 확정, 주문 상태 관리, 페이징 처리(Pagination Key)와 같은 로직을 간소화하여 구현했으며, 부하 테스트와 모니터링을 통해 성능 최적화를 경험했습니다. 또한, 약 150개의 유닛 테스트를 작성하고 검증하여 코드의 신뢰성을 높일 수 있었습니다.
 
