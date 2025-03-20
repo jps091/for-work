@@ -86,7 +86,7 @@
 3. Repository는 인터페이스로 설계 하여 서비스 계층과 결합도를 낮췄습니다.
 - 더 자세한 설명은 [4계층 프로젝트를 도입한 이유](https://github.com/jps091/for-work/wiki/%EB%8F%84%EB%A9%94%EC%9D%B8%EC%9D%84-%EB%8F%84%EC%9E%85%ED%95%9C-%EC%9D%B4%EC%9C%A0)를 확인 해주세요.
 
-<img width="850" height="600" alt="image" src="https://github.com/user-attachments/assets/15e4d5cf-1cf3-4c78-ae9b-ee64c46159b0" />
+<img width="900" height="600" alt="image" src="https://github.com/user-attachments/assets/723f78dc-6196-47ca-b287-988fa17120b5" />
 
 ---
 
