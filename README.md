@@ -30,7 +30,7 @@
 
 - [프로젝트 관련 포스팅](https://github.com/jps091/for-work/wiki)
 
-- [Github 칸반보드](https://github.com/users/jps091/projects/2/views/1)를 통한 코드 형상 관리
+- [Github 칸반보드](https://github.com/users/jps091/projects/2/views/1)를 통한 Git Flow 관리
 
   <img width="600" height="400" alt="image" src="https://github.com/user-attachments/assets/6022ee5f-290d-4ea6-8f98-91384e6d7aa2" />
 
@@ -84,7 +84,7 @@
 1. Presentation, Application, Domain, Persistence 4계층으로 프로젝트를 구성 하였습니다.
 2. Persistent Object와 Domain Object를 분리 하여 핵심 비지니스 로직은 Domain Object에 구현 하였습니다.
 3. Repository는 인터페이스로 설계 하여 서비스 계층과 결합도를 낮췄습니다.
-- 더 자세한 설명은 [4계층 프로젝트를 도입한 이유](https://github.com/jps091/for-work/wiki/%EB%8F%84%EB%A9%94%EC%9D%B8%EC%9D%84-%EB%8F%84%EC%9E%85%ED%95%9C-%EC%9D%B4%EC%9C%A0)를 확인 해주세요.
+- 더 자세한 설명은 [4계층 프로젝트를 도입한 이유](https://github.com/jps091/for-work/wiki/%EC%A7%80%EC%86%8D-%EC%84%B1%EC%9E%A5-%EA%B0%80%EB%8A%A5%ED%95%9C-%EC%BD%94%EB%93%9C-%EC%84%A4%EA%B3%84-%E2%80%90-4%E2%80%90Tier-Layer,-OOP&%EB%94%94%EC%9E%90%EC%9D%B8-%ED%8C%A8%ED%84%B4)를 확인 해주세요.
 
 <img width="900" height="600" alt="image" src="https://github.com/user-attachments/assets/723f78dc-6196-47ca-b287-988fa17120b5" />
 
