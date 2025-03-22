@@ -92,9 +92,12 @@
 
 ## 📝 API 명세서
 
-**[1. 스웨거 API 명세서 ver](http://search-info.n-e.kr:8080/swagger-ui/index.html?urls.primaryName=%EC%A0%84%EC%B2%B4%20%EC%82%AC%EC%9A%A9%EC%9E%90%EB%A5%BC%20%EC%9C%84%ED%95%9C%20For-work%20Service%20%EB%8F%84%EB%A9%94%EC%9D%B8%20API)**
+**[1. 스웨거 API 명세서 ver](http://43.201.73.11:8085/swagger-ui/index.html?urls.primaryName=%EC%A0%84%EC%B2%B4%20%EC%82%AC%EC%9A%A9%EC%9E%90%EB%A5%BC%20%EC%9C%84%ED%95%9C%20For-work%20Service%20%EB%8F%84%EB%A9%94%EC%9D%B8%20API#/OpenController/login)**
+
+- **@ApiResponses를 통해 예외 상황 Docs 코드를 하드코딩하지 않고, 커스텀 어노테이션과 리플렉션을 활용하여 명세서 효율적으로 작성했습니다.(Controller 코드량 최대 50% 감소)**
 
 <img width="700" height="400" alt="image" src="https://github.com/user-attachments/assets/22dc952f-6b34-4a74-8e73-34368cdf4fa3" /></br>
+<img width="700" height="400" alt="image" src="https://github.com/user-attachments/assets/c38577c9-ebe2-49e9-9f77-435fc126ea1f" />
 
 
 **[2. 노션 API 명세서 ver](https://cuboid-sunfish-749.notion.site/API-Notion-125bb83a1adf800ebb04e75115a0e3ac?pvs=4)**
