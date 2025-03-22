@@ -6,9 +6,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import project.forwork.api.common.annotation.ApiErrorCode;
 import project.forwork.api.common.annotation.Current;
 import project.forwork.api.common.api.Api;
 import project.forwork.api.common.domain.CurrentUser;
+import project.forwork.api.common.error.OrderErrorCode;
+import project.forwork.api.common.error.ResumeErrorCode;
 import project.forwork.api.domain.order.controller.model.*;
 import project.forwork.api.domain.order.service.OrderService;
 
@@ -24,6 +27,7 @@ public class OrderController {
 
     @Operation(summary = "주문 내역 전체 api",
             description = "사용자가 주문한 내역을 전부 조회 할 수 있습니다.")
+    @ApiErrorCode(domain = OrderErrorCode.class, errorCode = {"ORDER_NO_CONTENT"})
     @GetMapping
     public Api<List<OrderResponse>> findAll(
             @Parameter(hidden = true) @Current CurrentUser currentUser
@@ -34,6 +38,7 @@ public class OrderController {
 
     @Operation(summary = "주문 상세 api",
             description = "주문에 포함된 이력서 주문 내역을 전부 조회 할 수 있습니다.")
+    @ApiErrorCode(domain = OrderErrorCode.class, errorCode = {"ORDER_NO_CONTENT"})
     @GetMapping("/{orderId}")
     public Api<OrderDetailResponse> getOrderDetail(
             @Parameter(hidden = true) @Current CurrentUser currentUser,
@@ -45,6 +50,7 @@ public class OrderController {
 
     @Operation(summary = "즉시 구매 확정 api",
             description = "OrderId 에 해당 하는 주문 상태를 Confirm 으로 변경하고 구매 이력서 메일을 전송 합니다.")
+    @ApiErrorCode(domain = OrderErrorCode.class, errorCode = {"ORDER_NO_CONTENT", "ORDER_NOT_PERMISSION"})
     @PostMapping("/confirm/{orderId}")
     public Api<String> confirmOrderNow(
             @Parameter(hidden = true) @Current CurrentUser currentUser,

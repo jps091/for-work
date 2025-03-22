@@ -29,12 +29,10 @@ import project.forwork.api.domain.user.service.UserService;
 public class UserOpenApiController {
 
     private final UserService userService;
-    private final LoginService loginService;
-
     @Operation(summary = "회원 등록 API", description = "ID, 패스워드, 이름, 이메일 입력")
-    @PostMapping("/register")
-    @ResponseStatus(HttpStatus.CREATED)
     @ApiErrorCode(domain = UserErrorCode.class, errorCode = {"EMAIL_DUPLICATION"})
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping("/register")
     public Api<UserResponse> register(
             @Valid @RequestBody
             UserCreateRequest createRequest
@@ -43,6 +41,8 @@ public class UserOpenApiController {
         UserErrorCode emailNotFound = UserErrorCode.EMAIL_NOT_FOUND;
         return Api.CREATED(UserResponse.from(user));
     }
+
+    private final LoginService loginService;
 
     @Operation(summary = "이메일 인증코드 발송 API", description = "이메일 입력")
     @PostMapping("/code/send")
@@ -55,24 +55,8 @@ public class UserOpenApiController {
         return Api.OK("인증 코드 이메일 전송 완료");
     }
 
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "로그인 성공",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = Api.class))),
-            @ApiResponse(responseCode = "400", description = "잘못된 요청 또는 이메일 인증 실패",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = Api.class),
-                            examples = {
-                                    @ExampleObject(name = "BAD_REQUEST",
-                                            value = "{ \"result\": { \"resultCode\": 1402, \"resultMessage\": \"잘못된 요청.\", \"resultDescription\": \"잘못된 요청.\" }, \"body\": null }"),
-                                    @ExampleObject(name = "EMAIL_VERIFY_FAIL",
-                                            value = "{ \"result\": { \"resultCode\": 1406, \"resultMessage\": \"이메일 인증코드가 일치 하지 않습니다.\", \"resultDescription\": \"이메일 인증코드가 일치 하지 않습니다.\" }, \"body\": null }")
-                            })),
-            @ApiResponse(responseCode = "404", description = "사용자를 찾을 수 없음",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = Api.class)))
-    })
     @Operation(summary = "인증 코드 검증 API", description = "이메일, 받은 검증코드 입력")
+    @ApiErrorCode(domain = UserErrorCode.class, errorCode = {"EMAIL_VERIFY_FAIL"})
     @PostMapping("/code/verify")
     public Api<String> verifyEmail(
             @Valid @RequestBody
@@ -85,23 +69,24 @@ public class UserOpenApiController {
     @Operation(summary = "회원 로그인 API",
             description = "테스트용 관리자 : ID = admin@test.com / PW = admin1234@<br>" +
                     "테스트용 일반 회원 : ID = user@test.com / PW = for1234@")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "로그인 성공",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = Api.class))),
-            @ApiResponse(responseCode = "400", description = "잘못된 요청 또는 이메일 인증 실패",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = Api.class),
-                            examples = {
-                                    @ExampleObject(name = "BAD_REQUEST",
-                                            value = "{ \"result\": { \"resultCode\": 1402, \"resultMessage\": \"잘못된 요청.\", \"resultDescription\": \"잘못된 요청.\" }, \"body\": null }"),
-                                    @ExampleObject(name = "EMAIL_VERIFY_FAIL",
-                                            value = "{ \"result\": { \"resultCode\": 1406, \"resultMessage\": \"이메일 인증코드가 일치 하지 않습니다.\", \"resultDescription\": \"이메일 인증코드가 일치 하지 않습니다.\" }, \"body\": null }")
-                            })),
-            @ApiResponse(responseCode = "404", description = "사용자를 찾을 수 없음",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = Api.class)))
-    })
+//    @ApiResponses({
+//            @ApiResponse(responseCode = "200", description = "로그인 성공",
+//                    content = @Content(mediaType = "application/json",
+//                            schema = @Schema(implementation = Api.class))),
+//            @ApiResponse(responseCode = "400", description = "잘못된 요청 또는 이메일 인증 실패",
+//                    content = @Content(mediaType = "application/json",
+//                            schema = @Schema(implementation = Api.class),
+//                            examples = {
+//                                    @ExampleObject(name = "BAD_REQUEST",
+//                                            value = "{ \"result\": { \"resultCode\": 1402, \"resultMessage\": \"잘못된 요청.\", \"resultDescription\": \"잘못된 요청.\" }, \"body\": null }"),
+//                                    @ExampleObject(name = "EMAIL_VERIFY_FAIL",
+//                                            value = "{ \"result\": { \"resultCode\": 1406, \"resultMessage\": \"이메일 인증코드가 일치 하지 않습니다.\", \"resultDescription\": \"이메일 인증코드가 일치 하지 않습니다.\" }, \"body\": null }")
+//                            })),
+//            @ApiResponse(responseCode = "404", description = "사용자를 찾을 수 없음",
+//                    content = @Content(mediaType = "application/json",
+//                            schema = @Schema(implementation = Api.class)))
+//    })
+    @ApiErrorCode(domain = UserErrorCode.class, errorCode = {"EMAIL_NOT_FOUND", "DELETE_USER", "PASSWORD_NOT_MATCH"})
     @PostMapping("/login")
     public Api<LoginResponse> login(
             @Valid @RequestBody
@@ -113,6 +98,7 @@ public class UserOpenApiController {
     }
 
     @Operation(summary = "임시 비밀번호 발급 API", description = "계정의 이메일, 성함 입력")
+    @ApiErrorCode(domain = UserErrorCode.class, errorCode = {"USER_NOT_FOUND"})
     @PostMapping("/password/issue-temporary")
     public Api<String> initTemporaryPassword(
             @Valid @RequestBody PasswordInitRequest passwordInitRequest

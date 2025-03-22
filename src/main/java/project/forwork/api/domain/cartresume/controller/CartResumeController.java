@@ -6,9 +6,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import project.forwork.api.common.annotation.ApiErrorCode;
 import project.forwork.api.common.annotation.Current;
 import project.forwork.api.common.api.Api;
 import project.forwork.api.common.domain.CurrentUser;
+import project.forwork.api.common.error.CartResumeErrorCode;
+import project.forwork.api.common.error.OrderErrorCode;
 import project.forwork.api.domain.cartresume.controller.model.CartResumeDetailResponse;
 import project.forwork.api.domain.cartresume.controller.model.SelectCartResumeRequest;
 import project.forwork.api.domain.cartresume.service.CartResumeService;
@@ -23,6 +26,7 @@ public class CartResumeController {
     private final CartResumeService cartResumeService;
 
     @Operation(summary = "장바구니에 이력서 담기", description = "resumeId 이력서 담기")
+    @ApiErrorCode(domain = CartResumeErrorCode.class, errorCode = {"RESUME_EXISTS_CART"})
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public Api<String> register(

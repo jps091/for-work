@@ -6,8 +6,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import project.forwork.api.common.annotation.ApiErrorCode;
 import project.forwork.api.common.annotation.Current;
 import project.forwork.api.common.api.Api;
+import project.forwork.api.common.error.ResumeErrorCode;
 import project.forwork.api.domain.resume.controller.model.ResumeAdminDetailResponse;
 import project.forwork.api.domain.resume.controller.model.ResumeAdminResponse;
 import project.forwork.api.common.infrastructure.enums.PageStep;
@@ -30,6 +32,7 @@ public class ResumeAdminController {
     private final ResumeService resumeService;
 
     @Operation(summary = "요청 Resume 상세 조회 API", description = "요청 Resume 상세 조회 API")
+    @ApiErrorCode(domain = ResumeErrorCode.class, errorCode = {"ACCESS_NOT_PERMISSION"})
     @GetMapping("{resumeId}")
     public Api<ResumeAdminDetailResponse> retrieve(
             @Parameter(hidden = true) @Current CurrentUser currentUser,
@@ -50,6 +53,7 @@ public class ResumeAdminController {
                      limit 가져올 개수 기본 6개<br>
                      lastId : 이전, 다음 페이지 호출시 반드시 필요
                     """)
+    @ApiErrorCode(domain = ResumeErrorCode.class, errorCode = {"ACCESS_NOT_PERMISSION"})
     @GetMapping
     public Api<ResumePage> getFilteredPage(
             @RequestParam(required = false) PeriodCond periodCond,

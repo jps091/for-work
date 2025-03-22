@@ -135,12 +135,11 @@ public class SwaggerConfig {
                                 }
                         )
                         .collect(groupingBy(ExampleHolder::getCode));
-        log.info("generateErrorCodeResponseExample {}", statusWithExampleHolders);
+        // response 객체들을 responses 에 넣습니다.
         addExamplesToResponses(responses, statusWithExampleHolders);
     }
 
     private Example getSwaagerExample(ErrorCodeIfs errorCode){
-        //ApiException apiException = new ApiException((errorCode));
         Api<Object> errorResponse = Api.ERROR(errorCode);
         Example example = new Example();
         example.description(errorCode.getDescription());
