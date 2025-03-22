@@ -6,27 +6,28 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import project.forwork.api.common.controller.port.S3Service;
+import project.forwork.api.common.domain.CurrentUser;
 import project.forwork.api.common.error.ResumeErrorCode;
 import project.forwork.api.common.exception.ApiException;
+import project.forwork.api.common.infrastructure.enums.PageStep;
 import project.forwork.api.domain.cartresume.service.port.CartResumeRepository;
 import project.forwork.api.domain.resume.controller.model.*;
-import project.forwork.api.common.infrastructure.enums.PageStep;
 import project.forwork.api.domain.resume.infrastructure.enums.PeriodCond;
 import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
 import project.forwork.api.domain.resume.model.Resume;
 import project.forwork.api.domain.resume.service.port.ResumeRepository;
-import project.forwork.api.common.domain.CurrentUser;
 import project.forwork.api.domain.salespost.infrastructure.enums.SalesStatus;
 import project.forwork.api.domain.salespost.service.port.SalesPostRepository;
 import project.forwork.api.domain.user.model.User;
 import project.forwork.api.domain.user.service.port.UserRepository;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
 @Builder
 @RequiredArgsConstructor
-public class ResumeService {
+public class ResumeService2 {
 
     private final ResumeRepository resumeRepository;
     private final ResumePageService resumePageService;
@@ -40,7 +41,19 @@ public class ResumeService {
         User user = userRepository.getByIdWithThrow(currentUser.getId());
         String descriptionUrl = s3Service.saveFile(file);
 
-        Resume resume = Resume.from(user, body, descriptionUrl);
+        validatePriceWithThrow(body.getPrice());
+        Resume resume = Resume.builder()
+                .seller(user)
+                .field(body.getField())
+                .level(body.getLevel())
+                .resumeUrl(body.getResumeUrl())
+                .descriptionImageUrl(descriptionUrl)
+                .salesQuantity(0)
+                .price(body.getPrice())
+                .description(body.getDescription())
+                .status(ResumeStatus.PENDING)
+                .build();
+
         resume =  resumeRepository.save(resume);
         return resume;
     }
@@ -50,7 +63,18 @@ public class ResumeService {
         User user = userRepository.getByIdWithThrow(currentUser.getId());
         String presignedUrl = s3Service.generatePresignedUrl(fileName);
 
-        Resume resume = Resume.from(user, body);
+        validatePriceWithThrow(body.getPrice());
+        Resume resume = Resume.builder()
+                .seller(user)
+                .field(body.getField())
+                .level(body.getLevel())
+                .resumeUrl(body.getResumeUrl())
+                .salesQuantity(0)
+                .price(body.getPrice())
+                .description(body.getDescription())
+                .status(ResumeStatus.PENDING)
+                .build();
+
         Resume saved = resumeRepository.save(resume);
         return new ResumeRegisterResponse(saved.getId(), presignedUrl);
     }
@@ -58,7 +82,9 @@ public class ResumeService {
     @Transactional
     public void resumeCallback(String filePath, Long resumeId){
         Resume resume = resumeRepository.getByIdWithThrow(resumeId);
-        resume = resume.callbackDescriptionImageUrl(filePath);
+        resume = Resume.builder()
+                .descriptionImageUrl(filePath)
+                .build();
         resumeRepository.save(resume);
     }
 
@@ -75,7 +101,19 @@ public class ResumeService {
             descriptionUrl = s3Service.saveFile(file);
         }
 
-        resume = resume.modify(body, descriptionUrl);
+        validatePriceWithThrow(body.getPrice());
+        if(descriptionUrl == null){
+            descriptionUrl = resume.getDescriptionImageUrl();
+        }
+        resume = Resume.builder()
+                .field(body.getField())
+                .level(body.getLevel())
+                .resumeUrl(body.getResumeUrl())
+                .price(body.getPrice())
+                .description(body.getDescription())
+                .status(ResumeStatus.PENDING)
+                .build();
+
         resumeRepository.save(resume);
 
 
@@ -85,13 +123,16 @@ public class ResumeService {
             salesPostRepository.save(salesPost);
         });
     }
+
     @Transactional
     public void delete(Long resumeId, CurrentUser currentUser) {
         Resume resume = resumeRepository.getByIdWithThrow(resumeId);
         validateAuthor(currentUser, resume);
 
         s3Service.deleteFile(resume.getDescriptionImageUrl());
-        resume = resume.delete();
+        resume = Resume.builder()
+                .status(ResumeStatus.DELETE)
+                .build();
         resumeRepository.save(resume);
 
         salesPostRepository.deleteByResumeId(resumeId);
@@ -152,13 +193,20 @@ public class ResumeService {
         };
     }
 
-    private static void validateAuthor(CurrentUser currentUser, Resume resume) {
+    private void validatePriceWithThrow(BigDecimal price) {
+        if(price.compareTo(new BigDecimal("100000")) > 0 ||
+                price.compareTo(new BigDecimal("10000")) < 0){
+            throw new ApiException(ResumeErrorCode.PRICE_NOT_VALID);
+        }
+    }
+
+    private void validateAuthor(CurrentUser currentUser, Resume resume) {
         if(resume.isAuthorMismatch(currentUser.getId())){
             throw new ApiException(ResumeErrorCode.ACCESS_NOT_PERMISSION);
         }
     }
 
-    private static void validateAuthorOrAdmin(CurrentUser currentUser, Resume resume) {
+    private void validateAuthorOrAdmin(CurrentUser currentUser, Resume resume) {
         if(currentUser.isAdminMismatch() && resume.isAuthorMismatch(currentUser.getId())){
             throw new ApiException(ResumeErrorCode.ACCESS_NOT_PERMISSION);
         }
