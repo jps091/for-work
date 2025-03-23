@@ -4,7 +4,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import project.forwork.api.common.annotation.ApiErrorCode;
 import project.forwork.api.common.api.Api;
+import project.forwork.api.common.error.SalesPostErrorCode;
+import project.forwork.api.common.error.TokenErrorCode;
 import project.forwork.api.domain.salespost.controller.model.SalesPostDetailResponse;
 import project.forwork.api.domain.salespost.controller.model.SalesPostPage;
 import project.forwork.api.domain.salespost.infrastructure.enums.FieldCond;
@@ -26,6 +29,7 @@ public class SalesPostOpenController {
     private final SalesPostService salesPostService;
 
     @Operation(summary = "단건 sale-post 조회 API", description = "이력서 ID로 판매글 조회 (이력서 판매글은 서로 1대1 매핑)")
+    @ApiErrorCode(domain = SalesPostErrorCode.class, errorCode = {"NOT_SELLING"})
     @GetMapping("/{resumeId}")
     public Api<SalesPostDetailResponse> retrieve(
             @PathVariable Long resumeId

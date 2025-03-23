@@ -10,8 +10,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import project.forwork.api.common.annotation.ApiErrorCode;
 import project.forwork.api.common.annotation.Current;
 import project.forwork.api.common.api.Api;
+import project.forwork.api.common.error.ResumeErrorCode;
 import project.forwork.api.domain.resume.controller.model.*;
 import project.forwork.api.domain.resume.model.Resume;
 import project.forwork.api.domain.resume.service.ResumeService;
@@ -54,7 +56,6 @@ public class ResumeController {
     @Operation(summary = "Resume 업로드 Callback", description = "Resume 업로드 완료 후 호출")
     @PostMapping(value = "/register/callback")
     public Api<String> registerCallback(
-            @Parameter(hidden = true) @Current CurrentUser currentUser,
             @RequestParam("filePath") String filePath,
             @RequestParam("resumeId") Long resumeId
     ){
@@ -64,6 +65,7 @@ public class ResumeController {
 
 
     @Operation(summary = "Resume 삭제 API", description = "ResumeId 입력")
+    @ApiErrorCode(domain = ResumeErrorCode.class, errorCode = {"ACCESS_NOT_PERMISSION"})
     @DeleteMapping("/{resumeId}")
     public Api<String> delete(
             @Parameter(description = "삭제할 Resume ID", required = true, example = "1")
@@ -76,6 +78,7 @@ public class ResumeController {
 
     @Operation(summary = "Resume 수정 API",
             description = "Resume 수정시 상태가 PENDING 으로 변경 / 만약 판매글도 존재 할시 판매글 상태 CANCEL 으로 변경")
+    @ApiErrorCode(domain = ResumeErrorCode.class, errorCode = {"ACCESS_NOT_PERMISSION", "PRICE_NOT_VALID"})
     @PutMapping(value = "/{resumeId}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public Api<String> modifyIfPending(
             @Parameter(description = "수정할 Resume ID", required = true, example = "1")

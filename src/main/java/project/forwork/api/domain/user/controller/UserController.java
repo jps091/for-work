@@ -9,9 +9,12 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import project.forwork.api.common.annotation.ApiErrorCode;
 import project.forwork.api.common.annotation.Current;
 import project.forwork.api.common.api.Api;
 import project.forwork.api.common.domain.CurrentUser;
+import project.forwork.api.common.error.ErrorCode;
+import project.forwork.api.common.error.UserErrorCode;
 import project.forwork.api.domain.user.controller.model.InquiryRequest;
 import project.forwork.api.domain.user.controller.model.PasswordModifyRequest;
 import project.forwork.api.domain.user.controller.model.PasswordVerifyRequest;
@@ -31,6 +34,7 @@ public class UserController {
     private final LoginService loginService;
 
     @Operation(summary = "My Page API", description = "현재 나의 정보 출력")
+    @ApiErrorCode(domain = UserErrorCode.class, errorCode = {"USER_NOT_FOUND"})
     @GetMapping("/me")
     public Api<UserResponse> me(
             @Parameter(hidden = true) @Current CurrentUser currentUser
@@ -49,6 +53,7 @@ public class UserController {
     }
 
     @Operation(summary = "회원 비밀번호 검증 API", description = "비밀번호 입력")
+    @ApiErrorCode(domain = UserErrorCode.class, errorCode = {"USER_NOT_FOUND", "PASSWORD_NOT_MATCH"})
     @PostMapping("/verify-password")
     public Api<String> verifyPassword(
             @Parameter(hidden = true) @Current CurrentUser currentUser,
@@ -79,6 +84,7 @@ public class UserController {
     }
 
     @Operation(summary = "관리자에게 이메일 보내는 API", description = "제목, 내용, 문의 종류 필요")
+    @ApiErrorCode(domain = ErrorCode.class, errorCode = {"SERVER_ERROR"})
     @PostMapping("/inquiry")
     public Api<String> inquire(
             @Parameter(hidden = true) @Current CurrentUser currentUser,

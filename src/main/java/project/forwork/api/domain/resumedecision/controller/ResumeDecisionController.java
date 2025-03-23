@@ -6,8 +6,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import project.forwork.api.common.annotation.ApiErrorCode;
 import project.forwork.api.common.annotation.Current;
 import project.forwork.api.common.api.Api;
+import project.forwork.api.common.error.ResumeErrorCode;
+import project.forwork.api.common.error.SalesPostErrorCode;
 import project.forwork.api.domain.resumedecision.service.ResumeDecisionService;
 import project.forwork.api.common.domain.CurrentUser;
 
@@ -22,6 +25,7 @@ public class ResumeDecisionController {
     private final ResumeDecisionService resumeDecisionService;
 
     @Operation(summary = "이력서 판매 요청 승인 API", description = "이력서 판매 요청 승인 API")
+    @ApiErrorCode(domain = ResumeErrorCode.class, errorCode = {"ACCESS_NOT_PERMISSION"})
     @PostMapping("/{resumeId}/approve")
     public Api<String> approve(
             @Parameter(hidden = true) @Current CurrentUser currentUser,
@@ -32,6 +36,7 @@ public class ResumeDecisionController {
     }
 
     @Operation(summary = "이력서 판매 요청 거부 API", description = "이력서 판매 요청 거부 API")
+    @ApiErrorCode(domain = ResumeErrorCode.class, errorCode = {"ACCESS_NOT_PERMISSION"})
     @PostMapping("/{resumeId}/deny")
     public Api<String> deny(
             @Parameter(hidden = true) @Current CurrentUser currentUser,

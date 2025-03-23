@@ -8,7 +8,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import project.forwork.api.common.annotation.ApiErrorCode;
 import project.forwork.api.common.api.Api;
+import project.forwork.api.common.error.TokenErrorCode;
+import project.forwork.api.common.error.UserErrorCode;
 import project.forwork.api.domain.token.service.TokenHeaderService;
 
 @RestController
@@ -20,6 +23,7 @@ public class TokenAuthController {
     private final TokenHeaderService tokenHeaderService;
 
     @Operation(summary = "Access Token 재발급 API", description = "Refresh Token을 이용해 새로운 Access Token을 발급")
+    @ApiErrorCode(domain = TokenErrorCode.class, errorCode = {"TOKEN_NOT_FOUND", "INVALID_TOKEN", "EXPIRED_TOKEN"})
     @PostMapping("/reissue")
     public Api<String> reissueAccessToken(
             HttpServletRequest request,
