@@ -121,7 +121,7 @@
 
 ## 🪃 아키텍처
 
-<img width="850" height="600" alt="image" src="https://github.com/user-attachments/assets/91444a8d-abed-4a1d-b06a-4e1493464b7d" />
+<img width="850" height="600" alt="image" src="https://github.com/user-attachments/assets/361fe76b-7850-4ec9-9f62-7686a93f579b" />
 
 ---
 
