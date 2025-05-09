@@ -111,7 +111,7 @@
 - Backend: Java 17, Spring Boot, JPA, Query DSL, MyBatis, RabbitMQ, JWT, Swagger
 - Frontend: React
 - Test: JUnit5, Spock
-- Database: MySQL, Redis, Caffeine
+- Database: MySQL, Caffeine
 - Load Test & Monitoring: JMeter, PostMan, Scouter
 - Infra: EC2, S3, CDN, RDS, ElastiCache, SES
 - Containerization: Docker
@@ -121,7 +121,7 @@
 
 ## 🪃 아키텍처
 
-<img width="850" height="600" alt="image" src="https://github.com/user-attachments/assets/e39733fa-df98-42d4-9cd0-0a84233529df" />
+<img width="850" height="600" alt="image" src="https://github.com/user-attachments/assets/b6732f37-2a77-4b5c-99c2-7fb0319f6456" />
 
 ---
 
