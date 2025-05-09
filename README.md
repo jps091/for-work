@@ -113,9 +113,9 @@
 - Test: JUnit5, Spock
 - Database: MySQL, Caffeine
 - Load Test & Monitoring: JMeter, PostMan, Scouter
-- Infra: EC2, S3, CDN, RDS, ElastiCache, SES
+- Infra: EC2, S3, Cloud Front, RDS
 - Containerization: Docker
-- CI/CD: Github Actions, ECR, CodeDeploy
+- CI/CD: Github Actions
 
 ---
 
