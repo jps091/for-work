@@ -67,17 +67,6 @@ public class UserTransactionScriptService {
     }
 
     @Transactional
-    public void updatePassword(
-            CurrentUser currentUser, PasswordModifyRequest body
-    ){
-        User user = userRepository.getByIdWithThrow(currentUser.getId());
-        user = User.builder()
-                .password(body.getPassword())
-                .build();
-        userRepository.save(user);
-    }
-
-    @Transactional
     public void delete(
             @Current CurrentUser currentUser,
             HttpServletResponse response
@@ -95,52 +84,14 @@ public class UserTransactionScriptService {
         userRepository.save(user);
     }
 
-    public void verifyPassword(CurrentUser currentUser, PasswordVerifyRequest body){
-        User user = userRepository.getByIdWithThrow(currentUser.getId());
-        if(user.getPassword() != body.getPassword()){
-            throw new ApiException(UserErrorCode.PASSWORD_NOT_MATCH);
-        }
-    }
-
     @Transactional(readOnly = true)
     public User getByIdWithThrow(long id){
         return userRepository.findById(id)
                 .orElseThrow(() -> new ApiException(UserErrorCode.USER_NOT_FOUND, id));
     }
 
-    public void produceVerifyEmail(String email){
-        producer.sendAutCodeMail(email);
-    }
-
-    public void verifyEmail(EmailVerifyRequest body){
-        String targetCode = redisUtils.getData(getKeyByEmail(body.getEmail()));
-
-        if(isCodeMismatch(body.getCode(), targetCode)){
-            throw new ApiException(UserErrorCode.EMAIL_VERIFY_FAIL);
-        }
-
-        deleteCertificationCode(body.getEmail());
-    }
-
-    public void produceInquiryEmail(CurrentUser currentUser, InquiryRequest body){
-        AdminInquiryMessage message = AdminInquiryMessage.from(currentUser.getEmail(), body);
-        producer.sendAdminInquiry(message);
-    }
-
-    private String getKeyByEmail(String email) {
-        return redisUtils.createKeyForm(EMAIL_PREFIX, email);
-    }
-
-    private static boolean isCodeMismatch(String sourceCode, String targetCode) {
-        return !Objects.equals(sourceCode, targetCode);
-    }
-
     private void produceNoticeMessage(User user) {
         NoticeMessage message = NoticeMessage.from(user.getEmail());
         producer.sendNotice(message);
-    }
-
-    private void deleteCertificationCode(String email) {
-        redisUtils.deleteData(getKeyByEmail(email));
     }
 }
