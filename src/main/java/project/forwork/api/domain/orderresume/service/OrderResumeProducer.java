@@ -53,15 +53,5 @@ public class OrderResumeProducer {
     private static String createContent(OrderResumePurchaseInfo info) {
         return "주문 번호 #" + info.getOrderId() + " <URL> : " + info.getResumeUrl();
     }
-
-    @Async("emailTaskExecutor")
-    public void sendLogTest(String message) {
-        try {
-            Thread.sleep(1); // (1 ms) 각 작업에 소요시간을 Thread.sleep(1)로 대체
-            log.info("message : {}", message);
-        }catch (Exception e) {
-            log.error("[Error] : {} ",e.getMessage());
-        }
-    }
 }
 
