@@ -5,12 +5,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import project.forwork.api.domain.order.infrastructure.enums.OrderStatus;
-import project.forwork.api.domain.order.model.Order;
 import project.forwork.api.domain.order.model.Orders;
-import project.forwork.api.domain.order.service.port.OrderRepository;
+import project.forwork.api.domain.order.service.port.OrderCommandPort;
+import project.forwork.api.domain.order.service.port.OrderQueryPort;
 import project.forwork.api.domain.orderresume.service.OrderResumeService;
 
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -18,7 +17,8 @@ import java.util.List;
 public class ResumeAutoConfirmService {
 
     private final OrderResumeService orderResumeService;
-    private final OrderRepository orderRepository;
+    private final OrderQueryPort orderQueryPort;
+    private final OrderCommandPort orderCommandPort;
 
     @Scheduled(cron = "0 0,30 * * * *")
     public void markAsWaiting(){
@@ -44,7 +44,7 @@ public class ResumeAutoConfirmService {
     public void updatedOrderStatus(OrderStatus oldStatus, OrderStatus updatedStatus) {
         int limit = 10;
         while (true) {
-            Orders orders = orderRepository.findByStatus(oldStatus, limit);
+            Orders orders = orderQueryPort.findByStatus(oldStatus, limit);
 
             // 더 이상 처리할 주문이 없으면 반복 종료
             if (orders.isEmpty()) {
@@ -52,7 +52,7 @@ public class ResumeAutoConfirmService {
             }
 
             orders = orders.updateStatus(updatedStatus);
-            Orders updatedOrders = orderRepository.saveAll(orders);
+            Orders updatedOrders = orderCommandPort.updateAll(orders);
             sendMailByOrderConfirm(updatedOrders, updatedStatus);
         }
     }

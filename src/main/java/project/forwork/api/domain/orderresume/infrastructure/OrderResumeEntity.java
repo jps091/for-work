@@ -9,9 +9,8 @@ import project.forwork.api.domain.order.infrastructure.OrderEntity;
 import project.forwork.api.domain.order.model.Order;
 import project.forwork.api.domain.orderresume.infrastructure.enums.OrderResumeStatus;
 import project.forwork.api.domain.orderresume.model.OrderResume;
-import project.forwork.api.domain.resume.infrastructure.ResumeEntity;
+import project.forwork.api.domain.user.infrastructure.UserEntity;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -30,9 +29,8 @@ public class OrderResumeEntity extends BaseTimeEntity {
     @JoinColumn(name = "order_id") @NotNull
     private OrderEntity orderEntity;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "resume_id") @NotNull
-    private ResumeEntity resumeEntity;
+    @Column(name = "resume_id")
+    private Long resumeId;
 
     @Enumerated(EnumType.STRING)
     @NotNull
@@ -44,22 +42,11 @@ public class OrderResumeEntity extends BaseTimeEntity {
     @Column(name = "canceled_at", columnDefinition = "TIMESTAMP")
     private LocalDateTime canceledAt;
 
-    public static OrderResumeEntity from(OrderResume orderResume){
-        OrderResumeEntity orderResumeEntity = new OrderResumeEntity();
-        orderResumeEntity.id = orderResume.getId();
-        orderResumeEntity.orderEntity = OrderEntity.from(orderResume.getOrder());
-        orderResumeEntity.resumeEntity = ResumeEntity.from(orderResume.getResume());
-        orderResumeEntity.status = orderResume.getStatus();
-        orderResumeEntity.sentAt = orderResume.getSentAt();
-        orderResumeEntity.canceledAt = orderResume.getCanceledAt();
-        return orderResumeEntity;
-    }
-
-    public static OrderResumeEntity from2(Order order, OrderResume orderResume){
+    public static OrderResumeEntity from(OrderResume orderResume, Order order){
         OrderResumeEntity orderResumeEntity = new OrderResumeEntity();
         orderResumeEntity.id = orderResume.getId();
         orderResumeEntity.orderEntity = OrderEntity.from(order);
-        orderResumeEntity.resumeEntity = ResumeEntity.from(orderResume.getResume());
+        orderResumeEntity.resumeId = orderResume.getResumeId();
         orderResumeEntity.status = orderResume.getStatus();
         orderResumeEntity.sentAt = orderResume.getSentAt();
         orderResumeEntity.canceledAt = orderResume.getCanceledAt();
@@ -69,8 +56,8 @@ public class OrderResumeEntity extends BaseTimeEntity {
     public OrderResume toModel(){
         return OrderResume.builder()
                 .id(id)
-                .order(orderEntity.toModel())
-                .resume(resumeEntity.toModel())
+                .orderId(orderEntity.getId())
+                .resumeId(resumeId)
                 .status(status)
                 .sentAt(sentAt)
                 .canceledAt(canceledAt)

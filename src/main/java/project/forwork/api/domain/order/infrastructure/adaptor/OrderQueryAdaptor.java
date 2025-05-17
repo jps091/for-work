@@ -13,7 +13,6 @@ import project.forwork.api.domain.order.infrastructure.enums.OrderStatus;
 import project.forwork.api.domain.order.model.Order;
 import project.forwork.api.domain.order.model.Orders;
 import project.forwork.api.domain.order.service.port.OrderQueryPort;
-import project.forwork.api.domain.order.service.port.OrderRepository;
 import project.forwork.api.domain.orderresume.infrastructure.OrderResumeEntity;
 import project.forwork.api.domain.orderresume.infrastructure.OrderResumeJpaRepository;
 import project.forwork.api.domain.orderresume.infrastructure.enums.OrderResumeStatus;
@@ -45,7 +44,7 @@ public class OrderQueryAdaptor implements OrderQueryPort {
 
     @Override
     public Orders findByUserId(Long userId) {
-        List<Order> orders = orderJpaRepository.findByUserEntity_IdOrderByIdDesc(userId).stream().map(OrderEntity::toModel).toList();
+        List<Order> orders = orderJpaRepository.findByUserIdOrderByIdDesc(userId).stream().map(OrderEntity::toModel).toList();
         return Orders.of(orders);
     }
 

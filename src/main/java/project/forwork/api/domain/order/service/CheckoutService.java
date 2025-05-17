@@ -110,7 +110,7 @@ public class CheckoutService {
         orderService.validRequestId(body.getRequestId());
     }
 
-    private static PaymentFullCancelDto createCancelBody() {
+    private PaymentFullCancelDto createCancelBody() {
         return PaymentFullCancelDto.builder()
                 .cancelReason("주문 전체 취소")
                 .build();
