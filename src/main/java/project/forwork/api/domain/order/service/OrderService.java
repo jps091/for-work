@@ -51,6 +51,16 @@ public class OrderService {
         return order;
     }
 
+    public Order create2(CurrentUser currentUser, ConfirmPaymentRequest body){
+        User user = userRepository.getByIdWithThrow(currentUser.getId());
+
+        Order order = Order.create(user, body.getRequestId(), body.getAmount(), clockHolder);
+        List<Resume> resumes = resumeRepository.findByIds(body.getResumeIds());
+
+        orderResumeService.createByResumes(order, resumes);
+        return order;
+    }
+
     public void orderConfirmNow(CurrentUser currentUser, Long orderId, ConfirmOrderRequest body){
         Order order = orderRepository.getByIdWithThrow(orderId);
         order.validBuyer(currentUser);

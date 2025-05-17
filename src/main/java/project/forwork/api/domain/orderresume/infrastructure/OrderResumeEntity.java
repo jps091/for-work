@@ -6,6 +6,7 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 import project.forwork.api.common.infrastructure.BaseTimeEntity;
 import project.forwork.api.domain.order.infrastructure.OrderEntity;
+import project.forwork.api.domain.order.model.Order;
 import project.forwork.api.domain.orderresume.infrastructure.enums.OrderResumeStatus;
 import project.forwork.api.domain.orderresume.model.OrderResume;
 import project.forwork.api.domain.resume.infrastructure.ResumeEntity;
@@ -47,6 +48,17 @@ public class OrderResumeEntity extends BaseTimeEntity {
         OrderResumeEntity orderResumeEntity = new OrderResumeEntity();
         orderResumeEntity.id = orderResume.getId();
         orderResumeEntity.orderEntity = OrderEntity.from(orderResume.getOrder());
+        orderResumeEntity.resumeEntity = ResumeEntity.from(orderResume.getResume());
+        orderResumeEntity.status = orderResume.getStatus();
+        orderResumeEntity.sentAt = orderResume.getSentAt();
+        orderResumeEntity.canceledAt = orderResume.getCanceledAt();
+        return orderResumeEntity;
+    }
+
+    public static OrderResumeEntity from2(Order order, OrderResume orderResume){
+        OrderResumeEntity orderResumeEntity = new OrderResumeEntity();
+        orderResumeEntity.id = orderResume.getId();
+        orderResumeEntity.orderEntity = OrderEntity.from(order);
         orderResumeEntity.resumeEntity = ResumeEntity.from(orderResume.getResume());
         orderResumeEntity.status = orderResume.getStatus();
         orderResumeEntity.sentAt = orderResume.getSentAt();
