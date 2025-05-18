@@ -1,34 +1,58 @@
-package project.forwork.api.domain.orderresume.infrastructure;
+package project.forwork.api.domain.order.infrastructure.adaptor;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Limit;
 import org.springframework.stereotype.Repository;
+import project.forwork.api.common.error.OrderErrorCode;
 import project.forwork.api.common.error.OrderResumeErrorCode;
 import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.domain.order.infrastructure.OrderEntity;
+import project.forwork.api.domain.order.infrastructure.OrderJpaRepository;
+import project.forwork.api.domain.order.infrastructure.enums.OrderStatus;
 import project.forwork.api.domain.order.model.Order;
 import project.forwork.api.domain.order.model.Orders;
+import project.forwork.api.domain.order.service.port.OrderQueryPort;
+import project.forwork.api.domain.orderresume.infrastructure.OrderResumeEntity;
+import project.forwork.api.domain.orderresume.infrastructure.OrderResumeJpaRepository;
 import project.forwork.api.domain.orderresume.infrastructure.enums.OrderResumeStatus;
 import project.forwork.api.domain.orderresume.model.OrderResume;
-import project.forwork.api.domain.orderresume.service.port.OrderResumeRepository;
 
 import java.util.List;
 import java.util.Optional;
 
 @Repository
+@Slf4j
 @RequiredArgsConstructor
-public class OrderResumeRepositoryImpl implements OrderResumeRepository {
+public class OrderQueryAdaptor implements OrderQueryPort {
 
+    private final OrderJpaRepository orderJpaRepository;
     private final OrderResumeJpaRepository orderResumeJpaRepository;
 
     @Override
-    public OrderResume save(OrderResume orderResume) {
-        return orderResumeJpaRepository.save(OrderResumeEntity.from(orderResume)).toModel();
+    public Order getByIdWithThrow(Long orderId) {
+        return orderJpaRepository.findById(orderId)
+                .map(OrderEntity::toModel)
+                .orElseThrow(() -> new ApiException(OrderErrorCode.ORDER_NOT_FOUND, orderId));
     }
 
     @Override
-    public List<OrderResume> saveAll(List<OrderResume> orderResumes) {
-        List<OrderResumeEntity> orderEntities = orderResumes.stream().map(OrderResumeEntity::from).toList();
-        return orderResumeJpaRepository.saveAll(orderEntities).stream().map(OrderResumeEntity::toModel).toList();
+    public Optional<Order> findByRequestId(String requestId) {
+        return orderJpaRepository.findByRequestId(requestId).map(OrderEntity::toModel);
+
+    }
+
+    @Override
+    public Orders findByUserId(Long userId) {
+        List<Order> orders = orderJpaRepository.findByUserIdOrderByIdDesc(userId).stream().map(OrderEntity::toModel).toList();
+        return Orders.of(orders);
+    }
+
+    @Override
+    public Orders findByStatus(OrderStatus status, int limit) {
+        List<Order> orders = orderJpaRepository.findByStatus(status, Limit.of(limit))
+                .stream().map(OrderEntity::toModel).toList();
+        return Orders.of(orders);
     }
 
     @Override
@@ -40,12 +64,10 @@ public class OrderResumeRepositoryImpl implements OrderResumeRepository {
 
     @Override
     public OrderResume getByIdWithThrow(long orderResumeId) {
-        return findById(orderResumeId).orElseThrow(() -> new ApiException(OrderResumeErrorCode.NOT_FOUND, orderResumeId));
-    }
-
-    @Override
-    public Optional<OrderResume> findById(long orderResumeId) {
-        return orderResumeJpaRepository.findById(orderResumeId).map(OrderResumeEntity::toModel);
+        return orderResumeJpaRepository
+                .findById(orderResumeId)
+                .map(OrderResumeEntity::toModel)
+                .orElseThrow(() -> new ApiException(OrderResumeErrorCode.NOT_FOUND, orderResumeId));
     }
 
     @Override

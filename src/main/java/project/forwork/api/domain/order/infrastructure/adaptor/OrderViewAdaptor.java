@@ -1,4 +1,4 @@
-package project.forwork.api.domain.orderresume.infrastructure;
+package project.forwork.api.domain.order.infrastructure.adaptor;
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.Expressions;
@@ -6,33 +6,41 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import project.forwork.api.domain.order.infrastructure.QOrderEntity;
+import project.forwork.api.domain.order.service.port.OrderViewPort;
+import project.forwork.api.domain.orderresume.controller.model.OrderResumePurchaseInfo;
 import project.forwork.api.domain.orderresume.controller.model.OrderResumeResponse;
 import project.forwork.api.domain.orderresume.controller.model.OrderTitleResponse;
-import project.forwork.api.domain.orderresume.controller.model.OrderResumePurchaseInfo;
+import project.forwork.api.domain.orderresume.infrastructure.QOrderResumeEntity;
 import project.forwork.api.domain.orderresume.model.OrderResume;
-import project.forwork.api.domain.orderresume.service.port.OrderResumeRepositoryCustom;
+import project.forwork.api.domain.resume.infrastructure.QResumeEntity;
 import project.forwork.api.domain.user.infrastructure.QUserEntity;
 
 import java.util.List;
 
-import static project.forwork.api.domain.order.infrastructure.QOrderEntity.*;
-import static project.forwork.api.domain.orderresume.infrastructure.QOrderResumeEntity.*;
-import static project.forwork.api.domain.resume.infrastructure.QResumeEntity.resumeEntity;
-import static project.forwork.api.domain.user.infrastructure.QUserEntity.userEntity;
+import static project.forwork.api.domain.order.infrastructure.QOrderEntity.orderEntity;
+import static project.forwork.api.domain.orderresume.infrastructure.QOrderResumeEntity.orderResumeEntity;
 
 @Repository
-public class OrderResumeRepositoryCustomImpl implements OrderResumeRepositoryCustom {
+public class OrderViewAdaptor implements OrderViewPort {
 
     private final JPAQueryFactory queryFactory;
     @Autowired
-    public OrderResumeRepositoryCustomImpl(EntityManager em) {
+    public OrderViewAdaptor(EntityManager em) {
         this.queryFactory = new JPAQueryFactory(em);
     }
 
     @Override
     public List<OrderResumePurchaseInfo> findAllPurchaseResume(List<OrderResume> orderResumes) {
-        List<Long> orderResumeIds = orderResumes.stream().map(OrderResume::getId).toList();
+        List<Long> orderResumeIds = orderResumes.stream()
+                .map(OrderResume::getId)
+                .toList();
+
+        QOrderEntity orderEntity = QOrderEntity.orderEntity;
+        QUserEntity userEntity = QUserEntity.userEntity;
         QUserEntity sellerUser = new QUserEntity("sellerUser");
+        QOrderResumeEntity orderResumeEntity = QOrderResumeEntity.orderResumeEntity;
+        QResumeEntity resumeEntity = QResumeEntity.resumeEntity;
 
         return queryFactory
                 .select(Projections.fields(OrderResumePurchaseInfo.class,
@@ -43,11 +51,11 @@ public class OrderResumeRepositoryCustomImpl implements OrderResumeRepositoryCus
                         resumeEntity.fieldType.as("field"),
                         resumeEntity.levelType.as("level"),
                         sellerUser.email.as("sellerEmail")
-                        ))
+                ))
                 .from(orderResumeEntity)
                 .join(orderResumeEntity.orderEntity, orderEntity)
-                .join(orderResumeEntity.resumeEntity, resumeEntity)
-                .join(orderEntity.userEntity, userEntity)
+                .join(resumeEntity).on(orderResumeEntity.resumeId.eq(resumeEntity.id))
+                .join(userEntity).on(orderEntity.userId.eq(userEntity.id))
                 .join(resumeEntity.sellerEntity, sellerUser)
                 .where(orderResumeEntity.id.in(orderResumeIds))
                 .fetch();
@@ -55,6 +63,7 @@ public class OrderResumeRepositoryCustomImpl implements OrderResumeRepositoryCus
 
     @Override
     public List<OrderTitleResponse> findOrderTitleByOrderId(Long orderId) {
+        QResumeEntity resumeEntity = QResumeEntity.resumeEntity;
         return queryFactory
                 .select(Projections.fields(OrderTitleResponse.class,
                         Expressions.stringTemplate(
@@ -66,13 +75,15 @@ public class OrderResumeRepositoryCustomImpl implements OrderResumeRepositoryCus
                 ))
                 .from(orderResumeEntity)
                 .join(orderResumeEntity.orderEntity, orderEntity)
-                .join(orderResumeEntity.resumeEntity, resumeEntity)
+                //.join(orderResumeEntity.resumeEntity, resumeEntity)
+                .join(resumeEntity).on(orderResumeEntity.resumeId.eq(resumeEntity.id))
                 .where(orderEntity.id.eq(orderId))
                 .fetch();
     }
 
     @Override
     public List<OrderResumeResponse> findByOrderId(Long orderId){
+        QResumeEntity resumeEntity = QResumeEntity.resumeEntity;
         return queryFactory
                 .select(Projections.fields(OrderResumeResponse.class,
                         orderResumeEntity.id.as("orderResumeId"),
@@ -89,7 +100,7 @@ public class OrderResumeRepositoryCustomImpl implements OrderResumeRepositoryCus
                 ))
                 .from(orderResumeEntity)
                 .join(orderResumeEntity.orderEntity, orderEntity)
-                .join(orderResumeEntity.resumeEntity, resumeEntity)
+                .join(resumeEntity).on(orderResumeEntity.resumeId.eq(resumeEntity.id))
                 .where(orderEntity.id.eq(orderId))
                 .fetch();
     }

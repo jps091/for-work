@@ -15,6 +15,7 @@ import project.forwork.api.domain.orderresume.infrastructure.enums.OrderResumeSt
 import project.forwork.api.domain.orderresume.model.OrderResume;
 import project.forwork.api.common.infrastructure.enums.FieldType;
 import project.forwork.api.common.infrastructure.enums.LevelType;
+import project.forwork.api.domain.orderresume.producer.OrderResumeProducer;
 import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
 import project.forwork.api.domain.resume.model.Resume;
 import project.forwork.api.domain.user.infrastructure.enums.UserStatus;

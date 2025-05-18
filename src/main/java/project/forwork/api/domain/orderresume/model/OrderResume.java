@@ -2,14 +2,13 @@ package project.forwork.api.domain.orderresume.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import project.forwork.api.common.error.OrderResumeErrorCode;
 import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.common.service.port.ClockHolder;
-import project.forwork.api.domain.order.model.Order;
 import project.forwork.api.domain.orderresume.infrastructure.enums.OrderResumeStatus;
-import project.forwork.api.domain.resume.model.Resume;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -18,18 +17,21 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @Slf4j
+@EqualsAndHashCode(of = "id")
 public class OrderResume {
     private final Long id;
-    private final Order order;
-    private final Resume resume;
+    private final Long orderId;
+    private final Long resumeId;
+    private final BigDecimal price;
     private final OrderResumeStatus status;
     private final LocalDateTime sentAt;
     private final LocalDateTime canceledAt;
 
-    public static OrderResume create(Order order, Resume resume){
+    public static OrderResume create(Long orderId, Long resumeId, BigDecimal resumePrice){
         return OrderResume.builder()
-                .order(order)
-                .resume(resume)
+                .orderId(orderId)
+                .resumeId(resumeId)
+                .price(resumePrice)
                 .status(OrderResumeStatus.PAID)
                 .build();
     }
@@ -41,8 +43,8 @@ public class OrderResume {
 
         return OrderResume.builder()
                 .id(id)
-                .order(order)
-                .resume(resume)
+                .orderId(orderId)
+                .resumeId(resumeId)
                 .status(OrderResumeStatus.CANCEL)
                 .canceledAt(clockHolder.now())
                 .build();
@@ -51,17 +53,9 @@ public class OrderResume {
     public OrderResume updateStatusConfirm(){
         return OrderResume.builder()
                 .id(id)
-                .order(order)
-                .resume(resume)
+                .orderId(orderId)
+                .resumeId(resumeId)
                 .status(OrderResumeStatus.CONFIRM)
                 .build();
-    }
-
-    public BigDecimal getPrice(){
-        return resume.getPrice();
-    }
-
-    public Long getResumeId(){
-        return resume.getId();
     }
 }

@@ -1,14 +1,17 @@
 package project.forwork.api.domain.order.model;
 
+import lombok.Getter;
 import project.forwork.api.common.error.OrderErrorCode;
 import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.domain.order.controller.model.OrderResponse;
 import project.forwork.api.domain.order.infrastructure.OrderEntity;
 import project.forwork.api.domain.order.infrastructure.enums.OrderStatus;
+import project.forwork.api.domain.orderresume.infrastructure.enums.OrderResumeStatus;
+import project.forwork.api.domain.orderresume.model.OrderResume;
 
 import java.util.ArrayList;
 import java.util.List;
-
+@Getter
 
 public class Orders {
 
@@ -22,7 +25,7 @@ public class Orders {
         return new Orders(orders);
     }
 
-    public Orders updateStatus(OrderStatus status){
+    public Orders updateOrdersStatus(OrderStatus status) {
         List<Order> updatedOrders = new ArrayList<>(orders);
         updatedOrders = updatedOrders.stream()
                 .map(order -> order.updateStatus(status))

@@ -24,9 +24,8 @@ public class OrderEntity extends BaseTimeEntity {
     @Column(name = "order_id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id") @NotNull
-    private UserEntity userEntity;
+    @Column(name = "user_id")
+    private Long userId;
 
     @Column(length = 25, name = "request_id") @NotNull
     private String requestId;
@@ -44,7 +43,7 @@ public class OrderEntity extends BaseTimeEntity {
     public static OrderEntity from(Order order){
         OrderEntity orderEntity = new OrderEntity();
         orderEntity.id = order.getId();
-        orderEntity.userEntity = UserEntity.from(order.getUser());
+        orderEntity.userId = order.getUserId();
         orderEntity.requestId = order.getRequestId();
         orderEntity.totalAmount = order.getTotalAmount();
         orderEntity.status = order.getStatus();
@@ -55,7 +54,7 @@ public class OrderEntity extends BaseTimeEntity {
     public Order toModel(){
         return Order.builder()
                 .id(id)
-                .user(userEntity.toModel())
+                .userId(userId)
                 .requestId(requestId)
                 .totalAmount(totalAmount)
                 .status(status)
