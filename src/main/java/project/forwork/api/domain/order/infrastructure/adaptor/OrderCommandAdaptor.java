@@ -11,6 +11,7 @@ import project.forwork.api.domain.order.model.Orders;
 import project.forwork.api.domain.order.service.port.OrderCommandPort;
 import project.forwork.api.domain.orderresume.infrastructure.OrderResumeEntity;
 import project.forwork.api.domain.orderresume.infrastructure.OrderResumeJpaRepository;
+import project.forwork.api.domain.orderresume.model.OrderResume;
 
 import java.util.List;
 
@@ -27,11 +28,11 @@ public class OrderCommandAdaptor implements OrderCommandPort {
         Order savedOrder = orderJpaRepository.save(OrderEntity.from(order)).toModel();
         savedOrder.addOrderResumes(resumeDtos);
 
-        List<OrderResumeEntity> orderEntities = savedOrder.getOrderResumes()
+        List<OrderResumeEntity> orderResumeEntityList = savedOrder.getOrderResumes()
                 .stream()
                 .map(it -> OrderResumeEntity.from(it, savedOrder))
                 .toList();
-        orderResumeJpaRepository.saveAll(orderEntities);
+        orderResumeJpaRepository.saveAll(orderResumeEntityList);
         return savedOrder;
     }
 
@@ -39,11 +40,11 @@ public class OrderCommandAdaptor implements OrderCommandPort {
     public Order update(Order order) {
         Order updatedOrder = orderJpaRepository.save(OrderEntity.from(order)).toModel();
 
-        List<OrderResumeEntity> orderEntities = updatedOrder.getOrderResumes()
+        List<OrderResumeEntity> orderResumeEntityList = updatedOrder.getOrderResumes()
                 .stream()
                 .map(it -> OrderResumeEntity.from(it, updatedOrder))
                 .toList();
-        orderResumeJpaRepository.saveAll(orderEntities);
+        orderResumeJpaRepository.saveAll(orderResumeEntityList);
         return updatedOrder;
     }
 
@@ -53,6 +54,13 @@ public class OrderCommandAdaptor implements OrderCommandPort {
         List<Order> savedOrders = orderJpaRepository.saveAll(orderEntities).stream()
                 .map(OrderEntity::toModel)
                 .toList();
+
+        List<OrderResumeEntity> orderResumeEntityList = savedOrders.stream()
+                .flatMap(order -> order.getOrderResumes().stream()
+                        .map(orderResume -> OrderResumeEntity.from(orderResume, order))
+                )
+                .toList();
+        orderResumeJpaRepository.saveAll(orderResumeEntityList);
         return Orders.of(savedOrders);
     }
 }

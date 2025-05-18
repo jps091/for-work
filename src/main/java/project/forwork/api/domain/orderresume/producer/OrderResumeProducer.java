@@ -1,18 +1,17 @@
-package project.forwork.api.domain.orderresume.service;
+package project.forwork.api.domain.orderresume.producer;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.forwork.api.common.producer.Producer;
 import project.forwork.api.common.infrastructure.enums.FieldType;
 import project.forwork.api.common.infrastructure.enums.LevelType;
+import project.forwork.api.domain.order.service.port.OrderViewPort;
 import project.forwork.api.domain.orderresume.infrastructure.message.BuyerMessage;
 import project.forwork.api.domain.order.infrastructure.message.SellingMessage;
 import project.forwork.api.domain.orderresume.controller.model.OrderResumePurchaseInfo;
 import project.forwork.api.domain.orderresume.model.OrderResume;
-import project.forwork.api.domain.orderresume.service.port.OrderResumeRepositoryCustom;
 
 import java.util.List;
 
@@ -22,11 +21,11 @@ import java.util.List;
 public class OrderResumeProducer {
 
     private final Producer producer;
-    private final OrderResumeRepositoryCustom orderResumeRepositoryCustom;
+    private final OrderViewPort orderViewPort;
 
     @Transactional
     public void setupConfirmedResumesAndSendEmail(List<OrderResume> orderResumes) {
-        List<OrderResumePurchaseInfo> infoList = orderResumeRepositoryCustom.findAllPurchaseResume(orderResumes);
+        List<OrderResumePurchaseInfo> infoList = orderViewPort.findAllPurchaseResume(orderResumes);
         infoList.forEach(this::produceBuyerMail);
         infoList.forEach(this::produceSellerMail);
     }

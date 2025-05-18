@@ -10,6 +10,7 @@ import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.common.service.port.ClockHolder;
 import project.forwork.api.common.service.port.UuidHolder;
 import project.forwork.api.domain.order.controller.model.*;
+import project.forwork.api.domain.order.infrastructure.enums.OrderStatus;
 import project.forwork.api.domain.order.infrastructure.model.ResumeDto;
 import project.forwork.api.domain.order.model.Order;
 import project.forwork.api.domain.order.model.Orders;
@@ -19,10 +20,8 @@ import project.forwork.api.domain.order.service.port.OrderViewPort;
 import project.forwork.api.domain.orderresume.controller.model.OrderResumeResponse;
 import project.forwork.api.domain.orderresume.controller.model.OrderTitleResponse;
 import project.forwork.api.domain.orderresume.model.OrderResume;
-import project.forwork.api.domain.orderresume.service.OrderResumeProducer;
-import project.forwork.api.domain.orderresume.service.OrderResumeService;
+import project.forwork.api.domain.orderresume.producer.OrderResumeProducer;
 import project.forwork.api.domain.resume.service.port.ResumeRepository;
-import project.forwork.api.domain.user.service.port.UserRepository;
 
 import java.util.List;
 
@@ -32,9 +31,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class OrderService {
 
-    private final UserRepository userRepository;
-    private final ResumeRepository resumeRepository;
-    private final OrderResumeService orderResumeService;
+    private final ResumeRepository resumeRepository; //TODO 어댑터로 변경
     private final ClockHolder clockHolder;
     private final UuidHolder uuidHolder;
 
@@ -69,6 +66,22 @@ public class OrderService {
         order.validBuyer(currentUser);
         Order canceledPartialOrder = order.cancelPartialOrder(currentUser.getId(), orderResumes, clockHolder);
         orderCommandPort.update(canceledPartialOrder);
+    }
+
+    public void updatedOrderStatus(OrderStatus oldStatus, OrderStatus updatedStatus) {
+        int limit = 10;
+        while (true) {
+            Orders orders = orderQueryPort.findByStatus(oldStatus, limit);
+
+            // 더 이상 처리할 주문이 없으면 반복 종료
+            if (orders.isEmpty()) {
+                break;
+            }
+
+            Orders updatedOrders = orders.updateOrdersStatus(updatedStatus);
+            sendMailByOrderConfirm(updatedOrders, updatedStatus);
+            orderCommandPort.updateAll(updatedOrders);
+        }
     }
 
     // requestId = 현재 시간 (millis) / 5000 + "_" + userId + "-" + uuid 5자리
@@ -134,5 +147,13 @@ public class OrderService {
     private static String createOrderTitle(List<OrderTitleResponse> orderTitles, String orderResumeTitle) {
         int rest = orderTitles.size() - 1;
         return orderTitles.size() == 1 ? orderResumeTitle : orderResumeTitle + " 외 " + rest + "건";
+    }
+
+    private void sendMailByOrderConfirm(Orders orders, OrderStatus updatedStatus) {
+        if (OrderStatus.PARTIAL_CONFIRM.equals(updatedStatus) || OrderStatus.CONFIRM.equals(updatedStatus)) {
+            orders.getOrders().stream()
+                    .map(Order::confirmPaidResumes)
+                    .forEach(orderResumeProducer::setupConfirmedResumesAndSendEmail);
+        }
     }
 }

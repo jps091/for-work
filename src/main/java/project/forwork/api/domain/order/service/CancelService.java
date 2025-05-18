@@ -5,12 +5,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.forwork.api.common.domain.CurrentUser;
+import project.forwork.api.common.error.OrderResumeErrorCode;
+import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.domain.order.controller.model.CancelRequest;
 import project.forwork.api.domain.order.controller.model.CancelResponse;
 import project.forwork.api.domain.order.model.Order;
 import project.forwork.api.domain.order.service.port.OrderQueryPort;
+import project.forwork.api.domain.orderresume.infrastructure.enums.OrderResumeStatus;
 import project.forwork.api.domain.orderresume.model.OrderResume;
-import project.forwork.api.domain.orderresume.service.OrderResumeService;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -20,12 +22,13 @@ import java.util.List;
 @AllArgsConstructor
 public class CancelService {
     private final OrderQueryPort orderQueryPort;
-    private final OrderResumeService orderResumeService;
     private final  CheckoutService checkoutService;
 
     @Transactional
     public CancelResponse cancel(CurrentUser currentUser, Long orderId, CancelRequest body){
-        List<OrderResume> orderResumes = orderResumeService.getCancelRequestOrderResumes(body.getOrderResumeIds(), orderId);
+        List<OrderResume> orderResumes = orderQueryPort.findByOrderIdAndStatus(body.getOrderResumeIds(), orderId, OrderResumeStatus.PAID);
+        validSelected(body.getOrderResumeIds(), orderResumes);
+
         BigDecimal cancelAmount = getCancelAmount(orderResumes);
         Order order = orderQueryPort.getByIdWithThrow(orderId);
 
@@ -38,6 +41,12 @@ public class CancelService {
         log.info("partCancel order={} cancel={}", order.getTotalAmount(), cancelAmount);
         checkoutService.cancelPartialPayment(currentUser, order, orderResumes);
         return CancelResponse.fromPartCancel(cancelAmount);
+    }
+
+    private void validSelected(List<Long> orderResumeIds, List<OrderResume> orderResumes) {
+        if(orderResumes.size() != orderResumeIds.size()){
+            throw new ApiException(OrderResumeErrorCode.CANCEL_FAIL);
+        }
     }
 
     private static BigDecimal getCancelAmount(List<OrderResume> orderResumes) {

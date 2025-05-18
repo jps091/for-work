@@ -90,6 +90,13 @@ public class Order {
                 .build();
     }
 
+    public List<OrderResume> confirmPaidResumes() {
+        return orderResumes.stream()
+                .filter(resume -> resume.getStatus() == OrderResumeStatus.PAID)
+                .map(OrderResume::updateStatusConfirm)
+                .toList();
+    }
+
     public Order cancelOrderWithThrow(ClockHolder clockHolder){
         if(OrderStatus.CONFIRM.equals(status)){
             throw new ApiException(OrderErrorCode.RESUME_ALREADY_CONFIRM);
