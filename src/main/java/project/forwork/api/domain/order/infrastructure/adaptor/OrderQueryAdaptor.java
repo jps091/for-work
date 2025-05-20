@@ -17,6 +17,7 @@ import project.forwork.api.domain.orderresume.infrastructure.OrderResumeEntity;
 import project.forwork.api.domain.orderresume.infrastructure.OrderResumeJpaRepository;
 import project.forwork.api.domain.orderresume.infrastructure.enums.OrderResumeStatus;
 import project.forwork.api.domain.orderresume.model.OrderResume;
+import project.forwork.api.domain.orderresume.model.OrderResumes;
 
 import java.util.List;
 import java.util.Optional;
@@ -56,10 +57,11 @@ public class OrderQueryAdaptor implements OrderQueryPort {
     }
 
     @Override
-    public List<OrderResume> findByOrderId(Long orderId) {
-        return orderResumeJpaRepository.findByOrderEntity_Id(orderId).stream()
+    public OrderResumes findByOrderId(Long orderId) {
+        List<OrderResume> orderResumeList = orderResumeJpaRepository.findByOrderEntity_Id(orderId).stream()
                 .map(OrderResumeEntity::toModel)
                 .toList();
+        return OrderResumes.of(orderResumeList);
     }
 
     @Override
@@ -71,23 +73,26 @@ public class OrderQueryAdaptor implements OrderQueryPort {
     }
 
     @Override
-    public List<OrderResume> findByOrderIdAndStatus(List<Long> orderResumeIds, Long orderId, OrderResumeStatus status) {
-        return orderResumeJpaRepository.findByOrderIdAndStatus(orderResumeIds, orderId, status).stream()
+    public OrderResumes findByOrderIdAndStatus(List<Long> orderResumeIds, Long orderId, OrderResumeStatus status) {
+        List<OrderResume> orderResumeList = orderResumeJpaRepository.findByOrderIdAndStatus(orderResumeIds, orderId, status).stream()
                 .map(OrderResumeEntity::toModel)
                 .toList();
+        return OrderResumes.of(orderResumeList);
     }
 
     @Override
-    public List<OrderResume> findByStatusAndOrder(OrderResumeStatus status, Order order) {
-        return orderResumeJpaRepository.findByStatusAndOrder(status, OrderEntity.from(order)).stream()
+    public OrderResumes findByStatusAndOrder(OrderResumeStatus status, Order order) {
+        List<OrderResume> orderResumeList = orderResumeJpaRepository.findByStatusAndOrder(status, OrderEntity.from(order)).stream()
                 .map(OrderResumeEntity::toModel)
                 .toList();
+        return OrderResumes.of(orderResumeList);
     }
     @Override
-    public List<OrderResume> findByStatusAndOrders(OrderResumeStatus status, Orders orders) {
+    public OrderResumes findByStatusAndOrders(OrderResumeStatus status, Orders orders) {
         List<OrderEntity> orderEntities = orders.convertToEntity();
-        return orderResumeJpaRepository.findByStatusAndOrder(status, orderEntities).stream()
+        List<OrderResume> orderResumeList = orderResumeJpaRepository.findByStatusAndOrder(status, orderEntities).stream()
                 .map(OrderResumeEntity::toModel)
                 .toList();
+        return OrderResumes.of(orderResumeList);
     }
 }

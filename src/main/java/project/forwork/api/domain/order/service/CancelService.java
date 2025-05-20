@@ -13,6 +13,7 @@ import project.forwork.api.domain.order.model.Order;
 import project.forwork.api.domain.order.service.port.OrderQueryPort;
 import project.forwork.api.domain.orderresume.infrastructure.enums.OrderResumeStatus;
 import project.forwork.api.domain.orderresume.model.OrderResume;
+import project.forwork.api.domain.orderresume.model.OrderResumes;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -26,10 +27,8 @@ public class CancelService {
 
     @Transactional
     public CancelResponse cancel(CurrentUser currentUser, Long orderId, CancelRequest body){
-        List<OrderResume> orderResumes = orderQueryPort.findByOrderIdAndStatus(body.getOrderResumeIds(), orderId, OrderResumeStatus.PAID);
-        validSelected(body.getOrderResumeIds(), orderResumes);
-
-        BigDecimal cancelAmount = getCancelAmount(orderResumes);
+        OrderResumes orderResumes = orderQueryPort.findByOrderIdAndStatus(body.getOrderResumeIds(), orderId, OrderResumeStatus.PAID);
+        BigDecimal cancelAmount = orderResumes.calculateAmount();
         Order order = orderQueryPort.getByIdWithThrow(orderId);
 
         if(order.isAllCancel(cancelAmount)){
@@ -41,17 +40,5 @@ public class CancelService {
         log.info("partCancel order={} cancel={}", order.getTotalAmount(), cancelAmount);
         checkoutService.cancelPartialPayment(currentUser, order, orderResumes);
         return CancelResponse.fromPartCancel(cancelAmount);
-    }
-
-    private void validSelected(List<Long> orderResumeIds, List<OrderResume> orderResumes) {
-        if(orderResumes.size() != orderResumeIds.size()){
-            throw new ApiException(OrderResumeErrorCode.CANCEL_FAIL);
-        }
-    }
-
-    private static BigDecimal getCancelAmount(List<OrderResume> orderResumes) {
-        return orderResumes.stream()
-                .map(OrderResume::getPrice)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 }

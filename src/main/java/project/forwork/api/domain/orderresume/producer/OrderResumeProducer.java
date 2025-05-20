@@ -12,6 +12,7 @@ import project.forwork.api.domain.orderresume.infrastructure.message.BuyerMessag
 import project.forwork.api.domain.order.infrastructure.message.SellingMessage;
 import project.forwork.api.domain.orderresume.controller.model.OrderResumePurchaseInfo;
 import project.forwork.api.domain.orderresume.model.OrderResume;
+import project.forwork.api.domain.orderresume.model.OrderResumes;
 
 import java.util.List;
 
@@ -24,7 +25,7 @@ public class OrderResumeProducer {
     private final OrderViewPort orderViewPort;
 
     @Transactional
-    public void setupConfirmedResumesAndSendEmail(List<OrderResume> orderResumes) {
+    public void setupConfirmedResumesAndSendEmail(OrderResumes orderResumes) {
         List<OrderResumePurchaseInfo> infoList = orderViewPort.findAllPurchaseResume(orderResumes);
         infoList.forEach(this::produceBuyerMail);
         infoList.forEach(this::produceSellerMail);
