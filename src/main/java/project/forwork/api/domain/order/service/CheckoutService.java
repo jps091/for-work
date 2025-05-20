@@ -16,6 +16,7 @@ import project.forwork.api.domain.order.infrastructure.model.PaymentFullCancelDt
 import project.forwork.api.domain.order.infrastructure.model.PaymentPartialCancelDto;
 import project.forwork.api.domain.order.model.Order;
 import project.forwork.api.domain.orderresume.model.OrderResume;
+import project.forwork.api.domain.orderresume.model.OrderResumes;
 import project.forwork.api.domain.retrylog.service.RetryLogService;
 import project.forwork.api.domain.transaction.infrastructure.enums.TransactionType;
 import project.forwork.api.domain.transaction.model.Transaction;
@@ -80,7 +81,7 @@ public class CheckoutService {
     }
 
     @Transactional
-    public void cancelPartialPayment(CurrentUser currentUser, Order order, List<OrderResume> orderResumes){
+    public void cancelPartialPayment(CurrentUser currentUser, Order order, OrderResumes orderResumes){
         String requestId = orderService.getRequestIdByOrderId(order.getId());
 
         try{
@@ -116,11 +117,8 @@ public class CheckoutService {
                 .build();
     }
 
-    private PaymentPartialCancelDto createPartialCancelBody(List<OrderResume> orderResumes){
-        BigDecimal cancelAmount = orderResumes.stream()
-                .map(OrderResume::getPrice)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-
+    private PaymentPartialCancelDto createPartialCancelBody(OrderResumes orderResumes){
+        BigDecimal cancelAmount = orderResumes.calculateAmount();
         return PaymentPartialCancelDto.builder()
                 .cancelAmount(cancelAmount)
                 .cancelReason("부분 주문 취소")

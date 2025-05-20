@@ -13,6 +13,7 @@ import project.forwork.api.domain.orderresume.controller.model.OrderResumeRespon
 import project.forwork.api.domain.orderresume.controller.model.OrderTitleResponse;
 import project.forwork.api.domain.orderresume.infrastructure.QOrderResumeEntity;
 import project.forwork.api.domain.orderresume.model.OrderResume;
+import project.forwork.api.domain.orderresume.model.OrderResumes;
 import project.forwork.api.domain.resume.infrastructure.QResumeEntity;
 import project.forwork.api.domain.user.infrastructure.QUserEntity;
 
@@ -31,10 +32,8 @@ public class OrderViewAdaptor implements OrderViewPort {
     }
 
     @Override
-    public List<OrderResumePurchaseInfo> findAllPurchaseResume(List<OrderResume> orderResumes) {
-        List<Long> orderResumeIds = orderResumes.stream()
-                .map(OrderResume::getId)
-                .toList();
+    public List<OrderResumePurchaseInfo> findAllPurchaseResume(OrderResumes orderResumes) {
+        List<Long> orderResumeIds = orderResumes.getOrderResumeIds();
 
         QOrderEntity orderEntity = QOrderEntity.orderEntity;
         QUserEntity userEntity = QUserEntity.userEntity;

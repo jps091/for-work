@@ -12,6 +12,7 @@ import project.forwork.api.domain.order.service.port.OrderCommandPort;
 import project.forwork.api.domain.orderresume.infrastructure.OrderResumeEntity;
 import project.forwork.api.domain.orderresume.infrastructure.OrderResumeJpaRepository;
 import project.forwork.api.domain.orderresume.model.OrderResume;
+import project.forwork.api.domain.orderresume.model.OrderResumes;
 
 import java.util.List;
 
@@ -25,13 +26,12 @@ public class OrderCommandAdaptor implements OrderCommandPort {
 
     @Override
     public Order save(Order order, List<ResumeDto> resumeDtos) {
-        Order savedOrder = orderJpaRepository.save(OrderEntity.from(order)).toModel();
-        savedOrder.addOrderResumes(resumeDtos);
+        Order savedOrder = order.addOrderResumes(resumeDtos);
+        orderJpaRepository.save(OrderEntity.from(savedOrder)).toModel();
 
-        List<OrderResumeEntity> orderResumeEntityList = savedOrder.getOrderResumes()
-                .stream()
-                .map(it -> OrderResumeEntity.from(it, savedOrder))
-                .toList();
+        OrderResumes orderResumes = savedOrder.getOrderResumes();
+        List<OrderResumeEntity> orderResumeEntityList = orderResumes.convertToEntityList(savedOrder);
+
         orderResumeJpaRepository.saveAll(orderResumeEntityList);
         return savedOrder;
     }
@@ -40,10 +40,8 @@ public class OrderCommandAdaptor implements OrderCommandPort {
     public Order update(Order order) {
         Order updatedOrder = orderJpaRepository.save(OrderEntity.from(order)).toModel();
 
-        List<OrderResumeEntity> orderResumeEntityList = updatedOrder.getOrderResumes()
-                .stream()
-                .map(it -> OrderResumeEntity.from(it, updatedOrder))
-                .toList();
+        OrderResumes orderResumes = updatedOrder.getOrderResumes();
+        List<OrderResumeEntity> orderResumeEntityList = orderResumes.convertToEntityList(updatedOrder);
         orderResumeJpaRepository.saveAll(orderResumeEntityList);
         return updatedOrder;
     }
@@ -56,10 +54,11 @@ public class OrderCommandAdaptor implements OrderCommandPort {
                 .toList();
 
         List<OrderResumeEntity> orderResumeEntityList = savedOrders.stream()
-                .flatMap(order -> order.getOrderResumes().stream()
-                        .map(orderResume -> OrderResumeEntity.from(orderResume, order))
-                )
+                .flatMap(order -> order.getOrderResumes()
+                        .convertToEntityList(order) // ✅ 도메인 메서드 활용
+                        .stream())
                 .toList();
+
         orderResumeJpaRepository.saveAll(orderResumeEntityList);
         return Orders.of(savedOrders);
     }

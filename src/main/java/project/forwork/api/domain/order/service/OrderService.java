@@ -19,7 +19,7 @@ import project.forwork.api.domain.order.service.port.OrderQueryPort;
 import project.forwork.api.domain.order.service.port.OrderViewPort;
 import project.forwork.api.domain.orderresume.controller.model.OrderResumeResponse;
 import project.forwork.api.domain.orderresume.controller.model.OrderTitleResponse;
-import project.forwork.api.domain.orderresume.model.OrderResume;
+import project.forwork.api.domain.orderresume.model.OrderResumes;
 import project.forwork.api.domain.orderresume.producer.OrderResumeProducer;
 import project.forwork.api.domain.resume.service.port.ResumeRepository;
 
@@ -62,7 +62,7 @@ public class OrderService {
         orderCommandPort.update(canceledOrder);
     }
 
-    public void cancelPartialOrder(CurrentUser currentUser, Order order, List<OrderResume> orderResumes){
+    public void cancelPartialOrder(CurrentUser currentUser, Order order, OrderResumes orderResumes){
         order.validBuyer(currentUser);
         Order canceledPartialOrder = order.cancelPartialOrder(currentUser.getId(), orderResumes, clockHolder);
         orderCommandPort.update(canceledPartialOrder);
@@ -79,7 +79,7 @@ public class OrderService {
             }
 
             Orders updatedOrders = orders.updateOrdersStatus(updatedStatus);
-            sendMailByOrderConfirm(updatedOrders, updatedStatus);
+            updatedOrders = sendMailByOrderConfirm(updatedOrders, updatedStatus);
             orderCommandPort.updateAll(updatedOrders);
         }
     }
@@ -149,11 +149,17 @@ public class OrderService {
         return orderTitles.size() == 1 ? orderResumeTitle : orderResumeTitle + " 외 " + rest + "건";
     }
 
-    private void sendMailByOrderConfirm(Orders orders, OrderStatus updatedStatus) {
+    private Orders sendMailByOrderConfirm(Orders orders, OrderStatus updatedStatus) {
         if (OrderStatus.PARTIAL_CONFIRM.equals(updatedStatus) || OrderStatus.CONFIRM.equals(updatedStatus)) {
-            orders.getOrders().stream()
-                    .map(Order::confirmPaidResumes)
-                    .forEach(orderResumeProducer::setupConfirmedResumesAndSendEmail);
+            List<Order> updatedOrderList = orders.getOrders().stream()
+                    .map(or -> {
+                        Order updatedOrder = or.confirmPaidOrderResumes();
+                        orderResumeProducer.setupConfirmedResumesAndSendEmail(updatedOrder.getOrderResumes());
+                        return updatedOrder;
+                    })
+                    .toList();
+            return Orders.of(updatedOrderList);
         }
+        return orders;
     }
 }

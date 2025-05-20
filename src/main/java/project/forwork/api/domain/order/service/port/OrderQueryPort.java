@@ -5,6 +5,7 @@ import project.forwork.api.domain.order.model.Order;
 import project.forwork.api.domain.order.model.Orders;
 import project.forwork.api.domain.orderresume.infrastructure.enums.OrderResumeStatus;
 import project.forwork.api.domain.orderresume.model.OrderResume;
+import project.forwork.api.domain.orderresume.model.OrderResumes;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,9 +18,9 @@ public interface OrderQueryPort {
     Optional<Order> findByRequestId(String requestId);
     Orders findByUserId(Long userId);
     Orders findByStatus(OrderStatus status, int limit);
-    List<OrderResume> findByOrderId(Long orderId);
+    OrderResumes findByOrderId(Long orderId);
     OrderResume getByIdWithThrow(long orderResumeId);
-    List<OrderResume> findByOrderIdAndStatus(List<Long> orderResumeIds, Long orderId, OrderResumeStatus status);
-    List<OrderResume> findByStatusAndOrder(OrderResumeStatus status, Order order);
-    List<OrderResume> findByStatusAndOrders(OrderResumeStatus status, Orders orders);
+    OrderResumes findByOrderIdAndStatus(List<Long> orderResumeIds, Long orderId, OrderResumeStatus status);
+    OrderResumes findByStatusAndOrder(OrderResumeStatus status, Order order);
+    OrderResumes findByStatusAndOrders(OrderResumeStatus status, Orders orders);
 }
