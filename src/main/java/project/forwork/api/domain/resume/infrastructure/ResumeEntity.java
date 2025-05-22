@@ -26,9 +26,8 @@ public class ResumeEntity extends BaseTimeEntity {
     @Column(name = "resume_id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "seller_id") @NotNull
-    private UserEntity sellerEntity;
+    @Column(name = "seller_id")
+    private Long sellerId;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "field") @NotNull
@@ -63,7 +62,7 @@ public class ResumeEntity extends BaseTimeEntity {
     public static ResumeEntity from(Resume resume){
         ResumeEntity resumeEntity = new ResumeEntity();
         resumeEntity.id = resume.getId();
-        resumeEntity.sellerEntity = UserEntity.from(resume.getSeller());
+        resumeEntity.sellerId = resume.getSellerId();
         resumeEntity.fieldType = resume.getField();
         resumeEntity.levelType = resume.getLevel();
         resumeEntity.resumeUrl = resume.getResumeUrl();
@@ -78,7 +77,7 @@ public class ResumeEntity extends BaseTimeEntity {
     public Resume toModel(){
         return Resume.builder()
                 .id(id)
-                .seller(sellerEntity.toModel())
+                .sellerId(sellerId)
                 .field(fieldType)
                 .level(levelType)
                 .resumeUrl(resumeUrl)

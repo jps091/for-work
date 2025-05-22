@@ -10,8 +10,7 @@ import project.forwork.api.common.annotation.ApiErrorCode;
 import project.forwork.api.common.annotation.Current;
 import project.forwork.api.common.api.Api;
 import project.forwork.api.common.error.ResumeErrorCode;
-import project.forwork.api.common.error.SalesPostErrorCode;
-import project.forwork.api.domain.resumedecision.service.ResumeDecisionService;
+import project.forwork.api.domain.resume.service.ResumeService;
 import project.forwork.api.common.domain.CurrentUser;
 
 @RestController
@@ -22,7 +21,7 @@ import project.forwork.api.common.domain.CurrentUser;
 
 public class ResumeDecisionController {
 
-    private final ResumeDecisionService resumeDecisionService;
+    private final ResumeService resumeService;
 
     @Operation(summary = "이력서 판매 요청 승인 API", description = "이력서 판매 요청 승인 API")
     @ApiErrorCode(domain = ResumeErrorCode.class, errorCode = {"ACCESS_NOT_PERMISSION"})
@@ -31,7 +30,7 @@ public class ResumeDecisionController {
             @Parameter(hidden = true) @Current CurrentUser currentUser,
             @PathVariable Long resumeId
     ){
-        resumeDecisionService.approve(currentUser, resumeId);
+        resumeService.approve(currentUser, resumeId);
         return Api.OK("승인 완료 했습니다.");
     }
 
@@ -42,7 +41,7 @@ public class ResumeDecisionController {
             @Parameter(hidden = true) @Current CurrentUser currentUser,
             @PathVariable Long resumeId
     ){
-        resumeDecisionService.deny(currentUser, resumeId);
+        resumeService.deny(currentUser, resumeId);
         return Api.OK("거부 되었습니다.");
     }
 }

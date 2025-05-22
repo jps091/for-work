@@ -1,5 +1,6 @@
 package project.forwork.api.domain.resumedecision.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import project.forwork.api.common.error.ResumeErrorCode;
@@ -10,40 +11,27 @@ import project.forwork.api.domain.user.model.User;
 
 import java.time.LocalDateTime;
 @Getter
+@Builder
+@AllArgsConstructor
 public class ResumeDecision {
     private final Long id;
-    private final User admin;
-    private final Resume resume;
+    private final Long adminId;
+    private final Long resumeId;
     private final DecisionStatus decisionStatus;
     private final LocalDateTime registeredAt;
 
-    @Builder
-    public ResumeDecision(Long id, User admin, Resume resume, DecisionStatus decisionStatus, LocalDateTime registeredAt) {
-        this.id = id;
-        this.admin = admin;
-        this.resume = resume;
-        this.decisionStatus = decisionStatus;
-        this.registeredAt = registeredAt;
-    }
-
-    public static ResumeDecision approve(User admin, Resume resume){
-        if(admin.isAdminMismatch()){
-            throw new ApiException(ResumeErrorCode.ACCESS_NOT_PERMISSION);
-        }
+    public static ResumeDecision approve(Long adminId, Long resumeId){
         return ResumeDecision.builder()
-                .admin(admin)
-                .resume(resume)
+                .adminId(adminId)
+                .resumeId(resumeId)
                 .decisionStatus(DecisionStatus.APPROVE)
                 .build();
     }
 
-    public static ResumeDecision deny(User admin, Resume resume){
-        if(admin.isAdminMismatch()){
-            throw new ApiException(ResumeErrorCode.ACCESS_NOT_PERMISSION);
-        }
+    public static ResumeDecision deny(Long adminId, Long resumeId){
         return ResumeDecision.builder()
-                .admin(admin)
-                .resume(resume)
+                .adminId(adminId)
+                .resumeId(resumeId)
                 .decisionStatus(DecisionStatus.DENY)
                 .build();
     }

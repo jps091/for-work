@@ -19,9 +19,9 @@ import project.forwork.api.domain.order.controller.model.ConfirmPaymentRequest;
 import project.forwork.api.domain.order.service.CheckoutService;
 import project.forwork.api.domain.orderresume.infrastructure.message.BuyerMessage;
 import project.forwork.api.domain.resume.model.Resume;
-import project.forwork.api.domain.resume.service.port.ResumeRepository;
+import project.forwork.api.domain.resume.service.port.ResumeQueryPort;
 import project.forwork.api.domain.salespost.infrastructure.model.SalesPostSearchDto;
-import project.forwork.api.domain.salespost.service.SalesPostService;
+import project.forwork.api.domain.salespost.service.SalesPostViewService;
 import project.forwork.api.domain.user.infrastructure.enums.UserStatus;
 
 import java.util.List;
@@ -32,9 +32,9 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class TestController {
     private final CheckoutService checkoutService;
-    private final ResumeRepository resumeRepository;
+    private final ResumeQueryPort resumeQueryPort;
     private final Producer producer;
-    private final SalesPostService salesPostService;
+    private final SalesPostViewService salesPostViewService;
     private final S3ServiceImpl s3Service;
 
     @GetMapping("/open-api/order")
@@ -43,7 +43,7 @@ public class TestController {
             @RequestParam("resumeId") Long resumeId,
             Model model
     ) {
-        Resume resume = resumeRepository.findById(resumeId).get();
+        Resume resume = resumeQueryPort.getByIdWithThrow(resumeId);
 
         model.addAttribute("resumeId", resumeId);
         model.addAttribute("orderId", UUID.randomUUID());
@@ -82,31 +82,31 @@ public class TestController {
         return new ResponseEntity<>("confirm#@", HttpStatus.OK);
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/test/pess3")
-    @Transactional
-    public ResponseEntity<String> oncePessimistic1(
-    ){
-        List<Long> resumeIds = List.of(3L);
-        for (Long resumeId : resumeIds) {
-            Resume resume = resumeRepository.getByIdWithPessimisticLock(resumeId);
-            resume = resume.increaseSalesQuantity();
-            resumeRepository.save(resume);
-        }
-        return new ResponseEntity<>("confirm", HttpStatus.OK);
-    }
-
-    @RequestMapping(method = RequestMethod.POST, value = "/test/pess4")
-    @Transactional
-    public ResponseEntity<String> oncePessimistic2(
-    ){
-        List<Long> resumeIds = List.of(4L);
-        for (Long resumeId : resumeIds) {
-            Resume resume = resumeRepository.getByIdWithPessimisticLock(resumeId);
-            resume = resume.increaseSalesQuantity();
-            resumeRepository.save(resume);
-        }
-        return new ResponseEntity<>("confirm", HttpStatus.OK);
-    }
+//    @RequestMapping(method = RequestMethod.POST, value = "/test/pess3")
+//    @Transactional
+//    public ResponseEntity<String> oncePessimistic1(
+//    ){
+//        List<Long> resumeIds = List.of(3L);
+//        for (Long resumeId : resumeIds) {
+//            Resume resume = resumeRepository.getByIdWithPessimisticLock(resumeId);
+//            resume = resume.increaseSalesQuantity();
+//            resumeRepository.save(resume);
+//        }
+//        return new ResponseEntity<>("confirm", HttpStatus.OK);
+//    }
+//
+//    @RequestMapping(method = RequestMethod.POST, value = "/test/pess4")
+//    @Transactional
+//    public ResponseEntity<String> oncePessimistic2(
+//    ){
+//        List<Long> resumeIds = List.of(4L);
+//        for (Long resumeId : resumeIds) {
+//            Resume resume = resumeRepository.getByIdWithPessimisticLock(resumeId);
+//            resume = resume.increaseSalesQuantity();
+//            resumeRepository.save(resume);
+//        }
+//        return new ResponseEntity<>("confirm", HttpStatus.OK);
+//    }
 
     @RequestMapping(method = RequestMethod.POST, value = "/test/pro/{resumeId}")
     public ResponseEntity<String> produceMsg(
@@ -123,7 +123,7 @@ public class TestController {
             @RequestParam(defaultValue = "1") int pageNumber,
             @RequestParam(defaultValue = "10") int pageSize
     ) {
-        List<SalesPostSearchDto> salesPostSearchDtos = salesPostService.searchByTextWithLike(text, pageNumber, pageSize);
+        List<SalesPostSearchDto> salesPostSearchDtos = salesPostViewService.searchByTextWithLike(text, pageNumber, pageSize);
         return Api.OK(salesPostSearchDtos);
     }
 

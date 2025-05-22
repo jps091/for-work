@@ -10,6 +10,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlGroup;
 import project.forwork.api.domain.resume.controller.model.ResumeAdminResponse;
+import project.forwork.api.domain.resume.infrastructure.adaptor.ResumeViewAdaptor;
 import project.forwork.api.domain.resume.infrastructure.enums.PeriodCond;
 import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
 import project.forwork.api.mock.TestClockHolder;
@@ -22,16 +23,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @TestPropertySource("classpath:repository-custom-test.yaml")
 @DataJpaTest
-@Import({ResumeRepositoryCustomImpl.class})
+@Import({ResumeViewAdaptor.class})
 @SqlGroup({
         @Sql(value = "/sql/user-test-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
         @Sql(value = "/sql/resume-test-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
         @Sql(value = "/sql/delete-all-data.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 })
-class ResumeRepositoryCustomImplTest {
+class ResumeViewAdaptorTest {
 
     @Autowired
-    private ResumeRepositoryCustomImpl repository;
+    private ResumeViewAdaptor repository;
 
     @TestConfiguration
     static class TestClockHolderConfig{

@@ -16,6 +16,7 @@ import project.forwork.api.common.api.Api;
 import project.forwork.api.common.error.ResumeErrorCode;
 import project.forwork.api.domain.resume.controller.model.*;
 import project.forwork.api.domain.resume.model.Resume;
+import project.forwork.api.domain.resume.service.ResumeQueryService;
 import project.forwork.api.domain.resume.service.ResumeService;
 import project.forwork.api.common.domain.CurrentUser;
 
@@ -28,6 +29,7 @@ import java.util.List;
 public class ResumeController {
 
     private final ResumeService resumeService;
+    private final ResumeQueryService resumeQueryService;
 
     @Operation(summary = "Resume 생성", description = "Resume 생성")
     @ResponseStatus(HttpStatus.CREATED)
@@ -97,7 +99,7 @@ public class ResumeController {
             @Parameter(hidden = true) @Current CurrentUser currentUser,
             @PathVariable Long resumeId
     ){
-        Resume resume = resumeService.getByIdWithThrow(currentUser, resumeId);
+        Resume resume = resumeQueryService.getByIdWithThrow(currentUser, resumeId);
         return Api.OK(ResumeSellerDetailResponse.from(resume));
     }
 
@@ -106,7 +108,7 @@ public class ResumeController {
     public Api<List<ResumeSellerResponse>> retrieveAll(
             @Parameter(hidden = true) @Current CurrentUser currentUser
     ){
-        List<ResumeSellerResponse> resumes = resumeService.findResumesBySeller(currentUser);
+        List<ResumeSellerResponse> resumes = resumeQueryService.findResumesBySeller(currentUser);
         return Api.OK(resumes);
     }
 }

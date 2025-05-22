@@ -24,13 +24,11 @@ public class ResumeDecisionEntity extends BaseTimeEntity{
     @Column(name = "resume_decision_id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "admin_id") @NotNull
-    private UserEntity adminEntity;
+    @Column(name = "admin_id") @NotNull
+    private Long adminId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "resume_id") @NotNull
-    private ResumeEntity resumeEntity;
+    @Column(name = "resume_id") @NotNull
+    private Long resumeId;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status") @NotNull
@@ -39,8 +37,8 @@ public class ResumeDecisionEntity extends BaseTimeEntity{
     public static ResumeDecisionEntity from(ResumeDecision resumeDecision){
         ResumeDecisionEntity resumeDecisionEntity = new ResumeDecisionEntity();
         resumeDecisionEntity.id = resumeDecision.getId();
-        resumeDecisionEntity.adminEntity = UserEntity.from(resumeDecision.getAdmin());
-        resumeDecisionEntity.resumeEntity = ResumeEntity.from(resumeDecision.getResume());
+        resumeDecisionEntity.adminId = resumeDecision.getAdminId();
+        resumeDecisionEntity.resumeId = resumeDecision.getResumeId();
         resumeDecisionEntity.decisionStatus = resumeDecision.getDecisionStatus();
         return resumeDecisionEntity;
     }
@@ -48,8 +46,8 @@ public class ResumeDecisionEntity extends BaseTimeEntity{
     public ResumeDecision toModel(){
         return ResumeDecision.builder()
                 .id(id)
-                .admin(adminEntity.toModel())
-                .resume(resumeEntity.toModel())
+                .adminId(adminId)
+                .resumeId(resumeId)
                 .decisionStatus(decisionStatus)
                 .registeredAt(getRegisteredAt())
                 .build();

@@ -9,20 +9,17 @@ import project.forwork.api.common.error.SalesPostErrorCode;
 import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.common.infrastructure.enums.PageStep;
 import project.forwork.api.domain.resume.model.Resume;
+import project.forwork.api.domain.resume.service.port.ResumeQueryPort;
 import project.forwork.api.domain.salespost.controller.model.*;
-import project.forwork.api.domain.salespost.infrastructure.SalesPostMapper;
 import project.forwork.api.domain.salespost.infrastructure.enums.*;
-import project.forwork.api.domain.salespost.infrastructure.model.SalesPostSearchDto;
 import project.forwork.api.domain.salespost.model.SalesPost;
 import project.forwork.api.domain.salespost.service.port.SalesPostRepository;
 import project.forwork.api.domain.salespost.service.port.SalesPostRepositoryCustom;
 import project.forwork.api.domain.thumbnailimage.model.ThumbnailImage;
 import project.forwork.api.domain.thumbnailimage.service.port.ThumbnailImageRepository;
-import project.forwork.api.domain.user.model.User;
 import project.forwork.api.domain.user.service.port.UserRepository;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 @Service
 @Builder
@@ -31,10 +28,10 @@ public class SalesPostService {
 
     private final SalesPostRepository salesPostRepository;
     private final SalesPostRepositoryCustom salesPostRepositoryCustom;
-    private final SalesPostPageService salesPostPageService;
+    private final ResumeQueryPort resumeQueryPort;
+    private final SalesPostViewService salesPostViewService;
     private final UserRepository userRepository;
     private final ThumbnailImageRepository thumbnailImageRepository;
-    private final SalesPostMapper salesPostMapper;
 
     @Transactional
     public void registerSalesPost(Resume newResume) {
@@ -47,7 +44,7 @@ public class SalesPostService {
                 () -> {
                     // 새로운 SalesPost 생성 후 저장
                     ThumbnailImage thumbnailImage = thumbnailImageRepository.getByFieldWithThrow(newResume.getField());
-                    SalesPost newSalesPost = SalesPost.create(newResume, thumbnailImage);
+                    SalesPost newSalesPost = SalesPost.create(newResume.getId(), thumbnailImage.getId());
                     salesPostRepository.save(newSalesPost);
                 }
         );
@@ -55,60 +52,19 @@ public class SalesPostService {
 
     @Transactional
     public void changeSalesStatus(CurrentUser currentUser, Long resumeId, SalesStatus status){
-        SalesPost salesPost = validateSellerAndResumeStatus(currentUser, resumeId);
+        SalesPost salesPost = salesPostRepository.getByResumeIdWithThrow(resumeId);
+        Resume resume = resumeQueryPort.getByIdWithThrow(resumeId);
+        validateSellerAndResumeStatus(currentUser, resume);
         salesPost = salesPost.changeStatus(status);
         salesPostRepository.save(salesPost);
     }
 
-
-    @Transactional(readOnly = true)
-    public SalesPost validateSellerAndResumeStatus(CurrentUser currentUser, Long resumeId){
-        User user = userRepository.getByIdWithThrow(currentUser.getId());
-        SalesPost salesPost = salesPostRepository.getByResumeIdWithThrow(resumeId);
-        Resume resume = salesPost.getResume();
-
-        if(resume.isAuthorMismatch(user.getId())){
-            throw new ApiException(SalesPostErrorCode.ACCESS_NOT_PERMISSION, user.getId());
-        }
-
-        if(resume.isActiveMismatch()){
-            throw new ApiException(SalesPostErrorCode.STATUS_NOT_ACTIVE, resume.getId());
-        }
-
-        return salesPost;
-    }
-
-    @Transactional(readOnly = true)
-    public List<SalesPostSellerResponse> findBySeller(CurrentUser currentUser){
-        List<SalesPostSellerResponse> salesResponse = salesPostRepositoryCustom.findBySeller(currentUser.getId());
-
-        if(salesResponse.isEmpty()){
-            throw new ApiException(SalesPostErrorCode.SALES_POST_NO_CONTENT);
-        }
-
-        return salesResponse;
-    }
-
-    @Transactional(readOnly = true)
-    public SalesPostDetailResponse getSellingPost(Long resumeId){
-
-        SalesPostDetailResponse salesPostDetailResponse = salesPostRepositoryCustom.getDetailSalesPost(resumeId);
-        if(SalesStatus.CANCELED.equals(salesPostDetailResponse.getStatus())){
-            throw new ApiException(SalesPostErrorCode.NOT_SELLING);
-        }
-        return salesPostDetailResponse;
-    }
-
-    @Transactional(readOnly = true)
-    public List<SalesPostSearchDto> searchByText(String text, int pageNumber, int pageSize){
-        int offset = (pageNumber - 1) * pageSize;
-        return salesPostMapper.searchByText(text, pageNumber, offset);
-    }
-
-    @Transactional(readOnly = true)
-    public List<SalesPostSearchDto> searchByTextWithLike(String text, int pageNumber, int pageSize){
-        int offset = (pageNumber - 1) * pageSize;
-        return salesPostMapper.searchByTextWithLike(text, pageNumber, offset);
+    @Transactional
+    public void cancelSalesPostIfExistsByResumeId(Long resumeId){
+        salesPostRepository.findByResumeId(resumeId).ifPresent(salesPost -> {
+            salesPost = salesPost.changeStatus(SalesStatus.CANCELED);
+            salesPostRepository.save(salesPost);
+        });
     }
 
     public SalesPostPage searchFilteredResults(
@@ -118,10 +74,20 @@ public class SalesPostService {
     ){
         SalesPostFilterCond cond = SalesPostFilterCond.from(sortType, minPrice, maxPrice, field, level);
         return switch(pageStep){
-            case FIRST -> salesPostPageService.findFirstPage(cond, limit);
-            case LAST -> salesPostPageService.findLastPage(cond, limit);
-            case NEXT -> salesPostPageService.findNextPage(cond, lastId, limit);
-            case PREVIOUS -> salesPostPageService.findPreviousPage(cond, lastId, limit);
+            case FIRST -> salesPostViewService.findFirstPage(cond, limit);
+            case LAST -> salesPostViewService.findLastPage(cond, limit);
+            case NEXT -> salesPostViewService.findNextPage(cond, lastId, limit);
+            case PREVIOUS -> salesPostViewService.findPreviousPage(cond, lastId, limit);
         };
+    }
+
+    private void validateSellerAndResumeStatus(CurrentUser currentUser, Resume resume){
+        if(resume.isAuthorMismatch(currentUser.getId())){
+            throw new ApiException(SalesPostErrorCode.ACCESS_NOT_PERMISSION, currentUser.getId());
+        }
+
+        if(resume.isActiveMismatch()){
+            throw new ApiException(SalesPostErrorCode.STATUS_NOT_ACTIVE, resume.getId());
+        }
     }
 }

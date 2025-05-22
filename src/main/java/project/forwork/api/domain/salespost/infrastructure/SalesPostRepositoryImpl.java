@@ -4,14 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import project.forwork.api.common.error.SalesPostErrorCode;
 import project.forwork.api.common.exception.ApiException;
-import project.forwork.api.domain.resume.infrastructure.ResumeEntity;
-import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
-import project.forwork.api.domain.resume.model.Resume;
-import project.forwork.api.domain.salespost.infrastructure.enums.SalesStatus;
 import project.forwork.api.domain.salespost.model.SalesPost;
 import project.forwork.api.domain.salespost.service.port.SalesPostRepository;
 
-import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -52,18 +47,18 @@ public class SalesPostRepositoryImpl implements SalesPostRepository {
 
     @Override
     public SalesPost getByResumeIdWithThrow(Long resumeId) {
-        return salesPostJpaRepository.findByResumeEntity_Id(resumeId)
+        return salesPostJpaRepository.findByResumeId(resumeId)
                 .orElseThrow(() -> new ApiException(SalesPostErrorCode.SALES_POST_NOT_FOUND))
                 .toModel();
     }
 
     @Override
     public Optional<SalesPost> findByResumeId(Long resumeId) {
-        return salesPostJpaRepository.findByResumeEntity_Id(resumeId).map(SalesPostEntity::toModel);
+        return salesPostJpaRepository.findByResumeId(resumeId).map(SalesPostEntity::toModel);
     }
 
     @Override
     public void deleteByResumeId(Long resumeId) {
-        salesPostJpaRepository.deleteByResumeEntity_Id(resumeId);
+        salesPostJpaRepository.deleteByResumeId(resumeId);
     }
 }

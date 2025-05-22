@@ -14,6 +14,7 @@ import project.forwork.api.common.error.SalesPostErrorCode;
 import project.forwork.api.domain.salespost.controller.model.SalesPostSellerResponse;
 import project.forwork.api.domain.salespost.infrastructure.enums.SalesStatus;
 import project.forwork.api.domain.salespost.service.SalesPostService;
+import project.forwork.api.domain.salespost.service.SalesPostViewService;
 
 import java.util.List;
 
@@ -25,6 +26,7 @@ import java.util.List;
 public class SalesPostController {
 
     private final SalesPostService salesPostService;
+    private final SalesPostViewService salesPostViewService;
 
     @Operation(summary = "자신의 판매글 목록 조회 ", description = "판매량, 판매수량도 같이 볼수 있다.")
     @ApiErrorCode(domain = SalesPostErrorCode.class, errorCode = {"SALES_POST_NO_CONTENT"})
@@ -32,7 +34,7 @@ public class SalesPostController {
     public Api<List<SalesPostSellerResponse>> find(
             @Parameter(hidden = true) @Current CurrentUser currentUser
     ){
-        List<SalesPostSellerResponse> salesPostResponses = salesPostService.findBySeller(currentUser);
+        List<SalesPostSellerResponse> salesPostResponses = salesPostViewService.findBySeller(currentUser);
         return Api.OK(salesPostResponses);
     }
 

@@ -16,7 +16,7 @@ import project.forwork.api.domain.cartresume.controller.model.SelectCartResumeRe
 import project.forwork.api.domain.cartresume.model.CartResume;
 import project.forwork.api.domain.cartresume.service.port.CartResumeRepository;
 import project.forwork.api.domain.resume.model.Resume;
-import project.forwork.api.domain.resume.service.port.ResumeRepository;
+import project.forwork.api.domain.resume.service.port.ResumeQueryPort;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -30,11 +30,11 @@ public class CartResumeService {
 
     private final CartResumeRepository cartResumeRepository;
     private final CartRepository cartRepository;
-    private final ResumeRepository resumeRepository;
+    private final ResumeQueryPort resumeQueryPort;
 
     public CartResume register(CurrentUser currentUser, Long resumeId){
         Cart cart = cartRepository.getByUserIdWithThrow(currentUser.getId());
-        Resume resume = resumeRepository.getByIdWithThrow(resumeId);
+        Resume resume = resumeQueryPort.getByIdWithThrow(resumeId);
 
         if(cartResumeRepository.existsByCartAndResume(cart, resume)){
             throw new ApiException(CartResumeErrorCode.RESUME_EXISTS_CART);

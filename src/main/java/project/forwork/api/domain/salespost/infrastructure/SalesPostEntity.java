@@ -25,13 +25,11 @@ public class SalesPostEntity extends BaseTimeEntity {
     /*@Version
     private Long version;*/
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "resume_id") @NotNull
-    private ResumeEntity resumeEntity;
+    @Column(name = "resume_id") @NotNull
+    private Long resumeId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "thumbnail_image_id") @NotNull
-    private ThumbnailImageEntity thumbnailImageEntity;
+    @Column(name = "thumbnail_image_id") @NotNull
+    private Long thumbnailId;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status") @NotNull
@@ -40,8 +38,8 @@ public class SalesPostEntity extends BaseTimeEntity {
     public static SalesPostEntity from(SalesPost salesPost){
         SalesPostEntity salesPostEntity = new SalesPostEntity();
         salesPostEntity.id = salesPost.getId();
-        salesPostEntity.resumeEntity = ResumeEntity.from(salesPost.getResume());
-        salesPostEntity.thumbnailImageEntity = ThumbnailImageEntity.from(salesPost.getThumbnailImage());
+        salesPostEntity.resumeId = salesPost.getResumeId();
+        salesPostEntity.thumbnailId = salesPost.getThumbnailId();
         salesPostEntity.salesStatus = salesPost.getSalesStatus();
         //salesPostEntity.version = salesPost.getVersion();
         return salesPostEntity;
@@ -50,8 +48,8 @@ public class SalesPostEntity extends BaseTimeEntity {
     public SalesPost toModel(){
         return SalesPost.builder()
                 .id(id)
-                .resume(resumeEntity.toModel())
-                .thumbnailImage(thumbnailImageEntity.toModel())
+                .resumeId(resumeId)
+                .thumbnailId(thumbnailId)
                 .salesStatus(salesStatus)
                 .registeredAt(getModifiedAt())
                 //.version(version)

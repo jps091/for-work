@@ -16,6 +16,7 @@ import project.forwork.api.common.infrastructure.enums.PageStep;
 import project.forwork.api.domain.salespost.infrastructure.enums.SalesPostSortType;
 import project.forwork.api.domain.salespost.infrastructure.model.SalesPostSearchDto;
 import project.forwork.api.domain.salespost.service.SalesPostService;
+import project.forwork.api.domain.salespost.service.SalesPostViewService;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -27,6 +28,7 @@ import java.util.List;
 public class SalesPostOpenController {
 
     private final SalesPostService salesPostService;
+    private final SalesPostViewService salesPostViewService;
 
     @Operation(summary = "단건 sale-post 조회 API", description = "이력서 ID로 판매글 조회 (이력서 판매글은 서로 1대1 매핑)")
     @ApiErrorCode(domain = SalesPostErrorCode.class, errorCode = {"NOT_SELLING"})
@@ -34,7 +36,7 @@ public class SalesPostOpenController {
     public Api<SalesPostDetailResponse> retrieve(
             @PathVariable Long resumeId
     ){
-        SalesPostDetailResponse salesPostResponse = salesPostService.getSellingPost(resumeId);
+        SalesPostDetailResponse salesPostResponse = salesPostViewService.getSellingPost(resumeId);
         return Api.OK(salesPostResponse);
     }
 
@@ -71,7 +73,7 @@ public class SalesPostOpenController {
             @RequestParam(defaultValue = "1") int pageNumber,
             @RequestParam(defaultValue = "10") int pageSize
     ){
-        List<SalesPostSearchDto> salesPostSearchDtos = salesPostService.searchByText(text, pageNumber, pageSize);
+        List<SalesPostSearchDto> salesPostSearchDtos = salesPostViewService.searchByText(text, pageNumber, pageSize);
         return Api.OK(salesPostSearchDtos);
     }
 }

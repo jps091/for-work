@@ -12,11 +12,4 @@ import java.util.Optional;
 
 public interface ResumeDecisionJpaRepository extends JpaRepository<ResumeDecisionEntity, Long> {
 
-    @Query("select rd from ResumeDecisionEntity rd" +
-            " join fetch rd.resumeEntity r" +
-            " where r.resumeStatus = :status" +
-            " order by r.registeredAt desc")
-    Page<ResumeDecisionEntity> findAllByResumeStatus(PageRequest pageRequest, @Param("status") ResumeStatus resumeStatus);
-
-    Optional<ResumeDecisionEntity> findByResumeEntity(ResumeEntity resumeEntity);
 }
