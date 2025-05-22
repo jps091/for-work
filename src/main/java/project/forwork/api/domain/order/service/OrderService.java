@@ -21,7 +21,7 @@ import project.forwork.api.domain.orderresume.controller.model.OrderResumeRespon
 import project.forwork.api.domain.orderresume.controller.model.OrderTitleResponse;
 import project.forwork.api.domain.orderresume.model.OrderResumes;
 import project.forwork.api.domain.orderresume.producer.OrderResumeProducer;
-import project.forwork.api.domain.resume.service.port.ResumeRepository;
+import project.forwork.api.domain.resume.service.port.ResumeQueryPort;
 
 import java.util.List;
 
@@ -31,10 +31,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class OrderService {
 
-    private final ResumeRepository resumeRepository; //TODO 어댑터로 변경
     private final ClockHolder clockHolder;
     private final UuidHolder uuidHolder;
 
+    private final ResumeQueryPort resumeQueryPort;
     private final OrderCommandPort orderCommandPort;
     private final OrderQueryPort orderQueryPort;
     private final OrderViewPort orderViewPort;
@@ -42,7 +42,7 @@ public class OrderService {
 
     public Order create(CurrentUser currentUser, ConfirmPaymentRequest body){
         Order order = Order.create(currentUser.getId(), body.getRequestId(), body.getAmount(), clockHolder);
-        List<ResumeDto> resumeDtos = resumeRepository.findByIds(body.getResumeIds()).stream()
+        List<ResumeDto> resumeDtos = resumeQueryPort.findByIds(body.getResumeIds()).stream()
                 .map(re -> new ResumeDto(re.getId(), re.getPrice()))
                 .toList();
         return orderCommandPort.save(order, resumeDtos);

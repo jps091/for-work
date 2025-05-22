@@ -1,4 +1,4 @@
-package project.forwork.api.domain.resume.infrastructure;
+package project.forwork.api.domain.resume.infrastructure.adaptor;
 
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.Projections;
@@ -12,7 +12,7 @@ import project.forwork.api.common.service.port.ClockHolder;
 import project.forwork.api.domain.resume.controller.model.ResumeAdminResponse;
 import project.forwork.api.domain.resume.infrastructure.enums.PeriodCond;
 import project.forwork.api.domain.resume.infrastructure.enums.ResumeStatus;
-import project.forwork.api.domain.resume.service.port.ResumeRepositoryCustom;
+import project.forwork.api.domain.resume.service.port.ResumeViewPort;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -21,12 +21,12 @@ import java.util.List;
 import static project.forwork.api.domain.resume.infrastructure.QResumeEntity.*;
 
 @Repository
-public class ResumeRepositoryCustomImpl implements ResumeRepositoryCustom {
+public class ResumeViewAdaptor implements ResumeViewPort {
 
     private final JPAQueryFactory queryFactory;
     private final ClockHolder clockHolder;
     @Autowired
-    public ResumeRepositoryCustomImpl(EntityManager em, ClockHolder clockHolder) {
+    public ResumeViewAdaptor(EntityManager em, ClockHolder clockHolder) {
         this.queryFactory = new JPAQueryFactory(em);
         this.clockHolder = clockHolder;
     }

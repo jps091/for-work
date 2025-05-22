@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import project.forwork.api.common.domain.CurrentUser;
 import project.forwork.api.common.error.ResumeErrorCode;
 import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.domain.resume.controller.model.ResumeModifyRequest;
@@ -24,25 +25,24 @@ import java.util.Objects;
 public class Resume {
 
     private final Long id;
-    private final User seller;
+    private final Long sellerId;
+    private final String sellerEmail;
     private final FieldType field;
     private final LevelType level;
     private final String resumeUrl;
     private final String descriptionImageUrl;
     private final BigDecimal price;
-    private Integer salesQuantity;
+    private final Integer salesQuantity;
     private final String description;
     private final ResumeStatus status;
     private final LocalDateTime registeredAt;
 
 
-    public static Resume from(User user, ResumeRegisterRequest body, String descriptionUrl){
-        if(body.getPrice().compareTo(new BigDecimal("100000")) > 0 ||
-                body.getPrice().compareTo(new BigDecimal("10000")) < 0){
-            throw new ApiException(ResumeErrorCode.PRICE_NOT_VALID);
-        }
+    public static Resume from(CurrentUser user, ResumeRegisterRequest body, String descriptionUrl){
+        validateResumePrice(body.getPrice());
         return Resume.builder()
-                .seller(user)
+                .sellerId(user.getId())
+                .sellerEmail(user.getEmail())
                 .field(body.getField())
                 .level(body.getLevel())
                 .resumeUrl(body.getResumeUrl())
@@ -54,13 +54,11 @@ public class Resume {
                 .build();
     }
 
-    public static Resume from(User user, ResumeRegisterRequest body){
-        if(body.getPrice().compareTo(new BigDecimal("100000")) > 0 ||
-                body.getPrice().compareTo(new BigDecimal("10000")) < 0){
-            throw new ApiException(ResumeErrorCode.PRICE_NOT_VALID);
-        }
+    public static Resume from(CurrentUser user, ResumeRegisterRequest body){
+        validateResumePrice(body.getPrice());
         return Resume.builder()
-                .seller(user)
+                .sellerId(user.getId())
+                .sellerEmail(user.getEmail())
                 .field(body.getField())
                 .level(body.getLevel())
                 .resumeUrl(body.getResumeUrl())
@@ -74,7 +72,8 @@ public class Resume {
     public Resume callbackDescriptionImageUrl(String filePath){
         return Resume.builder()
                 .id(id)
-                .seller(seller)
+                .sellerId(sellerId)
+                .sellerEmail(sellerEmail)
                 .field(field)
                 .level(level)
                 .resumeUrl(resumeUrl)
@@ -86,17 +85,17 @@ public class Resume {
                 .build();
     }
 
-    public Resume modify(ResumeModifyRequest body, String newUrl){
-        if(body.getPrice().compareTo(new BigDecimal("100000")) > 0 ||
-                body.getPrice().compareTo(new BigDecimal("10000")) < 0){
-            throw new ApiException(ResumeErrorCode.PRICE_NOT_VALID);
-        }
+    public Resume modify(Long userId, ResumeModifyRequest body, String newUrl){
+        validateAuthor(userId);
+        validateResumePrice(body.getPrice());
+
         if(newUrl == null){
             newUrl = descriptionImageUrl;
         }
         return Resume.builder()
                 .id(id)
-                .seller(seller)
+                .sellerId(sellerId)
+                .sellerEmail(sellerEmail)
                 .field(body.getField())
                 .level(body.getLevel())
                 .resumeUrl(body.getResumeUrl())
@@ -111,7 +110,8 @@ public class Resume {
     public Resume updateStatus(ResumeStatus status){
         return Resume.builder()
                 .id(id)
-                .seller(seller)
+                .sellerId(sellerId)
+                .sellerEmail(sellerEmail)
                 .field(field)
                 .level(level)
                 .resumeUrl(resumeUrl)
@@ -123,10 +123,12 @@ public class Resume {
                 .build();
     }
 
-    public Resume delete(){
+    public Resume delete(Long userId){
+        validateAuthor(userId);
         return Resume.builder()
                 .id(id)
-                .seller(seller)
+                .sellerId(sellerId)
+                .sellerEmail(sellerEmail)
                 .field(field)
                 .level(level)
                 .resumeUrl(resumeUrl)
@@ -141,7 +143,8 @@ public class Resume {
     public Resume increaseSalesQuantity(){
         return Resume.builder()
                 .id(id)
-                .seller(seller)
+                .sellerId(sellerId)
+                .sellerEmail(sellerEmail)
                 .field(field)
                 .level(level)
                 .resumeUrl(resumeUrl)
@@ -158,7 +161,20 @@ public class Resume {
     }
 
     public boolean isAuthorMismatch(Long sellerId){
-        return !Objects.equals(seller.getId(), sellerId);
+        return !Objects.equals(this.sellerId, sellerId);
+    }
+
+    private static void validateResumePrice(BigDecimal price) {
+        if(price.compareTo(new BigDecimal("100000")) > 0 ||
+                price.compareTo(new BigDecimal("10000")) < 0){
+            throw new ApiException(ResumeErrorCode.PRICE_NOT_VALID);
+        }
+    }
+
+    private void validateAuthor(Long userId) {
+        if(isAuthorMismatch(userId)){
+            throw new ApiException(ResumeErrorCode.ACCESS_NOT_PERMISSION);
+        }
     }
 
     public boolean isActiveMismatch(){
@@ -170,8 +186,5 @@ public class Resume {
             return description;
         }
         return description.substring(0, 15) + "...";
-    }
-    public String getSellerEmail(){
-        return seller.getEmail();
     }
 }

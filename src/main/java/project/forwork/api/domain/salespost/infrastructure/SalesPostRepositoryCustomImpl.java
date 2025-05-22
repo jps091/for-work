@@ -48,10 +48,10 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
                         resumeEntity.fieldType.as("field"),
                         resumeEntity.levelType.as("level")))
                 .from(salesPostEntity)
-                .join(salesPostEntity.resumeEntity, resumeEntity)
-                .join(salesPostEntity.thumbnailImageEntity, thumbnailImageEntity)
+                .join(resumeEntity).on(salesPostEntity.resumeId.eq(resumeEntity.id))
+                .join(thumbnailImageEntity).on(salesPostEntity.thumbnailId.eq(thumbnailImageEntity.id))
                 .where(
-                        salesPostEntity.resumeEntity.id.eq(resumeId)
+                        salesPostEntity.resumeId.eq(resumeId)
                 )
                 .fetchOne();
     }
@@ -67,8 +67,8 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
                         salesPostEntity.salesStatus.as("status")
                 ))
                 .from(salesPostEntity)
-                .join(salesPostEntity.resumeEntity, resumeEntity)
-                .where(resumeEntity.sellerEntity.id.eq(sellerId))
+                .join(resumeEntity).on(salesPostEntity.resumeId.eq(resumeEntity.id))
+                .where(resumeEntity.sellerId.eq(sellerId))
                 .fetch();
     }
 
@@ -83,7 +83,7 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
                         resumeEntity.price.as("price")
                 ))
                 .from(salesPostEntity)
-                .join(salesPostEntity.resumeEntity, resumeEntity)
+                .join(resumeEntity).on(salesPostEntity.resumeId.eq(resumeEntity.id))
                 .where(
                         priceRangeCond(cond.getMinPrice(), cond.getMaxPrice()),
                         fieldEqual(cond.getField()),
@@ -105,7 +105,7 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
                         resumeEntity.price.as("price")
                 ))
                 .from(salesPostEntity)
-                .join(salesPostEntity.resumeEntity, resumeEntity)
+                .join(resumeEntity).on(salesPostEntity.resumeId.eq(resumeEntity.id))
                 .where(
                         priceRangeCond(cond.getMinPrice(), cond.getMaxPrice()),
                         fieldEqual(cond.getField()),
@@ -130,7 +130,7 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
                         resumeEntity.price.as("price")
                 ))
                 .from(salesPostEntity)
-                .join(salesPostEntity.resumeEntity, resumeEntity)
+                .join(resumeEntity).on(salesPostEntity.resumeId.eq(resumeEntity.id))
                 .where(priceRangeCond(cond.getMinPrice(), cond.getMaxPrice()),
                         fieldEqual(cond.getField()),
                         levelEqual(cond.getLevel()),
@@ -152,7 +152,7 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
                         resumeEntity.price.as("price")
                 ))
                 .from(salesPostEntity)
-                .join(salesPostEntity.resumeEntity, resumeEntity)
+                .join(resumeEntity).on(salesPostEntity.resumeId.eq(resumeEntity.id))
                 .where(priceRangeCond(cond.getMinPrice(), cond.getMaxPrice()),
                         fieldEqual(cond.getField()),
                         levelEqual(cond.getLevel()),
@@ -182,8 +182,8 @@ public class SalesPostRepositoryCustomImpl implements SalesPostRepositoryCustom 
                         resumeEntity.id.as("resumeId")
                 ))
                 .from(salesPostEntity)
-                .join(salesPostEntity.resumeEntity, resumeEntity)
-                .where(salesPostEntity.resumeEntity.id.eq(resumeId))
+                .join(resumeEntity).on(salesPostEntity.resumeId.eq(resumeEntity.id))
+                .where(salesPostEntity.resumeId.eq(resumeId))
                 .fetchOne();
     }
 

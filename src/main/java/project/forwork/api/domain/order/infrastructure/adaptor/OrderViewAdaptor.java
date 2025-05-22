@@ -12,7 +12,6 @@ import project.forwork.api.domain.orderresume.controller.model.OrderResumePurcha
 import project.forwork.api.domain.orderresume.controller.model.OrderResumeResponse;
 import project.forwork.api.domain.orderresume.controller.model.OrderTitleResponse;
 import project.forwork.api.domain.orderresume.infrastructure.QOrderResumeEntity;
-import project.forwork.api.domain.orderresume.model.OrderResume;
 import project.forwork.api.domain.orderresume.model.OrderResumes;
 import project.forwork.api.domain.resume.infrastructure.QResumeEntity;
 import project.forwork.api.domain.user.infrastructure.QUserEntity;
@@ -55,7 +54,7 @@ public class OrderViewAdaptor implements OrderViewPort {
                 .join(orderResumeEntity.orderEntity, orderEntity)
                 .join(resumeEntity).on(orderResumeEntity.resumeId.eq(resumeEntity.id))
                 .join(userEntity).on(orderEntity.userId.eq(userEntity.id))
-                .join(resumeEntity.sellerEntity, sellerUser)
+                .join(resumeEntity).on(userEntity.id.eq(resumeEntity.sellerId))
                 .where(orderResumeEntity.id.in(orderResumeIds))
                 .fetch();
     }

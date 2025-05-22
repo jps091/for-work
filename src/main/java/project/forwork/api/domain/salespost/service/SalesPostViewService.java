@@ -5,9 +5,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import project.forwork.api.common.domain.CurrentUser;
 import project.forwork.api.common.error.SalesPostErrorCode;
 import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.domain.salespost.controller.model.*;
+import project.forwork.api.domain.salespost.infrastructure.SalesPostMapper;
+import project.forwork.api.domain.salespost.infrastructure.enums.SalesStatus;
 import project.forwork.api.domain.salespost.infrastructure.model.SalesPostSearchDto;
 import project.forwork.api.domain.salespost.service.port.SalesPostRepository;
 import project.forwork.api.domain.salespost.service.port.SalesPostRepositoryCustom;
@@ -15,7 +18,6 @@ import project.forwork.api.domain.thumbnailimage.service.ThumbnailImageService;
 import project.forwork.api.domain.user.service.port.UserRepository;
 
 import java.util.List;
-import java.util.Objects;
 
 import static project.forwork.api.common.config.cache.redis.RedisCacheConfig.FIRST;
 
@@ -23,15 +25,45 @@ import static project.forwork.api.common.config.cache.redis.RedisCacheConfig.FIR
 @Service
 @Builder
 @RequiredArgsConstructor
-public class SalesPostPageService {
+@Transactional(readOnly = true)
+public class SalesPostViewService {
 
     private final SalesPostRepository salesPostRepository;
     private final SalesPostRepositoryCustom salesPostRepositoryCustom;
     private final UserRepository userRepository;
     private final ThumbnailImageService thumbnailImageService;
+    private final SalesPostMapper salesPostMapper;
+
+    public List<SalesPostSellerResponse> findBySeller(CurrentUser currentUser){
+        List<SalesPostSellerResponse> salesResponse = salesPostRepositoryCustom.findBySeller(currentUser.getId());
+
+        if(salesResponse.isEmpty()){
+            throw new ApiException(SalesPostErrorCode.SALES_POST_NO_CONTENT);
+        }
+
+        return salesResponse;
+    }
+
+    public SalesPostDetailResponse getSellingPost(Long resumeId){
+
+        SalesPostDetailResponse salesPostDetailResponse = salesPostRepositoryCustom.getDetailSalesPost(resumeId);
+        if(SalesStatus.CANCELED.equals(salesPostDetailResponse.getStatus())){
+            throw new ApiException(SalesPostErrorCode.NOT_SELLING);
+        }
+        return salesPostDetailResponse;
+    }
+
+    public List<SalesPostSearchDto> searchByText(String text, int pageNumber, int pageSize){
+        int offset = (pageNumber - 1) * pageSize;
+        return salesPostMapper.searchByText(text, pageNumber, offset);
+    }
+
+    public List<SalesPostSearchDto> searchByTextWithLike(String text, int pageNumber, int pageSize){
+        int offset = (pageNumber - 1) * pageSize;
+        return salesPostMapper.searchByTextWithLike(text, pageNumber, offset);
+    }
 
 
-    @Transactional(readOnly = true)
     @Cacheable(cacheNames = FIRST, key = "'salespost:field:' + #cond.field + ':firstpage:sort:' + #cond.sortType",
             condition = "#cond.sortType == T(project.forwork.api.domain.salespost.infrastructure.enums.SalesPostSortType).BEST_SELLING && " +
                     "#cond.level == T(project.forwork.api.domain.salespost.infrastructure.enums.LevelCond).UNSELECTED &&" +
@@ -46,13 +78,11 @@ public class SalesPostPageService {
         return createSearchResponseByDto(results, true, false);
     }
 
-    @Transactional(readOnly = true)
     public SalesPostPage findLastPage(SalesPostFilterCond cond, int limit){
         List<SalesPostSearchDto> results = salesPostRepositoryCustom.searchLastPage(cond, limit);
         return createSearchResponseByDto(results, false, true);
     }
 
-    @Transactional(readOnly = true)
     public SalesPostPage findNextPage(SalesPostFilterCond cond, Long lastId, int limit){
         List<SalesPostSearchDto> results = salesPostRepositoryCustom.searchNextPage(cond, lastId, limit + 1);
         boolean isLastPage = results.size() <= limit; // limit + 1과 비교하여 마지막 페이지 여부 판단
@@ -63,7 +93,6 @@ public class SalesPostPageService {
         return createSearchResponseByDto(results, false, isLastPage);
     }
 
-    @Transactional(readOnly = true)
     public SalesPostPage findPreviousPage(SalesPostFilterCond cond, Long lastId, int limit){
         List<SalesPostSearchDto> results = salesPostRepositoryCustom.searchPreviousPage(cond, lastId, limit + 1);
         boolean isFirstPage = results.size() <= limit; // limit + 1과 비교하여 마지막 페이지 여부 판단

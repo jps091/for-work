@@ -26,7 +26,7 @@ public class ResumeAdminDetailResponse {
     public static ResumeAdminDetailResponse from(Resume resume){
         return ResumeAdminDetailResponse.builder()
                 .id(resume.getId())
-                .email(resume.getSeller().getEmail())
+                .email(resume.getSellerEmail())
                 .field(resume.getField())
                 .level(resume.getLevel())
                 .resumeUrl(resume.getResumeUrl())

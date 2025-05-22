@@ -13,7 +13,7 @@ import java.util.Optional;
 public interface ResumeJpaRepository extends JpaRepository<ResumeEntity, Long>{
 
     @Query("select r from ResumeEntity r" +
-            " where  r.sellerEntity.id = :userId and" +
+            " where  r.sellerId = :userId and" +
             " r.resumeStatus IN (:statusList)")
     List<ResumeEntity> findBySellerIdAndStatus(@Param("userId") Long userId, @Param("statusList")List<ResumeStatus> statusList);
 

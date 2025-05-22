@@ -37,7 +37,7 @@ class ResumeServiceTest {
     private FakeUserRepository fakeUserRepository;
 
     @Mock
-    private ResumePageService resumePageService;
+    private ResumeQueryService resumeQueryService;
 
     @BeforeEach
     void init(){
@@ -53,7 +53,7 @@ class ResumeServiceTest {
                 .cartResumeRepository(fakeCartResumeRepository)
                 .salesPostRepository(fakeSalesPostRepository)
                 .s3Service(fakeS3Service)
-                .resumePageService(resumePageService)
+                .resumePageService(resumeQueryService)
                 .build();
 
         User user1 = User.builder()
