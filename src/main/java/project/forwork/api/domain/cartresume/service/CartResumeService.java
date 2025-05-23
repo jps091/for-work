@@ -9,7 +9,6 @@ import project.forwork.api.common.domain.CurrentUser;
 import project.forwork.api.common.error.CartResumeErrorCode;
 import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.domain.cart.model.Cart;
-import project.forwork.api.domain.cart.service.port.CartRepository;
 import project.forwork.api.domain.cartresume.controller.model.CartResumeDetailResponse;
 import project.forwork.api.domain.cartresume.controller.model.CartResumeResponse;
 import project.forwork.api.domain.cartresume.controller.model.SelectCartResumeRequest;
@@ -17,6 +16,7 @@ import project.forwork.api.domain.cartresume.model.CartResume;
 import project.forwork.api.domain.cartresume.service.port.CartResumeRepository;
 import project.forwork.api.domain.resume.model.Resume;
 import project.forwork.api.domain.resume.service.port.ResumeQueryPort;
+import project.forwork.api.domain.user.service.port.UserQueryPort;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -29,11 +29,11 @@ import java.util.List;
 public class CartResumeService {
 
     private final CartResumeRepository cartResumeRepository;
-    private final CartRepository cartRepository;
+    private final UserQueryPort userQueryPort;
     private final ResumeQueryPort resumeQueryPort;
 
     public CartResume register(CurrentUser currentUser, Long resumeId){
-        Cart cart = cartRepository.getByUserIdWithThrow(currentUser.getId());
+        Cart cart = userQueryPort.getCart(currentUser.getId());
         Resume resume = resumeQueryPort.getByIdWithThrow(resumeId);
 
         if(cartResumeRepository.existsByCartAndResume(cart, resume)){

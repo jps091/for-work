@@ -17,7 +17,6 @@ import project.forwork.api.domain.salespost.service.port.SalesPostRepository;
 import project.forwork.api.domain.salespost.service.port.SalesPostRepositoryCustom;
 import project.forwork.api.domain.thumbnailimage.model.ThumbnailImage;
 import project.forwork.api.domain.thumbnailimage.service.port.ThumbnailImageRepository;
-import project.forwork.api.domain.user.service.port.UserRepository;
 
 import java.math.BigDecimal;
 
@@ -30,7 +29,6 @@ public class SalesPostService {
     private final SalesPostRepositoryCustom salesPostRepositoryCustom;
     private final ResumeQueryPort resumeQueryPort;
     private final SalesPostViewService salesPostViewService;
-    private final UserRepository userRepository;
     private final ThumbnailImageRepository thumbnailImageRepository;
 
     @Transactional

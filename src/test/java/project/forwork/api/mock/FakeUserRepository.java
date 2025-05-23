@@ -18,7 +18,7 @@ public class FakeUserRepository implements UserRepository {
 
 
     @Override
-    public User save(User user) {
+    public User update(User user) {
         if(user.getId() == null || user.getId() == 0){
             User newUser = User.builder()
                     .id(id.incrementAndGet())

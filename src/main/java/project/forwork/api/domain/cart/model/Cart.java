@@ -17,12 +17,12 @@ import java.time.LocalDateTime;
 @Builder
 public class Cart {
     private final Long id;
-    private final User user;
+    private final Long userId;
     private final CartStatus status;
 
-    public static Cart create(User user){
+    public static Cart create(Long userId){
         return Cart.builder()
-                .user(user)
+                .userId(userId)
                 .status(CartStatus.ACTIVE)
                 .build();
     }

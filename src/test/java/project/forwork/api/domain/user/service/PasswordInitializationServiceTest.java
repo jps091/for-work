@@ -32,7 +32,7 @@ class PasswordInitializationServiceTest {
                 .password("123")
                 .status(UserStatus.USER)
                 .build();
-        fakeUserRepository.save(user);
+        fakeUserRepository.update(user);
 
         //when(상황발생)
         passwordInitializationService.issueTemporaryPassword(user);

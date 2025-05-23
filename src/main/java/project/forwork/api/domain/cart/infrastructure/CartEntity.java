@@ -24,9 +24,8 @@ public class CartEntity extends BaseTimeEntity {
     @Column(name = "cart_id")
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private UserEntity userEntity;
+    @Column(name = "user_id")
+    private Long userId;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status") @NotNull
@@ -35,7 +34,7 @@ public class CartEntity extends BaseTimeEntity {
     public static CartEntity from(Cart cart){
         CartEntity cartEntity = new CartEntity();
         cartEntity.id = cart.getId();
-        cartEntity.userEntity = UserEntity.from(cart.getUser());
+        cartEntity.userId = cart.getUserId();
         cartEntity.status = cart.getStatus();
         return cartEntity;
     }
@@ -43,7 +42,7 @@ public class CartEntity extends BaseTimeEntity {
     public Cart toModel(){
         return Cart.builder()
                 .id(id)
-                .user(userEntity.toModel())
+                .userId(userId)
                 .status(status)
                 .build();
     }

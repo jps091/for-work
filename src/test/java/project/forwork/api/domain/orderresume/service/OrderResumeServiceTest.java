@@ -67,8 +67,8 @@ class OrderResumeServiceTest {
                 .password("123")
                 .status(UserStatus.USER)
                 .build();
-        fakeUserRepository.save(user1);
-        fakeUserRepository.save(user2);
+        fakeUserRepository.update(user1);
+        fakeUserRepository.update(user2);
 
         Resume resume1 = Resume.builder()
                 .id(1L)

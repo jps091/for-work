@@ -14,13 +14,12 @@ import project.forwork.api.common.producer.Producer;
 import project.forwork.api.domain.user.infrastructure.message.NoticeMessage;
 import project.forwork.api.common.service.port.RedisUtils;
 import project.forwork.api.common.service.port.UuidHolder;
-import project.forwork.api.domain.cart.model.Cart;
-import project.forwork.api.domain.cart.service.port.CartRepository;
 import project.forwork.api.domain.resume.service.ResumeService;
 import project.forwork.api.domain.token.service.TokenHeaderService;
 import project.forwork.api.domain.user.controller.model.*;
 import project.forwork.api.domain.user.model.User;
-import project.forwork.api.domain.user.service.port.UserRepository;
+import project.forwork.api.domain.user.service.port.UserCommandPort;
+import project.forwork.api.domain.user.service.port.UserQueryPort;
 
 import java.util.Objects;
 
@@ -31,10 +30,10 @@ public class UserService {
 
     public static final String EMAIL_PREFIX = "email:";
 
-    private final UserRepository userRepository;
+    private final UserQueryPort userQueryPort;
+    private final UserCommandPort userCommandPort;
     private final TokenHeaderService tokenHeaderService;
     private final ResumeService resumeService;
-    private final CartRepository cartRepository;
     private final UuidHolder uuidHolder;
     private final RedisUtils redisUtils;
     private final Producer producer;
@@ -42,27 +41,23 @@ public class UserService {
     @Transactional
     public User register(UserCreateRequest body){
 
-        if(userRepository.existsByEmail(body.getEmail())){
+        if(userQueryPort.existsByEmail(body.getEmail())){
             throw new ApiException(UserErrorCode.EMAIL_DUPLICATION);
         }
 
-        User user = User.from(body);
-        user = userRepository.save(user);
-
-        Cart cart = Cart.create(user);
-        cartRepository.save(cart);
-
-        produceNoticeMessage(user);
-        return user;
+        User registeredUser = User.from(body);
+        userCommandPort.register(registeredUser);
+        produceNoticeMessage(registeredUser);
+        return registeredUser;
     }
 
     @Transactional
     public void updatePassword(
             CurrentUser currentUser, PasswordModifyRequest body
     ){
-        User user = userRepository.getByIdWithThrow(currentUser.getId());
+        User user = userQueryPort.getByIdWithThrow(currentUser.getId());
         user = user.updatePassword(body.getPassword());
-        userRepository.save(user);
+        userCommandPort.update(user);
     }
 
     @Transactional
@@ -70,18 +65,15 @@ public class UserService {
             @Current CurrentUser currentUser,
             HttpServletResponse response
     ){
-        User user = userRepository.getByIdWithThrow(currentUser.getId());
+        User user = userQueryPort.getByIdWithThrow(currentUser.getId());
         tokenHeaderService.expiredRefreshTokenAndHeaders(currentUser.getId(), response);
-
         resumeService.deleteAll(currentUser);
-        cartRepository.delete(user.getId());
-
         user = user.delete(uuidHolder);
-        userRepository.save(user);
+        userCommandPort.delete(user);
     }
 
     public void verifyPassword(CurrentUser currentUser, PasswordVerifyRequest body){
-        User user = userRepository.getByIdWithThrow(currentUser.getId());
+        User user = userQueryPort.getByIdWithThrow(currentUser.getId());
         if(user.isPasswordMismatch(body.getPassword())){
             throw new ApiException(UserErrorCode.PASSWORD_NOT_MATCH);
         }
@@ -89,8 +81,7 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public User getByIdWithThrow(long id){
-        return userRepository.findById(id)
-                .orElseThrow(() -> new ApiException(UserErrorCode.USER_NOT_FOUND, id));
+        return userQueryPort.getByIdWithThrow(id);
     }
 
     public void produceVerifyEmail(String email){

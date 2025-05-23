@@ -1,6 +1,5 @@
 package project.forwork.api.domain.user.service;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
@@ -11,13 +10,13 @@ import project.forwork.api.common.error.UserErrorCode;
 import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.common.service.port.ClockHolder;
 import project.forwork.api.common.service.port.RedisUtils;
-import project.forwork.api.domain.token.model.TokenResponse;
 import project.forwork.api.domain.token.service.TokenHeaderService;
 import project.forwork.api.domain.user.controller.model.LoginResponse;
 import project.forwork.api.domain.user.controller.model.PasswordInitRequest;
 import project.forwork.api.domain.user.controller.model.UserLoginRequest;
 import project.forwork.api.domain.user.model.User;
-import project.forwork.api.domain.user.service.port.UserRepository;
+import project.forwork.api.domain.user.service.port.UserCommandPort;
+import project.forwork.api.domain.user.service.port.UserQueryPort;
 
 @Slf4j
 @Builder
@@ -26,7 +25,8 @@ import project.forwork.api.domain.user.service.port.UserRepository;
 public class LoginService {
     private static final String LOGIN_ATTEMPT_KEY_PREFIX = "loginAttempt:userId:";
     private static final int MAX_LOGIN_ATTEMPTS = 5;
-    private final UserRepository userRepository;
+    private final UserCommandPort userCommandPort;
+    private final UserQueryPort userQueryPort;
     private final TokenHeaderService tokenHeaderService;
     private final ClockHolder clockHolder;
     private final RedisUtils redisUtils;
@@ -35,12 +35,12 @@ public class LoginService {
     @Transactional
     public LoginResponse login(HttpServletResponse response, UserLoginRequest loginUser){
 
-        User user = userRepository.findByEmail(loginUser.getEmail())
+        User user = userQueryPort.findByEmail(loginUser.getEmail())
                 .orElseThrow(() -> new ApiException(UserErrorCode.EMAIL_NOT_FOUND));
 
         loginAttempt(user);
         user = user.login(clockHolder, loginUser.getPassword());
-        userRepository.save(user);
+        userCommandPort.update(user);
 
         tokenHeaderService.addTokenToHeaders(response, user);
         initAttemptLoginCountByUser(user);
@@ -54,7 +54,7 @@ public class LoginService {
 
     @Transactional
     public void initTemporaryPassword(PasswordInitRequest body){
-        User user = userRepository.findByEmail(body.getEmail())
+        User user = userQueryPort.findByEmail(body.getEmail())
                 .orElseThrow(() -> new ApiException(UserErrorCode.USER_NOT_FOUND));
 
         if(user.isNameMismatch(body.getName())){

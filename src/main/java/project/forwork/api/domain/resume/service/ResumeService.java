@@ -17,8 +17,6 @@ import project.forwork.api.domain.resume.service.port.ResumeQueryPort;
 import project.forwork.api.common.domain.CurrentUser;
 import project.forwork.api.domain.resumedecision.infrastructure.message.SalesRequestResultMessage;
 import project.forwork.api.domain.salespost.service.SalesPostService;
-import project.forwork.api.domain.user.model.User;
-import project.forwork.api.domain.user.service.port.UserRepository;
 
 import java.util.List;
 
