@@ -14,13 +14,13 @@ public interface CartResumeJpaRepository extends JpaRepository<CartResumeEntity,
 
     @Query("select cr from CartResumeEntity  cr" +
             " join fetch cr.cartEntity c" +
-            " join fetch c.userEntity u" +
-            " where u.id = :userId")
+            " join fetch c.userId u" +
+            " where u = :userId")
     List<CartResumeEntity> findAllInCart(@Param("userId") Long userId);
 
     @Modifying
     @Query("delete from CartResumeEntity cr" +
-            " where cr.cartEntity.userEntity.id = :userId")
+            " where cr.cartEntity.userId = :userId")
     void deleteAllInCart(@Param("userId") Long userId);
 
     @Modifying
@@ -35,15 +35,15 @@ public interface CartResumeJpaRepository extends JpaRepository<CartResumeEntity,
     @Query("select cr from CartResumeEntity cr" +
             " join fetch cr.resumeEntity r" +
             " join fetch cr.cartEntity c" +
-            " join fetch c.userEntity u" +
-            " where u.id = :userId" +
+            " join fetch c.userId u" +
+            " where u = :userId" +
             " and r.id IN :resumeIds")
     List<CartResumeEntity> findByConfirmedResumes(@Param("userId") Long userId, @Param("resumeIds") List<Long> resumeIds);
 
     @Query("select cr from CartResumeEntity cr" +
             " join fetch cr.cartEntity c" +
-            " join fetch c.userEntity u" +
-            " where u.id = :userId" +
+            " join fetch c.userId u" +
+            " where u = :userId" +
             " and cr.id IN (:cartResumeIds)")
     List<CartResumeEntity> findByUserAndSelected(@Param("userId") Long userId, @Param("cartResumeIds") List<Long> cartResumeIds);
 

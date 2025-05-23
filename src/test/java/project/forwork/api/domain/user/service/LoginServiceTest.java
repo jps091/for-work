@@ -58,7 +58,7 @@ class LoginServiceTest {
                 .status(UserStatus.USER)
                 .build();
 
-        fakeUserRepository.save(user);
+        fakeUserRepository.update(user);
 
         User user2 = User.builder()
                 .id(2L)
@@ -68,7 +68,7 @@ class LoginServiceTest {
                 .status(UserStatus.DELETE)
                 .build();
 
-        fakeUserRepository.save(user2);
+        fakeUserRepository.update(user2);
     }
 
     @Test

@@ -9,7 +9,7 @@ import project.forwork.api.common.producer.Producer;
 import project.forwork.api.domain.user.infrastructure.message.TempPasswordMessage;
 import project.forwork.api.common.service.port.UuidHolder;
 import project.forwork.api.domain.user.model.User;
-import project.forwork.api.domain.user.service.port.UserRepository;
+import project.forwork.api.domain.user.service.port.UserCommandPort;
 
 @Service
 @Builder
@@ -17,14 +17,14 @@ import project.forwork.api.domain.user.service.port.UserRepository;
 public class PasswordInitializationService {
 
 
-    private final UserRepository userRepository;
+    private final UserCommandPort userCommandPort;
     private final UuidHolder uuidHolder;
     private final Producer producer;
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void issueTemporaryPassword(User user) {
         User tempUser = user.updatePassword(uuidHolder.random());
-        userRepository.save(tempUser);
+        userCommandPort.update(tempUser);
         TempPasswordMessage message = TempPasswordMessage.from(tempUser.getEmail(), tempUser.getPassword());
         producer.sendPasswordMail(message);
     }

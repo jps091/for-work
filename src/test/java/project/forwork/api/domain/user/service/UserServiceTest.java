@@ -67,7 +67,7 @@ class UserServiceTest {
                 .password("123")
                 .status(UserStatus.USER)
                 .build();
-        fakeUserRepository.save(user);
+        fakeUserRepository.update(user);
 
         Cart cart = Cart.builder()
                 .id(1L)

@@ -13,7 +13,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import project.forwork.api.common.annotation.Current;
 import project.forwork.api.common.domain.CurrentUser;
 import project.forwork.api.domain.user.model.User;
-import project.forwork.api.domain.user.service.port.UserRepository;
+import project.forwork.api.domain.user.service.port.UserQueryPort;
 
 import static project.forwork.api.interceptor.AuthorizationInterceptor.USER_ID;
 
@@ -22,7 +22,7 @@ import static project.forwork.api.interceptor.AuthorizationInterceptor.USER_ID;
 @RequiredArgsConstructor
 public class CurrentUserResolver implements HandlerMethodArgumentResolver {
 
-    private final UserRepository userRepository;
+    private final UserQueryPort userQueryPort;
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
@@ -39,7 +39,7 @@ public class CurrentUserResolver implements HandlerMethodArgumentResolver {
         RequestAttributes requestContext = RequestContextHolder.getRequestAttributes();
         Object userId = requestContext.getAttribute(USER_ID, RequestAttributes.SCOPE_REQUEST);
 
-        User user = userRepository.getByIdWithThrow(Long.parseLong(userId.toString()));
+        User user = userQueryPort.getByIdWithThrow(Long.parseLong(userId.toString()));
 
         return CurrentUser.builder()
                 .id(user.getId())

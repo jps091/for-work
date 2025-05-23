@@ -12,7 +12,7 @@ import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
 import project.forwork.api.common.error.ErrorCode;
 import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.domain.user.model.User;
-import project.forwork.api.domain.user.service.port.UserRepository;
+import project.forwork.api.domain.user.service.port.UserQueryPort;
 
 import java.util.Objects;
 
@@ -22,7 +22,7 @@ import static project.forwork.api.interceptor.AuthorizationInterceptor.USER_ID;
 @RequiredArgsConstructor
 public class AdminInterceptor implements HandlerInterceptor {
 
-    private final UserRepository userRepository;
+    private final UserQueryPort userQueryPort;
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
@@ -35,7 +35,7 @@ public class AdminInterceptor implements HandlerInterceptor {
 
         Objects.requireNonNull(userId, ()->{throw new ApiException(ErrorCode.NULL_POINT);});
 
-        User user = userRepository.getByIdWithThrow(Long.parseLong(userId.toString()));
+        User user = userQueryPort.getByIdWithThrow(Long.parseLong(userId.toString()));
         if(user.isAdminMismatch()){
             throw new ApiException(ErrorCode.FORBIDDEN);
         }

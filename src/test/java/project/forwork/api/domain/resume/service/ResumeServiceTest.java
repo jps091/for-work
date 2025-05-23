@@ -79,9 +79,9 @@ class ResumeServiceTest {
                 .password("321")
                 .status(UserStatus.ADMIN)
                 .build();
-        fakeUserRepository.save(user1);
-        fakeUserRepository.save(user2);
-        fakeUserRepository.save(admin);
+        fakeUserRepository.update(user1);
+        fakeUserRepository.update(user2);
+        fakeUserRepository.update(admin);
 
         Resume resume1 = Resume.builder()
                 .id(1L)

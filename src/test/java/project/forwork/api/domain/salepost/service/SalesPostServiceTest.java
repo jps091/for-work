@@ -12,7 +12,6 @@ import project.forwork.api.domain.salespost.infrastructure.enums.SalesStatus;
 import project.forwork.api.domain.salespost.model.SalesPost;
 import project.forwork.api.domain.salespost.service.SalesPostService;
 import project.forwork.api.domain.thumbnailimage.model.ThumbnailImage;
-import project.forwork.api.domain.thumbnailimage.service.port.ThumbnailImageRepository;
 import project.forwork.api.domain.user.infrastructure.enums.UserStatus;
 import project.forwork.api.domain.user.model.User;
 import project.forwork.api.mock.FakeSalesPostRepository;
@@ -59,8 +58,8 @@ class SalesPostServiceTest {
                 .status(UserStatus.USER)
                 .build();
 
-        fakeUserRepository.save(user1);
-        fakeUserRepository.save(user2);
+        fakeUserRepository.update(user1);
+        fakeUserRepository.update(user2);
 
         Resume resume1 = Resume.builder()
                 .id(1L)

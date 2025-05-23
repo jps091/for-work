@@ -15,7 +15,6 @@ import project.forwork.api.domain.salespost.infrastructure.model.SalesPostSearch
 import project.forwork.api.domain.salespost.service.port.SalesPostRepository;
 import project.forwork.api.domain.salespost.service.port.SalesPostRepositoryCustom;
 import project.forwork.api.domain.thumbnailimage.service.ThumbnailImageService;
-import project.forwork.api.domain.user.service.port.UserRepository;
 
 import java.util.List;
 
@@ -30,7 +29,6 @@ public class SalesPostViewService {
 
     private final SalesPostRepository salesPostRepository;
     private final SalesPostRepositoryCustom salesPostRepositoryCustom;
-    private final UserRepository userRepository;
     private final ThumbnailImageService thumbnailImageService;
     private final SalesPostMapper salesPostMapper;
 
