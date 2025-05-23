@@ -8,6 +8,7 @@ import project.forwork.api.common.exception.ApiException;
 import project.forwork.api.domain.cart.infrastructure.CartEntity;
 import project.forwork.api.domain.cart.model.Cart;
 import project.forwork.api.domain.cartresume.model.CartResume;
+import project.forwork.api.domain.cartresume.model.CartResumes;
 import project.forwork.api.domain.cartresume.service.port.CartResumeRepository;
 import project.forwork.api.domain.resume.infrastructure.ResumeEntity;
 import project.forwork.api.domain.resume.model.Resume;
@@ -27,14 +28,9 @@ public class CartResumeRepositoryImpl implements CartResumeRepository {
     }
 
     @Override
-    public void deleteAll(List<CartResume> cartResumes) {
-        List<CartResumeEntity> cartResumeEntities = cartResumes.stream().map(CartResumeEntity::from).toList();
+    public void deleteAll(CartResumes cartResumes) {
+        List<CartResumeEntity> cartResumeEntities = cartResumes.toEntityList();
         cartResumeJpaRepository.deleteAll(cartResumeEntities);
-    }
-
-    @Override
-    public void deleteByIds(Long cartId, List<Long> cartResumeIds) {
-        cartResumeJpaRepository.deleteByIds(cartId, cartResumeIds);
     }
 
     @Override
@@ -58,32 +54,28 @@ public class CartResumeRepositoryImpl implements CartResumeRepository {
                 .orElseThrow(() -> new ApiException(CartResumeErrorCode.CART_RESUME_NOT_FOUND, cartResumeId));
     }
 
-//    @Override
-//    public List<CartResume> findByIds(List<Long> cartResumeIds) {
-//        return cartResumeJpaRepository.findByConfirmedResumes(cartResumeIds).stream()
-//                .map(CartResumeEntity::toModel)
-//                .toList();
-//    }
-
     @Override
-    public List<CartResume> findByUserAndSelected(Long userId, List<Long> cartResumeIds) {
-        return cartResumeJpaRepository.findByUserAndSelected(userId, cartResumeIds).stream()
+    public CartResumes findByUserAndSelected(Long userId, List<Long> cartResumeIds) {
+        List<CartResume> cartResumeList = cartResumeJpaRepository.findByUserAndSelected(userId, cartResumeIds).stream()
                 .map(CartResumeEntity::toModel)
                 .toList();
+        return CartResumes.of(cartResumeList);
     }
 
     @Override
-    public List<CartResume> findByConfirmedResumes(Long userId, List<Long> resumeIds) {
-        return cartResumeJpaRepository.findByConfirmedResumes(userId, resumeIds).stream()
+    public CartResumes findByConfirmedResumes(Long userId, List<Long> resumeIds) {
+        List<CartResume> cartResumeList = cartResumeJpaRepository.findByConfirmedResumes(userId, resumeIds).stream()
                 .map(CartResumeEntity::toModel)
                 .toList();
+        return CartResumes.of(cartResumeList);
     }
 
     @Override
-    public List<CartResume> findAllInCart(Long userId) {
-        return cartResumeJpaRepository.findAllInCart(userId).stream()
+    public CartResumes findAllInCart(Long userId) {
+        List<CartResume> cartResumeList = cartResumeJpaRepository.findAllInCart(userId).stream()
                 .map(CartResumeEntity::toModel)
                 .toList();
+        return CartResumes.of(cartResumeList);
     }
 
     @Override
