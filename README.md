@@ -81,12 +81,14 @@
 
 ## 🗂 프로젝트 구조
 
-1. Presentation, Application, Domain, Persistence 4계층으로 프로젝트를 구성 하였습니다.
-2. Persistent Object와 Domain Object를 분리 하여 핵심 비지니스 로직은 Domain Object에 구현 하였습니다.
-3. Repository는 인터페이스로 설계 하여 서비스 계층과 결합도를 낮췄습니다.
+1. **Presentation, Application, Domain, Persistence 4계층으로 프로젝트를 구성 하였습니다.**
+2. **핵심 비즈니스 로직은 도메인 계층에서 처리되며, 도메인 객체(Domain Object)와 일급 컬렉션을 활용해 책임을 명확히 분리하고 응집도를 높였습니다.**
+3. **Repository는 인터페이스 기반으로 설계하여 Application(Service) 계층과 Persistence 계층 간의 결합도를 낮췄습니다.**
+4. **Bounded Context 기준의 Aggregate Root 설계와 어댑터 포트(Adapter Port) 패턴을 도입하여, UseCase 단위로 명확한 책임을 분리하고 엔드포인트 수를 최소화하는 구조를 구현했습니다.**
+   
 - 더 자세한 설명은 [4계층 프로젝트를 도입한 이유](https://github.com/jps091/for-work/wiki/%EC%A7%80%EC%86%8D-%EC%84%B1%EC%9E%A5-%EA%B0%80%EB%8A%A5%ED%95%9C-%EC%BD%94%EB%93%9C-%EC%84%A4%EA%B3%84-%E2%80%90-4%E2%80%90Tier-Layer,-OOP&%EB%94%94%EC%9E%90%EC%9D%B8-%ED%8C%A8%ED%84%B4)를 확인 해주세요.
 
-<img width="900" height="600" alt="image" src="https://github.com/user-attachments/assets/723f78dc-6196-47ca-b287-988fa17120b5" />
+<img width="900" height="600" alt="image" src="https://github.com/user-attachments/assets/07e2457b-f12c-4f8b-8b51-773749dbe0a8" />
 
 ---
 
