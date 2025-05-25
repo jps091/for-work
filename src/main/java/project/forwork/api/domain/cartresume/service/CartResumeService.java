@@ -13,6 +13,7 @@ import project.forwork.api.domain.cartresume.controller.model.CartResumeDetailRe
 import project.forwork.api.domain.cartresume.controller.model.CartResumeResponse;
 import project.forwork.api.domain.cartresume.controller.model.SelectCartResumeRequest;
 import project.forwork.api.domain.cartresume.model.CartResume;
+import project.forwork.api.domain.cartresume.model.CartResumes;
 import project.forwork.api.domain.cartresume.service.port.CartResumeRepository;
 import project.forwork.api.domain.resume.model.Resume;
 import project.forwork.api.domain.resume.service.port.ResumeQueryPort;
@@ -47,12 +48,12 @@ public class CartResumeService {
     }
 
     public void deleteBySelected(CurrentUser currentUser, SelectCartResumeRequest body){
-        List<CartResume> cartResumes = cartResumeRepository.findByUserAndSelected(currentUser.getId(), body.getCartResumeIds());
+        CartResumes cartResumes = cartResumeRepository.findByUserAndSelected(currentUser.getId(), body.getCartResumeIds());
         cartResumeRepository.deleteAll(cartResumes);
     }
 
     public void deleteByPaidResumeIds(CurrentUser currentUser, List<Long> resumeIds){
-        List<CartResume> cartResumes = cartResumeRepository.findByConfirmedResumes(currentUser.getId(), resumeIds);
+        CartResumes cartResumes = cartResumeRepository.findByConfirmedResumes(currentUser.getId(), resumeIds);
         cartResumeRepository.deleteAll(cartResumes);
     }
 
@@ -62,10 +63,8 @@ public class CartResumeService {
 
     @Transactional(readOnly = true)
     public CartResumeDetailResponse selectAll(CurrentUser currentUser){
-        List<CartResumeResponse> cartResumeResponses = cartResumeRepository.findAllInCart(currentUser.getId()).stream()
-                .map(CartResumeResponse::from)
-                .toList();
-
+        CartResumes cartResumes = cartResumeRepository.findAllInCart(currentUser.getId());
+        List<CartResumeResponse> cartResumeResponses = cartResumes.toResponseList();
         return createCartResumeDetailResponse(cartResumeResponses);
     }
 
